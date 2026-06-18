@@ -217,13 +217,29 @@ struct IntelligentNotificationEngine {
             profile: profile
         )
 
+        // Adapter: derive minimal NotificationAnalytics from existing data
+        let analytics = NotificationAnalytics(
+            timeAffinity: profile.preferredHours.max(by: { $0.value < $1.value })?.value ?? 0,
+            weekdayAffinity: profile.preferredWeekdays.max(by: { $0.value < $1.value })?.value ?? 0,
+            momentum: profile.momentum,
+            sessionFit: 1.0, // placeholder until a precise computation exists
+            completionProbability: 0.0,
+            inactivityUrgency: min(1.0, profile.inactivityDays / 14.0),
+            engagementLikelihood: min(1.0, max(profile.readingFrequencyPerWeek / 7.0, profile.sessionConsistency)),
+            sessionConsistency: profile.sessionConsistency,
+            daysSinceLastSession: Int(max(0, profile.inactivityDays.rounded())),
+            recommendedDeliveryTime: date
+        )
+
+        // TODO: Thread real recommendation and estimation when available
+        let recommendation: RecommendationResultV3? = nil
+        let estimationResults: [UUID: BookEstimationResult] = [:]
+
         let candidates = buildCandidates(
             books: books,
-            profile: profile,
-            confidence: confidence,
-            opportunities: opportunities,
-            notificationHistory: notificationHistory,
-            date: date
+            analytics: analytics,
+            recommendation: recommendation,
+            estimationResults: estimationResults
         )
 
         let ranked = candidates.sorted {
@@ -353,7 +369,49 @@ extension IntelligentNotificationEngine {
                 sessions: sessions,
                 date: date
             )
+        static func computeLongestStreak(
+            sessions: [ReadingSession]
+        ) -> Int {
 
+            let calendar = Calendar.current
+
+            let days = Set(
+                sessions.map {
+                    calendar.startOfDay(for: $0.startTime)
+                }
+            )
+
+            let sortedDays = days.sorted()
+
+            guard !sortedDays.isEmpty else {
+                return 0
+            }
+
+            var longest = 1
+            var current = 1
+
+            for index in 1..<sortedDays.count {
+
+                let previous = sortedDays[index - 1]
+                let currentDay = sortedDays[index]
+
+                let difference =
+                    calendar.dateComponents(
+                        [.day],
+                        from: previous,
+                        to: currentDay
+                    ).day ?? 0
+
+                if difference == 1 {
+                    current += 1
+                    longest = max(longest, current)
+                } else {
+                    current = 1
+                }
+            }
+
+            return longest
+        }
         let frequency =
             computeWeeklyFrequency(
                 sessions: sessions
@@ -587,7 +645,7 @@ import Foundation
 
 extension IntelligentNotificationEngine {
 
-    func buildCandidates(
+    static func buildCandidates(
         books: [Book],
         analytics: NotificationAnalytics,
         recommendation: RecommendationResultV3?,
@@ -662,7 +720,7 @@ extension IntelligentNotificationEngine {
 
 private extension IntelligentNotificationEngine {
 
-    func buildReadingOpportunity(
+    static func buildReadingOpportunity(
         books: [Book],
         analytics: NotificationAnalytics
     ) -> NotificationCandidate? {
@@ -704,7 +762,7 @@ private extension IntelligentNotificationEngine {
 
 private extension IntelligentNotificationEngine {
 
-    func buildStreakProtection(
+    static func buildStreakProtection(
         books: [Book],
         analytics: NotificationAnalytics
     ) -> NotificationCandidate? {
@@ -757,7 +815,7 @@ private extension IntelligentNotificationEngine {
 
 private extension IntelligentNotificationEngine {
 
-    func buildCompletionEncouragement(
+    static func buildCompletionEncouragement(
         books: [Book],
         analytics: NotificationAnalytics,
         estimationResults: [UUID: BookEstimationResult]
@@ -819,7 +877,7 @@ private extension IntelligentNotificationEngine {
 
 private extension IntelligentNotificationEngine {
 
-    func buildMomentumReinforcement(
+    static func buildMomentumReinforcement(
         books: [Book],
         analytics: NotificationAnalytics
     ) -> NotificationCandidate? {
@@ -857,7 +915,7 @@ private extension IntelligentNotificationEngine {
 
 private extension IntelligentNotificationEngine {
 
-    func buildInactivityRecovery(
+    static func buildInactivityRecovery(
         books: [Book],
         analytics: NotificationAnalytics
     ) -> NotificationCandidate? {
@@ -901,7 +959,7 @@ private extension IntelligentNotificationEngine {
 
 private extension IntelligentNotificationEngine {
 
-    func buildChapterOpportunity(
+    static func buildChapterOpportunity(
         books: [Book],
         analytics: NotificationAnalytics,
         estimationResults: [UUID: BookEstimationResult]
@@ -957,7 +1015,7 @@ private extension IntelligentNotificationEngine {
 
 private extension IntelligentNotificationEngine {
 
-    func buildSessionContinuation(
+    static func buildSessionContinuation(
         books: [Book],
         analytics: NotificationAnalytics
     ) -> NotificationCandidate? {
@@ -1014,7 +1072,7 @@ private extension IntelligentNotificationEngine {
 
 private extension IntelligentNotificationEngine {
 
-    func buildAchievementMilestone(
+    static func buildAchievementMilestone(
         books: [Book],
         analytics: NotificationAnalytics
     ) -> NotificationCandidate? {
@@ -1062,19 +1120,40 @@ private extension IntelligentNotificationEngine {
 
 extension IntelligentNotificationEngine {
 
-    func rankCandidates(
+    // Ensures candidate scores are valid and returns a sanitized candidate
+    static func validateCandidate(_ candidate: NotificationCandidate) -> NotificationCandidate {
+        // Clamp rankingScore to [0,1] to keep ordering stable
+        let clampedScore = max(0.0, min(1.0, candidate.rankingScore))
+        if clampedScore == candidate.rankingScore {
+            return candidate
+        }
+        // Rebuild candidate with clamped score, preserving all other fields
+        return NotificationCandidate(
+            category: candidate.category,
+            title: candidate.title,
+            message: candidate.message,
+            triggerReason: candidate.triggerReason,
+            recommendedDeliveryTime: candidate.recommendedDeliveryTime,
+            breakdown: candidate.breakdown,
+            rankingScore: clampedScore,
+            confidence: candidate.confidence,
+            explanation: candidate.explanation
+        )
+    }
+
+    static func rankCandidates(
         _ candidates: [NotificationCandidate]
     ) -> [NotificationCandidate] {
 
         candidates
-            .map(validateCandidate)
+            .map { validateCandidate($0) }
             .sorted {
                 $0.rankingScore >
                 $1.rankingScore
             }
     }
 
-    func weightedScore(
+    static func weightedScore(
         from breakdown: NotificationScoreBreakdown
     ) -> Double {
 
@@ -1091,4 +1170,3 @@ extension IntelligentNotificationEngine {
         return clamp(score)
     }
 }
-
