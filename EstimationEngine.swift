@@ -499,8 +499,8 @@ extension EstimationEngine {
 
     // MARK: - Global Safety Clamp
 
-    private static func clamp(_ value: Double, min: Double = 0.7, max: Double = 1.5) -> Double {
-        Swift.max(min, Swift.min(max, value))
+    func clamp(_ value: Double, min minValue: Double, max maxValue: Double) -> Double {
+        Swift.max(minValue, Swift.min(maxValue, value))
     }
 
     // MARK: - Final Speed Normalization Helper

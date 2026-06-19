@@ -18,6 +18,7 @@
 		CA085C1F2FE25EA3000F30E0 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA085C1E2FE25EA3000F30E0 /* LibraryView.swift */; };
 		CA085C212FE290E5000F30E0 /* EstimationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA085C202FE290E5000F30E0 /* EstimationEngine.swift */; };
 		CA085C232FE2A57D000F30E0 /* PredictiveRecommendationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA085C222FE2A57D000F30E0 /* PredictiveRecommendationEngine.swift */; };
+		CA23B0FB2FE3FE05005B0A5F /* WeatherKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA23B0FA2FE3FE05005B0A5F /* WeatherKitService.swift */; };
 		CA272B662FE05F8D0031387F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = CA272B652FE05F8D0031387F /* ZIPFoundation */; };
 		CA272B772FE068150031387F /* Reading-Tracker-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CA272B762FE068150031387F /* Reading-Tracker-Info.plist */; };
 		CA50059A2FE3D70E004D6526 /* WeatherAnalysisEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5005992FE3D70E004D6526 /* WeatherAnalysisEngine.swift */; };
@@ -57,6 +58,7 @@
 		CA085C1E2FE25EA3000F30E0 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		CA085C202FE290E5000F30E0 /* EstimationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EstimationEngine.swift; sourceTree = "<group>"; };
 		CA085C222FE2A57D000F30E0 /* PredictiveRecommendationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredictiveRecommendationEngine.swift; sourceTree = "<group>"; };
+		CA23B0FA2FE3FE05005B0A5F /* WeatherKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherKitService.swift; sourceTree = "<group>"; };
 		CA272B272FE04E910031387F /* Reading Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Reading Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA272B362FE04E920031387F /* Reading TrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Reading TrackerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA272B402FE04E920031387F /* Reading TrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Reading TrackerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -129,6 +131,7 @@
 				CA085C202FE290E5000F30E0 /* EstimationEngine.swift */,
 				CA841D002FE2C65A00D98641 /* IntelligentNotificationEngine.swift */,
 				CA5005992FE3D70E004D6526 /* WeatherAnalysisEngine.swift */,
+				CA23B0FA2FE3FE05005B0A5F /* WeatherKitService.swift */,
 				CA085C062FE24829000F30E0 /* ReadingComplexityHints.swift */,
 				CA085C0A2FE248BC000F30E0 /* ReadingGoalSet.swift */,
 				CA085C0E2FE24937000F30E0 /* ReadingInsight.swift */,
@@ -321,6 +324,7 @@
 				CA085C0B2FE248BC000F30E0 /* ReadingGoalSet.swift in Sources */,
 				CAEB7DF72FE11C730068BD25 /* SessionCoordinator.swift in Sources */,
 				CA085C032FE247CA000F30E0 /* DataStore.swift in Sources */,
+				CA23B0FB2FE3FE05005B0A5F /* WeatherKitService.swift in Sources */,
 				CA085C1F2FE25EA3000F30E0 /* LibraryView.swift in Sources */,
 				CA50059A2FE3D70E004D6526 /* WeatherAnalysisEngine.swift in Sources */,
 				CA085C212FE290E5000F30E0 /* EstimationEngine.swift in Sources */,

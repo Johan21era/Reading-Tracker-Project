@@ -369,7 +369,7 @@ extension IntelligentNotificationEngine {
                 sessions: sessions,
                 date: date
             )
-        static func computeLongestStreak(
+        func computeLongestStreak(
             sessions: [ReadingSession]
         ) -> Int {
 
@@ -1115,7 +1115,9 @@ private extension IntelligentNotificationEngine {
         )
     }
 }
-
+func clamp(_ value: Double) -> Double {
+    max(0.0, min(1.0, value))
+}
 // MARK: - Ranking Engine
 
 extension IntelligentNotificationEngine {
