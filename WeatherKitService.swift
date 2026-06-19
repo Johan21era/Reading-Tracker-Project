@@ -5,9 +5,7 @@
 //  Created by Johan Rembeci on 6/18/26.
 //
 //
-//
-//
-//  Architecture: WeatherKitService as the missing dependency of WeatherAnalysisEngine.
+// 
 //
 //  Sole responsibility: produce a valid WeatherSnapshot for any (location, timestamp) pair,
 //  persist it durably, and make historical snapshots queryable by the range and granularity
@@ -763,8 +761,18 @@ public struct EnvironmentalSessionAssembler {
 
     private let weatherService: WeatherKitService
 
-    public init(weatherService: WeatherKitService = .shared) {
-        self.weatherService = weatherService
+    public init(weatherService: WeatherKitService? = nil) {
+        if let ws = weatherService {
+            self.weatherService = ws
+        } else {
+            // Resolve the shared instance on the main actor to satisfy isolation rules in Swift 6
+            self.weatherService = Self.resolveShared()
+        }
+    }
+
+    @MainActor
+    private static func resolveShared() -> WeatherKitService {
+        WeatherKitService.shared
     }
 
     // MARK: - Assemble at Session End
@@ -1023,7 +1031,7 @@ extension WeatherAnalysisEngine {
 //   2. WeatherSnapshotStoreTests       — SQLite integration, no network
 //   3. WeatherAnalysisEngineIntegrationTests — validates full pipeline with synthetic data
 
-#if DEBUG
+#if canImport(XCTest) && DEBUG
 
 import XCTest
 
@@ -1239,8 +1247,14 @@ final class WeatherAnalysisEngineIntegrationTests: XCTestCase {
     let engine = WeatherAnalysisEngine()
 
     func testFullCorrelationPipeline_withMinimumSessions_returnsResults() {
-        let sessions = (0..<20).map { i in
-            makeSession(temperature: Double(10 + i), readingSpeed: Double(200 + i * 5))
+        // Break up complex expression to help the type-checker
+        var sessions: [WeatherAnalysisEngine.EnvironmentalSessionRecord] = []
+        sessions.reserveCapacity(20)
+        for i in 0..<20 {
+            let temp = Double(10 + i)
+            let speed = Double(200 + i * 5)
+            let s = makeSession(temperature: temp, readingSpeed: speed)
+            sessions.append(s)
         }
         let correlations = engine.analyzeCorrelations(from: sessions)
 
@@ -1337,3 +1351,4 @@ final class WeatherAnalysisEngineIntegrationTests: XCTestCase {
 }
 
 #endif
+
