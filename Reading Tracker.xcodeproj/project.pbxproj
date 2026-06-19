@@ -23,6 +23,10 @@
 		CA272B772FE068150031387F /* Reading-Tracker-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CA272B762FE068150031387F /* Reading-Tracker-Info.plist */; };
 		CA50059A2FE3D70E004D6526 /* WeatherAnalysisEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5005992FE3D70E004D6526 /* WeatherAnalysisEngine.swift */; };
 		CA841D012FE2C65A00D98641 /* IntelligentNotificationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA841D002FE2C65A00D98641 /* IntelligentNotificationEngine.swift */; };
+		CADDFA522FE521B8006C81C0 /* AnnualReportData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADDFA512FE521B8006C81C0 /* AnnualReportData.swift */; };
+		CADDFA542FE521DB006C81C0 /* AnnualReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADDFA532FE521DB006C81C0 /* AnnualReportView.swift */; };
+		CADDFA562FE52215006C81C0 /* AnnualReportArchiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADDFA552FE52215006C81C0 /* AnnualReportArchiveView.swift */; };
+		CADDFA582FE52268006C81C0 /* NewYearTransitionMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADDFA572FE52268006C81C0 /* NewYearTransitionMonitor.swift */; };
 		CAEB7DF72FE11C730068BD25 /* SessionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAEB7DF62FE11C730068BD25 /* SessionCoordinator.swift */; };
 		CAEB7DF92FE11C830068BD25 /* PDFReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAEB7DF82FE11C830068BD25 /* PDFReaderView.swift */; };
 		CAEB7DFB2FE11C910068BD25 /* EPUBReaderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAEB7DFA2FE11C910068BD25 /* EPUBReaderScreen.swift */; };
@@ -65,6 +69,10 @@
 		CA272B762FE068150031387F /* Reading-Tracker-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Reading-Tracker-Info.plist"; sourceTree = "<group>"; };
 		CA5005992FE3D70E004D6526 /* WeatherAnalysisEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherAnalysisEngine.swift; sourceTree = "<group>"; };
 		CA841D002FE2C65A00D98641 /* IntelligentNotificationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligentNotificationEngine.swift; sourceTree = "<group>"; };
+		CADDFA512FE521B8006C81C0 /* AnnualReportData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnualReportData.swift; sourceTree = "<group>"; };
+		CADDFA532FE521DB006C81C0 /* AnnualReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnualReportView.swift; sourceTree = "<group>"; };
+		CADDFA552FE52215006C81C0 /* AnnualReportArchiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnualReportArchiveView.swift; sourceTree = "<group>"; };
+		CADDFA572FE52268006C81C0 /* NewYearTransitionMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewYearTransitionMonitor.swift; sourceTree = "<group>"; };
 		CAEB7DF62FE11C730068BD25 /* SessionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCoordinator.swift; sourceTree = "<group>"; };
 		CAEB7DF82FE11C830068BD25 /* PDFReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFReaderView.swift; sourceTree = "<group>"; };
 		CAEB7DFA2FE11C910068BD25 /* EPUBReaderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPUBReaderScreen.swift; sourceTree = "<group>"; };
@@ -127,11 +135,15 @@
 				CAEB7DFC2FE11CA20068BD25 /* BookImporter.swift */,
 				CA085C1C2FE24AB5000F30E0 /* DataIntegrityValidator.swift */,
 				CA085C042FE247F2000F30E0 /* AnalyticsEngine.swift */,
-				CA085C222FE2A57D000F30E0 /* PredictiveRecommendationEngine.swift */,
 				CA085C202FE290E5000F30E0 /* EstimationEngine.swift */,
 				CA841D002FE2C65A00D98641 /* IntelligentNotificationEngine.swift */,
+				CA085C222FE2A57D000F30E0 /* PredictiveRecommendationEngine.swift */,
 				CA5005992FE3D70E004D6526 /* WeatherAnalysisEngine.swift */,
 				CA23B0FA2FE3FE05005B0A5F /* WeatherKitService.swift */,
+				CADDFA512FE521B8006C81C0 /* AnnualReportData.swift */,
+				CADDFA532FE521DB006C81C0 /* AnnualReportView.swift */,
+				CADDFA552FE52215006C81C0 /* AnnualReportArchiveView.swift */,
+				CADDFA572FE52268006C81C0 /* NewYearTransitionMonitor.swift */,
 				CA085C062FE24829000F30E0 /* ReadingComplexityHints.swift */,
 				CA085C0A2FE248BC000F30E0 /* ReadingGoalSet.swift */,
 				CA085C0E2FE24937000F30E0 /* ReadingInsight.swift */,
@@ -317,17 +329,21 @@
 				CA085C232FE2A57D000F30E0 /* PredictiveRecommendationEngine.swift in Sources */,
 				CA085C0D2FE248DE000F30E0 /* AchievementKind.swift in Sources */,
 				CA085C052FE247F2000F30E0 /* AnalyticsEngine.swift in Sources */,
+				CADDFA522FE521B8006C81C0 /* AnnualReportData.swift in Sources */,
 				CAEB7DF92FE11C830068BD25 /* PDFReaderView.swift in Sources */,
 				CA085C012FE24799000F30E0 /* Book.swift in Sources */,
+				CADDFA542FE521DB006C81C0 /* AnnualReportView.swift in Sources */,
 				CA841D012FE2C65A00D98641 /* IntelligentNotificationEngine.swift in Sources */,
 				CA085C0F2FE24937000F30E0 /* ReadingInsight.swift in Sources */,
 				CA085C0B2FE248BC000F30E0 /* ReadingGoalSet.swift in Sources */,
+				CADDFA582FE52268006C81C0 /* NewYearTransitionMonitor.swift in Sources */,
 				CAEB7DF72FE11C730068BD25 /* SessionCoordinator.swift in Sources */,
 				CA085C032FE247CA000F30E0 /* DataStore.swift in Sources */,
 				CA23B0FB2FE3FE05005B0A5F /* WeatherKitService.swift in Sources */,
 				CA085C1F2FE25EA3000F30E0 /* LibraryView.swift in Sources */,
 				CA50059A2FE3D70E004D6526 /* WeatherAnalysisEngine.swift in Sources */,
 				CA085C212FE290E5000F30E0 /* EstimationEngine.swift in Sources */,
+				CADDFA562FE52215006C81C0 /* AnnualReportArchiveView.swift in Sources */,
 				CA085C072FE24829000F30E0 /* ReadingComplexityHints.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
