@@ -230,7 +230,7 @@ enum AnnualReportGenerator {
         // ── Slide 6: Streak & Consistency ────────────────────────────────
         let overallStreak   = AnalyticsEngine.streak(books: books)
         let yearStreakLen    = longestStreakInYear(sessions: yearSessions, calendar: calendar)
-        let daysInYear      = daysInCalendarYear(year: year)
+        let daysInYear      = daysInCalendarYear(year)
         let readingDaysPct  = daysInYear > 0 ? Double(totalDays) / Double(daysInYear) : 0
         let weeklyPattern   = weeklyPatternScores(sessions: yearSessions, calendar: calendar)
 
@@ -722,3 +722,4 @@ func weekdayName(_ weekday: Int) -> String {
     default: return "—"
     }
 }
+
