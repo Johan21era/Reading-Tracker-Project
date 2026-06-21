@@ -380,19 +380,6 @@ struct BookEstimationView: View {
     }
 }
 
-// MARK: - Shared Duration Formatter
-// Single source of truth for "Xh Ym" / "Ym" display across ContentView and BookEstimationView.
-
-private func formatDuration(_ time: TimeInterval) -> String {
-    let hours   = Int(time) / 3600
-    let minutes = (Int(time) % 3600) / 60
-    if hours > 0 {
-        return "\(hours)h \(minutes)m"
-    } else {
-        return "\(minutes)m"
-    }
-}
-
 // MARK: - Preview
 
 #Preview {
