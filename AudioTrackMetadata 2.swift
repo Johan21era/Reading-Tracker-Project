@@ -5,7 +5,6 @@
 //  Created by Johan Rembeci on 6/23/26.
 //
 
-
 //
 //  AudioMonitorService.swift
 //  Reading Tracker
@@ -51,6 +50,7 @@
 import Foundation
 import AppKit
 import CoreAudio
+import Combine
 
 // MARK: - AudioTrackMetadata (Internal)
 

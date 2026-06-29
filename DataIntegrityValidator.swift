@@ -4,8 +4,6 @@
 //
 //  Created by Johan Rembeci on 6/16/26.
 //
-
-
 //
 //  DataIntegrityValidator.swift
 //  Reading Tracker

@@ -1,8 +1,8 @@
 //
-//  RecommendationPanel.swift
+//  RecommendationPanel 2.swift
 //  Reading Tracker
 //
-//  Created by Johan Rembeci on 6/28/26.
+//  Created by Johan Rembeci on 6/29/26.
 //
 
 
@@ -257,7 +257,7 @@ private struct BreakdownGrid: View {
                                 .fill(Color.secondary.opacity(0.12))
                             RoundedRectangle(cornerRadius: 3)
                                 .fill(Color.accentColor.opacity(0.7))
-                                .frame(width: geo.size.width * CGFloat(row.value.clamped(to: 0...1)))
+                                .frame(width: geo.size.width * CGFloat(min(1.0, max(0.0, row.value))))
                         }
                     }
                     .frame(height: 6)

@@ -476,7 +476,9 @@ public final class BehaviorContextAccessKit: ObservableObject {
     public init() {}
 
     deinit {
-        stopMonitoring()
+        Task { @MainActor in
+            stopMonitoring()
+        }
     }
 
     // MARK: Monitoring Lifecycle
@@ -1664,7 +1666,6 @@ public struct BehavioralStoragePartition:
         self.observationWindow = observationWindow
     }
 }
-  id="8r1m2q"
 // MARK: - Advanced Behavioral Categorization
 
 /// Provides runtime-extensible application categorization.
@@ -2420,7 +2421,6 @@ public struct BehavioralRetentionController {
         }
     }
 }
-swiftid="v9k2ax"
 // MARK: - Observer Health Monitoring
 
 /// Represents the operational health state of an observer.
@@ -3210,3 +3210,4 @@ public struct BehavioralMetricsGenerator {
         )
     }
 }
+
