@@ -1,4 +1,12 @@
 //
+//  AnnualReportData 2.swift
+//  Reading Tracker
+//
+//  Created by Johan Rembeci on 6/23/26.
+//
+
+
+//
 //  AnnualReportData.swift
 //  Reading Tracker
 //
@@ -136,6 +144,11 @@ struct AnnualReportData {
 
     // MARK: Slide 9 — Narrative: Who did I become as a reader?
     let narrativeProfile: ReaderNarrativeProfile  // Source: deterministic from all metrics
+
+    // MARK: Slide 10 — Audio Environment: What was the soundtrack to your reading?
+    // nil when audioProfiles were not passed to generate() or fewer than 3 audio-linked
+    // sessions exist for the year. MusicalAnalysisEngine is the authoritative source.
+    let audioReport: AudioAnnualReport?           // Source: MusicalAnalysisEngine.generateAnnualReport
 }
 
 // MARK: - Reader Narrative Profile
@@ -181,7 +194,8 @@ enum AnnualReportGenerator {
         year: Int,
         books: [Book],
         goalSet: ReadingGoalSet,
-        earnedAchievements: [EarnedAchievement]
+        earnedAchievements: [EarnedAchievement],
+        audioProfiles: [AudioContextProfile] = []
     ) -> AnnualReportData {
 
         let calendar  = Calendar.current
@@ -257,6 +271,24 @@ enum AnnualReportGenerator {
         let allGoalStatuses = ReadingGoalManager.allStatuses(for: goalSet, books: yearSubsetBooks)
         let metCount = allGoalStatuses.filter(\.isAchieved).count
 
+        // ── Slide 10: Audio Environment ───────────────────────────────────
+        // Builds only when AudioContextProfile data is available for this year.
+        // Requires at least 3 audio-linked sessions to produce a meaningful report.
+        let audioReport: AudioAnnualReport? = {
+            guard !audioProfiles.isEmpty else { return nil }
+            let yearProfiles = audioProfiles.filter { profile in
+                Calendar.current.component(.year, from: profile.createdAt) == year
+            }
+            guard !yearProfiles.isEmpty else { return nil }
+            let audioRecords = MusicalAnalysisEngine.buildSessionRecords(
+                books: yearBooks,
+                audioProfiles: yearProfiles,
+                allBooks: books
+            )
+            guard audioRecords.count >= 3 else { return nil }
+            return MusicalAnalysisEngine().generateAnnualReport(year: year, records: audioRecords)
+        }()
+
         // ── Slide 9: Narrative ────────────────────────────────────────────
         let narrative = buildNarrative(
             year: year,
@@ -314,7 +346,8 @@ enum AnnualReportGenerator {
             goalMetCount: metCount,
             hadAnnualGoal: goalSet.annualBookTarget != nil,
             annualBookTarget: goalSet.annualBookTarget,
-            narrativeProfile: narrative
+            narrativeProfile: narrative,
+            audioReport: audioReport
         )
     }
 
@@ -722,4 +755,3 @@ func weekdayName(_ weekday: Int) -> String {
     default: return "—"
     }
 }
-

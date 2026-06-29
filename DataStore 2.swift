@@ -1,4 +1,12 @@
 //
+//  DataStore 2.swift
+//  Reading Tracker
+//
+//  Created by Johan Rembeci on 6/23/26.
+//
+
+
+//
 //  DataStore.swift
 //  Reading Tracker
 //
@@ -43,6 +51,10 @@ final class DataStore: ObservableObject {
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
+    /// Persists AudioContextProfile objects captured by AudioMonitorService.
+    /// Stored at: ~/Library/Application Support/ReadTracker/audio-profiles.json
+    let audioProfileStore: AudioProfileStore
+
     /// Debounce timer: coalesces rapid updates into a single disk write.
     private var saveTimer: Timer?
     private let saveDebounceInterval: TimeInterval = 0.5
@@ -58,12 +70,16 @@ final class DataStore: ObservableObject {
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
 
         if let url = fileURL {
-            self.fileURL  = url
-            self.stateURL = url.deletingLastPathComponent()
+            self.fileURL            = url
+            self.stateURL           = url.deletingLastPathComponent()
                 .appendingPathComponent("library-state.json")
+            self.audioProfileStore  = AudioProfileStore(
+                directory: url.deletingLastPathComponent()
+            )
         } else {
-            self.fileURL  = dir.appendingPathComponent("library.json")
-            self.stateURL = dir.appendingPathComponent("library-state.json")
+            self.fileURL            = dir.appendingPathComponent("library.json")
+            self.stateURL           = dir.appendingPathComponent("library-state.json")
+            self.audioProfileStore  = AudioProfileStore(directory: dir)
         }
 
         encoder.dateEncodingStrategy  = .iso8601
@@ -122,6 +138,41 @@ final class DataStore: ObservableObject {
 
     func clearNewAchievements() {
         newlyEarnedAchievements = []
+    }
+
+    // MARK: - Public API — Audio Context
+
+    /// Saves an AudioContextProfile and links it to its reading session.
+    /// Called by SessionCoordinator immediately after a session ends.
+    /// - Parameters:
+    ///   - sessionID: The ReadingSession.id that this profile describes.
+    ///   - profile:   The AudioContextProfile produced by AudioMonitorService.finalizeContext.
+    func attachAudioContext(to sessionID: UUID, profile: AudioContextProfile) {
+        // 1. Persist the profile to the audio store.
+        audioProfileStore.save(profile: profile)
+
+        // 2. Write the profileID back onto the session so analytics can join them.
+        for i in books.indices {
+            for j in books[i].sessions.indices
+            where books[i].sessions[j].id == sessionID {
+                books[i].sessions[j].audioContextProfileID = profile.id
+                scheduleSave()   // debounced — coalesces with the endSession save
+                return
+            }
+        }
+        print("[DataStore] attachAudioContext: session \(sessionID.uuidString.prefix(8)) " +
+              "not found — profile saved to store but session reference not updated.")
+    }
+
+    /// Returns the AudioContextProfile for a specific session, if one was captured.
+    func audioContextProfile(for sessionID: UUID) -> AudioContextProfile? {
+        audioProfileStore.fetch(sessionID: sessionID)
+    }
+
+    /// Returns all persisted AudioContextProfile objects.
+    /// Used by AnnualReportGenerator and MusicalAnalysisEngine.buildSessionRecords.
+    func allAudioProfiles() -> [AudioContextProfile] {
+        audioProfileStore.fetchAll()
     }
 
     // MARK: - Session Helpers

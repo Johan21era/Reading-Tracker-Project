@@ -1,47 +1,43 @@
 //
+//  HoverIntent.swift
+//  Reading Tracker
+//
+//  Created by Johan Rembeci on 6/28/26.
+//
+
+
+//
 //  NewContentView.swift
 //  Reading Tracker
 //
-//  Created by Johan Rembeci on 6/15/26.
+//  CHANGES FROM PREVIOUS VERSION:
 //
-//  CHANGES FROM ORIGINAL:
+//  8. Five engine-backed feature panels are now reachable from the toolbar:
+//       • "Analytics" menu  → Insights, Recommendations, Goals & Achievements,
+//                             Session History
+//       • "Discover Books"  → BookDiscoveryView (online search — already built)
+//       • "Annual Reports"  → AnnualReportArchiveView (year-in-review — already built)
 //
-//  1. EstimationEngine is now wired up (was dead code).
-//     Hovering over a book for 1.5s shows full reading time estimates
-//     (time to finish, per-session breakdown, chapter-by-chapter, confidence)
-//     in the detail pane — the core feature the app was designed around.
+//  9. Achievement toast overlay: when DataStore publishes newly earned achievements,
+//     a banner appears briefly at the top of the window then auto-dismisses.
+//     Tapping the banner opens the full AchievementPanel.
 //
-//  2. HoverIntent enum replaces the stringly-typed "INSPECTING"/"INTERESTED"/"IGNORE"
-//     state machine. The free function hoverLevel() at the bottom of the file is removed.
+// 10. GoalProgressViewModel injected via @EnvironmentObject so GoalsDashboard
+//     receives live goal status updates throughout the app session.
 //
-//  3. @State var selectedBook removed — it was declared but never read or written
-//     anywhere that affected the UI. Replaced with @State var inspectedBook which
-//     actually drives the detail pane.
-//
-//  4. All print() / emoji debug logging removed (F13).
-//     Import errors now surface via @State var importError + .alert() instead
-//     of printing to the console and silently failing.
-//
-//  5. Hover now triggers while the user is still hovering (after 1.5s),
-//     not only when they move the cursor away — better UX for the estimation panel.
-//
-//  6. Book row label extracted into BookRowView (keeps body readable).
-//
-//  7. BookEstimationView added — renders the EstimationEngine output in the
-//     detail pane with time-to-finish, session breakdown, chapter list, confidence.
+//  All original functionality (hover estimation, book import, PDFReaderScreen,
+//  EPUBReaderScreen, NavigationSplitView layout) is unchanged.
 //
 
 import SwiftUI
 import UniformTypeIdentifiers
 
-// MARK: - HoverIntent
-// Replaces the stringly-typed "INSPECTING" / "INTERESTED" / "IGNORE" system (F9).
-// Using an enum means the compiler catches typos and exhaustive switch is enforced.
+// MARK: - HoverIntent (unchanged)
 
 private enum HoverIntent {
-    case ignore       // < 0.5 s — accidental mouse pass
-    case interested   // 0.5 – 1.5 s — user paused
-    case inspecting   // ≥ 1.5 s — user wants detail
+    case ignore
+    case interested
+    case inspecting
 
     init(seconds: Double) {
         if seconds < 0.5 {
@@ -57,19 +53,28 @@ private enum HoverIntent {
 // MARK: - ContentView
 
 struct ContentView: View {
-    @EnvironmentObject private var dataStore: DataStore
+    @EnvironmentObject private var dataStore:    DataStore
     @EnvironmentObject private var sessionCoordinator: SessionCoordinator
+    @EnvironmentObject private var goalVM:       GoalProgressViewModel
 
-    /// The book whose estimation is currently shown in the detail pane.
-    /// Replaces the unused @State var selectedBook.
-    @State private var inspectedBook: Book?
+    // Estimation state (unchanged)
+    @State private var inspectedBook:    Book?
     @State private var currentEstimation: BookEstimationResult?
+    @State private var hoverWorkItem:    DispatchWorkItem?
+    @State private var importError:      String?
 
-    /// Fires after 1.5 s of hover to show estimation while the cursor is still over the row.
-    @State private var hoverWorkItem: DispatchWorkItem?
+    // ── Feature sheet presentation ─────────────────────────────────────────
+    @State private var showInsights:        Bool = false
+    @State private var showRecommendations: Bool = false
+    @State private var showGoals:           Bool = false
+    @State private var showAchievements:    Bool = false
+    @State private var showSessionHistory:  Bool = false
+    @State private var showDiscovery:       Bool = false
+    @State private var showAnnualReports:   Bool = false
 
-    /// Surfaces import failures to the user via an alert instead of print().
-    @State private var importError: String?
+    // ── Achievement toast ──────────────────────────────────────────────────
+    @State private var toastAchievement: EarnedAchievement?
+    @State private var toastVisible:     Bool = false
 
     var body: some View {
         NavigationSplitView {
@@ -92,18 +97,77 @@ struct ContentView: View {
             }
             .navigationSplitViewColumnWidth(min: 180, ideal: 200)
             .toolbar {
-                ToolbarItem {
+                // ── Existing: Add Book ─────────────────────────────────────
+                ToolbarItem(placement: .primaryAction) {
                     Button(action: addItem) {
                         Label("Add Book", systemImage: "plus")
+                    }
+                }
+
+                // ── New: Analytics menu ────────────────────────────────────
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Button {
+                            showInsights = true
+                        } label: {
+                            Label("Insights", systemImage: "lightbulb")
+                        }
+
+                        Button {
+                            showRecommendations = true
+                        } label: {
+                            Label("What to Read Next", systemImage: "star.leadinghalf.filled")
+                        }
+
+                        Divider()
+
+                        Button {
+                            showGoals = true
+                        } label: {
+                            Label("Goals", systemImage: "target")
+                        }
+
+                        Button {
+                            showAchievements = true
+                        } label: {
+                            Label("Achievements", systemImage: "medal")
+                        }
+
+                        Divider()
+
+                        Button {
+                            showSessionHistory = true
+                        } label: {
+                            Label("Session History", systemImage: "clock.arrow.circlepath")
+                        }
+
+                    } label: {
+                        Label("Analytics", systemImage: "chart.line.uptrend.xyaxis")
+                    }
+                }
+
+                // ── New: Discover Books ────────────────────────────────────
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showDiscovery = true
+                    } label: {
+                        Label("Discover Books", systemImage: "books.vertical.fill")
+                    }
+                }
+
+                // ── New: Annual Reports ────────────────────────────────────
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showAnnualReports = true
+                    } label: {
+                        Label("Annual Reports", systemImage: "chart.bar.doc.horizontal")
                     }
                 }
             }
         } detail: {
             if let book = inspectedBook, let estimation = currentEstimation {
-                // EstimationEngine output — the core hover feature
                 BookEstimationView(book: book, estimation: estimation)
             } else {
-                // Placeholder shown before any book is hovered
                 VStack(spacing: 12) {
                     Image(systemName: "books.vertical")
                         .font(.system(size: 48))
@@ -113,6 +177,8 @@ struct ContentView: View {
                 }
             }
         }
+
+        // ── Import error alert (unchanged) ─────────────────────────────────
         .alert("Import Failed", isPresented: Binding(
             get: { importError != nil },
             set: { if !$0 { importError = nil } }
@@ -121,32 +187,84 @@ struct ContentView: View {
         } message: {
             Text(importError ?? "")
         }
+
+        // ── Feature sheets ─────────────────────────────────────────────────
+        .sheet(isPresented: $showInsights) {
+            ReadingInsightsDashboard()
+                .environmentObject(dataStore)
+        }
+        .sheet(isPresented: $showRecommendations) {
+            RecommendationPanel()
+                .environmentObject(dataStore)
+        }
+        .sheet(isPresented: $showGoals) {
+            GoalsDashboard()
+                .environmentObject(goalVM)
+                .environmentObject(dataStore)
+        }
+        .sheet(isPresented: $showAchievements) {
+            AchievementPanel()
+                .environmentObject(dataStore)
+                .onAppear { dataStore.clearNewAchievements() }
+        }
+        .sheet(isPresented: $showSessionHistory) {
+            SessionHistoryView()
+                .environmentObject(dataStore)
+        }
+        .sheet(isPresented: $showDiscovery) {
+            BookDiscoveryView()
+        }
+        .sheet(isPresented: $showAnnualReports) {
+            AnnualReportArchiveView()
+                .environmentObject(dataStore)
+        }
+
+        // ── Achievement toast ──────────────────────────────────────────────
+        .onReceive(dataStore.$newlyEarnedAchievements) { newly in
+            guard let first = newly.first, !toastVisible else { return }
+            toastAchievement = first
+            withAnimation(.spring(duration: 0.4)) { toastVisible = true }
+            // Auto-dismiss after 3.5 s
+            Task {
+                try? await Task.sleep(for: .seconds(3.5))
+                withAnimation(.easeOut(duration: 0.3)) { toastVisible = false }
+                try? await Task.sleep(for: .seconds(0.3))
+                toastAchievement = nil
+            }
+        }
+        .overlay(alignment: .top) {
+            if toastVisible, let achievement = toastAchievement {
+                AchievementToastView(achievement: achievement) {
+                    // Tap opens the full achievements panel
+                    withAnimation(.easeOut) { toastVisible = false }
+                    showAchievements = true
+                    dataStore.clearNewAchievements()
+                }
+                .padding(.top, 12)
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
     }
 
-    // MARK: - Hover Handling
+    // MARK: - Hover Handling (unchanged)
 
     private func handleHover(hovering: Bool, book: Book) {
         if hovering {
-            // Cancel any pending work from a previous hover
             hoverWorkItem?.cancel()
-
-            // After 1.5 s of sustained hover → run the estimation and show it
             let workItem = DispatchWorkItem { [book] in
                 let result = EstimationEngine.estimate(for: book, allBooks: dataStore.books)
-                inspectedBook = book
+                inspectedBook     = book
                 currentEstimation = EstimationEngine.validate(result: result)
             }
             hoverWorkItem = workItem
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: workItem)
-
         } else {
-            // Cursor left the row — cancel the pending estimation if it hasn't fired yet
             hoverWorkItem?.cancel()
             hoverWorkItem = nil
         }
     }
 
-    // MARK: - Toolbar: Add Book
+    // MARK: - Toolbar: Add Book (unchanged)
 
     private func addItem() {
         let panel = NSOpenPanel()
@@ -160,19 +278,15 @@ struct ContentView: View {
             Task {
                 do {
                     let book = try await BookImporter.importBook(from: url)
-                    await MainActor.run {
-                        dataStore.addBook(book)
-                    }
+                    await MainActor.run { dataStore.addBook(book) }
                 } catch {
-                    await MainActor.run {
-                        importError = error.localizedDescription
-                    }
+                    await MainActor.run { importError = error.localizedDescription }
                 }
             }
         }
     }
 
-    // MARK: - Delete
+    // MARK: - Delete (unchanged)
 
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
@@ -183,8 +297,7 @@ struct ContentView: View {
     }
 }
 
-// MARK: - ContentBookRowView
-// Extracted from ContentView.body to keep the list readable.
+// MARK: - ContentBookRowView (unchanged)
 
 private struct ContentBookRowView: View {
     let book: Book
@@ -193,11 +306,9 @@ private struct ContentBookRowView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(book.title)
                 .font(.headline)
-
             Text(book.author)
                 .font(.caption)
                 .foregroundColor(.secondary)
-
             HStack {
                 Text(book.fileType.displayName)
                     .font(.caption2)
@@ -205,7 +316,6 @@ private struct ContentBookRowView: View {
                     .padding(.vertical, 2)
                     .background(Color.secondary.opacity(0.2))
                     .cornerRadius(4)
-
                 if book.totalReadingTime > 0 {
                     Text(formatDuration(book.totalReadingTime))
                         .font(.caption2)
@@ -217,9 +327,49 @@ private struct ContentBookRowView: View {
     }
 }
 
-// MARK: - BookEstimationView
-// Renders EstimationEngine output in the detail pane.
-// Shown when the user hovers over a book for ≥ 1.5 s.
+// MARK: - Achievement Toast
+
+private struct AchievementToastView: View {
+    let achievement: EarnedAchievement
+    let onTap: () -> Void
+
+    private var definition: AchievementDefinition? {
+        AchievementDefinition.definition(for: achievement.kind)
+    }
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                Image(systemName: definition?.symbolName ?? "medal.fill")
+                    .font(.title2)
+                    .foregroundColor(.yellow)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Achievement Unlocked")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(definition?.title ?? achievement.kind.rawValue)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+            .shadow(color: .black.opacity(0.12), radius: 8, y: 4)
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, 20)
+    }
+}
+
+// MARK: - BookEstimationView (unchanged)
 
 struct BookEstimationView: View {
     let book: Book
@@ -228,8 +378,6 @@ struct BookEstimationView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-
-                // ── Header ────────────────────────────────────────────────
                 VStack(alignment: .leading, spacing: 4) {
                     Text(book.title)
                         .font(.title2)
@@ -241,15 +389,12 @@ struct BookEstimationView: View {
 
                 Divider()
 
-                // ── Time to Finish ────────────────────────────────────────
                 VStack(alignment: .leading, spacing: 6) {
                     Label("Time to Finish", systemImage: "clock")
                         .font(.headline)
-
                     Text(estimation.formattedRemaining)
                         .font(.largeTitle)
                         .fontWeight(.bold)
-
                     Text(completionLabel)
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -257,11 +402,9 @@ struct BookEstimationView: View {
 
                 Divider()
 
-                // ── Per Reading Session ───────────────────────────────────
                 VStack(alignment: .leading, spacing: 8) {
                     Label("Per Reading Session", systemImage: "book.pages")
                         .font(.headline)
-
                     HStack(spacing: 32) {
                         statCell(
                             value: formatDuration(estimation.expectedSessionDuration),
@@ -274,14 +417,11 @@ struct BookEstimationView: View {
                     }
                 }
 
-                // ── Chapter Breakdown ─────────────────────────────────────
                 if !estimation.chapterEstimates.isEmpty {
                     Divider()
-
                     VStack(alignment: .leading, spacing: 8) {
                         Label("Chapter Estimates", systemImage: "list.number")
                             .font(.headline)
-
                         ForEach(
                             Array(estimation.chapterEstimates.prefix(10).enumerated()),
                             id: \.element.chapterID
@@ -300,7 +440,6 @@ struct BookEstimationView: View {
                                     .frame(minWidth: 50, alignment: .trailing)
                             }
                         }
-
                         if estimation.chapterEstimates.count > 10 {
                             Text("+ \(estimation.chapterEstimates.count - 10) more chapters")
                                 .font(.caption2)
@@ -311,7 +450,6 @@ struct BookEstimationView: View {
 
                 Divider()
 
-                // ── Confidence ────────────────────────────────────────────
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Label("Prediction confidence", systemImage: "chart.bar.fill")
@@ -323,7 +461,6 @@ struct BookEstimationView: View {
                             .fontWeight(.medium)
                             .foregroundColor(confidenceColor(estimation.confidence.level))
                     }
-
                     if estimation.confidence.level == .low {
                         Text("Read more of this book to improve estimate accuracy.")
                             .font(.caption2)
@@ -338,28 +475,18 @@ struct BookEstimationView: View {
         }
     }
 
-    // MARK: - Helpers
-
     private var completionLabel: String {
         let days = estimation.estimatedDaysRemaining
-        if days == 0 {
-            return "Could finish today"
-        } else if days == 1 {
-            return "Estimated completion tomorrow"
-        } else {
-            return "Estimated completion in \(days) days"
-        }
+        if days == 0 { return "Could finish today" }
+        if days == 1 { return "Estimated completion tomorrow" }
+        return "Estimated completion in \(days) days"
     }
 
     @ViewBuilder
     private func statCell(value: String, label: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(value)
-                .font(.title3)
-                .fontWeight(.semibold)
-            Text(label)
-                .font(.caption)
-                .foregroundColor(.secondary)
+            Text(value).font(.title3).fontWeight(.semibold)
+            Text(label).font(.caption).foregroundColor(.secondary)
         }
     }
 
@@ -386,5 +513,5 @@ struct BookEstimationView: View {
     ContentView()
         .environmentObject(DataStore())
         .environmentObject(SessionCoordinator(dataStore: DataStore()))
+        .environmentObject(GoalProgressViewModel())
 }
-
