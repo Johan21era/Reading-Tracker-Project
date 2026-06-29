@@ -1,4 +1,12 @@
 //
+//  AnnualReportArchiveView 2.swift
+//  Reading Tracker
+//
+//  Created by Johan Rembeci on 6/23/26.
+//
+
+
+//
 //  AnnualReportArchiveView.swift
 //  Reading Tracker
 //
@@ -157,15 +165,18 @@ struct AnnualReportArchiveView: View {
 
         // Run on background thread; generation is synchronous but can be slow for large libraries.
         Task.detached(priority: .userInitiated) {
-            let books       = await dataStore.books
-            let goalSet     = await dataStore.libraryState.goalSet
-            let achievements = await dataStore.libraryState.earnedAchievements
+            let books         = await dataStore.books
+            let goalSet       = await dataStore.libraryState.goalSet
+            let achievements  = await dataStore.libraryState.earnedAchievements
+            // Load persisted audio profiles so MusicalAnalysisEngine can populate Slide 10.
+            let audioProfiles = await dataStore.allAudioProfiles()
 
             let generated = AnnualReportGenerator.generate(
                 year: year,
                 books: books,
                 goalSet: goalSet,
-                earnedAchievements: achievements
+                earnedAchievements: achievements,
+                audioProfiles: audioProfiles
             )
 
             await MainActor.run {
@@ -291,16 +302,19 @@ struct JanuaryFirstBannerView: View {
         // Mark dismissed so app-close removes it next launch
         UserDefaults.standard.set(previousYear, forKey: "annualReport.bannerDismissedYear")
 
-        let books        = dataStore.books
-        let goalSet      = dataStore.libraryState.goalSet
-        let achievements = dataStore.libraryState.earnedAchievements
+        let books         = dataStore.books
+        let goalSet       = dataStore.libraryState.goalSet
+        let achievements  = dataStore.libraryState.earnedAchievements
+        // Load audio profiles so Slide 10 is populated when opened from the banner.
+        let audioProfiles = dataStore.allAudioProfiles()
 
         Task.detached(priority: .userInitiated) {
             let generated = AnnualReportGenerator.generate(
                 year: previousYear,
                 books: books,
                 goalSet: goalSet,
-                earnedAchievements: achievements
+                earnedAchievements: achievements,
+                audioProfiles: audioProfiles
             )
             await MainActor.run {
                 reportData   = generated

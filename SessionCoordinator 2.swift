@@ -1,4 +1,12 @@
 //
+//  SessionCoordinator 2.swift
+//  Reading Tracker
+//
+//  Created by Johan Rembeci on 6/23/26.
+//
+
+
+//
 //  SessionCoordinator.swift
 //  Reading Tracker
 //
@@ -42,6 +50,9 @@ final class SessionCoordinator: ObservableObject {
     private weak var dataStore: DataStore?
     private var elapsedTimer: Timer?
     private var sessionStartDate: Date?
+
+    /// Audio environment monitor. One instance per coordinator; monitors one session at a time.
+    private let audioMonitor = AudioMonitorService()
 
     // MARK: - Init
 
@@ -89,6 +100,10 @@ final class SessionCoordinator: ObservableObject {
         if let book = dataStore?.book(id: bookID),
            let sid  = book.activeSessionID {
             activeSessionID = sid
+            // Begin audio environment monitoring for this session.
+            // AudioMonitorService captures a baseline snapshot immediately and
+            // then polls every 60 seconds for the session's lifetime.
+            audioMonitor.startMonitoring(sessionID: sid)
         }
 
         startElapsedTimer()
@@ -106,7 +121,19 @@ final class SessionCoordinator: ObservableObject {
     }
 
     func endSession(for bookID: UUID) {
+        // Finalize audio context BEFORE clearing activeSessionID.
+        // elapsedTime is the best available duration approximation for this stint;
+        // the actual session duration (startTime→endTime) is set by DataStore.closeActiveSession.
+        if activeBookID == bookID, let sid = activeSessionID {
+            let profile = audioMonitor.finalizeContext(
+                sessionID: sid,
+                sessionDuration: elapsedTime
+            )
+            dataStore?.attachAudioContext(to: sid, profile: profile)
+        }
+
         dataStore?.endSession(bookID: bookID)
+
         if activeBookID == bookID {
             activeBookID    = nil
             activeSessionID = nil
@@ -118,6 +145,15 @@ final class SessionCoordinator: ObservableObject {
     /// Called by the app lifecycle (scene phase → .background) to ensure no sessions
     /// remain open when the process may be suspended or terminated.
     func endAllActiveSessions() {
+        // Finalize the one session this coordinator is monitoring before bulk-closing.
+        if let sid = activeSessionID {
+            let profile = audioMonitor.finalizeContext(
+                sessionID: sid,
+                sessionDuration: elapsedTime
+            )
+            dataStore?.attachAudioContext(to: sid, profile: profile)
+        }
+
         dataStore?.endAllActiveSessions()
         activeBookID    = nil
         activeSessionID = nil

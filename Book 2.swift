@@ -1,4 +1,12 @@
 //
+//  Book 2.swift
+//  Reading Tracker
+//
+//  Created by Johan Rembeci on 6/23/26.
+//
+
+
+//
 //  Book.swift
 //  Reading Tracker
 //
@@ -276,6 +284,10 @@ struct ReadingSession: Identifiable, Codable, Hashable {
     var endPage: Int
     var pageTimes: [PageTiming]
 
+    /// Set when the session ends; references the AudioContextProfile saved in AudioProfileStore.
+    /// nil for sessions recorded before MusicalAnalysisEngine was introduced.
+    var audioContextProfileID: UUID?
+
     var duration: TimeInterval {
         guard let end = endTime else { return 0 }
         return end.timeIntervalSince(startTime)
@@ -299,15 +311,17 @@ struct ReadingSession: Identifiable, Codable, Hashable {
         endTime: Date? = nil,
         startPage: Int,
         endPage: Int,
-        pageTimes: [PageTiming] = []
+        pageTimes: [PageTiming] = [],
+        audioContextProfileID: UUID? = nil
     ) {
-        self.id         = id
-        self.bookID     = bookID
-        self.startTime  = startTime
-        self.endTime    = endTime
-        self.startPage  = startPage
-        self.endPage    = endPage
-        self.pageTimes  = pageTimes
+        self.id                    = id
+        self.bookID                = bookID
+        self.startTime             = startTime
+        self.endTime               = endTime
+        self.startPage             = startPage
+        self.endPage               = endPage
+        self.pageTimes             = pageTimes
+        self.audioContextProfileID = audioContextProfileID
     }
 }
 
