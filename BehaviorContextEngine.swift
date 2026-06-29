@@ -5,6 +5,7 @@
 //  Created by Johan Rembeci on 6/20/26.
 //
 import Foundation
+import Combine
 
 /// -----------------------------------------------------------------------------
 /// MARK: - Behavior Context Engine
@@ -3322,3 +3323,4 @@ extension BehaviorContextEngine {
 // 8. Final target remains a 2k–4k+ line contextual intelligence subsystem.
 //
 // ==============================================
+

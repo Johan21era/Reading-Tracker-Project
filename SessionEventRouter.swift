@@ -2,7 +2,7 @@
 //  SessionEventRouter.swift
 //  Reading Tracker
 //
-//  Created by Johan Rembeci on 6/28/26.
+//  Created by Johan Rembeci on 6/29/26.
 //
 
 
@@ -10,18 +10,14 @@
 //  SessionEventRouter.swift
 //  Reading Tracker
 //
-//  Observes DataStore for reading session lifecycle events and fans out to
-//  the engines that should act at session close. This file contains NO engine
-//  logic — it only calls existing engine APIs.
+//  Observes DataStore for session-close events and fans out to engines that
+//  act at session end. Contains NO engine logic — only calls existing APIs.
 //
-//  Engines triggered at session end:
+//  Cascade at session close:
 //    1. WeatherKitService              — captures a weather snapshot
 //    2. IntelligentNotificationEngine  — evaluates a reading prompt
 //    3. NotificationScheduler          — delivers the prompt if score qualifies
-//
-//  GoalProgressViewModel does NOT need to be called here — its bind() already
-//  sets up a Combine subscription to dataStore.$books that refreshes statuses
-//  automatically whenever books change (which includes session close events).
+//    4. BehaviorContextEngine.analyze()— updates behavioral context summary
 //
 
 import Foundation
@@ -32,31 +28,34 @@ final class SessionEventRouter: ObservableObject {
 
     // MARK: - Private
 
-    private weak var dataStore: DataStore?
+    private weak var dataStore:    DataStore?
+    private weak var behaviorKit:  BehaviorContextAccessKit?
+    private weak var contextEngine: BehaviorContextEngine?
 
-    /// IDs of books that had an open activeSessionID on the last observed books update.
-    /// Diffing against the next update reveals which sessions just closed.
+    /// Books that had an open activeSessionID on the last observed update.
+    /// Diffing against the next emission reveals which sessions just closed.
     private var previouslyActiveBookIDs: Set<UUID> = []
-
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Bind
 
-    /// Attaches the router to a DataStore. Call once at app startup.
-    /// Subsequent calls are safe but redundant — the existing subscription
-    /// handles all future updates.
-    func bind(to dataStore: DataStore) {
-        self.dataStore = dataStore
+    /// Attaches the router to the three objects it needs. Call once at app launch.
+    func bind(
+        to dataStore: DataStore,
+        behaviorKit: BehaviorContextAccessKit,
+        contextEngine: BehaviorContextEngine
+    ) {
+        self.dataStore     = dataStore
+        self.behaviorKit   = behaviorKit
+        self.contextEngine = contextEngine
 
-        // Seed the initial snapshot so the first diff is accurate.
+        // Seed the initial set so the first diff is accurate.
         previouslyActiveBookIDs = Set(
-            dataStore.books
-                .filter { $0.activeSessionID != nil }
-                .map(\.id)
+            dataStore.books.filter { $0.activeSessionID != nil }.map(\.id)
         )
 
         dataStore.$books
-            .dropFirst()                     // skip the seeded initial value
+            .dropFirst()
             .receive(on: RunLoop.main)
             .sink { [weak self] newBooks in
                 self?.handleBooksUpdate(newBooks)
@@ -70,9 +69,6 @@ final class SessionEventRouter: ObservableObject {
         let currentlyActive = Set(
             books.filter { $0.activeSessionID != nil }.map(\.id)
         )
-
-        // Books that had an open session on the previous tick but don't now —
-        // these are the sessions that just closed.
         let justClosed = previouslyActiveBookIDs.subtracting(currentlyActive)
         previouslyActiveBookIDs = currentlyActive
 
@@ -85,20 +81,16 @@ final class SessionEventRouter: ObservableObject {
 
     private func runPostSessionCascade(allBooks: [Book]) async {
 
-        // ── 1. Weather snapshot ──────────────────────────────────────────────
-        //
-        // Find sessions that closed in the last 2 minutes. This window handles
-        // slight timing differences between the Combine update and the cascade
-        // firing. Failures are swallowed — weather data enriches analytics but
-        // is never critical to the app's core reading function.
-
+        // ── 1. Weather snapshot ──────────────────────────────────────────
+        // Find sessions that ended in the last 2 minutes and capture weather.
+        // Failures are swallowed — weather data enriches analytics but is never
+        // critical to the core reading function.
         let twoMinutesAgo = Date().addingTimeInterval(-120)
-
         let recentlyClosed = allBooks
             .flatMap(\.sessions)
-            .filter { session in
-                guard let end = session.endTime else { return false }
-                return end >= twoMinutesAgo && session.audioContextProfileID != nil || end >= twoMinutesAgo
+            .filter { s in
+                guard let end = s.endTime else { return false }
+                return end >= twoMinutesAgo
             }
 
         for session in recentlyClosed {
@@ -107,21 +99,41 @@ final class SessionEventRouter: ObservableObject {
             )
         }
 
-        // ── 2. Intelligent notification evaluation ───────────────────────────
-        //
-        // IntelligentNotificationEngine.evaluate() is a pure function: it scores
-        // the user's behavioral state and returns a result with a shouldNotify flag
-        // and a top-ranked NotificationCandidate. We respect its own gating logic
-        // (shouldNotify reflects the engine's built-in 0.55 threshold) and only
-        // deliver when it says to.
-
+        // ── 2. Notification evaluation ───────────────────────────────────
+        // IntelligentNotificationEngine.evaluate() is a pure function.
+        // Its shouldNotify flag already applies the engine's own threshold.
         let result = IntelligentNotificationEngine.evaluate(
             books: allBooks,
             date: Date()
         )
-
         if result.shouldNotify, let candidate = result.selectedNotification {
             await NotificationScheduler.shared.schedule(candidate: candidate)
         }
+
+        // ── 3. Behavioral context analysis ──────────────────────────────
+        // Convert BehaviorContextAccessKit's raw event data into the types
+        // BehaviorContextEngine.analyze() expects, then call analyze().
+        // analyze() sets contextEngine.summary (the @Published property)
+        // internally — no return value needs to be stored here.
+        guard let kit = behaviorKit, let engine = contextEngine else { return }
+
+        let allSessions = allBooks.flatMap(\.sessions)
+
+        let readingRecords = BehaviorEvidenceBuilder.readingSessionRecords(
+            from: allSessions
+        )
+        let evidence = BehaviorEvidenceBuilder.evidence(
+            from: kit.applicationSessions,
+            readingSessions: allSessions
+        )
+
+        // Only run the analysis when there is meaningful data.
+        // The engine handles sparse input gracefully, but calling it with
+        // zero records produces a low-confidence summary with no content.
+        guard !readingRecords.isEmpty, !evidence.isEmpty else { return }
+
+        // analyze() is a synchronous method on a @MainActor class.
+        // We are already on MainActor so the call is safe here.
+        _ = engine.analyze(sessions: readingRecords, evidence: evidence)
     }
 }

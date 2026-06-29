@@ -2,7 +2,7 @@
 //  HoverIntent.swift
 //  Reading Tracker
 //
-//  Created by Johan Rembeci on 6/28/26.
+//  Created by Johan Rembeci on 6/29/26.
 //
 
 
@@ -56,6 +56,7 @@ struct ContentView: View {
     @EnvironmentObject private var dataStore:    DataStore
     @EnvironmentObject private var sessionCoordinator: SessionCoordinator
     @EnvironmentObject private var goalVM:       GoalProgressViewModel
+    @EnvironmentObject private var contextEngine: BehaviorContextEngine
 
     // Estimation state (unchanged)
     @State private var inspectedBook:    Book?
@@ -71,6 +72,8 @@ struct ContentView: View {
     @State private var showSessionHistory:  Bool = false
     @State private var showDiscovery:       Bool = false
     @State private var showAnnualReports:   Bool = false
+    @State private var showContextInsights: Bool = false
+    @State private var showWeatherInsights: Bool = false
 
     // ── Achievement toast ──────────────────────────────────────────────────
     @State private var toastAchievement: EarnedAchievement?
@@ -139,6 +142,18 @@ struct ContentView: View {
                             showSessionHistory = true
                         } label: {
                             Label("Session History", systemImage: "clock.arrow.circlepath")
+                        }
+
+                        Button {
+                            showWeatherInsights = true
+                        } label: {
+                            Label("Environment", systemImage: "cloud.sun")
+                        }
+
+                        Button {
+                            showContextInsights = true
+                        } label: {
+                            Label("Your Context", systemImage: "brain")
                         }
 
                     } label: {
@@ -216,6 +231,14 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showAnnualReports) {
             AnnualReportArchiveView()
+                .environmentObject(dataStore)
+        }
+        .sheet(isPresented: $showContextInsights) {
+            ContextInsightPanel()
+                .environmentObject(contextEngine)
+        }
+        .sheet(isPresented: $showWeatherInsights) {
+            WeatherInsightPanel()
                 .environmentObject(dataStore)
         }
 
@@ -514,4 +537,5 @@ struct BookEstimationView: View {
         .environmentObject(DataStore())
         .environmentObject(SessionCoordinator(dataStore: DataStore()))
         .environmentObject(GoalProgressViewModel())
+        .environmentObject(BehaviorContextEngine())
 }

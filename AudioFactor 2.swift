@@ -507,7 +507,7 @@ public final class MusicalAnalysisEngine {
     public func generatePredictiveContext(
         from profile: AudioReadingProfile,
         currentContext: AudioContextProfile?,
-        weatherRecords: [EnvironmentalSessionRecord] = [],
+        weatherRecords: [WeatherAnalysisEngine.EnvironmentalSessionRecord] = [],
         allAudioRecords: [AudioSessionRecord] = [],
         year: Int? = nil
     ) -> AudioPredictiveContext {
@@ -1081,7 +1081,7 @@ extension MusicalAnalysisEngine {
 
     func buildAudioWeatherInteraction(
         audioRecords: [AudioSessionRecord],
-        weatherRecords: [EnvironmentalSessionRecord]
+        weatherRecords: [WeatherAnalysisEngine.EnvironmentalSessionRecord]
     ) -> AudioWeatherInteraction? {
         guard audioRecords.count >= 5, !weatherRecords.isEmpty else { return nil }
 

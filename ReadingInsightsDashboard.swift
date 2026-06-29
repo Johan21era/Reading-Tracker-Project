@@ -2,7 +2,7 @@
 //  ReadingInsightsDashboard.swift
 //  Reading Tracker
 //
-//  Created by Johan Rembeci on 6/28/26.
+//  Created by Johan Rembeci on 6/29/26.
 //
 
 
@@ -384,6 +384,8 @@ private struct InsightCard: View {
         case .predictionQuality: return "chart.bar.xaxis"
         case .genrePattern:      return "books.vertical"
         case .milestoneNear:     return "flag.checkered"
+        case .consistencyReward: return "calendar.badge.checkmark"
+        case .drySpell:          return "cloud.rain"
         }
     }
 
