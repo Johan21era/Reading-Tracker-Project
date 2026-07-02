@@ -1370,6 +1370,9 @@ extension MusicalAnalysisEngine {
 
 // MARK: - Formatting helper
 
-extension TimeInterval {
-    fileprivate static func - (lhs: Date, rhs: Int) -> Date { lhs }
+extension Date {
+    /// Returns a new date by subtracting the given number of seconds.
+    fileprivate func subtracting(seconds: TimeInterval) -> Date {
+        self.addingTimeInterval(-seconds)
+    }
 }
