@@ -469,10 +469,9 @@ public final class AudioMonitorService: ObservableObject {
         parser: (NSAppleEventDescriptor) -> T?
     ) -> T? {
         var errorInfo: NSDictionary?
-        guard let script     = NSAppleScript(source: source),
-              let descriptor = script.executeAndReturnError(&errorInfo),
-              errorInfo      == nil
-        else { return nil }
+        guard let script = NSAppleScript(source: source) else { return nil }
+        let descriptor = script.executeAndReturnError(&errorInfo)
+        if let _ = errorInfo { return nil }
         return parser(descriptor)
     }
 
@@ -666,3 +665,4 @@ public final class AudioMonitorService: ObservableObject {
         isMonitoring     = false
     }
 }
+
