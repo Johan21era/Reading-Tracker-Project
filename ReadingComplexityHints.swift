@@ -213,7 +213,7 @@ func extractPlainSentences(from text: String) -> [String] {
 
             if nextIsUpper || isEndOfText {
                 let trimmed = current.trimmingCharacters(in: .whitespacesAndNewlines)
-                if !trimmed.isEmpty { sentences.append(trimmed) }
+               if !trimmed.isEmpty { sentences.append(trimmed) }
                 current = ""
             }
         }

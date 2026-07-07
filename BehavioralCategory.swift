@@ -2,6 +2,14 @@
 //  BehavioralCategory.swift
 //  Reading Tracker
 //
+//  Created by Johan Rembeci on 7/5/26.
+//
+
+
+//
+//  BehavioralCategory.swift
+//  Reading Tracker
+//
 //  Created by Johan Rembeci on 6/20/26.
 //
 import Foundation
@@ -471,6 +479,12 @@ public final class BehaviorContextAccessKit: ObservableObject {
 
     private var systemPowerObserver: NSObjectProtocol?
 
+    // MEMORY-FIX (Phase 4, BEHAVIOR_MEMORY_FIX_PLAN.txt Section 4 Step 2):
+    // Caps applied to events/applicationSessions/inactivityRecords/deviceStateEvents
+    // below. Uses BehavioralRetentionPolicy's existing defaults (250k/100k/50k/50k) —
+    // unchanged from what was already coded, just actually enforced now.
+    private let retentionPolicy = BehavioralRetentionPolicy()
+
     // MARK: Initialization
 
     public init() {}
@@ -653,6 +667,12 @@ public final class BehaviorContextAccessKit: ObservableObject {
                 currentInactivityRecord = record
                 inactivityRecords.append(record)
 
+                // MEMORY-FIX (Phase 4, Step 5): safe to trim here — the record
+                // just appended is always the most recent, so it's never the
+                // one a count-based .suffix() trim would drop, and the later
+                // close-out below looks it up by id, not by stored index.
+                BehavioralRetentionController.apply(policy: retentionPolicy, to: &inactivityRecords)
+
                 recordEvent(
                     type: .inactivityStarted,
                     source: "IOKit",
@@ -765,6 +785,12 @@ public final class BehaviorContextAccessKit: ObservableObject {
         currentSession = session
         applicationSessions.append(session)
 
+        // MEMORY-FIX (Phase 4, Step 4): safe to trim here — the just-appended
+        // session is always the most recent, and both endCurrentSessionIfNeeded()
+        // above and the close-out logic elsewhere look sessions up by id, not
+        // by stored index, so a count-based trim can't invalidate them.
+        BehavioralRetentionController.apply(policy: retentionPolicy, to: &applicationSessions)
+
         recordEvent(
             type: .applicationActivated,
             application: descriptor,
@@ -822,6 +848,11 @@ public final class BehaviorContextAccessKit: ObservableObject {
         )
 
         events.append(event)
+
+        // MEMORY-FIX (Phase 4, Step 3): recordEvent() is the single choke point
+        // every event-producing code path in this class funnels through, so
+        // capping here covers all of them.
+        BehavioralRetentionController.apply(policy: retentionPolicy, to: &events)
     }
 
     /// Records a device state transition.
@@ -836,6 +867,9 @@ public final class BehaviorContextAccessKit: ObservableObject {
         )
 
         deviceStateEvents.append(event)
+
+        // MEMORY-FIX (Phase 4, Step 6):
+        BehavioralRetentionController.apply(policy: retentionPolicy, to: &deviceStateEvents)
 
         recordEvent(
             type: .deviceStateTransition,
@@ -2420,6 +2454,46 @@ public struct BehavioralRetentionController {
             )
         }
     }
+
+    // MEMORY-FIX (Phase 4, Step 1): the two overloads below were missing even
+    // though BehavioralRetentionPolicy already declared limits for both
+    // (maximumInactivityRecords, maximumDeviceStateEvents) — mirrors the
+    // count-based trim pattern used by the two overloads above. No age-based
+    // cutoff is added here, matching how the sessions overload above also
+    // only does a count-based trim (see BEHAVIOR_MEMORY_FIX_PLAN.txt, open
+    // decision 2, for adding age-based eviction to these later if wanted).
+
+    public static func apply(
+        policy: BehavioralRetentionPolicy,
+        to records: inout [InactivityRecord]
+    ) {
+
+        if records.count >
+            policy.maximumInactivityRecords {
+
+            records = Array(
+                records.suffix(
+                    policy.maximumInactivityRecords
+                )
+            )
+        }
+    }
+
+    public static func apply(
+        policy: BehavioralRetentionPolicy,
+        to deviceEvents: inout [DeviceStateEvent]
+    ) {
+
+        if deviceEvents.count >
+            policy.maximumDeviceStateEvents {
+
+            deviceEvents = Array(
+                deviceEvents.suffix(
+                    policy.maximumDeviceStateEvents
+                )
+            )
+        }
+    }
 }
 // MARK: - Observer Health Monitoring
 
@@ -3210,4 +3284,3 @@ public struct BehavioralMetricsGenerator {
         )
     }
 }
-

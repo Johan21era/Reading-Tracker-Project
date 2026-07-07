@@ -2,35 +2,51 @@
 //  EPUBReaderScreen.swift
 //  Reading Tracker
 //
-//  Created by Johan Rembeci on 6/16/26.
+//  Created by Johan Rembeci on 7/6/26.
 //
 
 
-// EPUBReaderScreen.swift
-// AUDIT:
-//   Task 5  — Security scope held across async Task via withTaskCancellationHandler.
-//             Explicit capture list ensures resolvedURL is not accessed after dealloc.
-//   Task 18 — errorMessage and isLoading reset at the top of onAppear so re-opening
-//             after a failure triggers a fresh load attempt.
-//   Task 28 — All early-return paths set isLoading = false (confirmed present).
+//
+//  EPUBReaderScreen.swift
+//  Reading Tracker
+//
+//  Architectural redesign — see EPUB_READER_REDESIGN_PLAN.txt (this file's
+//  single source of truth). Previous version extracted a fixed ~3,000-
+//  character plain-text snippet with no navigation; this version renders
+//  full chapter content via WKWebView and supports real chapter-by-chapter
+//  navigation, matching the reading-position contract SessionCoordinator
+//  already establishes for the PDF reader.
+//
+//  External contract preserved exactly: init(book: Book, coordinator:
+//  SessionCoordinator) — unchanged, so both call sites (NewContentView,
+//  and the dead-in-practice LibraryView) keep compiling untouched.
+//
 
 import SwiftUI
-import Foundation
-#if canImport(ZIPFoundation)
-import ZIPFoundation
-#endif
+import WebKit
+import os
 
 // MARK: - EPUBReaderScreen
 
 struct EPUBReaderScreen: View {
     let book: Book
     @ObservedObject var coordinator: SessionCoordinator
+
+    @State private var package: EPUBPackage?
+    @State private var currentChapterIndex: Int = 0
     @State private var errorMessage: String?
     @State private var isLoading = true
-    @State private var extractedText: String = ""
+    @State private var showingChapterList = false
+    @State private var showingInfo = false
 
-    /// Reference to the in-flight Task so it can be cancelled on disappear.
-    @State private var loadTask: Task<Void, Never>?
+    /// Reference to the in-flight open Task so it can be cancelled on
+    /// disappear, exactly like the previous implementation's loadTask.
+    @State private var openTask: Task<Void, Never>?
+
+    private let logger = Logger(
+        subsystem: Bundle.main.bundleIdentifier ?? "ReadingTracker",
+        category: "EPUBReaderScreen"
+    )
 
     init(book: Book, coordinator: SessionCoordinator) {
         self.book = book
@@ -39,8 +55,8 @@ struct EPUBReaderScreen: View {
 
     var body: some View {
         Group {
-            if let error = errorMessage {
-                errorView(error)
+            if let errorMessage {
+                errorView(errorMessage)
             } else if isLoading {
                 loadingView
             } else {
@@ -48,28 +64,97 @@ struct EPUBReaderScreen: View {
             }
         }
         .onAppear {
-            // TASK 18 FIX: Reset state before each load attempt so that re-opening
-            // after a failure triggers a fresh load rather than showing the stale error.
-            //
-            // Original code (no reset):
-            //   .onAppear {
-            //       loadEPUBContent()   ← errorMessage still set from previous failure
-            //       coordinator.startReading(...)
-            //   }
             errorMessage = nil
-            isLoading    = true
-            extractedText = ""
-
-            loadEPUBContent()
+            isLoading = true
+            openTask = Task {
+                await openPackage()
+            }
             coordinator.startReading(bookID: book.id, page: coordinator.currentPage)
         }
         .onDisappear {
-            // Cancel the in-flight load task to avoid updating state after the
-            // view has left the hierarchy.
-            loadTask?.cancel()
-            loadTask = nil
+            openTask?.cancel()
+            openTask = nil
+            package?.close()
+            package = nil
             coordinator.endCurrentSession()
         }
+    }
+
+    // MARK: - Opening
+
+    private func openPackage() async {
+        logger.debug("Opening EPUB package")
+        do {
+            let opened = try await EPUBPackage.open(book: book)
+
+            guard !Task.isCancelled else {
+                // Nobody will ever hold a reference to `opened` if we bail
+                // out here — release it ourselves rather than leaking it.
+                opened.close()
+                return
+            }
+
+            let startIndex = startingChapterIndex(in: opened, resumingFrom: coordinator.currentPage)
+
+            await MainActor.run {
+                guard !Task.isCancelled else {
+                    opened.close()
+                    return
+                }
+                self.package = opened
+                self.currentChapterIndex = startIndex
+                self.isLoading = false
+            }
+            logger.info("EPUB package opened with \(opened.chapterCount, privacy: .public) chapters, resuming at chapter \(startIndex, privacy: .public)")
+        } catch {
+            logger.error("Failed to open EPUB package: \(error.localizedDescription)")
+            await MainActor.run {
+                guard !Task.isCancelled else { return }
+                self.errorMessage = error.localizedDescription
+                self.isLoading = false
+            }
+        }
+    }
+
+    /// Maps the coordinator's persisted page back to a chapter index, so
+    /// reopening a book resumes where the reader left off instead of always
+    /// restarting at chapter 1. Falls back to chapter 0 if nothing matches.
+    ///
+    /// Defensive by design: book.chapters (persisted at import time) and the
+    /// freshly-parsed spine (package.chapterCount) are not guaranteed to be
+    /// the same length — see EPUB_READER_REDESIGN_PLAN.txt Section 1 — so
+    /// the result is always clamped to a real spine index.
+    private func startingChapterIndex(in package: EPUBPackage, resumingFrom page: Int) -> Int {
+        guard package.chapterCount > 0 else { return 0 }
+        let match = book.chapters.first { page >= $0.startPage && page <= $0.endPage }
+        let index = match?.index ?? 0
+        return min(max(0, index), package.chapterCount - 1)
+    }
+
+    // MARK: - Chapter navigation
+
+    private var canGoToPreviousChapter: Bool { currentChapterIndex > 0 }
+
+    private var canGoToNextChapter: Bool {
+        guard let package else { return false }
+        return currentChapterIndex < package.chapterCount - 1
+    }
+
+    private func goToChapter(_ index: Int) {
+        guard let package, package.chapterCount > 0 else { return }
+        let clamped = max(0, min(index, package.chapterCount - 1))
+        currentChapterIndex = clamped
+
+        // book.chapters may not have an entry for every spine index (see
+        // startingChapterIndex above) — only update the tracked reading
+        // position when there's a real page number to report.
+        if book.chapters.indices.contains(clamped) {
+            coordinator.turnToPage(book.chapters[clamped].startPage)
+        }
+    }
+
+    private func chapterTitle(at index: Int) -> String {
+        book.chapters.indices.contains(index) ? book.chapters[index].title : "Chapter \(index + 1)"
     }
 
     // MARK: - Content Views
@@ -103,283 +188,183 @@ struct EPUBReaderScreen: View {
     }
 
     private var contentView: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                metadataSection
+        Group {
+            if let package, let url = package.fileURL(forChapterAt: currentChapterIndex) {
+                EPUBChapterWebView(
+                    fileURL: url,
+                    allowedReadRoot: package.allowedReadRoot,
+                    onExternalLink: { url in
+                        NSWorkspace.shared.open(url)
+                    },
+                    onLoadError: { message in
+                        logger.error("Chapter failed to render: \(message)")
+                    }
+                )
+            } else {
+                Text("This chapter is unavailable.")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .navigationTitle(book.title)
+        .toolbar {
+            ToolbarItemGroup(placement: .navigation) {
+                Button {
+                    goToChapter(currentChapterIndex - 1)
+                } label: {
+                    Image(systemName: "chevron.left")
+                }
+                .disabled(!canGoToPreviousChapter)
+                .help("Previous Chapter")
 
-                if !book.chapters.isEmpty {
-                    chaptersSection
+                Button {
+                    showingChapterList = true
+                } label: {
+                    Text(chapterTitle(at: currentChapterIndex))
+                        .lineLimit(1)
+                }
+                .popover(isPresented: $showingChapterList) {
+                    chapterListPopover
                 }
 
-                if !extractedText.isEmpty {
-                    textPreviewSection
+                Button {
+                    goToChapter(currentChapterIndex + 1)
+                } label: {
+                    Image(systemName: "chevron.right")
+                }
+                .disabled(!canGoToNextChapter)
+                .help("Next Chapter")
+            }
+
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button {
+                    showingInfo = true
+                } label: {
+                    Image(systemName: "info.circle")
+                }
+                .popover(isPresented: $showingInfo) {
+                    metadataSection
+                        .padding()
+                        .frame(minWidth: 260)
                 }
             }
-            .padding()
         }
+    }
+
+    private var chapterListPopover: some View {
+        List(book.chapters) { chapter in
+            Button {
+                goToChapter(chapter.index)
+                showingChapterList = false
+            } label: {
+                HStack {
+                    Text(chapter.title)
+                    Spacer()
+                    if chapter.index == currentChapterIndex {
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.accentColor)
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(minWidth: 280, minHeight: 320)
     }
 
     private var metadataSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(book.title)
-                .font(.title)
+                .font(.title2)
                 .fontWeight(.bold)
             Text("By \(book.author)")
-                .font(.title2)
+                .font(.headline)
                 .foregroundColor(.secondary)
             HStack(spacing: 16) {
                 Label("\(book.totalPages) pages", systemImage: "doc.text")
                 Label("\(book.chapters.count) chapters", systemImage: "list.bullet")
-                if let difficulty = book.difficultyProfile {
-                    Label(String(format: "Grade %.1f", difficulty.gradeLevel), systemImage: "chart.bar")
-                }
             }
             .font(.subheadline)
             .foregroundColor(.secondary)
-        }
-        .padding()
-        .background(Color.secondary.opacity(0.1))
-        .cornerRadius(12)
-    }
-
-    private var chaptersSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Chapters")
-                .font(.headline)
-                .fontWeight(.bold)
-            ForEach(book.chapters) { chapter in
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(chapter.title)
-                            .font(.body)
-                        Text("Pages \(chapter.startPage + 1) - \(chapter.endPage + 1)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    Spacer()
-                    Text("\(chapter.pageCount) p")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 12)
-                .background(Color.secondary.opacity(0.05))
-                .cornerRadius(8)
+            if let difficulty = book.difficultyProfile {
+                Label(String(format: "Grade %.1f", difficulty.gradeLevel), systemImage: "chart.bar")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
             }
         }
-        .padding()
-        .background(Color.secondary.opacity(0.1))
-        .cornerRadius(12)
+    }
+}
+
+// MARK: - EPUBChapterWebView
+
+/// Renders one already-unzipped chapter file. Holds no resource lifecycle
+/// of its own — EPUBPackage (owned by the parent view's @State) is what
+/// keeps the underlying files and security scope alive; this view only
+/// ever needs to be handed a currently-valid local file URL.
+private struct EPUBChapterWebView: NSViewRepresentable {
+    let fileURL: URL
+    let allowedReadRoot: URL
+    let onExternalLink: (URL) -> Void
+    let onLoadError: (String) -> Void
+
+    func makeNSView(context: Context) -> WKWebView {
+        let configuration = WKWebViewConfiguration()
+        // Chapter content is untrusted-ish book content, not app UI — it
+        // never needs to execute script.
+        configuration.defaultWebpagePreferences.allowsContentJavaScript = false
+
+        let webView = WKWebView(frame: .zero, configuration: configuration)
+        webView.navigationDelegate = context.coordinator
+
+        webView.loadFileURL(fileURL, allowingReadAccessTo: allowedReadRoot)
+        context.coordinator.currentlyLoadedURL = fileURL
+        return webView
     }
 
-    private var textPreviewSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Text Preview")
-                .font(.headline)
-                .fontWeight(.bold)
-            Text(extractedText)
-                .font(.body)
-                .lineLimit(nil)
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.secondary.opacity(0.05))
-                .cornerRadius(8)
-        }
-        .padding()
-        .background(Color.secondary.opacity(0.1))
-        .cornerRadius(12)
+    func updateNSView(_ webView: WKWebView, context: Context) {
+        guard context.coordinator.currentlyLoadedURL != fileURL else { return }
+        context.coordinator.currentlyLoadedURL = fileURL
+        webView.loadFileURL(fileURL, allowingReadAccessTo: allowedReadRoot)
     }
 
-    // MARK: - EPUB Loading
-
-    private func loadEPUBContent() {
-        print("🔍 [EPUBReaderScreen] loadEPUBContent called for book: \(book.title)")
-        print("🔍 [EPUBReaderScreen] Original fileURL: \(book.fileURL.path)")
-        print("🔍 [EPUBReaderScreen] Has bookmarkData: \(book.bookmarkData != nil)")
-
-        guard let resolvedURL = book.resolveURL() else {
-            let msg = "Could not resolve file URL for \(book.title)"
-            print("❌ EPUB ERROR: \(msg)")
-            errorMessage = msg
-            isLoading    = false       // TASK 28: confirmed present on all early-exit paths
-            return
-        }
-
-        print("🔍 [EPUBReaderScreen] Resolved URL: \(resolvedURL.path)")
-        print("🔍 [EPUBReaderScreen] File exists: \(FileManager.default.fileExists(atPath: resolvedURL.path))")
-
-        let didStartAccess = resolvedURL.startAccessingSecurityScopedResource()
-        print("🔍 [EPUBReaderScreen] Security scope started: \(didStartAccess)")
-
-        guard didStartAccess else {
-            let msg = "Could not access security-scoped resource for \(book.title)"
-            print("❌ EPUB ERROR: \(msg)")
-            errorMessage = msg
-            isLoading    = false       // TASK 28: confirmed present
-            return
-        }
-
-        // TASK 5 FIX: Use withTaskCancellationHandler to guarantee
-        // stopAccessingSecurityScopedResource() is called even when the Task
-        // is cancelled (e.g. user navigates away mid-load).
-        //
-        // Original code called stop() inside do/catch blocks, but Swift's
-        // structured concurrency will NOT run those catch/finally paths when a
-        // Task is externally cancelled — the cancellation propagates by throwing
-        // CancellationError, which bypasses user-written catch { } blocks unless
-        // the catch explicitly re-throws (or uses Task.checkCancellation()).
-        //
-        // withTaskCancellationHandler guarantees the handler runs synchronously
-        // on cancellation, regardless of where the Task is suspended.
-        //
-        // Explicit capture [resolvedURL] ensures the URL is captured by value
-        // (not as a closure over self.resolvedURL which would be a local variable
-        // on the stack and potentially deallocated before the handler fires).
-        loadTask = Task { [resolvedURL] in
-            await withTaskCancellationHandler(
-                operation: {
-                    print("🔍 [EPUBReaderScreen] Task started, security scope active")
-                    do {
-                        let tempDir = FileManager.default.temporaryDirectory
-                            .appendingPathComponent(UUID().uuidString, isDirectory: true)
-                        try FileManager.default.createDirectory(at: tempDir,
-                                                                withIntermediateDirectories: true)
-                        defer { try? FileManager.default.removeItem(at: tempDir) }
-
-                        print("🔍 [EPUBReaderScreen] Unzipping EPUB to temp dir")
-                        try unzipEPUB(at: resolvedURL, to: tempDir)
-
-                        print("🔍 [EPUBReaderScreen] Parsing OPF")
-                        let containerURL = tempDir.appendingPathComponent("META-INF/container.xml")
-                        let opfURL = try findOPFURL(containerURL: containerURL, baseDir: tempDir)
-                        let metadata = try parseOPF(opfURL: opfURL, baseDir: tempDir)
-
-                        print("🔍 [EPUBReaderScreen] Extracting sample text")
-                        let sampleText = await extractSampleText(spineItems: metadata.spineItems,
-                                                                 maxChars: 3000)
-
-                        // Release scope after all file I/O is complete.
-                        print("🔍 [EPUBReaderScreen] Stopping security scope after extraction")
-                        resolvedURL.stopAccessingSecurityScopedResource()
-
-                        let displayText = sampleText.isEmpty ? "No text content available" : sampleText
-                        await MainActor.run {
-                            guard !Task.isCancelled else { return }
-                            self.extractedText = displayText
-                            self.isLoading     = false
-                            print("✅ [EPUBReaderScreen] Content loaded successfully")
-                        }
-                    } catch {
-                        resolvedURL.stopAccessingSecurityScopedResource()
-                        let msg = "Failed to load EPUB: \(error.localizedDescription)"
-                        print("❌ EPUB ERROR: \(msg)")
-                        await MainActor.run {
-                            guard !Task.isCancelled else { return }
-                            self.errorMessage = msg
-                            self.isLoading    = false
-                        }
-                    }
-                },
-                onCancel: {
-                    // TASK 5 FIX: This handler fires synchronously on cancellation,
-                    // guaranteeing the security scope is always released even when
-                    // the Task body is mid-suspension (e.g. inside extractSampleText).
-                    print("🔍 [EPUBReaderScreen] Task cancelled — releasing security scope")
-                    resolvedURL.stopAccessingSecurityScopedResource()
-                }
-            )
-        }
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onExternalLink: onExternalLink, onLoadError: onLoadError)
     }
 
-    // MARK: - EPUB Parsing Helpers
+    final class Coordinator: NSObject, WKNavigationDelegate {
+        var currentlyLoadedURL: URL?
+        let onExternalLink: (URL) -> Void
+        let onLoadError: (String) -> Void
 
-    private func unzipEPUB(at source: URL, to destination: URL) throws {
-        #if canImport(ZIPFoundation)
-        try FileManager.default.unzipItem(at: source, to: destination)
-        #else
-        throw NSError(domain: "EPUBReader", code: 1,
-                      userInfo: [NSLocalizedDescriptionKey: "ZIPFoundation not available"])
-        #endif
-    }
-
-    private func findOPFURL(containerURL: URL, baseDir: URL) throws -> URL {
-        guard let data = try? Data(contentsOf: containerURL) else {
-            throw NSError(domain: "EPUBReader", code: 2,
-                          userInfo: [NSLocalizedDescriptionKey: "Cannot read container.xml"])
-        }
-        let xml = try XMLDocument(data: data, options: [])
-        guard let opfPath = try xml.nodes(forXPath: "//@full-path").first?.stringValue else {
-            throw NSError(domain: "EPUBReader", code: 3,
-                          userInfo: [NSLocalizedDescriptionKey: "OPF path not found"])
-        }
-        return baseDir.appendingPathComponent(opfPath)
-    }
-
-    private struct OPFMetadata {
-        var title: String
-        var author: String
-        var spineItems: [(id: String, href: URL)]
-    }
-
-    private func parseOPF(opfURL: URL, baseDir: URL) throws -> OPFMetadata {
-        guard let data = try? Data(contentsOf: opfURL) else {
-            throw NSError(domain: "EPUBReader", code: 4,
-                          userInfo: [NSLocalizedDescriptionKey: "Cannot read OPF"])
+        init(onExternalLink: @escaping (URL) -> Void, onLoadError: @escaping (String) -> Void) {
+            self.onExternalLink = onExternalLink
+            self.onLoadError = onLoadError
         }
 
-        let xml = try XMLDocument(data: data, options: [])
-        let opfDir  = opfURL.deletingLastPathComponent()
-        let title   = (try? xml.nodes(forXPath: "//*[local-name()='title']").first?.stringValue)   ?? "Unknown Title"
-        let creator = (try? xml.nodes(forXPath: "//*[local-name()='creator']").first?.stringValue) ?? "Unknown Author"
-
-        var manifest: [String: URL] = [:]
-        if let items = try? xml.nodes(forXPath: "//*[local-name()='item']") {
-            for item in items {
-                guard let el   = item as? XMLElement,
-                      let id   = el.attribute(forName: "id")?.stringValue,
-                      let href = el.attribute(forName: "href")?.stringValue else { continue }
-                let decoded = href.removingPercentEncoding ?? href
-                manifest[id] = opfDir.appendingPathComponent(decoded)
+        /// Local file loads (the chapter itself, and its relative
+        /// resources) are always allowed. A user clicking an actual link
+        /// inside the chapter (e.g. a footnote pointing at a web URL) is
+        /// handed to the system browser instead of navigating the reader
+        /// away from the book.
+        func webView(
+            _ webView: WKWebView,
+            decidePolicyFor navigationAction: WKNavigationAction,
+            decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+        ) {
+            if navigationAction.navigationType == .linkActivated,
+               let url = navigationAction.request.url {
+                onExternalLink(url)
+                decisionHandler(.cancel)
+                return
             }
+            decisionHandler(.allow)
         }
 
-        var spineItems: [(id: String, href: URL)] = []
-        if let refs = try? xml.nodes(forXPath: "//*[local-name()='itemref']/@idref") {
-            for ref in refs {
-                guard let idref = ref.stringValue, let href = manifest[idref] else { continue }
-                spineItems.append((id: idref, href: href))
-            }
+        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+            onLoadError(error.localizedDescription)
         }
 
-        return OPFMetadata(title: title, author: creator, spineItems: spineItems)
-    }
-
-    private func extractSampleText(spineItems: [(id: String, href: URL)], maxChars: Int) async -> String {
-        await Task.detached(priority: .utility) {
-            var collected = ""
-            for item in spineItems {
-                guard collected.count < maxChars else { break }
-                guard let data = try? Data(contentsOf: item.href),
-                      let html = String(data: data, encoding: .utf8) else { continue }
-                collected += stripHTML(html)
-            }
-            return String(collected.prefix(maxChars))
-        }.value
-    }
-
-    private func stripHTML(_ html: String) -> String {
-        var result = html
-        result = result.replacingOccurrences(
-            of: "<(script|style)[^>]*>[\\s\\S]*?</(script|style)>",
-            with: " ",
-            options: .regularExpression
-        )
-        result = result.replacingOccurrences(of: "<[^>]+>", with: " ", options: .regularExpression)
-        return result
-            .replacingOccurrences(of: "&nbsp;", with: " ")
-            .replacingOccurrences(of: "&amp;",  with: "&")
-            .replacingOccurrences(of: "&lt;",   with: "<")
-            .replacingOccurrences(of: "&gt;",   with: ">")
-            .replacingOccurrences(of: "&quot;", with: "\"")
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            onLoadError(error.localizedDescription)
+        }
     }
 }

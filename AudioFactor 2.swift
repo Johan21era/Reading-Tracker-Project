@@ -633,7 +633,7 @@ public final class MusicalAnalysisEngine {
     ///   - books: Books whose sessions should be included (e.g. booksRead in year).
     ///   - audioProfiles: All AudioContextProfile objects from AudioProfileStore.
     ///   - allBooks: The complete library (used for momentum calculation).
-    public static func buildSessionRecords(
+    static func buildSessionRecords(
         books: [Book],
         audioProfiles: [AudioContextProfile],
         allBooks: [Book]
@@ -1376,3 +1376,4 @@ extension Date {
         self.addingTimeInterval(-seconds)
     }
 }
+
