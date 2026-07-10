@@ -11,7 +11,6 @@
 		CA085C072FE24829000F30E0 /* ReadingComplexityHints.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA085C062FE24829000F30E0 /* ReadingComplexityHints.swift */; };
 		CA085C0B2FE248BC000F30E0 /* ReadingGoalSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA085C0A2FE248BC000F30E0 /* ReadingGoalSet.swift */; };
 		CA085C0D2FE248DE000F30E0 /* AchievementEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA085C0C2FE248DE000F30E0 /* AchievementEngine.swift */; };
-		CA085C0F2FE24937000F30E0 /* ReadingInsight.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA085C0E2FE24937000F30E0 /* ReadingInsight.swift */; };
 		CA085C1D2FE24AB5000F30E0 /* DataIntegrityValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA085C1C2FE24AB5000F30E0 /* DataIntegrityValidator.swift */; };
 		CA085C1F2FE25EA3000F30E0 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA085C1E2FE25EA3000F30E0 /* LibraryView.swift */; };
 		CA085C212FE290E5000F30E0 /* EstimationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA085C202FE290E5000F30E0 /* EstimationEngine.swift */; };
@@ -21,9 +20,9 @@
 		CA272B772FE068150031387F /* Reading-Tracker-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CA272B762FE068150031387F /* Reading-Tracker-Info.plist */; };
 		CA31FFA42FFC72B800CE6822 /* EPUBReaderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA31FFA32FFC72B800CE6822 /* EPUBReaderScreen.swift */; };
 		CA31FFA62FFC72D200CE6822 /* EPUBSpineItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA31FFA52FFC72D200CE6822 /* EPUBSpineItem.swift */; };
+		CA3DE8F72FFDA1E500F26559 /* PDFReaderView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3DE8F62FFDA1E500F26559 /* PDFReaderView 2.swift */; };
 		CA4D58332FFAAF37003FEF6D /* BehavioralCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA4D58322FFAAF37003FEF6D /* BehavioralCategory.swift */; };
 		CA50059A2FE3D70E004D6526 /* WeatherAnalysisEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5005992FE3D70E004D6526 /* WeatherAnalysisEngine.swift */; };
-		CA6236F02FE7672A006597AE /* BehaviorContextEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6236EF2FE7672A006597AE /* BehaviorContextEngine.swift */; };
 		CA6F509B2FE6963600973E2F /* OnlineBookSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F509A2FE6963600973E2F /* OnlineBookSource.swift */; };
 		CA6F509D2FE696AB00973E2F /* OnlineBookProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F509C2FE696AB00973E2F /* OnlineBookProvider.swift */; };
 		CA6F509F2FE696FE00973E2F /* OpenLibraryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F509E2FE696FE00973E2F /* OpenLibraryProvider.swift */; };
@@ -35,7 +34,6 @@
 		CA6F50AB2FE698B400973E2F /* OnlineBookSearchDrawer.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F50AA2FE698B400973E2F /* OnlineBookSearchDrawer.swift */; };
 		CA6F50AD2FE698EB00973E2F /* BookDiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F50AC2FE698EB00973E2F /* BookDiscoveryView.swift */; };
 		CA841D012FE2C65A00D98641 /* IntelligentNotificationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA841D002FE2C65A00D98641 /* IntelligentNotificationEngine.swift */; };
-		CAA892DA2FF264170097D855 /* SessionEventRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA892D92FF264170097D855 /* SessionEventRouter.swift */; };
 		CAA892DC2FF2643D0097D855 /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA892DB2FF2643D0097D855 /* NotificationScheduler.swift */; };
 		CAA892DE2FF2646F0097D855 /* BehaviorEvidenceBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA892DD2FF2646F0097D855 /* BehaviorEvidenceBuilder.swift */; };
 		CAA892E22FF265050097D855 /* ReadingInsightsDashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA892E12FF265050097D855 /* ReadingInsightsDashboard.swift */; };
@@ -43,7 +41,6 @@
 		CAA892E62FF2657A0097D855 /* GoalsDashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA892E52FF2657A0097D855 /* GoalsDashboard.swift */; };
 		CAA892E82FF265AA0097D855 /* RecommendationPanel 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA892E72FF265AA0097D855 /* RecommendationPanel 2.swift */; };
 		CAA892EA2FF265CB0097D855 /* SessionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA892E92FF265CB0097D855 /* SessionHistoryView.swift */; };
-		CAA892EC2FF265ED0097D855 /* WeatherInsightPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA892EB2FF265ED0097D855 /* WeatherInsightPanel.swift */; };
 		CAA892EE2FF266210097D855 /* ContextInsightPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA892ED2FF266210097D855 /* ContextInsightPanel.swift */; };
 		CAC092C42FEA5AA9009416CE /* AudioCategory 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC092C32FEA5AA9009416CE /* AudioCategory 2.swift */; };
 		CAC092C62FEA5AD6009416CE /* Book 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC092C52FEA5AD6009416CE /* Book 2.swift */; };
@@ -53,9 +50,14 @@
 		CAC092CE2FEA5BAC009416CE /* AnnualReportData 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC092CD2FEA5BAC009416CE /* AnnualReportData 2.swift */; };
 		CAC092D02FEA5BED009416CE /* SessionCoordinator 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC092CF2FEA5BED009416CE /* SessionCoordinator 2.swift */; };
 		CAC092D22FEA5C12009416CE /* DataStore 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC092D12FEA5C12009416CE /* DataStore 2.swift */; };
+		CACE4CF73000A3AF00DEBD96 /* SessionEventRouter 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACE4CF63000A3AF00DEBD96 /* SessionEventRouter 2.swift */; };
+		CACE4CF93000A3E200DEBD96 /* DataMaturityEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACE4CF83000A3E200DEBD96 /* DataMaturityEngine.swift */; };
+		CACE4CFB3000A43700DEBD96 /* DataMaturityEngineAdapters.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACE4CFA3000A43700DEBD96 /* DataMaturityEngineAdapters.swift */; };
+		CACE4D093000A53700DEBD96 /* BehaviorContextEngine 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACE4D083000A53700DEBD96 /* BehaviorContextEngine 2.swift */; };
+		CACE4D0B3000A59400DEBD96 /* WeatherInsightPanel 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACE4D0A3000A59400DEBD96 /* WeatherInsightPanel 2.swift */; };
+		CACE4D0D3000A5C400DEBD96 /* ReadingInsight 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACE4D0C3000A5C400DEBD96 /* ReadingInsight 2.swift */; };
 		CADDFA542FE521DB006C81C0 /* AnnualReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADDFA532FE521DB006C81C0 /* AnnualReportView.swift */; };
 		CADDFA582FE52268006C81C0 /* NewYearTransitionMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADDFA572FE52268006C81C0 /* NewYearTransitionMonitor.swift */; };
-		CAEB7DF92FE11C830068BD25 /* PDFReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAEB7DF82FE11C830068BD25 /* PDFReaderView.swift */; };
 		CAEB7DFD2FE11CA20068BD25 /* BookImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAEB7DFC2FE11CA20068BD25 /* BookImporter.swift */; };
 /* End PBXBuildFile section */
 
@@ -81,7 +83,6 @@
 		CA085C062FE24829000F30E0 /* ReadingComplexityHints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingComplexityHints.swift; sourceTree = "<group>"; };
 		CA085C0A2FE248BC000F30E0 /* ReadingGoalSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingGoalSet.swift; sourceTree = "<group>"; };
 		CA085C0C2FE248DE000F30E0 /* AchievementEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementEngine.swift; sourceTree = "<group>"; };
-		CA085C0E2FE24937000F30E0 /* ReadingInsight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingInsight.swift; sourceTree = "<group>"; };
 		CA085C1C2FE24AB5000F30E0 /* DataIntegrityValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataIntegrityValidator.swift; sourceTree = "<group>"; };
 		CA085C1E2FE25EA3000F30E0 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		CA085C202FE290E5000F30E0 /* EstimationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EstimationEngine.swift; sourceTree = "<group>"; };
@@ -93,9 +94,9 @@
 		CA272B762FE068150031387F /* Reading-Tracker-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Reading-Tracker-Info.plist"; sourceTree = "<group>"; };
 		CA31FFA32FFC72B800CE6822 /* EPUBReaderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPUBReaderScreen.swift; sourceTree = "<group>"; };
 		CA31FFA52FFC72D200CE6822 /* EPUBSpineItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPUBSpineItem.swift; sourceTree = "<group>"; };
+		CA3DE8F62FFDA1E500F26559 /* PDFReaderView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PDFReaderView 2.swift"; sourceTree = "<group>"; };
 		CA4D58322FFAAF37003FEF6D /* BehavioralCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehavioralCategory.swift; sourceTree = "<group>"; };
 		CA5005992FE3D70E004D6526 /* WeatherAnalysisEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherAnalysisEngine.swift; sourceTree = "<group>"; };
-		CA6236EF2FE7672A006597AE /* BehaviorContextEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehaviorContextEngine.swift; sourceTree = "<group>"; };
 		CA6F509A2FE6963600973E2F /* OnlineBookSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineBookSource.swift; sourceTree = "<group>"; };
 		CA6F509C2FE696AB00973E2F /* OnlineBookProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineBookProvider.swift; sourceTree = "<group>"; };
 		CA6F509E2FE696FE00973E2F /* OpenLibraryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenLibraryProvider.swift; sourceTree = "<group>"; };
@@ -107,7 +108,6 @@
 		CA6F50AA2FE698B400973E2F /* OnlineBookSearchDrawer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineBookSearchDrawer.swift; sourceTree = "<group>"; };
 		CA6F50AC2FE698EB00973E2F /* BookDiscoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDiscoveryView.swift; sourceTree = "<group>"; };
 		CA841D002FE2C65A00D98641 /* IntelligentNotificationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligentNotificationEngine.swift; sourceTree = "<group>"; };
-		CAA892D92FF264170097D855 /* SessionEventRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionEventRouter.swift; sourceTree = "<group>"; };
 		CAA892DB2FF2643D0097D855 /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
 		CAA892DD2FF2646F0097D855 /* BehaviorEvidenceBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehaviorEvidenceBuilder.swift; sourceTree = "<group>"; };
 		CAA892E12FF265050097D855 /* ReadingInsightsDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingInsightsDashboard.swift; sourceTree = "<group>"; };
@@ -115,7 +115,6 @@
 		CAA892E52FF2657A0097D855 /* GoalsDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsDashboard.swift; sourceTree = "<group>"; };
 		CAA892E72FF265AA0097D855 /* RecommendationPanel 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RecommendationPanel 2.swift"; sourceTree = "<group>"; };
 		CAA892E92FF265CB0097D855 /* SessionHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionHistoryView.swift; sourceTree = "<group>"; };
-		CAA892EB2FF265ED0097D855 /* WeatherInsightPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherInsightPanel.swift; sourceTree = "<group>"; };
 		CAA892ED2FF266210097D855 /* ContextInsightPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextInsightPanel.swift; sourceTree = "<group>"; };
 		CAC092C32FEA5AA9009416CE /* AudioCategory 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioCategory 2.swift"; sourceTree = "<group>"; };
 		CAC092C52FEA5AD6009416CE /* Book 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Book 2.swift"; sourceTree = "<group>"; };
@@ -125,9 +124,14 @@
 		CAC092CD2FEA5BAC009416CE /* AnnualReportData 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnnualReportData 2.swift"; sourceTree = "<group>"; };
 		CAC092CF2FEA5BED009416CE /* SessionCoordinator 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionCoordinator 2.swift"; sourceTree = "<group>"; };
 		CAC092D12FEA5C12009416CE /* DataStore 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataStore 2.swift"; sourceTree = "<group>"; };
+		CACE4CF63000A3AF00DEBD96 /* SessionEventRouter 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionEventRouter 2.swift"; sourceTree = "<group>"; };
+		CACE4CF83000A3E200DEBD96 /* DataMaturityEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataMaturityEngine.swift; sourceTree = "<group>"; };
+		CACE4CFA3000A43700DEBD96 /* DataMaturityEngineAdapters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataMaturityEngineAdapters.swift; sourceTree = "<group>"; };
+		CACE4D083000A53700DEBD96 /* BehaviorContextEngine 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BehaviorContextEngine 2.swift"; sourceTree = "<group>"; };
+		CACE4D0A3000A59400DEBD96 /* WeatherInsightPanel 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeatherInsightPanel 2.swift"; sourceTree = "<group>"; };
+		CACE4D0C3000A5C400DEBD96 /* ReadingInsight 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ReadingInsight 2.swift"; sourceTree = "<group>"; };
 		CADDFA532FE521DB006C81C0 /* AnnualReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnualReportView.swift; sourceTree = "<group>"; };
 		CADDFA572FE52268006C81C0 /* NewYearTransitionMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewYearTransitionMonitor.swift; sourceTree = "<group>"; };
-		CAEB7DF82FE11C830068BD25 /* PDFReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFReaderView.swift; sourceTree = "<group>"; };
 		CAEB7DFC2FE11CA20068BD25 /* BookImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookImporter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -182,23 +186,25 @@
 				CAC092D12FEA5C12009416CE /* DataStore 2.swift */,
 				CAC092CF2FEA5BED009416CE /* SessionCoordinator 2.swift */,
 				CAA892E92FF265CB0097D855 /* SessionHistoryView.swift */,
-				CAA892D92FF264170097D855 /* SessionEventRouter.swift */,
-				CAEB7DF82FE11C830068BD25 /* PDFReaderView.swift */,
+				CACE4CF63000A3AF00DEBD96 /* SessionEventRouter 2.swift */,
+				CA3DE8F62FFDA1E500F26559 /* PDFReaderView 2.swift */,
 				CA31FFA52FFC72D200CE6822 /* EPUBSpineItem.swift */,
 				CA31FFA32FFC72B800CE6822 /* EPUBReaderScreen.swift */,
 				CA085C1E2FE25EA3000F30E0 /* LibraryView.swift */,
 				CAEB7DFC2FE11CA20068BD25 /* BookImporter.swift */,
 				CA085C1C2FE24AB5000F30E0 /* DataIntegrityValidator.swift */,
+				CA841D002FE2C65A00D98641 /* IntelligentNotificationEngine.swift */,
 				CA23B0FA2FE3FE05005B0A5F /* WeatherKitService.swift */,
-				CAA892EB2FF265ED0097D855 /* WeatherInsightPanel.swift */,
+				CACE4D0A3000A59400DEBD96 /* WeatherInsightPanel 2.swift */,
 				CA5005992FE3D70E004D6526 /* WeatherAnalysisEngine.swift */,
 				CA085C042FE247F2000F30E0 /* AnalyticsEngine.swift */,
 				CA085C202FE290E5000F30E0 /* EstimationEngine.swift */,
-				CA841D002FE2C65A00D98641 /* IntelligentNotificationEngine.swift */,
+				CACE4CF83000A3E200DEBD96 /* DataMaturityEngine.swift */,
+				CACE4CFA3000A43700DEBD96 /* DataMaturityEngineAdapters.swift */,
 				CAA892DB2FF2643D0097D855 /* NotificationScheduler.swift */,
 				CA085C222FE2A57D000F30E0 /* PredictiveRecommendationEngine.swift */,
 				CAA892E72FF265AA0097D855 /* RecommendationPanel 2.swift */,
-				CA6236EF2FE7672A006597AE /* BehaviorContextEngine.swift */,
+				CACE4D083000A53700DEBD96 /* BehaviorContextEngine 2.swift */,
 				CA4D58322FFAAF37003FEF6D /* BehavioralCategory.swift */,
 				CAA892ED2FF266210097D855 /* ContextInsightPanel.swift */,
 				CAA892DD2FF2646F0097D855 /* BehaviorEvidenceBuilder.swift */,
@@ -214,7 +220,7 @@
 				CA085C062FE24829000F30E0 /* ReadingComplexityHints.swift */,
 				CA085C0A2FE248BC000F30E0 /* ReadingGoalSet.swift */,
 				CAA892E52FF2657A0097D855 /* GoalsDashboard.swift */,
-				CA085C0E2FE24937000F30E0 /* ReadingInsight.swift */,
+				CACE4D0C3000A5C400DEBD96 /* ReadingInsight 2.swift */,
 				CAA892E12FF265050097D855 /* ReadingInsightsDashboard.swift */,
 				CA6F50AC2FE698EB00973E2F /* BookDiscoveryView.swift */,
 				CA6F509A2FE6963600973E2F /* OnlineBookSource.swift */,
@@ -408,10 +414,8 @@
 				CA085C0D2FE248DE000F30E0 /* AchievementEngine.swift in Sources */,
 				CA085C052FE247F2000F30E0 /* AnalyticsEngine.swift in Sources */,
 				CAC092C82FEA5B09009416CE /* AudioFactor 2.swift in Sources */,
-				CAEB7DF92FE11C830068BD25 /* PDFReaderView.swift in Sources */,
 				CA31FFA62FFC72D200CE6822 /* EPUBSpineItem.swift in Sources */,
 				CA6F509D2FE696AB00973E2F /* OnlineBookProvider.swift in Sources */,
-				CAA892EC2FF265ED0097D855 /* WeatherInsightPanel.swift in Sources */,
 				CAC092C62FEA5AD6009416CE /* Book 2.swift in Sources */,
 				CAA892E22FF265050097D855 /* ReadingInsightsDashboard.swift in Sources */,
 				CADDFA542FE521DB006C81C0 /* AnnualReportView.swift in Sources */,
@@ -421,23 +425,27 @@
 				CAC092C42FEA5AA9009416CE /* AudioCategory 2.swift in Sources */,
 				CAA892E42FF265530097D855 /* AchievementPanel.swift in Sources */,
 				CAC092CE2FEA5BAC009416CE /* AnnualReportData 2.swift in Sources */,
-				CA6236F02FE7672A006597AE /* BehaviorContextEngine.swift in Sources */,
+				CACE4D0B3000A59400DEBD96 /* WeatherInsightPanel 2.swift in Sources */,
 				CA6F50A72FE697F800973E2F /* OnlineBookRow.swift in Sources */,
 				CA6F509B2FE6963600973E2F /* OnlineBookSource.swift in Sources */,
 				CA4D58332FFAAF37003FEF6D /* BehavioralCategory.swift in Sources */,
-				CA085C0F2FE24937000F30E0 /* ReadingInsight.swift in Sources */,
-				CAA892DA2FF264170097D855 /* SessionEventRouter.swift in Sources */,
+				CA3DE8F72FFDA1E500F26559 /* PDFReaderView 2.swift in Sources */,
 				CA085C0B2FE248BC000F30E0 /* ReadingGoalSet.swift in Sources */,
 				CAA892EA2FF265CB0097D855 /* SessionHistoryView.swift in Sources */,
 				CAC092CA2FEA5B3C009416CE /* AudioTrackMetadata 2.swift in Sources */,
+				CACE4CF73000A3AF00DEBD96 /* SessionEventRouter 2.swift in Sources */,
 				CAA892E82FF265AA0097D855 /* RecommendationPanel 2.swift in Sources */,
+				CACE4CFB3000A43700DEBD96 /* DataMaturityEngineAdapters.swift in Sources */,
 				CAA892DC2FF2643D0097D855 /* NotificationScheduler.swift in Sources */,
 				CA6F50A92FE6988700973E2F /* OnlineBookDetailView.swift in Sources */,
 				CA6F50A52FE697AF00973E2F /* OnlineBookDiscoveryViewModel.swift in Sources */,
 				CADDFA582FE52268006C81C0 /* NewYearTransitionMonitor.swift in Sources */,
 				CAA892DE2FF2646F0097D855 /* BehaviorEvidenceBuilder.swift in Sources */,
+				CACE4D093000A53700DEBD96 /* BehaviorContextEngine 2.swift in Sources */,
 				CAC092CC2FEA5B68009416CE /* AnnualReportArchiveView 2.swift in Sources */,
 				CA23B0FB2FE3FE05005B0A5F /* WeatherKitService.swift in Sources */,
+				CACE4CF93000A3E200DEBD96 /* DataMaturityEngine.swift in Sources */,
+				CACE4D0D3000A5C400DEBD96 /* ReadingInsight 2.swift in Sources */,
 				CAC092D02FEA5BED009416CE /* SessionCoordinator 2.swift in Sources */,
 				CA6F50A32FE6975F00973E2F /* OnlineBookDiscoveryService.swift in Sources */,
 				CA6F509F2FE696FE00973E2F /* OpenLibraryProvider.swift in Sources */,

@@ -1,4 +1,12 @@
 //
+//  BehaviorContextEngine 2.swift
+//  Reading Tracker
+//
+//  Created by Johan Rembeci on 7/9/26.
+//
+
+
+//
 //  BehaviorContextEngine.swift
 //  Reading Tracker
 //
@@ -122,7 +130,9 @@ public final class BehaviorContextEngine: ObservableObject {
         let narratives = buildNarratives(
             profiles: profiles,
             routines: routines,
-            transitions: transitions
+            transitions: transitions,
+            contexts: contexts,
+            evidence: significantEvidence
         )
 
         let confidence = calculateOverallConfidence(
@@ -497,62 +507,35 @@ private extension BehaviorContextEngine {
 
 private extension BehaviorContextEngine {
 
+    /// Builds the narrative candidates for each detected profile, then
+    /// asks DataMaturityEngine whether each one has earned the right to
+    /// exist before it is returned. This is the pipeline
+    /// ContextInsightPanel actually reads via `summary.narratives` today,
+    /// so this is the live gate, not a demonstration one.
+    ///
+    /// The candidate-generation logic itself (which sentence maps to
+    /// which ContextProfile.kind) lives in DataMaturityContextV1Adapter
+    /// now, alongside the evidence-recovery logic it needs to build a
+    /// real digest per profile — see DataMaturityEngineAdapters.swift.
+    /// Nothing about routine/transition/context detection changed; this
+    /// function still receives exactly the same `profiles`, `routines`,
+    /// and `transitions` it always did, plus the two additional
+    /// already-computed values (`contexts`, `evidence`) it needs to
+    /// recover real evidence per profile.
     func buildNarratives(
         profiles: [ContextProfile],
         routines: [BehavioralRoutine],
-        transitions: [ContextTransition]
+        transitions: [ContextTransition],
+        contexts: [ReadingContextRecord],
+        evidence: [BehaviorEvidence]
     ) -> [ContextNarrative] {
-
-        var narratives: [ContextNarrative] = []
-
-        for profile in profiles {
-
-            switch profile.kind {
-
-            case .mostCommonPreReadingEnvironment:
-                narratives.append(
-                    ContextNarrative(
-                        text:
-                            "Reading most often followed \(profile.value.lowercased()) activity."
-                    )
-                )
-
-            case .mostCommonPostReadingEnvironment:
-                narratives.append(
-                    ContextNarrative(
-                        text:
-                            "Reading commonly transitioned into \(profile.value.lowercased()) activity."
-                    )
-                )
-
-            case .mostStableRoutine:
-                narratives.append(
-                    ContextNarrative(
-                        text:
-                            "A stable recurring reading routine was observed."
-                    )
-                )
-
-            case .mostFrequentTransition:
-                narratives.append(
-                    ContextNarrative(
-                        text:
-                            "A recurring behavioral transition frequently surrounded reading sessions."
-                    )
-                )
-            }
-        }
-
-        if narratives.isEmpty {
-            narratives.append(
-                ContextNarrative(
-                    text:
-                        "Insufficient recurring evidence exists to establish reliable contextual patterns."
-                )
-            )
-        }
-
-        return narratives
+        DataMaturityContextV1Adapter.gate(
+            profiles: profiles,
+            routines: routines,
+            transitions: transitions,
+            contexts: contexts,
+            evidence: evidence
+        )
     }
 }
 
@@ -4933,6 +4916,17 @@ public struct CitedContextNarrative: Codable, Hashable, Identifiable, Sendable {
 
 struct ExplainabilityNarrativeBuilder {
 
+    /// Candidate generation (which categories exist, what each sentence
+    /// says) and evidence recovery (real dates/counts per candidate) both
+    /// now live in DataMaturityContextV3Adapter, alongside the inclusion
+    /// and wording-strength decisions this function used to make inline
+    /// via ad hoc thresholds (`routine.confidence.score > 0.5`,
+    /// `trend.strength > 0.3`, `meanFocusScore > 0.8`, and so on). Those
+    /// thresholds were exactly the "scattered, ad hoc confidence
+    /// thresholds" DataMaturityEngine exists to replace with one
+    /// composable, calibratable authority — see DataMaturityEngine.swift
+    /// and DataMaturityEngineAdapters.swift. Signature is unchanged, so
+    /// NarrativePipeline.run() below needed no edits at all.
     func build(
         contexts:           [ReadingContextRecord],
         routines:           [BehavioralRoutine],
@@ -4945,114 +4939,18 @@ struct ExplainabilityNarrativeBuilder {
         evolutionSnapshots: [EnvironmentEvolutionSnapshot],
         evidence:           [BehaviorEvidence]
     ) -> [CitedContextNarrative] {
-
-        var narratives: [CitedContextNarrative] = []
-        let allEvidenceIDs = evidence.map(\.id)
-        let allSessionIDs  = contexts.map(\.sessionID)
-
-        // ── Routine narratives ─────────────────────────────────────────────
-        for routine in routines where routine.confidence.score > 0.5 {
-            let text = "\(routine.recurrenceCount) reading sessions occurred at approximately \(routine.averageHour):00. \(routine.dominantEnvironment.rawValue.capitalized) activity was the most common preceding context."
-            narratives.append(CitedContextNarrative(
-                text:        text,
-                evidenceIDs: allEvidenceIDs,
-                sessionIDs:  allSessionIDs,
-                confidence:  routine.confidence,
-                category:    .routine
-            ))
-        }
-
-        // ── Environment transition narratives ──────────────────────────────
-        // ContextTrend.direction is ContextTrendDirection (.increasing/.decreasing/.stable).
-        // Only surface increasing trends (verified field name: .direction, .strength, .environment).
-        for trend in trends where trend.direction == .increasing && trend.strength > 0.3 {
-            let pct  = Int(trend.strength * 100)
-            let text = "\(trend.environment.rawValue.capitalized) activity had the strongest association with reading sessions, appearing before \(pct)% of recorded sessions."
-            narratives.append(CitedContextNarrative(
-                text:        text,
-                evidenceIDs: allEvidenceIDs,
-                sessionIDs:  allSessionIDs,
-                confidence:  ContextConfidence(score: trend.strength),
-                category:    .environment
-            ))
-        }
-
-        // ── Productive context narrative ───────────────────────────────────
-        if let prod = productiveContext {
-            let pct  = Int(prod.averageSessionQuality * 100)
-            let text = "Reading sessions preceded by \(prod.environment.rawValue) activity averaged a session quality score of \(pct)%, the highest across all observed environments."
-            narratives.append(CitedContextNarrative(
-                text:        text,
-                evidenceIDs: allEvidenceIDs,
-                sessionIDs:  allSessionIDs,
-                confidence:  prod.confidence,
-                category:    .productive
-            ))
-        }
-
-        // ── Disruption narrative ───────────────────────────────────────────
-        if !disruptions.isEmpty, let first = disruptions.first {
-            let text = "\(disruptions.count) sessions occurred outside the established \(first.routineTitle) routine window."
-            narratives.append(CitedContextNarrative(
-                text:        text,
-                evidenceIDs: allEvidenceIDs,
-                sessionIDs:  disruptions.map(\.id).map { $0 },
-                confidence:  ContextConfidence(
-                    score: min(1.0, Double(disruptions.count) / 10.0)
-                ),
-                category:    .disruption
-            ))
-        }
-
-        // ── Device focus narrative ─────────────────────────────────────────
-        if !deviceProfiles.isEmpty {
-            let meanFocusScore = deviceProfiles.map(\.influenceScore).reduce(0, +)
-                / Double(deviceProfiles.count)
-            if meanFocusScore > 0.8 {
-                let interruptedPct = Int((1 - meanFocusScore) * 100)
-                let text = "Reading sessions were largely uninterrupted — screen lock events occurred in fewer than \(interruptedPct)% of sessions."
-                narratives.append(CitedContextNarrative(
-                    text:        text,
-                    evidenceIDs: allEvidenceIDs,
-                    sessionIDs:  deviceProfiles.map(\.sessionID),
-                    confidence:  ContextConfidence(score: meanFocusScore),
-                    category:    .device
-                ))
-            }
-        }
-
-        // ── Recovery narrative ─────────────────────────────────────────────
-        if !recoveryRecords.isEmpty {
-            let text = "\(recoveryRecords.count) reading sessions followed extended inactivity periods, suggesting reading is used as a re-engagement activity after breaks."
-            narratives.append(CitedContextNarrative(
-                text:        text,
-                evidenceIDs: allEvidenceIDs,
-                sessionIDs:  recoveryRecords.map(\.sessionID),
-                confidence:  ContextConfidence(
-                    score: min(1.0, Double(recoveryRecords.count) / 10.0)
-                ),
-                category:    .recovery
-            ))
-        }
-
-        // ── Evolution narrative ────────────────────────────────────────────
-        if evolutionSnapshots.count >= 2,
-           let first = evolutionSnapshots.first,
-           let last  = evolutionSnapshots.last,
-           first.dominantEnvironment != last.dominantEnvironment {
-            let text = "The dominant pre-reading environment shifted from \(first.dominantEnvironment.rawValue) to \(last.dominantEnvironment.rawValue) over the observed period."
-            narratives.append(CitedContextNarrative(
-                text:        text,
-                evidenceIDs: allEvidenceIDs,
-                sessionIDs:  allSessionIDs,
-                confidence:  ContextConfidence(
-                    score: min(1.0, Double(evolutionSnapshots.count) / 12.0)
-                ),
-                category:    .evolution
-            ))
-        }
-
-        return narratives
+        DataMaturityContextV3Adapter.gate(
+            contexts: contexts,
+            routines: routines,
+            trends: trends,
+            disruptions: disruptions,
+            productiveContext: productiveContext,
+            consistentContext: consistentContext,
+            deviceProfiles: deviceProfiles,
+            recoveryRecords: recoveryRecords,
+            evolutionSnapshots: evolutionSnapshots,
+            evidence: evidence
+        )
     }
 }
 
