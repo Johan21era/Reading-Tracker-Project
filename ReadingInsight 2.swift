@@ -1,4 +1,12 @@
 //
+//  ReadingInsight 2.swift
+//  Reading Tracker
+//
+//  Created by Johan Rembeci on 7/10/26.
+//
+
+
+//
 //  ReadingInsight.swift
 //  Reading Tracker
 //
@@ -129,9 +137,17 @@ enum InsightEngine {
         insights += milestoneNearInsight(books: books, earned: earnedAchievements)
         insights += drySpellInsight(streak: streak, activity: AnalyticsEngine.dailyActivity(books: books, days: 14))
 
-        return insights
-            .filter { $0.confidence >= minimumConfidence }
-            .sorted { $0.priority < $1.priority }
+        // Each of the nine builder functions above still computes its own
+        // ad hoc confidence exactly as before — that math is untouched.
+        // What used to happen here (`.filter { $0.confidence >= minimumConfidence }`)
+        // was a single flat threshold applied identically to a streak-risk
+        // read-of-today and a genre-speed comparison, which is the "scattered,
+        // ad hoc confidence threshold" problem DataMaturityEngine exists to
+        // replace. DataMaturityInsightAdapter.gate builds a real evidence
+        // digest per insight kind (from `books`' actual session history),
+        // asks DataMaturityEngine per kind, clamps confidence to whatever it
+        // allows, and sorts by priority — see DataMaturityEngineAdapters.swift.
+        return DataMaturityInsightAdapter.gate(insights, books: books)
     }
 
     // MARK: - Best Reading Time

@@ -1,4 +1,12 @@
 //
+//  PDFReaderView 2.swift
+//  Reading Tracker
+//
+//  Created by Johan Rembeci on 7/7/26.
+//
+
+
+//
 //  PDFReaderView.swift
 //  Reading Tracker
 //
@@ -21,9 +29,23 @@
 //   Task 19 — PDFReaderScreen surfaces a load error via @State errorMessage.
 //   Task 20 — updateNSView already guards nil document; confirmed correct.
 //   Task 23 — stopPolling() and stopSecurityAccess() called from dismantleNSView.
+// READER POLISH (this pass):
+//   Visual — backgroundColor + pageBreakMargins give the page breathing room;
+//            PDFKit renders its own native page shadow against the contrast
+//            (no custom drawing added).
+//   Render — interpolationQuality raised for crisper scroll/zoom rendering.
+//   Zoom   — min/maxScaleFactor bound the range so autoScales can't collapse
+//            a page to an illegible sliver or blow it up past usefulness.
+//   Zoom   — trackManualZoom() piggybacks on the existing 1 Hz polling timer:
+//            if scaleFactor moves without a bounds-size change, that's a
+//            manual zoom, so autoScales is turned off to preserve it across
+//            later window resizes.
+//   Nothing in security-scoped access, polling cadence, the onPageChange /
+//   onLoadError contracts, document loading, or teardown logic was touched.
 
 import SwiftUI
 import PDFKit
+import AppKit
 
 // MARK: - PDFReaderView
 
@@ -57,6 +79,32 @@ struct PDFReaderView: NSViewRepresentable {
         view.autoScales = true
         view.displayDirection = .vertical
         view.delegate = context.coordinator
+
+        // READER POLISH: visual presentation.
+        // Stock PDFView has no page insets and no contrast against its own
+        // background, so the page reads as a flat rectangle wallpapered onto
+        // the window. A comfortable inset plus a contrasting system backdrop
+        // reproduces the "page floating on a mat" look of Preview.app/Books —
+        // PDFKit renders the page's drop shadow natively against that
+        // background; nothing here draws anything by hand. Side margins are
+        // slightly larger than the page-to-page gap, echoing the proportions
+        // of a printed page's own margins.
+        view.backgroundColor = .underPageBackgroundColor
+        view.displaysPageBreaks = true
+        view.pageBreakMargins = NSEdgeInsets(top: 36, left: 44, bottom: 36, right: 44)
+
+        // READER POLISH: rendering quality.
+        // Keeps glyph edges and images crisp while scrolling or zoomed past
+        // 100%, instead of the coarser default sampling.
+        view.interpolationQuality = .high
+
+        // READER POLISH: zoom range.
+        // Unconfigured min/maxScaleFactor leave very little headroom to zoom
+        // in for detail or out for an overview, and don't stop autoScales
+        // from blowing a small page up into a blurry, oversized fit. These
+        // bounds are generous but finite in both directions.
+        view.minScaleFactor = 0.25
+        view.maxScaleFactor = 6.0
 
         // Security-scoped access: resolve URL and start accessing before reading.
         guard let resolvedURL = book.resolveURL() else {
@@ -168,6 +216,11 @@ struct PDFReaderView: NSViewRepresentable {
         // Nil when no scope is active (before makeNSView or after dismantleNSView).
         private var securityScopedURL: URL?
 
+        // READER POLISH: zoom-preservation state — see trackManualZoom(on:).
+        private var userHasCustomZoom = false
+        private var lastKnownBoundsSize: CGSize?
+        private var lastKnownScaleFactor: CGFloat?
+
         init(onPageChange: @escaping (Int) -> Void) {
             self.onPageChange = onPageChange
         }
@@ -195,9 +248,20 @@ struct PDFReaderView: NSViewRepresentable {
         // B1 FIX: 1 Hz timer; fires onPageChange only when page actually changes.
         func startPolling(view: PDFView) {
             pollingTimer?.invalidate()
+
+            // READER POLISH: fresh zoom-tracking baseline for this PDFView.
+            userHasCustomZoom = false
+            lastKnownBoundsSize = nil
+            lastKnownScaleFactor = nil
+
             pollingTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self, weak view] _ in
-                guard let self, let view,
-                      let page = view.currentPage,
+                guard let self, let view else { return }
+
+                // READER POLISH: independent of page detection below — never
+                // changes lastReportedPage and never touches onPageChange.
+                self.trackManualZoom(on: view)
+
+                guard let page = view.currentPage,
                       let doc  = view.document else { return }
                 let idx = doc.index(for: page)
                 guard idx != self.lastReportedPage else { return }
@@ -210,6 +274,40 @@ struct PDFReaderView: NSViewRepresentable {
         func stopPolling() {
             pollingTimer?.invalidate()
             pollingTimer = nil
+        }
+
+        // READER POLISH: detects a user-driven zoom (trackpad pinch, ⌘+/⌘-, or
+        // any other path that changes scaleFactor) so it survives window
+        // resizing instead of snapping back to fit-to-page on the next layout
+        // pass.
+        //
+        // autoScales recomputes scaleFactor to match the view's bounds on
+        // every bounds change, so a genuine window resize always moves
+        // scaleFactor and bounds.size together within the same tick. If
+        // scaleFactor moves while bounds.size does not, the only remaining
+        // explanation is a manual zoom — at that point autoScales is turned
+        // off so the chosen zoom level is preserved through future resizes.
+        // A newly opened book gets a fresh Coordinator (see makeCoordinator
+        // and the NavigationLink call sites in NewContentView/LibraryView),
+        // so this state never leaks from one book to the next.
+        private func trackManualZoom(on view: PDFView) {
+            let boundsSize = view.bounds.size
+            let scale = view.scaleFactor
+
+            defer {
+                lastKnownBoundsSize = boundsSize
+                lastKnownScaleFactor = scale
+            }
+
+            guard !userHasCustomZoom,
+                  let lastBounds = lastKnownBoundsSize,
+                  let lastScale = lastKnownScaleFactor,
+                  lastBounds == boundsSize,
+                  abs(lastScale - scale) > 0.001
+            else { return }
+
+            userHasCustomZoom = true
+            view.autoScales = false
         }
     }
 }

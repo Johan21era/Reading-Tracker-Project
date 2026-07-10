@@ -1,4 +1,12 @@
 //
+//  SessionEventRouter 2.swift
+//  Reading Tracker
+//
+//  Created by Johan Rembeci on 7/9/26.
+//
+
+
+//
 //  SessionEventRouter.swift
 //  Reading Tracker
 //
@@ -107,7 +115,15 @@ final class SessionEventRouter: ObservableObject {
             date: Date()
         )
         if result.shouldNotify, let candidate = result.selectedNotification {
-            await NotificationScheduler.shared.schedule(candidate: candidate)
+            // A push notification is the one pathway in this app where a
+            // claim reaches the user completely outside SwiftUI — the
+            // engine's own shouldNotify/rankingScore threshold is a
+            // real-time targeting decision, not evidence gating. This is
+            // the actual "has this earned the right to exist" check.
+            let verdict = DataMaturityNotificationAdapter.evaluate(candidate)
+            if verdict.maySurface {
+                await NotificationScheduler.shared.schedule(candidate: candidate)
+            }
         }
 
         // ── 3. Behavioral context analysis ──────────────────────────────

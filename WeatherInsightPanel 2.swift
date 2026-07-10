@@ -1,4 +1,12 @@
 //
+//  WeatherInsightPanel 2.swift
+//  Reading Tracker
+//
+//  Created by Johan Rembeci on 7/9/26.
+//
+
+
+//
 //  WeatherInsightPanel.swift
 //  Reading Tracker
 //
@@ -278,7 +286,17 @@ struct WeatherInsightPanel: View {
 
             let engine   = WeatherAnalysisEngine()
             profile      = engine.buildEnvironmentalProfile(from: records)
-            correlations = engine.analyzeCorrelations(from: records)
+            // analyzeCorrelations() itself is completely untouched — this
+            // only decides which of its results have earned the right to
+            // be shown. WeatherAnalysisEngine's own gate here was a single
+            // flat `sessions.count >= 5`; DataMaturityWeatherAdapter asks
+            // per-correlation, using each EnvironmentalCorrelation's own
+            // firstObserved/lastObserved/supportingSampleCount — the exact
+            // "cold weather improves reading speed" high-evidence case the
+            // product spec calls out by name. See DataMaturityEngineAdapters.swift.
+            correlations = DataMaturityWeatherAdapter
+                .gate(engine.analyzeCorrelations(from: records))
+                .map(\.correlation)
             trend        = engine.generateTrendReport(from: records)
         } catch {
             errorMessage = "Could not load weather data: \(error.localizedDescription)"
