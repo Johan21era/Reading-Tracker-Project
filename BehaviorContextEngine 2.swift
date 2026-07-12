@@ -1,19 +1,9 @@
 //
 //  BehaviorContextEngine 2.swift
-//  Reading Tracker
+// 
 //
-//  Created by Johan Rembeci on 7/9/26.
-//
-
-
-//
-//  BehaviorContextEngine.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
-import Foundation
 import Combine
+import Foundation
 
 /// -----------------------------------------------------------------------------
 /// MARK: - Behavior Context Engine
@@ -63,11 +53,9 @@ import Combine
 ///
 @MainActor
 public final class BehaviorContextEngine: ObservableObject {
-
     // MARK: Configuration
 
     public struct Configuration: Sendable, Codable, Hashable {
-
         public var preReadingWindow: TimeInterval
         public var postReadingWindow: TimeInterval
         public var significanceThreshold: Double
@@ -98,7 +86,6 @@ public final class BehaviorContextEngine: ObservableObject {
         evidence: [BehaviorEvidence],
         weatherRecords: [WeatherContextRecord] = []
     ) -> BehavioralContextSummary {
-
         let assessments = evidence.map(significanceAssessment)
 
         let significantEvidence = zip(evidence, assessments)
@@ -158,11 +145,9 @@ public final class BehaviorContextEngine: ObservableObject {
 }
 
 private extension BehaviorContextEngine {
-
     func significanceAssessment(
         for evidence: BehaviorEvidence
     ) -> SignificanceAssessment {
-
         let normalizedDuration =
             min(evidence.totalDuration / (60 * 30), 1.0)
 
@@ -196,9 +181,9 @@ private extension BehaviorContextEngine {
         switch score {
         case 0.80...:
             return "Strong recurring behavior"
-        case 0.60..<0.80:
+        case 0.60 ..< 0.80:
             return "Meaningful contextual signal"
-        case 0.35..<0.60:
+        case 0.35 ..< 0.60:
             return "Moderately relevant activity"
         default:
             return "Likely incidental behavior"
@@ -207,15 +192,12 @@ private extension BehaviorContextEngine {
 }
 
 private extension BehaviorContextEngine {
-
     func reconstructContexts(
         sessions: [ReadingSessionRecord],
         evidence: [BehaviorEvidence],
         weather: [WeatherContextRecord]
     ) -> [ReadingContextRecord] {
-
         sessions.map { session in
-
             let preWindow = ContextWindow(
                 start: session.startDate.addingTimeInterval(
                     -configuration.preReadingWindow
@@ -244,8 +226,8 @@ private extension BehaviorContextEngine {
 
             let weatherRecord = weather.min {
                 abs($0.timestamp.timeIntervalSince(session.startDate))
-                <
-                abs($1.timestamp.timeIntervalSince(session.startDate))
+                    <
+                    abs($1.timestamp.timeIntervalSince(session.startDate))
             }
 
             return ReadingContextRecord(
@@ -257,7 +239,7 @@ private extension BehaviorContextEngine {
                 weatherContext: weatherRecord,
                 confidence: contextConfidence(
                     evidenceCount:
-                        preEvidence.count +
+                    preEvidence.count +
                         inEvidence.count +
                         postEvidence.count
                 )
@@ -268,7 +250,6 @@ private extension BehaviorContextEngine {
     func buildEnvironment(
         from evidence: [BehaviorEvidence]
     ) -> BehavioralEnvironment {
-
         guard !evidence.isEmpty else {
             return BehavioralEnvironment(
                 type: .unknown,
@@ -294,7 +275,6 @@ private extension BehaviorContextEngine {
     func environmentType(
         from category: BehaviorCategory?
     ) -> BehavioralEnvironmentType {
-
         switch category {
         case .development:
             return .development
@@ -325,12 +305,10 @@ private extension BehaviorContextEngine {
 }
 
 private extension BehaviorContextEngine {
-
     func detectRoutines(
         sessions: [ReadingSessionRecord],
         evidence: [BehaviorEvidence]
     ) -> [BehavioralRoutine] {
-
         let grouped = Dictionary(
             grouping: sessions
         ) { session in
@@ -341,7 +319,6 @@ private extension BehaviorContextEngine {
         }
 
         return grouped.map { hour, sessions in
-
             let confidence = ContextConfidence(
                 score: min(
                     Double(sessions.count) / 20.0,
@@ -369,17 +346,15 @@ private extension BehaviorContextEngine {
         sessions: [ReadingSessionRecord],
         evidence: [BehaviorEvidence]
     ) -> BehavioralEnvironmentType {
-
         var counts: [BehavioralEnvironmentType: Int] = [:]
 
         for session in sessions {
-
             let start = session.startDate
                 .addingTimeInterval(-configuration.preReadingWindow)
 
             let related = evidence.filter {
                 $0.timestamp >= start &&
-                $0.timestamp <= session.startDate
+                    $0.timestamp <= session.startDate
             }
 
             let environment = buildEnvironment(from: related)
@@ -394,27 +369,24 @@ private extension BehaviorContextEngine {
 }
 
 private extension BehaviorContextEngine {
-
     func buildTransitions(
         sessions: [ReadingSessionRecord],
         evidence: [BehaviorEvidence]
     ) -> [ContextTransition] {
-
         var transitions: [ContextTransition] = []
 
         for session in sessions {
-
             let pre = evidence.filter {
                 $0.timestamp >= session.startDate
                     .addingTimeInterval(-configuration.preReadingWindow)
-                &&
-                $0.timestamp <= session.startDate
+                    &&
+                    $0.timestamp <= session.startDate
             }
 
             let post = evidence.filter {
                 $0.timestamp >= session.endDate
-                &&
-                $0.timestamp <= session.endDate
+                    &&
+                    $0.timestamp <= session.endDate
                     .addingTimeInterval(configuration.postReadingWindow)
             }
 
@@ -441,25 +413,22 @@ private extension BehaviorContextEngine {
         from preCount: Int,
         to postCount: Int
     ) -> Double {
-
         min(Double(preCount + postCount) / 20.0, 1.0)
     }
 }
 
 private extension BehaviorContextEngine {
-
     func buildProfiles(
         contexts: [ReadingContextRecord],
         routines: [BehavioralRoutine],
         transitions: [ContextTransition]
     ) -> [ContextProfile] {
-
         var profiles: [ContextProfile] = []
 
         if let commonPre = contexts
             .map(\.preReadingContext.type)
-            .mostCommon {
-
+            .mostCommon
+        {
             profiles.append(
                 ContextProfile(
                     kind: .mostCommonPreReadingEnvironment,
@@ -470,8 +439,8 @@ private extension BehaviorContextEngine {
 
         if let commonPost = contexts
             .map(\.postReadingContext.type)
-            .mostCommon {
-
+            .mostCommon
+        {
             profiles.append(
                 ContextProfile(
                     kind: .mostCommonPostReadingEnvironment,
@@ -481,7 +450,6 @@ private extension BehaviorContextEngine {
         }
 
         if let routine = routines.first {
-
             profiles.append(
                 ContextProfile(
                     kind: .mostStableRoutine,
@@ -491,12 +459,11 @@ private extension BehaviorContextEngine {
         }
 
         if let transition = transitions.first {
-
             profiles.append(
                 ContextProfile(
                     kind: .mostFrequentTransition,
                     value:
-                        "\(transition.from.rawValue) → \(transition.to.rawValue)"
+                    "\(transition.from.rawValue) → \(transition.to.rawValue)"
                 )
             )
         }
@@ -506,7 +473,6 @@ private extension BehaviorContextEngine {
 }
 
 private extension BehaviorContextEngine {
-
     /// Builds the narrative candidates for each detected profile, then
     /// asks DataMaturityEngine whether each one has earned the right to
     /// exist before it is returned. This is the pipeline
@@ -540,11 +506,9 @@ private extension BehaviorContextEngine {
 }
 
 private extension BehaviorContextEngine {
-
     func contextConfidence(
         evidenceCount: Int
     ) -> ContextConfidence {
-
         ContextConfidence(
             score: min(Double(evidenceCount) / 25.0, 1.0)
         )
@@ -553,7 +517,6 @@ private extension BehaviorContextEngine {
     func confidenceForEvidence(
         _ evidence: [BehaviorEvidence]
     ) -> ContextConfidence {
-
         contextConfidence(
             evidenceCount: evidence.count
         )
@@ -564,7 +527,6 @@ private extension BehaviorContextEngine {
         routines: [BehavioralRoutine],
         transitions: [ContextTransition]
     ) -> ContextConfidence {
-
         let sessionScore =
             min(Double(sessions.count) / 50.0, 1.0)
 
@@ -576,7 +538,7 @@ private extension BehaviorContextEngine {
 
         return ContextConfidence(
             score:
-                (sessionScore * 0.4) +
+            (sessionScore * 0.4) +
                 (routineScore * 0.3) +
                 (transitionScore * 0.3)
         )
@@ -968,9 +930,7 @@ public struct BehavioralContextSummary: Codable, Hashable, Sendable {
 }
 
 private extension Sequence where Element: Hashable {
-
     var mostCommon: Element? {
-
         let counts = reduce(into: [:]) {
             $0[$1, default: 0] += 1
         }
@@ -980,6 +940,7 @@ private extension Sequence where Element: Hashable {
         }?.key
     }
 }
+
 // MARK: - Advanced Behavioral Sequence Analysis
 
 /// A recurring contextual pathway observed around reading behavior.
@@ -997,8 +958,8 @@ public struct BehavioralSequencePattern:
     Codable,
     Hashable,
     Identifiable,
-    Sendable {
-
+    Sendable
+{
     public let id: UUID
     public let environments: [BehavioralEnvironmentType]
     public let recurrenceCount: Int
@@ -1025,11 +986,9 @@ public struct BehavioralSequencePattern:
 
 /// Detects recurring environment chains surrounding reading activity.
 struct BehavioralSequenceAnalyzer {
-
     func analyze(
         contexts: [ReadingContextRecord]
     ) -> [BehavioralSequencePattern] {
-
         guard contexts.count > 2 else {
             return []
         }
@@ -1038,7 +997,7 @@ struct BehavioralSequenceAnalyzer {
             [
                 $0.preReadingContext.type,
                 $0.inSessionContext.type,
-                $0.postReadingContext.type
+                $0.postReadingContext.type,
             ]
         }
 
@@ -1050,7 +1009,6 @@ struct BehavioralSequenceAnalyzer {
 
         return counts
             .map { sequence, count in
-
                 let consistency =
                     min(Double(count) / Double(max(contexts.count, 1)), 1.0)
 
@@ -1059,9 +1017,8 @@ struct BehavioralSequenceAnalyzer {
                     recurrenceCount: count,
                     averageIntervalMinutes: 0,
                     consistencyScore: consistency,
-                    strength: (
-                        Double(count) * consistency
-                    )
+                    strength:
+                    Double(count) * consistency
                 )
             }
             .sorted { $0.strength > $1.strength }
@@ -1073,8 +1030,8 @@ struct BehavioralSequenceAnalyzer {
 public struct BehavioralDiversityMetrics:
     Codable,
     Hashable,
-    Sendable {
-
+    Sendable
+{
     public let uniqueEnvironmentCount: Int
     public let diversityScore: Double
     public let dominantEnvironmentPercentage: Double
@@ -1091,11 +1048,9 @@ public struct BehavioralDiversityMetrics:
 }
 
 struct BehavioralDiversityAnalyzer {
-
     func analyze(
         contexts: [ReadingContextRecord]
     ) -> BehavioralDiversityMetrics {
-
         let environments =
             contexts.map(\.preReadingContext.type)
 
@@ -1137,25 +1092,23 @@ struct BehavioralDiversityAnalyzer {
 public struct ContextDistributionMetrics:
     Codable,
     Hashable,
-    Sendable {
-
+    Sendable
+{
     public let distribution:
         [BehavioralEnvironmentType: Double]
 
     public init(
         distribution:
-            [BehavioralEnvironmentType: Double]
+        [BehavioralEnvironmentType: Double]
     ) {
         self.distribution = distribution
     }
 }
 
 struct ContextDistributionAnalyzer {
-
     func analyze(
         contexts: [ReadingContextRecord]
     ) -> ContextDistributionMetrics {
-
         let environments =
             contexts.map(\.preReadingContext.type)
 
@@ -1166,12 +1119,10 @@ struct ContextDistributionAnalyzer {
             [BehavioralEnvironmentType: Double] = [:]
 
         for environment in environments {
-
             values[environment, default: 0] += 1
         }
 
         for key in values.keys {
-
             values[key] =
                 values[key, default: 0] / total
         }
@@ -1202,8 +1153,8 @@ public struct RoutineDisruption:
     Codable,
     Hashable,
     Identifiable,
-    Sendable {
-
+    Sendable
+{
     public let id: UUID
     public let routineTitle: String
     public let occurrenceDate: Date
@@ -1223,18 +1174,15 @@ public struct RoutineDisruption:
 }
 
 struct RoutineDisruptionAnalyzer {
-
     func detect(
         routines: [BehavioralRoutine],
         contexts: [ReadingContextRecord]
     ) -> [RoutineDisruption] {
-
         guard let dominantRoutine = routines.first else {
             return []
         }
 
         return contexts.compactMap { context in
-
             let matches =
                 context.preReadingContext.type ==
                 dominantRoutine.dominantEnvironment
@@ -1247,7 +1195,7 @@ struct RoutineDisruptionAnalyzer {
                 routineTitle: dominantRoutine.title,
                 occurrenceDate: context.readingDate,
                 disruptionScore:
-                    dominantRoutine.confidence.score
+                dominantRoutine.confidence.score
             )
         }
     }
@@ -1258,8 +1206,8 @@ struct RoutineDisruptionAnalyzer {
 public struct EnvironmentStabilityMetrics:
     Codable,
     Hashable,
-    Sendable {
-
+    Sendable
+{
     public let stabilityScore: Double
     public let dominantEnvironment:
         BehavioralEnvironmentType
@@ -1267,7 +1215,7 @@ public struct EnvironmentStabilityMetrics:
     public init(
         stabilityScore: Double,
         dominantEnvironment:
-            BehavioralEnvironmentType
+        BehavioralEnvironmentType
     ) {
         self.stabilityScore = stabilityScore
         self.dominantEnvironment = dominantEnvironment
@@ -1275,17 +1223,15 @@ public struct EnvironmentStabilityMetrics:
 }
 
 struct EnvironmentStabilityAnalyzer {
-
     func analyze(
         contexts: [ReadingContextRecord]
     ) -> EnvironmentStabilityMetrics {
-
         let environments =
             contexts.map(\.preReadingContext.type)
 
         guard let dominant =
-            environments.mostCommon else {
-
+            environments.mostCommon
+        else {
             return EnvironmentStabilityMetrics(
                 stabilityScore: 0,
                 dominantEnvironment: .unknown
@@ -1313,8 +1259,8 @@ struct EnvironmentStabilityAnalyzer {
 public struct HistoricalPatternAnalysis:
     Codable,
     Hashable,
-    Sendable {
-
+    Sendable
+{
     public let patterns:
         [HistoricalBehaviorPattern]
 
@@ -1333,13 +1279,13 @@ public struct HistoricalPatternAnalysis:
     public init(
         patterns: [HistoricalBehaviorPattern],
         sequencePatterns:
-            [BehavioralSequencePattern],
+        [BehavioralSequencePattern],
         diversity:
-            BehavioralDiversityMetrics,
+        BehavioralDiversityMetrics,
         distribution:
-            ContextDistributionMetrics,
+        ContextDistributionMetrics,
         stability:
-            EnvironmentStabilityMetrics
+        EnvironmentStabilityMetrics
     ) {
         self.patterns = patterns
         self.sequencePatterns = sequencePatterns
@@ -1350,11 +1296,9 @@ public struct HistoricalPatternAnalysis:
 }
 
 extension BehaviorContextEngine {
-
     func buildHistoricalPatternAnalysis(
         contexts: [ReadingContextRecord]
     ) -> HistoricalPatternAnalysis {
-
         let sequenceAnalyzer =
             BehavioralSequenceAnalyzer()
 
@@ -1389,19 +1333,18 @@ extension BehaviorContextEngine {
 
         let patterns =
             sequences.prefix(5).map {
-
                 HistoricalBehaviorPattern(
                     title:
-                        $0.environments
+                    $0.environments
                         .map(\.rawValue)
                         .joined(separator: " → "),
                     confidence:
-                        ContextConfidence(
-                            score: min(
-                                $0.strength,
-                                1.0
-                            )
+                    ContextConfidence(
+                        score: min(
+                            $0.strength,
+                            1.0
                         )
+                    )
                 )
             }
 
@@ -1414,6 +1357,7 @@ extension BehaviorContextEngine {
         )
     }
 }
+
 // MARK: - Advanced Significance Evaluation Engine
 
 /// The significance engine is responsible for distinguishing meaningful
@@ -1446,8 +1390,8 @@ public struct AdvancedSignificanceAssessment:
     Codable,
     Hashable,
     Identifiable,
-    Sendable {
-
+    Sendable
+{
     public let id: UUID
 
     public let evidenceID: UUID
@@ -1479,7 +1423,7 @@ public struct AdvancedSignificanceAssessment:
         overallScore: Double,
         confidence: ContextConfidence,
         classification:
-            BehavioralSignificanceClassification
+        BehavioralSignificanceClassification
     ) {
         self.id = id
         self.evidenceID = evidenceID
@@ -1502,8 +1446,8 @@ public enum BehavioralSignificanceClassification:
     String,
     Codable,
     Hashable,
-    Sendable {
-
+    Sendable
+{
     case incidentalNoise
     case weakSignal
     case moderateSignal
@@ -1512,14 +1456,12 @@ public enum BehavioralSignificanceClassification:
 }
 
 struct AdvancedSignificanceEngine {
-
     func evaluate(
         evidence: BehaviorEvidence,
         historicalOccurrences: Int,
         routineOccurrences: Int,
         ageInDays: Double
     ) -> AdvancedSignificanceAssessment {
-
         let duration =
             normalize(
                 evidence.totalDuration,
@@ -1546,9 +1488,9 @@ struct AdvancedSignificanceEngine {
         let stability =
             stabilityScore(
                 recurrenceCount:
-                    historicalOccurrences,
+                historicalOccurrences,
                 ageInDays:
-                    ageInDays
+                ageInDays
             )
 
         let routineParticipation =
@@ -1570,7 +1512,7 @@ struct AdvancedSignificanceEngine {
                 consistency: consistency,
                 stability: stability,
                 routineParticipation:
-                    routineParticipation,
+                routineParticipation,
                 proximity: proximity
             )
 
@@ -1582,21 +1524,21 @@ struct AdvancedSignificanceEngine {
             consistencyScore: consistency,
             stabilityScore: stability,
             routineParticipationScore:
-                routineParticipation,
+            routineParticipation,
             readingProximityScore:
-                proximity,
+            proximity,
             overallScore: score,
             confidence:
-                ContextConfidence(
-                    score: confidence(
-                        score: score,
-                        recurrence: recurrence
-                    )
-                ),
-            classification:
-                classification(
-                    score: score
+            ContextConfidence(
+                score: confidence(
+                    score: score,
+                    recurrence: recurrence
                 )
+            ),
+            classification:
+            classification(
+                score: score
+            )
         )
     }
 
@@ -1609,46 +1551,43 @@ struct AdvancedSignificanceEngine {
         routineParticipation: Double,
         proximity: Double
     ) -> Double {
-
         (
             duration * 0.10
         ) +
-        (
-            recurrence * 0.25
-        ) +
-        (
-            frequency * 0.15
-        ) +
-        (
-            consistency * 0.15
-        ) +
-        (
-            stability * 0.15
-        ) +
-        (
-            routineParticipation * 0.10
-        ) +
-        (
-            proximity * 0.10
-        )
+            (
+                recurrence * 0.25
+            ) +
+            (
+                frequency * 0.15
+            ) +
+            (
+                consistency * 0.15
+            ) +
+            (
+                stability * 0.15
+            ) +
+            (
+                routineParticipation * 0.10
+            ) +
+            (
+                proximity * 0.10
+            )
     }
 
     private func classification(
         score: Double
     ) -> BehavioralSignificanceClassification {
-
         switch score {
-
         case 0.85...:
             return .dominantBehavior
 
-        case 0.70..<0.85:
+        case 0.70 ..< 0.85:
             return .strongSignal
 
-        case 0.45..<0.70:
+        case 0.45 ..< 0.70:
             return .moderateSignal
 
-        case 0.20..<0.45:
+        case 0.20 ..< 0.45:
             return .weakSignal
 
         default:
@@ -1660,14 +1599,13 @@ struct AdvancedSignificanceEngine {
         score: Double,
         recurrence: Double
     ) -> Double {
-
         min(
             (
                 score * 0.7
             ) +
-            (
-                recurrence * 0.3
-            ),
+                (
+                    recurrence * 0.3
+                ),
             1.0
         )
     }
@@ -1676,7 +1614,6 @@ struct AdvancedSignificanceEngine {
         recurrenceCount: Int,
         ageInDays: Double
     ) -> Double {
-
         guard ageInDays > 0 else {
             return 0
         }
@@ -1695,7 +1632,6 @@ struct AdvancedSignificanceEngine {
         _ value: Double,
         maxValue: Double
     ) -> Double {
-
         guard maxValue > 0 else {
             return 0
         }
@@ -1709,7 +1645,6 @@ struct AdvancedSignificanceEngine {
     private func clamp(
         _ value: Double
     ) -> Double {
-
         max(
             0,
             min(
@@ -1739,8 +1674,8 @@ public struct ContextEvidenceChain:
     Codable,
     Hashable,
     Identifiable,
-    Sendable {
-
+    Sendable
+{
     public let id: UUID
 
     public let readingSessionID: UUID
@@ -1758,9 +1693,9 @@ public struct ContextEvidenceChain:
         readingSessionID: UUID,
         evidenceIDs: [UUID],
         environment:
-            BehavioralEnvironmentType,
+        BehavioralEnvironmentType,
         confidence:
-            ContextConfidence
+        ContextConfidence
     ) {
         self.id = id
         self.readingSessionID =
@@ -1775,35 +1710,33 @@ public struct ContextEvidenceChain:
 }
 
 struct ContextEvidenceChainBuilder {
-
     func build(
         session: ReadingSessionRecord,
         evidence: [BehaviorEvidence],
         environment:
-            BehavioralEnvironmentType
+        BehavioralEnvironmentType
     ) -> ContextEvidenceChain {
-
         let ids =
             evidence.map(\.id)
 
         let confidence =
             ContextConfidence(
                 score:
-                    min(
-                        Double(ids.count) / 20.0,
-                        1.0
-                    )
+                min(
+                    Double(ids.count) / 20.0,
+                    1.0
+                )
             )
 
         return ContextEvidenceChain(
             readingSessionID:
-                session.id,
+            session.id,
             evidenceIDs:
-                ids,
+            ids,
             environment:
-                environment,
+            environment,
             confidence:
-                confidence
+            confidence
         )
     }
 }
@@ -1813,14 +1746,14 @@ struct ContextEvidenceChainBuilder {
 public struct ContextCorrelationMatrix:
     Codable,
     Hashable,
-    Sendable {
-
+    Sendable
+{
     public let correlations:
         [BehavioralCorrelation]
 
     public init(
         correlations:
-            [BehavioralCorrelation]
+        [BehavioralCorrelation]
     ) {
         self.correlations =
             correlations
@@ -1828,12 +1761,10 @@ public struct ContextCorrelationMatrix:
 }
 
 struct ContextCorrelationAnalyzer {
-
     func analyze(
         contexts:
-            [ReadingContextRecord]
+        [ReadingContextRecord]
     ) -> ContextCorrelationMatrix {
-
         var results:
             [BehavioralCorrelation] = []
 
@@ -1848,7 +1779,6 @@ struct ContextCorrelationAnalyzer {
             environment,
             records
         ) in grouped {
-
             guard records.count > 1 else {
                 continue
             }
@@ -1856,31 +1786,31 @@ struct ContextCorrelationAnalyzer {
             let strength =
                 min(
                     Double(records.count) /
-                    Double(
-                        max(
-                            contexts.count,
-                            1
-                        )
-                    ),
+                        Double(
+                            max(
+                                contexts.count,
+                                1
+                            )
+                        ),
                     1.0
                 )
 
             results.append(
                 BehavioralCorrelation(
                     description:
-                        "\(environment.rawValue) before reading",
+                    "\(environment.rawValue) before reading",
                     strength:
-                        strength
+                    strength
                 )
             )
         }
 
         return ContextCorrelationMatrix(
             correlations:
-                results.sorted {
-                    $0.strength >
+            results.sorted {
+                $0.strength >
                     $1.strength
-                }
+            }
         )
     }
 }
@@ -1905,8 +1835,8 @@ public struct EnvironmentCluster:
     Codable,
     Hashable,
     Identifiable,
-    Sendable {
-
+    Sendable
+{
     public let id: UUID
 
     public let title: String
@@ -1921,9 +1851,9 @@ public struct EnvironmentCluster:
         id: UUID = UUID(),
         title: String,
         environments:
-            [BehavioralEnvironmentType],
+        [BehavioralEnvironmentType],
         confidence:
-            ContextConfidence
+        ContextConfidence
     ) {
         self.id = id
         self.title = title
@@ -1935,83 +1865,78 @@ public struct EnvironmentCluster:
 }
 
 struct EnvironmentClusterBuilder {
-
     func clusters(
         from contexts:
-            [ReadingContextRecord]
+        [ReadingContextRecord]
     ) -> [EnvironmentCluster] {
-
         let productive:
             [BehavioralEnvironmentType] = [
                 .work,
                 .development,
                 .research,
-                .administrative
+                .administrative,
             ]
 
         let leisure:
             [BehavioralEnvironmentType] = [
                 .gaming,
                 .social,
-                .entertainment
+                .entertainment,
             ]
 
         let learning:
             [BehavioralEnvironmentType] = [
                 .learning,
-                .research
+                .research,
             ]
 
         return [
-
             EnvironmentCluster(
                 title:
-                    "Productive Work",
+                "Productive Work",
                 environments:
+                productive,
+                confidence:
+                clusterConfidence(
                     productive,
-                confidence:
-                    clusterConfidence(
-                        productive,
-                        contexts
-                    )
+                    contexts
+                )
             ),
 
             EnvironmentCluster(
                 title:
-                    "Leisure",
+                "Leisure",
                 environments:
+                leisure,
+                confidence:
+                clusterConfidence(
                     leisure,
-                confidence:
-                    clusterConfidence(
-                        leisure,
-                        contexts
-                    )
+                    contexts
+                )
             ),
 
             EnvironmentCluster(
                 title:
-                    "Learning",
+                "Learning",
                 environments:
-                    learning,
+                learning,
                 confidence:
-                    clusterConfidence(
-                        learning,
-                        contexts
-                    )
-            )
+                clusterConfidence(
+                    learning,
+                    contexts
+                )
+            ),
         ]
     }
 
     private func clusterConfidence(
         _ environments:
-            [BehavioralEnvironmentType],
+        [BehavioralEnvironmentType],
         _ contexts:
-            [ReadingContextRecord]
+        [ReadingContextRecord]
     ) -> ContextConfidence {
-
         let matches =
             contexts.filter {
-
                 environments.contains(
                     $0.preReadingContext.type
                 )
@@ -2031,6 +1956,7 @@ struct EnvironmentClusterBuilder {
         )
     }
 }
+
 // MARK: - Advanced Routine Detection Engine
 
 /// Routine classification used for contextual reconstruction.
@@ -2042,8 +1968,8 @@ public enum RoutineCategory:
     Codable,
     Hashable,
     Sendable,
-    CaseIterable {
-
+    CaseIterable
+{
     case morningReading
     case afternoonReading
     case eveningReading
@@ -2068,8 +1994,8 @@ public struct RoutineOccurrence:
     Codable,
     Hashable,
     Identifiable,
-    Sendable {
-
+    Sendable
+{
     public let id: UUID
 
     public let routine:
@@ -2096,8 +2022,8 @@ public struct RoutineOccurrence:
 public struct AdvancedRoutineAnalysis:
     Codable,
     Hashable,
-    Sendable {
-
+    Sendable
+{
     public let detectedRoutines:
         [BehavioralRoutine]
 
@@ -2112,13 +2038,13 @@ public struct AdvancedRoutineAnalysis:
 
     public init(
         detectedRoutines:
-            [BehavioralRoutine],
+        [BehavioralRoutine],
         occurrences:
-            [RoutineOccurrence],
+        [RoutineOccurrence],
         stabilityScore:
-            Double,
+        Double,
         consistencyScore:
-            Double
+        Double
     ) {
         self.detectedRoutines =
             detectedRoutines
@@ -2132,12 +2058,10 @@ public struct AdvancedRoutineAnalysis:
 }
 
 struct AdvancedRoutineDetector {
-
     func analyze(
         contexts:
-            [ReadingContextRecord]
+        [ReadingContextRecord]
     ) -> AdvancedRoutineAnalysis {
-
         let occurrences =
             buildOccurrences(
                 contexts
@@ -2150,25 +2074,24 @@ struct AdvancedRoutineDetector {
 
         return AdvancedRoutineAnalysis(
             detectedRoutines:
-                routines,
+            routines,
             occurrences:
-                occurrences,
+            occurrences,
             stabilityScore:
-                stability(
-                    occurrences
-                ),
+            stability(
+                occurrences
+            ),
             consistencyScore:
-                consistency(
-                    occurrences
-                )
+            consistency(
+                occurrences
+            )
         )
     }
 
     private func buildOccurrences(
         _ contexts:
-            [ReadingContextRecord]
+        [ReadingContextRecord]
     ) -> [RoutineOccurrence] {
-
         var results:
             [RoutineOccurrence] = []
 
@@ -2176,159 +2099,148 @@ struct AdvancedRoutineDetector {
             Calendar.current
 
         for context in contexts {
-
             let hour =
                 calendar.component(
                     .hour,
                     from:
-                        context.readingDate
+                    context.readingDate
                 )
 
             let weekday =
                 calendar.component(
                     .weekday,
                     from:
-                        context.readingDate
+                    context.readingDate
                 )
 
             if hour >= 5 && hour < 12 {
-
                 results.append(
                     RoutineOccurrence(
                         routine:
-                            .morningReading,
+                        .morningReading,
                         date:
-                            context.readingDate,
+                        context.readingDate,
                         confidence:
-                            .medium
+                        .medium
                     )
                 )
             }
 
             if hour >= 12 && hour < 17 {
-
                 results.append(
                     RoutineOccurrence(
                         routine:
-                            .afternoonReading,
+                        .afternoonReading,
                         date:
-                            context.readingDate,
+                        context.readingDate,
                         confidence:
-                            .medium
+                        .medium
                     )
                 )
             }
 
             if hour >= 17 && hour < 22 {
-
                 results.append(
                     RoutineOccurrence(
                         routine:
-                            .eveningReading,
+                        .eveningReading,
                         date:
-                            context.readingDate,
+                        context.readingDate,
                         confidence:
-                            .medium
+                        .medium
                     )
                 )
             }
 
             if hour >= 22 || hour < 5 {
-
                 results.append(
                     RoutineOccurrence(
                         routine:
-                            .lateNightReading,
+                        .lateNightReading,
                         date:
-                            context.readingDate,
+                        context.readingDate,
                         confidence:
-                            .medium
+                        .medium
                     )
                 )
             }
 
             if weekday == 1 ||
-                weekday == 7 {
-
+                weekday == 7
+            {
                 results.append(
                     RoutineOccurrence(
                         routine:
-                            .weekendReading,
+                        .weekendReading,
                         date:
-                            context.readingDate,
+                        context.readingDate,
                         confidence:
-                            .medium
+                        .medium
                     )
                 )
             } else {
-
                 results.append(
                     RoutineOccurrence(
                         routine:
-                            .weekdayReading,
+                        .weekdayReading,
                         date:
-                            context.readingDate,
+                        context.readingDate,
                         confidence:
-                            .medium
+                        .medium
                     )
                 )
             }
 
             switch context.preReadingContext.type {
-
             case .work,
                  .development,
                  .administrative:
-
                 results.append(
                     RoutineOccurrence(
                         routine:
-                            .workTransition,
+                        .workTransition,
                         date:
-                            context.readingDate,
+                        context.readingDate,
                         confidence:
-                            .high
+                        .high
                     )
                 )
 
             case .learning,
                  .research:
-
                 results.append(
                     RoutineOccurrence(
                         routine:
-                            .learningTransition,
+                        .learningTransition,
                         date:
-                            context.readingDate,
+                        context.readingDate,
                         confidence:
-                            .high
+                        .high
                     )
                 )
 
             case .social:
-
                 results.append(
                     RoutineOccurrence(
                         routine:
-                            .socialTransition,
+                        .socialTransition,
                         date:
-                            context.readingDate,
+                        context.readingDate,
                         confidence:
-                            .high
+                        .high
                     )
                 )
 
             case .entertainment,
                  .gaming:
-
                 results.append(
                     RoutineOccurrence(
                         routine:
-                            .entertainmentTransition,
+                        .entertainmentTransition,
                         date:
-                            context.readingDate,
+                        context.readingDate,
                         confidence:
-                            .high
+                        .high
                     )
                 )
 
@@ -2342,13 +2254,12 @@ struct AdvancedRoutineDetector {
 
     private func buildRoutines(
         _ occurrences:
-            [RoutineOccurrence]
+        [RoutineOccurrence]
     ) -> [BehavioralRoutine] {
-
         let grouped =
             Dictionary(
                 grouping:
-                    occurrences
+                occurrences
             ) {
                 $0.routine
             }
@@ -2359,43 +2270,41 @@ struct AdvancedRoutineDetector {
             entries
 
             in
-
             BehavioralRoutine(
                 title:
-                    category.rawValue,
+                category.rawValue,
                 recurrenceCount:
-                    entries.count,
+                entries.count,
                 averageHour:
-                    0,
+                0,
                 dominantEnvironment:
-                    .unknown,
+                .unknown,
                 confidence:
-                    ContextConfidence(
-                        score:
-                            min(
-                                Double(
-                                    entries.count
-                                ) / 50,
-                                1
-                            )
+                ContextConfidence(
+                    score:
+                    min(
+                        Double(
+                            entries.count
+                        ) / 50,
+                        1
                     )
+                )
             )
         }
         .sorted {
             $0.recurrenceCount >
-            $1.recurrenceCount
+                $1.recurrenceCount
         }
     }
 
     private func stability(
         _ occurrences:
-            [RoutineOccurrence]
+        [RoutineOccurrence]
     ) -> Double {
-
         let grouped =
             Dictionary(
                 grouping:
-                    occurrences
+                occurrences
             ) {
                 $0.routine
             }
@@ -2403,32 +2312,31 @@ struct AdvancedRoutineDetector {
         guard let maxCount =
             grouped.values
                 .map(\.count)
-                .max() else {
-
+                .max()
+        else {
             return 0
         }
 
         return min(
             Double(maxCount) /
-            Double(
-                max(
-                    occurrences.count,
-                    1
-                )
-            ),
+                Double(
+                    max(
+                        occurrences.count,
+                        1
+                    )
+                ),
             1
         )
     }
 
     private func consistency(
         _ occurrences:
-            [RoutineOccurrence]
+        [RoutineOccurrence]
     ) -> Double {
-
         let grouped =
             Dictionary(
                 grouping:
-                    occurrences
+                occurrences
             ) {
                 $0.routine
             }
@@ -2459,21 +2367,21 @@ struct AdvancedRoutineDetector {
                     0,
                     +
                 ) /
-            Double(
-                grouped.count
-            )
+                Double(
+                    grouped.count
+                )
 
         return max(
             0,
             1 -
-            (
-                variance /
                 (
-                    average *
-                    average +
-                    1
+                    variance /
+                        (
+                            average *
+                                average +
+                                1
+                        )
                 )
-            )
         )
     }
 }
@@ -2486,8 +2394,8 @@ public enum ContextContinuityType:
     String,
     Codable,
     Hashable,
-    Sendable {
-
+    Sendable
+{
     case continuous
     case partialTransition
     case majorTransition
@@ -2498,8 +2406,8 @@ public struct ContextContinuityRecord:
     Codable,
     Hashable,
     Identifiable,
-    Sendable {
-
+    Sendable
+{
     public let id: UUID
 
     public let sessionID: UUID
@@ -2514,9 +2422,9 @@ public struct ContextContinuityRecord:
         id: UUID = UUID(),
         sessionID: UUID,
         continuityType:
-            ContextContinuityType,
+        ContextContinuityType,
         continuityScore:
-            Double
+        Double
     ) {
         self.id = id
         self.sessionID = sessionID
@@ -2528,27 +2436,24 @@ public struct ContextContinuityRecord:
 }
 
 struct ContextContinuityAnalyzer {
-
     func analyze(
         contexts:
-            [ReadingContextRecord]
+        [ReadingContextRecord]
     ) -> [ContextContinuityRecord] {
-
         contexts.map {
 
             context in
-
             let pre =
                 context.preReadingContext
-                .type
+                    .type
 
             let reading =
                 context.inSessionContext
-                .type
+                    .type
 
             let post =
                 context.postReadingContext
-                .type
+                    .type
 
             let score =
                 continuity(
@@ -2559,26 +2464,25 @@ struct ContextContinuityAnalyzer {
 
             return ContextContinuityRecord(
                 sessionID:
-                    context.sessionID,
+                context.sessionID,
                 continuityType:
-                    classify(
-                        score
-                    ),
-                continuityScore:
+                classify(
                     score
+                ),
+                continuityScore:
+                score
             )
         }
     }
 
     private func continuity(
         _ pre:
-            BehavioralEnvironmentType,
+        BehavioralEnvironmentType,
         _ reading:
-            BehavioralEnvironmentType,
+        BehavioralEnvironmentType,
         _ post:
-            BehavioralEnvironmentType
+        BehavioralEnvironmentType
     ) -> Double {
-
         var score: Double = 0
 
         if pre == reading {
@@ -2595,16 +2499,14 @@ struct ContextContinuityAnalyzer {
     private func classify(
         _ score: Double
     ) -> ContextContinuityType {
-
         switch score {
-
         case 1.0:
             return .continuous
 
         case 0.5:
             return .partialTransition
 
-        case 0..<0.5:
+        case 0 ..< 0.5:
             return .majorTransition
 
         default:
@@ -2619,8 +2521,8 @@ public enum ContextTrendDirection:
     String,
     Codable,
     Hashable,
-    Sendable {
-
+    Sendable
+{
     case increasing
     case decreasing
     case stable
@@ -2631,8 +2533,8 @@ public struct ContextTrend:
     Codable,
     Hashable,
     Identifiable,
-    Sendable {
-
+    Sendable
+{
     public let id: UUID
 
     public let environment:
@@ -2647,11 +2549,11 @@ public struct ContextTrend:
     public init(
         id: UUID = UUID(),
         environment:
-            BehavioralEnvironmentType,
+        BehavioralEnvironmentType,
         direction:
-            ContextTrendDirection,
+        ContextTrendDirection,
         strength:
-            Double
+        Double
     ) {
         self.id = id
         self.environment =
@@ -2664,16 +2566,14 @@ public struct ContextTrend:
 }
 
 struct ContextTrendAnalyzer {
-
     func analyze(
         contexts:
-            [ReadingContextRecord]
+        [ReadingContextRecord]
     ) -> [ContextTrend] {
-
         let grouped =
             Dictionary(
                 grouping:
-                    contexts
+                contexts
             ) {
                 $0.preReadingContext.type
             }
@@ -2684,33 +2584,32 @@ struct ContextTrendAnalyzer {
             records
 
             in
-
             let strength =
                 min(
                     Double(
                         records.count
                     ) /
-                    Double(
-                        max(
-                            contexts.count,
-                            1
-                        )
-                    ),
+                        Double(
+                            max(
+                                contexts.count,
+                                1
+                            )
+                        ),
                     1
                 )
 
             return ContextTrend(
                 environment:
-                    environment,
+                environment,
                 direction:
-                    direction(
-                        count:
-                            records.count,
-                        total:
-                            contexts.count
-                    ),
+                direction(
+                    count:
+                    records.count,
+                    total:
+                    contexts.count
+                ),
                 strength:
-                    strength
+                strength
             )
         }
     }
@@ -2719,7 +2618,6 @@ struct ContextTrendAnalyzer {
         count: Int,
         total: Int
     ) -> ContextTrendDirection {
-
         let ratio =
             Double(count) /
             Double(
@@ -2730,14 +2628,13 @@ struct ContextTrendAnalyzer {
             )
 
         switch ratio {
-
         case 0.50...:
             return .increasing
 
-        case 0.25..<0.50:
+        case 0.25 ..< 0.50:
             return .stable
 
-        case 0.10..<0.25:
+        case 0.10 ..< 0.25:
             return .emerging
 
         default:
@@ -2758,8 +2655,8 @@ public struct WeatherRoutinePattern:
     Codable,
     Hashable,
     Identifiable,
-    Sendable {
-
+    Sendable
+{
     public let id: UUID
 
     public let weatherDescriptor: String
@@ -2787,11 +2684,9 @@ public struct WeatherRoutinePattern:
 }
 
 struct WeatherRoutineAnalyzer {
-
     func analyze(
         contexts: [ReadingContextRecord]
     ) -> [WeatherRoutinePattern] {
-
         let descriptors =
             contexts.compactMap {
                 $0.weatherContext?.descriptor
@@ -2818,28 +2713,27 @@ struct WeatherRoutineAnalyzer {
             records
 
             in
-
             let strength =
                 Double(records.count) /
                 total
 
             return WeatherRoutinePattern(
                 weatherDescriptor:
-                    descriptor,
+                descriptor,
                 occurrenceCount:
-                    records.count,
+                records.count,
                 readingAssociationStrength:
-                    strength,
+                strength,
                 confidence:
-                    ContextConfidence(
-                        score:
-                            strength
-                    )
+                ContextConfidence(
+                    score:
+                    strength
+                )
             )
         }
         .sorted {
             $0.readingAssociationStrength >
-            $1.readingAssociationStrength
+                $1.readingAssociationStrength
         }
     }
 }
@@ -2850,8 +2744,8 @@ public struct EnvironmentalInfluence:
     Codable,
     Hashable,
     Identifiable,
-    Sendable {
-
+    Sendable
+{
     public let id: UUID
 
     public let source: String
@@ -2877,17 +2771,15 @@ public struct EnvironmentalInfluence:
 }
 
 struct EnvironmentalInfluenceAnalyzer {
-
     func analyze(
         contexts: [ReadingContextRecord]
     ) -> [EnvironmentalInfluence] {
-
         let grouped =
             Dictionary(
                 grouping:
-                    contexts.compactMap {
-                        $0.weatherContext?.descriptor
-                    }
+                contexts.compactMap {
+                    $0.weatherContext?.descriptor
+                }
             ) {
                 $0
             }
@@ -2906,21 +2798,20 @@ struct EnvironmentalInfluenceAnalyzer {
             values
 
             in
-
             let score =
                 Double(values.count) /
                 total
 
             return EnvironmentalInfluence(
                 source:
-                    descriptor,
+                descriptor,
                 influenceScore:
-                    score,
+                score,
                 confidence:
-                    ContextConfidence(
-                        score:
-                            score
-                    )
+                ContextConfidence(
+                    score:
+                    score
+                )
             )
         }
     }
@@ -2936,41 +2827,39 @@ struct EnvironmentalInfluenceAnalyzer {
 ///
 /// Every narrative must be reproducible from evidence.
 struct DeterministicNarrativeBuilder {
-
     func build(
         contexts: [ReadingContextRecord],
         routines: [BehavioralRoutine],
         trends: [ContextTrend],
         disruptions: [RoutineDisruption]
     ) -> [ContextNarrative] {
-
         var narratives:
             [ContextNarrative] = []
 
         if let dominant =
             contexts
-            .map(\.preReadingContext.type)
-            .mostCommon {
-
+                .map(\.preReadingContext.type)
+                .mostCommon
+        {
             narratives.append(
                 ContextNarrative(
                     text:
-                        """
-                        Reading most frequently occurred after \(dominant.rawValue.lowercased()) activity.
-                        """
+                    """
+                    Reading most frequently occurred after \(dominant.rawValue.lowercased()) activity.
+                    """
                 )
             )
         }
 
         if let routine =
-            routines.first {
-
+            routines.first
+        {
             narratives.append(
                 ContextNarrative(
                     text:
-                        """
-                        A recurring routine centered around \(routine.title) was repeatedly observed.
-                        """
+                    """
+                    A recurring routine centered around \(routine.title) was repeatedly observed.
+                    """
                 )
             )
         }
@@ -2979,40 +2868,38 @@ struct DeterministicNarrativeBuilder {
             trends.max(
                 by: {
                     $0.strength <
-                    $1.strength
+                        $1.strength
                 }
-            ) {
-
+            )
+        {
             narratives.append(
                 ContextNarrative(
                     text:
-                        """
-                        \(trend.environment.rawValue.capitalized) activity showed the strongest contextual relationship with reading behavior.
-                        """
+                    """
+                    \(trend.environment.rawValue.capitalized) activity showed the strongest contextual relationship with reading behavior.
+                    """
                 )
             )
         }
 
         if !disruptions.isEmpty {
-
             narratives.append(
                 ContextNarrative(
                     text:
-                        """
-                        Established reading routines experienced occasional contextual disruption events.
-                        """
+                    """
+                    Established reading routines experienced occasional contextual disruption events.
+                    """
                 )
             )
         }
 
         if narratives.isEmpty {
-
             narratives.append(
                 ContextNarrative(
                     text:
-                        """
-                        Contextual evidence remains insufficient for reliable reconstruction.
-                        """
+                    """
+                    Contextual evidence remains insufficient for reliable reconstruction.
+                    """
                 )
             )
         }
@@ -3029,8 +2916,8 @@ struct DeterministicNarrativeBuilder {
 public struct ContextIntelligenceReport:
     Codable,
     Hashable,
-    Sendable {
-
+    Sendable
+{
     public let generatedAt: Date
 
     public let patterns:
@@ -3063,23 +2950,23 @@ public struct ContextIntelligenceReport:
     public init(
         generatedAt: Date,
         patterns:
-            HistoricalPatternAnalysis,
+        HistoricalPatternAnalysis,
         routines:
-            AdvancedRoutineAnalysis,
+        AdvancedRoutineAnalysis,
         trends:
-            [ContextTrend],
+        [ContextTrend],
         disruptions:
-            [RoutineDisruption],
+        [RoutineDisruption],
         weatherPatterns:
-            [WeatherRoutinePattern],
+        [WeatherRoutinePattern],
         environmentalInfluences:
-            [EnvironmentalInfluence],
+        [EnvironmentalInfluence],
         correlations:
-            ContextCorrelationMatrix,
+        ContextCorrelationMatrix,
         clusters:
-            [EnvironmentCluster],
+        [EnvironmentCluster],
         narratives:
-            [ContextNarrative]
+        [ContextNarrative]
     ) {
         self.generatedAt =
             generatedAt
@@ -3107,12 +2994,10 @@ public struct ContextIntelligenceReport:
 // MARK: - Future Engine Entry Point
 
 extension BehaviorContextEngine {
-
     func buildIntelligenceReport(
         contexts: [ReadingContextRecord],
         routines: [BehavioralRoutine]
     ) -> ContextIntelligenceReport {
-
         let patternAnalysis =
             buildHistoricalPatternAnalysis(
                 contexts: contexts
@@ -3120,55 +3005,55 @@ extension BehaviorContextEngine {
 
         let routineAnalysis =
             AdvancedRoutineDetector()
-            .analyze(
-                contexts: contexts
-            )
+                .analyze(
+                    contexts: contexts
+                )
 
         let trends =
             ContextTrendAnalyzer()
-            .analyze(
-                contexts: contexts
-            )
+                .analyze(
+                    contexts: contexts
+                )
 
         let disruptions =
             RoutineDisruptionAnalyzer()
-            .detect(
-                routines: routines,
-                contexts: contexts
-            )
+                .detect(
+                    routines: routines,
+                    contexts: contexts
+                )
 
         let weatherPatterns =
             WeatherRoutineAnalyzer()
-            .analyze(
-                contexts: contexts
-            )
+                .analyze(
+                    contexts: contexts
+                )
 
         let influences =
             EnvironmentalInfluenceAnalyzer()
-            .analyze(
-                contexts: contexts
-            )
+                .analyze(
+                    contexts: contexts
+                )
 
         let correlations =
             ContextCorrelationAnalyzer()
-            .analyze(
-                contexts: contexts
-            )
+                .analyze(
+                    contexts: contexts
+                )
 
         let clusters =
             EnvironmentClusterBuilder()
-            .clusters(
-                from: contexts
-            )
+                .clusters(
+                    from: contexts
+                )
 
         let narratives =
             DeterministicNarrativeBuilder()
-            .build(
-                contexts: contexts,
-                routines: routineAnalysis.detectedRoutines,
-                trends: trends,
-                disruptions: disruptions
-            )
+                .build(
+                    contexts: contexts,
+                    routines: routineAnalysis.detectedRoutines,
+                    trends: trends,
+                    disruptions: disruptions
+                )
 
         return ContextIntelligenceReport(
             generatedAt: Date(),
@@ -3187,6 +3072,7 @@ extension BehaviorContextEngine {
 
 // ============================================================================
 // MARK: - DEVELOPMENT CHECKLIST FOR NEXT AI
+
 // ============================================================================
 //
 // COMPLETED SO FAR
@@ -3312,6 +3198,7 @@ extension BehaviorContextEngine {
 
 // ============================================================================
 // MARK: - BEHAVIOR CONTEXT ENGINE APPEND — PHASE 2 UPGRADE
+
 // ============================================================================
 //
 // Append-only extension of BehaviorContextEngine.swift.
@@ -3332,9 +3219,9 @@ extension BehaviorContextEngine {
 //  11. Unified Entry Point
 // ============================================================================
 
-
 // ============================================================================
 // MARK: - Integration Layer
+
 // ============================================================================
 
 // 1A — BehaviorContextAdapterInput
@@ -3343,24 +3230,24 @@ extension BehaviorContextEngine {
 // every adapter shares one consistent input type.
 
 public struct BehaviorContextAdapterInput: Sendable {
-    public let books:               [Book]
+    public let books: [Book]
     public let applicationSessions: [ApplicationUsageSession]
-    public let inactivityRecords:   [InactivityRecord]
-    public let deviceStateEvents:   [DeviceStateEvent]
-    public let behavioralEvents:    [BehavioralEvent]
+    public let inactivityRecords: [InactivityRecord]
+    public let deviceStateEvents: [DeviceStateEvent]
+    public let behavioralEvents: [BehavioralEvent]
 
     public init(
-        books:               [Book],
+        books: [Book],
         applicationSessions: [ApplicationUsageSession],
-        inactivityRecords:   [InactivityRecord],
-        deviceStateEvents:   [DeviceStateEvent],
-        behavioralEvents:    [BehavioralEvent]
+        inactivityRecords: [InactivityRecord],
+        deviceStateEvents: [DeviceStateEvent],
+        behavioralEvents: [BehavioralEvent]
     ) {
-        self.books               = books
+        self.books = books
         self.applicationSessions = applicationSessions
-        self.inactivityRecords   = inactivityRecords
-        self.deviceStateEvents   = deviceStateEvents
-        self.behavioralEvents    = behavioralEvents
+        self.inactivityRecords = inactivityRecords
+        self.deviceStateEvents = deviceStateEvents
+        self.behavioralEvents = behavioralEvents
     }
 }
 
@@ -3370,19 +3257,17 @@ public struct BehaviorContextAdapterInput: Sendable {
 // [BehaviorEvidence] for BehaviorContextEngine.analyze().
 
 struct BehaviorContextAccessKitAdapter {
-
     func adapt(_ input: BehaviorContextAdapterInput) -> [BehaviorEvidence] {
-
         let completedSessions = input.applicationSessions.filter { $0.endTime != nil }
         guard !completedSessions.isEmpty else { return [] }
 
         let allReadingSessions = input.books.flatMap(\.sessions)
-        let readingBoundaries  = allReadingSessions.flatMap {
+        let readingBoundaries = allReadingSessions.flatMap {
             [$0.startTime, $0.endTime].compactMap { $0 }
         }
 
         let observedDays = daySpan(from: completedSessions)
-        let grouped      = Dictionary(grouping: completedSessions) {
+        let grouped = Dictionary(grouping: completedSessions) {
             $0.application.applicationName
         }
 
@@ -3390,24 +3275,24 @@ struct BehaviorContextAccessKitAdapter {
             guard let first = sessions.first else { return nil }
 
             let totalDuration = sessions.compactMap(\.duration).reduce(0, +)
-            guard totalDuration >= 30 else { return nil }   // filter accidental activations
+            guard totalDuration >= 30 else { return nil } // filter accidental activations
 
-            let distinctDays    = Set(sessions.map { Calendar.current.startOfDay(for: $0.startTime) })
+            let distinctDays = Set(sessions.map { Calendar.current.startOfDay(for: $0.startTime) })
             let recurrenceCount = distinctDays.count
-            let consistency     = min(1.0, Double(recurrenceCount) / Double(max(observedDays, 1)))
-            let proximity       = averageProximity(appSessions: sessions,
-                                                   readingBoundaries: readingBoundaries)
-            let category        = mapCategory(first.application.category)
+            let consistency = min(1.0, Double(recurrenceCount) / Double(max(observedDays, 1)))
+            let proximity = averageProximity(appSessions: sessions,
+                                             readingBoundaries: readingBoundaries)
+            let category = mapCategory(first.application.category)
 
             return BehaviorEvidence(
-                id:               UUID(),
-                timestamp:        first.startTime,
-                name:             appName,
-                category:         category,
-                totalDuration:    totalDuration,
-                frequency:        sessions.count,
-                recurrenceCount:  recurrenceCount,
-                consistency:      consistency,
+                id: UUID(),
+                timestamp: first.startTime,
+                name: appName,
+                category: category,
+                totalDuration: totalDuration,
+                frequency: sessions.count,
+                recurrenceCount: recurrenceCount,
+                consistency: consistency,
                 proximityToReading: proximity
             )
         }
@@ -3417,20 +3302,20 @@ struct BehaviorContextAccessKitAdapter {
 
     private func daySpan(from sessions: [ApplicationUsageSession]) -> Int {
         guard let first = sessions.map(\.startTime).min(),
-              let last  = sessions.compactMap(\.endTime).max()
+              let last = sessions.compactMap(\.endTime).max()
         else { return 1 }
         return max(1, Calendar.current.dateComponents([.day], from: first, to: last).day ?? 1)
     }
 
     private func averageProximity(
-        appSessions:      [ApplicationUsageSession],
+        appSessions: [ApplicationUsageSession],
         readingBoundaries: [Date]
     ) -> Double {
         guard !readingBoundaries.isEmpty else { return 0.5 }
         let scores = appSessions.map { s -> Double in
             guard let nearest = readingBoundaries.min(by: {
                 abs($0.timeIntervalSince(s.startTime)) <
-                abs($1.timeIntervalSince(s.startTime))
+                    abs($1.timeIntervalSince(s.startTime))
             }) else { return 0.5 }
             let deltaMinutes = abs(nearest.timeIntervalSince(s.startTime)) / 60
             return max(0, 1 - (deltaMinutes / 120))
@@ -3442,18 +3327,18 @@ struct BehaviorContextAccessKitAdapter {
     /// (BehaviorContextEngine.swift). Verified against both enums.
     private func mapCategory(_ src: BehavioralCategory) -> BehaviorCategory {
         switch src {
-        case .productivity:  return .productivity
-        case .development:   return .development
-        case .browsing:      return .browsing
-        case .gaming:        return .gaming
+        case .productivity: return .productivity
+        case .development: return .development
+        case .browsing: return .browsing
+        case .gaming: return .gaming
         case .entertainment: return .entertainment
         case .communication: return .social
-        case .creativeWork:  return .creative
-        case .education:     return .learning
-        case .finance:       return .administrative
-        case .utility:       return .administrative
-        case .system:        return .administrative
-        case .unknown:       return .idle
+        case .creativeWork: return .creative
+        case .education: return .learning
+        case .finance: return .administrative
+        case .utility: return .administrative
+        case .system: return .administrative
+        case .unknown: return .idle
         }
     }
 }
@@ -3464,14 +3349,13 @@ struct BehaviorContextAccessKitAdapter {
 // ReadingSessionRecord is already defined in the file above.
 
 struct ReadingSessionAdapter {
-
     func adapt(_ books: [Book]) -> [ReadingSessionRecord] {
         books.flatMap(\.sessions).compactMap { session -> ReadingSessionRecord? in
             guard let end = session.endTime else { return nil }
             return ReadingSessionRecord(
-                id:        session.id,
+                id: session.id,
                 startDate: session.startTime,
-                endDate:   end
+                endDate: end
             )
         }
     }
@@ -3488,20 +3372,19 @@ struct ReadingSessionAdapter {
 // All failures are swallowed — BCE always accepts empty weatherRecords.
 
 struct WeatherContextAdapter {
-
     func adapt(sessions: [ReadingSession]) -> [WeatherContextRecord] {
         let completed = sessions.filter { $0.endTime != nil }
         guard !completed.isEmpty else { return [] }
 
         guard let earliest = completed.map(\.startTime).min(),
-              let latest   = completed.compactMap(\.endTime).max()
+              let latest = completed.compactMap(\.endTime).max()
         else { return [] }
 
         let snapshots: [WeatherSnapshot]
         do {
             snapshots = try WeatherKitService.shared.snapshots(
                 from: earliest.addingTimeInterval(-3600),
-                to:   latest.addingTimeInterval(3600)
+                to: latest.addingTimeInterval(3600)
             )
         } catch {
             return []
@@ -3514,15 +3397,15 @@ struct WeatherContextAdapter {
         for session in completed {
             guard let nearest = snapshots.min(by: {
                 abs($0.timestamp.timeIntervalSince(session.startTime)) <
-                abs($1.timestamp.timeIntervalSince(session.startTime))
+                    abs($1.timestamp.timeIntervalSince(session.startTime))
             }) else { continue }
 
             let delta = abs(nearest.timestamp.timeIntervalSince(session.startTime))
-            guard delta <= 3600 else { continue }    // only accept within ±1 hour
+            guard delta <= 3600 else { continue } // only accept within ±1 hour
 
             records.append(WeatherContextRecord(
-                id:         UUID(),
-                timestamp:  nearest.timestamp,
+                id: UUID(),
+                timestamp: nearest.timestamp,
                 descriptor: nearest.condition.rawValue
             ))
         }
@@ -3537,16 +3420,14 @@ struct WeatherContextAdapter {
 // Does NOT feed into analyze() directly — used by the upgraded entry point.
 
 public struct AnalyticsContextEnrichment: Sendable {
-    public let sessionQualities:   [UUID: Double]       // sessionID → SessionQuality.score
-    public let streakLength:        Int
-    public let readingSpeedByBook:  [UUID: Double]      // bookID → adjustedReadingSpeed (secs/page)
-    public let improvementVector:   ImprovementAnalytics
+    public let sessionQualities: [UUID: Double] // sessionID → SessionQuality.score
+    public let streakLength: Int
+    public let readingSpeedByBook: [UUID: Double] // bookID → adjustedReadingSpeed (secs/page)
+    public let improvementVector: ImprovementAnalytics
 }
 
 struct AnalyticsContextAdapter {
-
     func enrich(books: [Book]) -> AnalyticsContextEnrichment {
-
         var sessionQualities: [UUID: Double] = [:]
         for book in books {
             for session in book.sessions {
@@ -3565,8 +3446,8 @@ struct AnalyticsContextAdapter {
         let improvement = AnalyticsEngine.improvementAnalysis(books: books)
 
         return AnalyticsContextEnrichment(
-            sessionQualities:  sessionQualities,
-            streakLength:      streak.currentStreak,
+            sessionQualities: sessionQualities,
+            streakLength: streak.currentStreak,
             readingSpeedByBook: readingSpeedByBook,
             improvementVector: improvement
         )
@@ -3578,24 +3459,23 @@ struct AnalyticsContextAdapter {
 // Converts Book domain data into context-relevant metadata for advanced analyzers.
 
 public struct BookContextMetadata: Sendable {
-    public let bookID:           UUID
-    public let genre:            String       // book.genre.rawValue
-    public let totalPages:       Int
-    public let isCompleted:      Bool
-    public let sessionCount:     Int
+    public let bookID: UUID
+    public let genre: String // book.genre.rawValue
+    public let totalPages: Int
+    public let isCompleted: Bool
+    public let sessionCount: Int
     public let totalReadingTime: TimeInterval
 }
 
 struct BookModelAdapter {
-
     func adapt(_ books: [Book]) -> [BookContextMetadata] {
         books.map { book in
             BookContextMetadata(
-                bookID:          book.id,
-                genre:           book.genre.rawValue,
-                totalPages:      book.totalPages,
-                isCompleted:     book.isCompleted,
-                sessionCount:    book.sessions.count,
+                bookID: book.id,
+                genre: book.genre.rawValue,
+                totalPages: book.totalPages,
+                isCompleted: book.isCompleted,
+                sessionCount: book.sessions.count,
                 totalReadingTime: book.totalReadingTime
             )
         }
@@ -3607,83 +3487,81 @@ struct BookModelAdapter {
 // Aggregates everything the upgraded entry point needs into one struct.
 
 public struct FullIntegrationInput: Sendable {
-    public let sessions:        [ReadingSessionRecord]
-    public let evidence:        [BehaviorEvidence]
-    public let weatherRecords:  [WeatherContextRecord]
-    public let enrichment:      AnalyticsContextEnrichment
-    public let bookMetadata:    [BookContextMetadata]
+    public let sessions: [ReadingSessionRecord]
+    public let evidence: [BehaviorEvidence]
+    public let weatherRecords: [WeatherContextRecord]
+    public let enrichment: AnalyticsContextEnrichment
+    public let bookMetadata: [BookContextMetadata]
 }
 
 enum IntegrationInputBuilder {
-
     static func build(
         from books: [Book],
         kit: BehaviorContextAccessKit
     ) -> FullIntegrationInput {
-
-        let sessionAdapter  = ReadingSessionAdapter()
-        let kitAdapter      = BehaviorContextAccessKitAdapter()
+        let sessionAdapter = ReadingSessionAdapter()
+        let kitAdapter = BehaviorContextAccessKitAdapter()
         let analyticsAdapter = AnalyticsContextAdapter()
-        let bookAdapter     = BookModelAdapter()
-        let weatherAdapter  = WeatherContextAdapter()
+        let bookAdapter = BookModelAdapter()
+        let weatherAdapter = WeatherContextAdapter()
 
         let adapterInput = BehaviorContextAdapterInput(
-            books:               books,
+            books: books,
             applicationSessions: kit.applicationSessions,
-            inactivityRecords:   kit.inactivityRecords,
-            deviceStateEvents:   kit.deviceStateEvents,
-            behavioralEvents:    kit.events
+            inactivityRecords: kit.inactivityRecords,
+            deviceStateEvents: kit.deviceStateEvents,
+            behavioralEvents: kit.events
         )
 
-        let sessions       = sessionAdapter.adapt(books)
-        let evidence       = kitAdapter.adapt(adapterInput)
-        let enrichment     = analyticsAdapter.enrich(books: books)
-        let bookMetadata   = bookAdapter.adapt(books)
+        let sessions = sessionAdapter.adapt(books)
+        let evidence = kitAdapter.adapt(adapterInput)
+        let enrichment = analyticsAdapter.enrich(books: books)
+        let bookMetadata = bookAdapter.adapt(books)
 
         let allReadingSessions = books.flatMap(\.sessions)
-        let weatherRecords     = weatherAdapter.adapt(sessions: allReadingSessions)
+        let weatherRecords = weatherAdapter.adapt(sessions: allReadingSessions)
 
         return FullIntegrationInput(
-            sessions:       sessions,
-            evidence:       evidence,
+            sessions: sessions,
+            evidence: evidence,
             weatherRecords: weatherRecords,
-            enrichment:     enrichment,
-            bookMetadata:   bookMetadata
+            enrichment: enrichment,
+            bookMetadata: bookMetadata
         )
     }
 }
 
-
 // ============================================================================
 // MARK: - Context Window System
+
 // ============================================================================
 
 // 2A — ContextWindowPreset
 
 public enum ContextWindowPreset: Sendable {
-    case narrow                                      // 15 min before/after
-    case standard                                    // 60 min (current BCE default)
-    case extended                                    // 3 hours
-    case fullDay                                     // 12 hours
+    case narrow // 15 min before/after
+    case standard // 60 min (current BCE default)
+    case extended // 3 hours
+    case fullDay // 12 hours
     case custom(pre: TimeInterval, post: TimeInterval)
 
     var preInterval: TimeInterval {
         switch self {
-        case .narrow:              return 15 * 60
-        case .standard:            return 60 * 60
-        case .extended:            return 3 * 60 * 60
-        case .fullDay:             return 12 * 60 * 60
-        case .custom(let pre, _):  return pre
+        case .narrow: return 15 * 60
+        case .standard: return 60 * 60
+        case .extended: return 3 * 60 * 60
+        case .fullDay: return 12 * 60 * 60
+        case let .custom(pre, _): return pre
         }
     }
 
     var postInterval: TimeInterval {
         switch self {
-        case .narrow:               return 15 * 60
-        case .standard:             return 60 * 60
-        case .extended:             return 3 * 60 * 60
-        case .fullDay:              return 12 * 60 * 60
-        case .custom(_, let post):  return post
+        case .narrow: return 15 * 60
+        case .standard: return 60 * 60
+        case .extended: return 3 * 60 * 60
+        case .fullDay: return 12 * 60 * 60
+        case let .custom(_, post): return post
         }
     }
 }
@@ -3694,13 +3572,12 @@ public enum ContextWindowPreset: Sendable {
 // More data → narrower windows are reliable. Less data → wider windows needed.
 
 struct DynamicContextWindowSelector {
-
-    func select(sessionCount: Int, averageSessionDuration: TimeInterval) -> ContextWindowPreset {
+    func select(sessionCount: Int, averageSessionDuration _: TimeInterval) -> ContextWindowPreset {
         switch sessionCount {
-        case ..<5:  return .fullDay
+        case ..<5: return .fullDay
         case ..<20: return .extended
         case ..<50: return .standard
-        default:    return .narrow
+        default: return .narrow
         }
     }
 }
@@ -3711,18 +3588,16 @@ struct DynamicContextWindowSelector {
 // window yields the most consistent (highest-stability) results.
 
 public struct WindowComparisonResult: Sendable {
-    public let preset:          ContextWindowPreset
-    public let contextCount:    Int
-    public let stabilityScore:  Double
+    public let preset: ContextWindowPreset
+    public let contextCount: Int
+    public let stabilityScore: Double
 }
 
 struct MultiWindowComparisonEngine {
-
     func compare(
         contexts: [ReadingContextRecord],
-        presets:  [ContextWindowPreset] = [.narrow, .standard, .extended]
+        presets: [ContextWindowPreset] = [.narrow, .standard, .extended]
     ) -> [WindowComparisonResult] {
-
         let stabilityAnalyzer = EnvironmentStabilityAnalyzer()
 
         return presets.map { preset in
@@ -3737,8 +3612,8 @@ struct MultiWindowComparisonEngine {
             let stability = stabilityAnalyzer.analyze(contexts: filtered)
 
             return WindowComparisonResult(
-                preset:         preset,
-                contextCount:   filtered.count,
+                preset: preset,
+                contextCount: filtered.count,
                 stabilityScore: stability.stabilityScore
             )
         }
@@ -3747,11 +3622,11 @@ struct MultiWindowComparisonEngine {
 
     private func windowConfidenceThreshold(_ preset: ContextWindowPreset) -> Double {
         switch preset {
-        case .narrow:   return 0.70
+        case .narrow: return 0.70
         case .standard: return 0.45
         case .extended: return 0.25
-        case .fullDay:  return 0.10
-        case .custom:   return 0.45
+        case .fullDay: return 0.10
+        case .custom: return 0.45
         }
     }
 }
@@ -3763,20 +3638,18 @@ struct MultiWindowComparisonEngine {
 
 public struct WeightedBehaviorEvidence: Sendable {
     public let evidence: BehaviorEvidence
-    public let weight:   Double           // 0–1, proximity-based
+    public let weight: Double // 0–1, proximity-based
 }
 
 struct WindowWeightingEngine {
-
     func weight(
-        evidence:           [BehaviorEvidence],
+        evidence: [BehaviorEvidence],
         relativeTo sessionStart: Date,
-        window:             ContextWindowPreset
+        window: ContextWindowPreset
     ) -> [WeightedBehaviorEvidence] {
-
         evidence
             .map { item -> WeightedBehaviorEvidence in
-                let delta  = abs(item.timestamp.timeIntervalSince(sessionStart))
+                let delta = abs(item.timestamp.timeIntervalSince(sessionStart))
                 let weight = max(0, 1 - (delta / window.preInterval))
                 return WeightedBehaviorEvidence(evidence: item, weight: weight)
             }
@@ -3784,53 +3657,50 @@ struct WindowWeightingEngine {
     }
 }
 
-
 // ============================================================================
 // MARK: - Device-State Analysis
+
 // ============================================================================
 
 // 3A — DeviceStateInfluenceProfile
 
 public struct DeviceStateInfluenceProfile: Codable, Hashable, Identifiable, Sendable {
-    public let id:                    UUID
-    public let sessionID:             UUID
+    public let id: UUID
+    public let sessionID: UUID
     public let preSessionDeviceState: DeviceStateType?
-    public let midSessionLockEvents:  Int
+    public let midSessionLockEvents: Int
     public let postSessionSleepEvents: Int
-    public let deviceWasFocused:      Bool
-    public let influenceScore:        Double
+    public let deviceWasFocused: Bool
+    public let influenceScore: Double
 
     public init(
-        id:                    UUID = UUID(),
-        sessionID:             UUID,
+        id: UUID = UUID(),
+        sessionID: UUID,
         preSessionDeviceState: DeviceStateType?,
-        midSessionLockEvents:  Int,
+        midSessionLockEvents: Int,
         postSessionSleepEvents: Int,
-        deviceWasFocused:      Bool,
-        influenceScore:        Double
+        deviceWasFocused: Bool,
+        influenceScore: Double
     ) {
-        self.id                    = id
-        self.sessionID             = sessionID
+        self.id = id
+        self.sessionID = sessionID
         self.preSessionDeviceState = preSessionDeviceState
-        self.midSessionLockEvents  = midSessionLockEvents
+        self.midSessionLockEvents = midSessionLockEvents
         self.postSessionSleepEvents = postSessionSleepEvents
-        self.deviceWasFocused      = deviceWasFocused
-        self.influenceScore        = influenceScore
+        self.deviceWasFocused = deviceWasFocused
+        self.influenceScore = influenceScore
     }
 }
 
 // 3B — DeviceStateInfluenceAnalyzer
 
 struct DeviceStateInfluenceAnalyzer {
-
     func analyze(
-        sessions:     [ReadingSessionRecord],
+        sessions: [ReadingSessionRecord],
         deviceEvents: [DeviceStateEvent]
     ) -> [DeviceStateInfluenceProfile] {
-
         sessions.map { session in
-
-            let sessionInterval = session.startDate...session.endDate
+            let sessionInterval = session.startDate ... session.endDate
 
             // State just before the session (within 10 minutes prior)
             let tenMinutesBefore = session.startDate.addingTimeInterval(-600)
@@ -3849,21 +3719,21 @@ struct DeviceStateInfluenceAnalyzer {
             let thirtyMinutesAfter = session.endDate.addingTimeInterval(1800)
             let postSleeps = deviceEvents.filter {
                 $0.timestamp > session.endDate &&
-                $0.timestamp <= thirtyMinutesAfter &&
-                $0.state == .sleeping
+                    $0.timestamp <= thirtyMinutesAfter &&
+                    $0.state == .sleeping
             }.count
 
-            let wasFocused     = midLocks == 0 && postSleeps == 0
+            let wasFocused = midLocks == 0 && postSleeps == 0
             let influenceScore = (wasFocused ? 1.0 : 0.0) * 0.5
-                               + (1.0 - min(1.0, Double(midLocks) / 5.0)) * 0.5
+                + (1.0 - min(1.0, Double(midLocks) / 5.0)) * 0.5
 
             return DeviceStateInfluenceProfile(
-                sessionID:             session.id,
+                sessionID: session.id,
                 preSessionDeviceState: preState,
-                midSessionLockEvents:  midLocks,
+                midSessionLockEvents: midLocks,
                 postSessionSleepEvents: postSleeps,
-                deviceWasFocused:      wasFocused,
-                influenceScore:        influenceScore
+                deviceWasFocused: wasFocused,
+                influenceScore: influenceScore
             )
         }
     }
@@ -3872,73 +3742,71 @@ struct DeviceStateInfluenceAnalyzer {
 // 3C — DeviceStateContextRecord
 
 public struct DeviceStateContextRecord: Codable, Hashable, Sendable {
-    public let generatedAt:         Date
-    public let profiles:            [DeviceStateInfluenceProfile]
-    public let averageFocusScore:   Double
-    public let mostFocusedSessions: [UUID]   // influenceScore > 0.8
-    public let disruptedSessions:   [UUID]   // midSessionLockEvents > 2
+    public let generatedAt: Date
+    public let profiles: [DeviceStateInfluenceProfile]
+    public let averageFocusScore: Double
+    public let mostFocusedSessions: [UUID] // influenceScore > 0.8
+    public let disruptedSessions: [UUID] // midSessionLockEvents > 2
 
     public init(profiles: [DeviceStateInfluenceProfile]) {
-        self.generatedAt       = Date()
-        self.profiles          = profiles
-        self.averageFocusScore = profiles.isEmpty
+        generatedAt = Date()
+        self.profiles = profiles
+        averageFocusScore = profiles.isEmpty
             ? 0
             : profiles.map(\.influenceScore).reduce(0, +) / Double(profiles.count)
-        self.mostFocusedSessions = profiles
+        mostFocusedSessions = profiles
             .filter { $0.influenceScore > 0.8 }
             .map(\.sessionID)
-        self.disruptedSessions   = profiles
+        disruptedSessions = profiles
             .filter { $0.midSessionLockEvents > 2 }
             .map(\.sessionID)
     }
 }
 
-
 // ============================================================================
 // MARK: - Inactivity Reconstruction
+
 // ============================================================================
 
 // 4A — InactivityGapType + InactivityGapRecord
 
 public enum InactivityGapType: String, Codable, Hashable, Sendable {
-    case brief          // < 5 minutes
-    case moderate       // 5–30 minutes
-    case extended       // 30 min – 2 hours
-    case longBreak      // 2–8 hours
-    case overnight      // > 8 hours
+    case brief // < 5 minutes
+    case moderate // 5–30 minutes
+    case extended // 30 min – 2 hours
+    case longBreak // 2–8 hours
+    case overnight // > 8 hours
 }
 
 public struct InactivityGapRecord: Codable, Hashable, Identifiable, Sendable {
-    public let id:              UUID
-    public let gapDuration:     TimeInterval
-    public let precededSession: UUID?   // reading session that FOLLOWED this gap
-    public let followedSession: UUID?   // reading session that PRECEDED this gap
-    public let gapType:         InactivityGapType
+    public let id: UUID
+    public let gapDuration: TimeInterval
+    public let precededSession: UUID? // reading session that FOLLOWED this gap
+    public let followedSession: UUID? // reading session that PRECEDED this gap
+    public let gapType: InactivityGapType
 
     public init(
-        id:              UUID = UUID(),
-        gapDuration:     TimeInterval,
+        id: UUID = UUID(),
+        gapDuration: TimeInterval,
         precededSession: UUID?,
         followedSession: UUID?,
-        gapType:         InactivityGapType
+        gapType: InactivityGapType
     ) {
-        self.id              = id
-        self.gapDuration     = gapDuration
+        self.id = id
+        self.gapDuration = gapDuration
         self.precededSession = precededSession
         self.followedSession = followedSession
-        self.gapType         = gapType
+        self.gapType = gapType
     }
 }
 
 // 4B — InactivityGapAnalyzer
 
 struct InactivityGapAnalyzer {
-
     func analyze(
         inactivityRecords: [InactivityRecord],
-        sessions:          [ReadingSessionRecord]
+        sessions: [ReadingSessionRecord]
     ) -> [InactivityGapRecord] {
-
         inactivityRecords.compactMap { record -> InactivityGapRecord? in
             guard let duration = record.duration, let end = record.endTime else { return nil }
 
@@ -3954,18 +3822,18 @@ struct InactivityGapAnalyzer {
 
             let gapType: InactivityGapType
             switch duration {
-            case ..<300:          gapType = .brief
-            case ..<1800:         gapType = .moderate
-            case ..<7200:         gapType = .extended
-            case ..<28800:        gapType = .longBreak
-            default:              gapType = .overnight
+            case ..<300: gapType = .brief
+            case ..<1800: gapType = .moderate
+            case ..<7200: gapType = .extended
+            case ..<28800: gapType = .longBreak
+            default: gapType = .overnight
             }
 
             return InactivityGapRecord(
-                gapDuration:     duration,
+                gapDuration: duration,
                 precededSession: following?.id,
                 followedSession: preceding?.id,
-                gapType:         gapType
+                gapType: gapType
             )
         }
     }
@@ -3976,35 +3844,33 @@ struct InactivityGapAnalyzer {
 // A "recovery session" = reading that follows an extended or overnight gap.
 
 public struct RecoverySessionRecord: Codable, Hashable, Identifiable, Sendable {
-    public let id:               UUID
-    public let sessionID:        UUID
-    public let precedingGap:     InactivityGapRecord
+    public let id: UUID
+    public let sessionID: UUID
+    public let precedingGap: InactivityGapRecord
     public let recoveryStrength: Double
 
     public init(
-        id:               UUID = UUID(),
-        sessionID:        UUID,
-        precedingGap:     InactivityGapRecord,
+        id: UUID = UUID(),
+        sessionID: UUID,
+        precedingGap: InactivityGapRecord,
         recoveryStrength: Double
     ) {
-        self.id               = id
-        self.sessionID        = sessionID
-        self.precedingGap     = precedingGap
+        self.id = id
+        self.sessionID = sessionID
+        self.precedingGap = precedingGap
         self.recoveryStrength = recoveryStrength
     }
 }
 
 struct RecoverySessionDetector {
-
     func detect(
-        gaps:     [InactivityGapRecord],
+        gaps: [InactivityGapRecord],
         sessions: [ReadingSessionRecord]
     ) -> [RecoverySessionRecord] {
-
         gaps
             .filter { gap in
                 (gap.gapType == .extended || gap.gapType == .longBreak || gap.gapType == .overnight)
-                && gap.precededSession != nil
+                    && gap.precededSession != nil
             }
             .compactMap { gap -> RecoverySessionRecord? in
                 guard let sessionID = gap.precededSession else { return nil }
@@ -4012,15 +3878,15 @@ struct RecoverySessionDetector {
 
                 let strength: Double
                 switch gap.gapType {
-                case .overnight:  strength = 1.0
-                case .longBreak:  strength = 0.8
-                case .extended:   strength = 0.5
-                default:          strength = 0.0
+                case .overnight: strength = 1.0
+                case .longBreak: strength = 0.8
+                case .extended: strength = 0.5
+                default: strength = 0.0
                 }
 
                 return RecoverySessionRecord(
-                    sessionID:        sessionID,
-                    precedingGap:     gap,
+                    sessionID: sessionID,
+                    precedingGap: gap,
                     recoveryStrength: strength
                 )
             }
@@ -4030,32 +3896,31 @@ struct RecoverySessionDetector {
 // 4D — FatigueSignalType + FatigueSignal + FatigueIndicatorAnalyzer
 
 public enum FatigueSignalType: String, Codable, Hashable, Sendable {
-    case increasingGaps            // 3+ consecutive gaps each longer than the prior
-    case multipleExtendedGaps      // 2+ extended gaps in the same calendar day
-    case overnightFollowedByBrief  // overnight gap, then the following session is brief
+    case increasingGaps // 3+ consecutive gaps each longer than the prior
+    case multipleExtendedGaps // 2+ extended gaps in the same calendar day
+    case overnightFollowedByBrief // overnight gap, then the following session is brief
 }
 
 public struct FatigueSignal: Codable, Hashable, Identifiable, Sendable {
-    public let id:         UUID
-    public let date:       Date
+    public let id: UUID
+    public let date: Date
     public let signalType: FatigueSignalType
     public let confidence: ContextConfidence
 
     public init(
-        id:         UUID = UUID(),
-        date:       Date,
+        id: UUID = UUID(),
+        date: Date,
         signalType: FatigueSignalType,
         confidence: ContextConfidence
     ) {
-        self.id         = id
-        self.date       = date
+        self.id = id
+        self.date = date
         self.signalType = signalType
         self.confidence = confidence
     }
 }
 
 struct FatigueIndicatorAnalyzer {
-
     func analyze(gaps: [InactivityGapRecord]) -> [FatigueSignal] {
         var signals: [FatigueSignal] = []
 
@@ -4066,12 +3931,12 @@ struct FatigueIndicatorAnalyzer {
 
         if sorted.count >= 3 {
             var consecutiveCount = 1
-            for i in 1..<sorted.count {
+            for i in 1 ..< sorted.count {
                 if sorted[i].gapDuration > sorted[i - 1].gapDuration {
                     consecutiveCount += 1
                     if consecutiveCount >= 3 {
                         signals.append(FatigueSignal(
-                            date:       Date(),
+                            date: Date(),
                             signalType: .increasingGaps,
                             confidence: ContextConfidence(
                                 score: min(1.0, Double(consecutiveCount) / 10.0)
@@ -4097,7 +3962,7 @@ struct FatigueIndicatorAnalyzer {
         }
         if extendedGaps.count >= 2 {
             signals.append(FatigueSignal(
-                date:       Date(),
+                date: Date(),
                 signalType: .multipleExtendedGaps,
                 confidence: ContextConfidence(
                     score: min(1.0, Double(extendedGaps.count) / 5.0)
@@ -4112,9 +3977,9 @@ struct FatigueIndicatorAnalyzer {
         // ReadingSessionRecord. We mark any overnight gap as this signal type
         // with moderate confidence since it is structurally present.
         let overnightGaps = gaps.filter { $0.gapType == .overnight && $0.precededSession != nil }
-        for gap in overnightGaps {
+        for _ in overnightGaps {
             signals.append(FatigueSignal(
-                date:       Date(),
+                date: Date(),
                 signalType: .overnightFollowedByBrief,
                 confidence: ContextConfidence(score: 0.5)
             ))
@@ -4124,9 +3989,9 @@ struct FatigueIndicatorAnalyzer {
     }
 }
 
-
 // ============================================================================
 // MARK: - Environment Evolution Tracking
+
 // ============================================================================
 
 // Private file-scope helper for Shannon entropy.
@@ -4154,36 +4019,34 @@ public enum EnvironmentEvolutionPeriod: String, Codable, Hashable, Sendable {
 }
 
 public struct EnvironmentEvolutionSnapshot: Codable, Hashable, Sendable {
-    public let period:               EnvironmentEvolutionPeriod
-    public let periodStart:          Date
-    public let dominantEnvironment:  BehavioralEnvironmentType
-    public let distributionScore:    Double   // 0 = monoculture, 1 = diverse
-    public let sessionCount:         Int
+    public let period: EnvironmentEvolutionPeriod
+    public let periodStart: Date
+    public let dominantEnvironment: BehavioralEnvironmentType
+    public let distributionScore: Double // 0 = monoculture, 1 = diverse
+    public let sessionCount: Int
 
     public init(
-        period:              EnvironmentEvolutionPeriod,
-        periodStart:         Date,
+        period: EnvironmentEvolutionPeriod,
+        periodStart: Date,
         dominantEnvironment: BehavioralEnvironmentType,
-        distributionScore:   Double,
-        sessionCount:        Int
+        distributionScore: Double,
+        sessionCount: Int
     ) {
-        self.period              = period
-        self.periodStart         = periodStart
+        self.period = period
+        self.periodStart = periodStart
         self.dominantEnvironment = dominantEnvironment
-        self.distributionScore   = distributionScore
-        self.sessionCount        = sessionCount
+        self.distributionScore = distributionScore
+        self.sessionCount = sessionCount
     }
 }
 
 // 5B — LongitudinalEnvironmentTracker
 
 struct LongitudinalEnvironmentTracker {
-
     func track(
         contexts: [ReadingContextRecord],
-        period:   EnvironmentEvolutionPeriod = .month
+        period: EnvironmentEvolutionPeriod = .month
     ) -> [EnvironmentEvolutionSnapshot] {
-
         guard !contexts.isEmpty else { return [] }
 
         // Group contexts into calendar buckets based on the period.
@@ -4200,14 +4063,14 @@ struct LongitudinalEnvironmentTracker {
                 guard let dominant = types.mostCommon else { return nil }
 
                 let typeCounts = Dictionary(grouping: types) { $0 }.mapValues(\.count)
-                let entropy    = bceAppendShannonEntropy(typeCounts)
+                let entropy = bceAppendShannonEntropy(typeCounts)
 
                 return EnvironmentEvolutionSnapshot(
-                    period:              period,
-                    periodStart:         bucketDate,
+                    period: period,
+                    periodStart: bucketDate,
                     dominantEnvironment: dominant,
-                    distributionScore:   entropy,
-                    sessionCount:        records.count
+                    distributionScore: entropy,
+                    sessionCount: records.count
                 )
             }
     }
@@ -4220,10 +4083,10 @@ struct LongitudinalEnvironmentTracker {
         switch period {
         case .week:
             // Start of ISO week
-            components.weekday = 2   // Monday
-            components.hour    = 0
-            components.minute  = 0
-            components.second  = 0
+            components.weekday = 2 // Monday
+            components.hour = 0
+            components.minute = 0
+            components.second = 0
             return Calendar.current.date(from: components)
                 ?? Calendar.current.startOfDay(for: date)
         case .month:
@@ -4231,8 +4094,8 @@ struct LongitudinalEnvironmentTracker {
                 from: DateComponents(year: components.year, month: components.month, day: 1)
             ) ?? Calendar.current.startOfDay(for: date)
         case .quarter:
-            let month     = components.month ?? 1
-            let qMonth    = ((month - 1) / 3) * 3 + 1
+            let month = components.month ?? 1
+            let qMonth = ((month - 1) / 3) * 3 + 1
             return Calendar.current.date(
                 from: DateComponents(year: components.year, month: qMonth, day: 1)
             ) ?? Calendar.current.startOfDay(for: date)
@@ -4243,55 +4106,53 @@ struct LongitudinalEnvironmentTracker {
 // 5C — BehavioralShiftEvent + LongitudinalBehaviorShiftDetector
 
 public struct BehavioralShiftEvent: Codable, Hashable, Identifiable, Sendable {
-    public let id:               UUID
-    public let shiftDate:        Date
-    public let fromEnvironment:  BehavioralEnvironmentType
-    public let toEnvironment:    BehavioralEnvironmentType
-    public let persistenceScore: Double   // fraction of subsequent snapshots matching new dominant
+    public let id: UUID
+    public let shiftDate: Date
+    public let fromEnvironment: BehavioralEnvironmentType
+    public let toEnvironment: BehavioralEnvironmentType
+    public let persistenceScore: Double // fraction of subsequent snapshots matching new dominant
 
     public init(
-        id:               UUID = UUID(),
-        shiftDate:        Date,
-        fromEnvironment:  BehavioralEnvironmentType,
-        toEnvironment:    BehavioralEnvironmentType,
+        id: UUID = UUID(),
+        shiftDate: Date,
+        fromEnvironment: BehavioralEnvironmentType,
+        toEnvironment: BehavioralEnvironmentType,
         persistenceScore: Double
     ) {
-        self.id               = id
-        self.shiftDate        = shiftDate
-        self.fromEnvironment  = fromEnvironment
-        self.toEnvironment    = toEnvironment
+        self.id = id
+        self.shiftDate = shiftDate
+        self.fromEnvironment = fromEnvironment
+        self.toEnvironment = toEnvironment
         self.persistenceScore = persistenceScore
     }
 }
 
 struct LongitudinalBehaviorShiftDetector {
-
     func detect(
         snapshots: [EnvironmentEvolutionSnapshot]
     ) -> [BehavioralShiftEvent] {
-
         let sorted = snapshots.sorted { $0.periodStart < $1.periodStart }
         guard sorted.count >= 2 else { return [] }
 
         var shifts: [BehavioralShiftEvent] = []
 
-        for i in 1..<sorted.count {
+        for i in 1 ..< sorted.count {
             let previous = sorted[i - 1]
-            let current  = sorted[i]
+            let current = sorted[i]
 
             guard current.dominantEnvironment != previous.dominantEnvironment else { continue }
 
             // Persistence: fraction of snapshots after this shift that share the new dominant
-            let subsequent = Array(sorted[(i)...])
-            let matching   = subsequent.filter {
+            let subsequent = Array(sorted[i...])
+            let matching = subsequent.filter {
                 $0.dominantEnvironment == current.dominantEnvironment
             }.count
             let persistence = Double(matching) / Double(max(subsequent.count, 1))
 
             shifts.append(BehavioralShiftEvent(
-                shiftDate:        current.periodStart,
-                fromEnvironment:  previous.dominantEnvironment,
-                toEnvironment:    current.dominantEnvironment,
+                shiftDate: current.periodStart,
+                fromEnvironment: previous.dominantEnvironment,
+                toEnvironment: current.dominantEnvironment,
                 persistenceScore: persistence
             ))
         }
@@ -4300,37 +4161,37 @@ struct LongitudinalBehaviorShiftDetector {
     }
 }
 
-
 // ============================================================================
 // MARK: - Sequence System Upgrades
+
 // ============================================================================
 
 // 6A — SequenceRecurrenceRecord
 
 public struct SequenceRecurrenceRecord: Codable, Hashable, Identifiable, Sendable {
-    public let id:              UUID
-    public let sequence:        [BehavioralEnvironmentType]
+    public let id: UUID
+    public let sequence: [BehavioralEnvironmentType]
     public let occurrenceDates: [Date]
     public let recurrenceCount: Int
-    public let firstSeen:       Date
-    public let lastSeen:        Date
-    public let spanDays:        Int
+    public let firstSeen: Date
+    public let lastSeen: Date
+    public let spanDays: Int
 
     public init(
-        id:              UUID = UUID(),
-        sequence:        [BehavioralEnvironmentType],
+        id: UUID = UUID(),
+        sequence: [BehavioralEnvironmentType],
         occurrenceDates: [Date]
     ) {
-        self.id              = id
-        self.sequence        = sequence
+        self.id = id
+        self.sequence = sequence
         self.occurrenceDates = occurrenceDates
-        self.recurrenceCount = occurrenceDates.count
-        self.firstSeen       = occurrenceDates.min() ?? Date()
-        self.lastSeen        = occurrenceDates.max() ?? Date()
-        self.spanDays        = max(0, Calendar.current.dateComponents(
+        recurrenceCount = occurrenceDates.count
+        firstSeen = occurrenceDates.min() ?? Date()
+        lastSeen = occurrenceDates.max() ?? Date()
+        spanDays = max(0, Calendar.current.dateComponents(
             [.day],
             from: occurrenceDates.min() ?? Date(),
-            to:   occurrenceDates.max() ?? Date()
+            to: occurrenceDates.max() ?? Date()
         ).day ?? 0)
     }
 }
@@ -4338,9 +4199,7 @@ public struct SequenceRecurrenceRecord: Codable, Hashable, Identifiable, Sendabl
 // 6B — SequenceRecurrenceDatabase
 
 struct SequenceRecurrenceDatabase {
-
     func build(contexts: [ReadingContextRecord]) -> [SequenceRecurrenceRecord] {
-
         guard contexts.count >= 3 else { return [] }
 
         let sorted = contexts.sorted { $0.readingDate < $1.readingDate }
@@ -4351,13 +4210,13 @@ struct SequenceRecurrenceDatabase {
             let triple: [BehavioralEnvironmentType] = [
                 context.preReadingContext.type,
                 context.inSessionContext.type,
-                context.postReadingContext.type
+                context.postReadingContext.type,
             ]
             grouped[triple, default: []].append(context.readingDate)
         }
 
         return grouped
-            .filter { _, dates in dates.count >= 2 }   // require at least 2 occurrences
+            .filter { _, dates in dates.count >= 2 } // require at least 2 occurrences
             .map { triple, dates in
                 SequenceRecurrenceRecord(sequence: triple, occurrenceDates: dates)
             }
@@ -4368,13 +4227,12 @@ struct SequenceRecurrenceDatabase {
 // 6C — SequenceConsistencyScore + SequenceConsistencyScorer
 
 public struct SequenceConsistencyScore: Sendable {
-    public let sequence:          [BehavioralEnvironmentType]
-    public let consistencyScore:  Double   // recurrences per observed day
-    public let intervalVariance:  Double   // 0=regular, 1=irregular
+    public let sequence: [BehavioralEnvironmentType]
+    public let consistencyScore: Double // recurrences per observed day
+    public let intervalVariance: Double // 0=regular, 1=irregular
 }
 
 struct SequenceConsistencyScorer {
-
     func score(records: [SequenceRecurrenceRecord]) -> [SequenceConsistencyScore] {
         records.map { record in
             let consistencyScore = min(
@@ -4385,7 +4243,7 @@ struct SequenceConsistencyScorer {
             let intervalVariance = computeIntervalVariance(dates: record.occurrenceDates)
 
             return SequenceConsistencyScore(
-                sequence:         record.sequence,
+                sequence: record.sequence,
                 consistencyScore: consistencyScore,
                 intervalVariance: intervalVariance
             )
@@ -4395,13 +4253,13 @@ struct SequenceConsistencyScorer {
     private func computeIntervalVariance(dates: [Date]) -> Double {
         guard dates.count >= 3 else { return 0.5 }
 
-        let sorted    = dates.sorted()
+        let sorted = dates.sorted()
         let intervals = zip(sorted, sorted.dropFirst()).map { $1.timeIntervalSince($0) }
-        let mean      = intervals.reduce(0, +) / Double(intervals.count)
+        let mean = intervals.reduce(0, +) / Double(intervals.count)
         guard mean > 0 else { return 0 }
 
-        let variance  = intervals.map { pow($0 - mean, 2) }.reduce(0, +) / Double(intervals.count)
-        let stdDev    = sqrt(variance)
+        let variance = intervals.map { pow($0 - mean, 2) }.reduce(0, +) / Double(intervals.count)
+        let stdDev = sqrt(variance)
         // Normalize: coefficient of variation clamped to 0–1
         return min(1.0, stdDev / mean)
     }
@@ -4410,19 +4268,18 @@ struct SequenceConsistencyScorer {
 // 6D — SequenceTimingProfile + SequenceTimingAnalyzer
 
 public struct SequenceTimingProfile: Sendable {
-    public let sequence:               [BehavioralEnvironmentType]
+    public let sequence: [BehavioralEnvironmentType]
     public let averageIntervalMinutes: Double
-    public let peakHour:               Int     // most common hour-of-day this sequence starts
-    public let isTimeStable:           Bool    // std-dev of occurrence hours < 2
+    public let peakHour: Int // most common hour-of-day this sequence starts
+    public let isTimeStable: Bool // std-dev of occurrence hours < 2
 }
 
 struct SequenceTimingAnalyzer {
-
     func analyze(records: [SequenceRecurrenceRecord]) -> [SequenceTimingProfile] {
         records.map { record in
-            let sorted    = record.occurrenceDates.sorted()
+            let sorted = record.occurrenceDates.sorted()
             let intervals = zip(sorted, sorted.dropFirst())
-                .map { $1.timeIntervalSince($0) / 60 }   // convert to minutes
+                .map { $1.timeIntervalSince($0) / 60 } // convert to minutes
 
             let avgInterval = intervals.isEmpty
                 ? 0
@@ -4431,18 +4288,18 @@ struct SequenceTimingAnalyzer {
             let hours = record.occurrenceDates.map {
                 Calendar.current.component(.hour, from: $0)
             }
-            let peakHour   = hours.mostCommon ?? 0
-            let meanHour   = Double(hours.reduce(0, +)) / Double(max(hours.count, 1))
+            let peakHour = hours.mostCommon ?? 0
+            let meanHour = Double(hours.reduce(0, +)) / Double(max(hours.count, 1))
             let hourStdDev = sqrt(
                 hours.map { pow(Double($0) - meanHour, 2) }.reduce(0, +)
-                / Double(max(hours.count, 1))
+                    / Double(max(hours.count, 1))
             )
 
             return SequenceTimingProfile(
-                sequence:               record.sequence,
+                sequence: record.sequence,
                 averageIntervalMinutes: avgInterval,
-                peakHour:               peakHour,
-                isTimeStable:           hourStdDev < 2.0
+                peakHour: peakHour,
+                isTimeStable: hourStdDev < 2.0
             )
         }
     }
@@ -4454,53 +4311,51 @@ struct SequenceTimingAnalyzer {
 // (A→B→C→D) across consecutive sessions.
 
 public struct TransitionChain: Codable, Hashable, Identifiable, Sendable {
-    public let id:           UUID
-    public let chain:        [BehavioralEnvironmentType]
-    public let sessionIDs:   [UUID]
-    public let chainStrength: Double   // recurrenceCount * consistency
+    public let id: UUID
+    public let chain: [BehavioralEnvironmentType]
+    public let sessionIDs: [UUID]
+    public let chainStrength: Double // recurrenceCount * consistency
 
     public init(
-        id:           UUID = UUID(),
-        chain:        [BehavioralEnvironmentType],
-        sessionIDs:   [UUID],
+        id: UUID = UUID(),
+        chain: [BehavioralEnvironmentType],
+        sessionIDs: [UUID],
         chainStrength: Double
     ) {
-        self.id           = id
-        self.chain        = chain
-        self.sessionIDs   = sessionIDs
+        self.id = id
+        self.chain = chain
+        self.sessionIDs = sessionIDs
         self.chainStrength = chainStrength
     }
 }
 
 struct TransitionChainReconstructor {
-
     func reconstruct(
-        contexts:      [ReadingContextRecord],
-        minLength:     Int = 3,
+        contexts: [ReadingContextRecord],
+        minLength: Int = 3,
         minRecurrence: Int = 2
     ) -> [TransitionChain] {
-
         let sorted = contexts.sorted { $0.readingDate < $1.readingDate }
         guard sorted.count >= minLength else { return [] }
 
         // Build a directed graph: post-reading type[n] → pre-reading type[n+1]
         var graph: [BehavioralEnvironmentType: [BehavioralEnvironmentType]] = [:]
-        for i in 0..<(sorted.count - 1) {
+        for i in 0 ..< (sorted.count - 1) {
             let from = sorted[i].postReadingContext.type
-            let to   = sorted[i + 1].preReadingContext.type
+            let to = sorted[i + 1].preReadingContext.type
             graph[from, default: []].append(to)
         }
 
         // Walk paths from each starting node, collecting chains of minLength+
         var chainCounts: [[BehavioralEnvironmentType]: (count: Int, sessionIDs: [UUID])] = [:]
 
-        for startIndex in 0..<(sorted.count - minLength + 1) {
-            var path       = [BehavioralEnvironmentType]()
+        for startIndex in 0 ..< (sorted.count - minLength + 1) {
+            var path = [BehavioralEnvironmentType]()
             var sessionIDs = [UUID]()
             path.append(sorted[startIndex].preReadingContext.type)
             sessionIDs.append(sorted[startIndex].sessionID)
 
-            for j in startIndex..<min(startIndex + 6, sorted.count - 1) {
+            for j in startIndex ..< min(startIndex + 6, sorted.count - 1) {
                 let next = sorted[j + 1].preReadingContext.type
                 path.append(next)
                 sessionIDs.append(sorted[j + 1].sessionID)
@@ -4518,11 +4373,11 @@ struct TransitionChainReconstructor {
         return chainCounts
             .filter { _, value in value.count >= minRecurrence }
             .map { chain, value in
-                let consistency  = min(1.0, Double(value.count) / Double(max(sorted.count, 1)))
+                let consistency = min(1.0, Double(value.count) / Double(max(sorted.count, 1)))
                 let chainStrength = Double(value.count) * consistency
                 return TransitionChain(
-                    chain:        chain,
-                    sessionIDs:   value.sessionIDs,
+                    chain: chain,
+                    sessionIDs: value.sessionIDs,
                     chainStrength: chainStrength
                 )
             }
@@ -4530,63 +4385,62 @@ struct TransitionChainReconstructor {
     }
 }
 
-
 // ============================================================================
 // MARK: - Context Distribution Profiles
+
 // ============================================================================
 
 // 7A — DiversityClassification + BehavioralDiversityProfile + BehavioralDiversityProfileBuilder
 
 public enum DiversityClassification: String, Codable, Hashable, Sendable {
-    case focused   // 1 dominant environment > 70% of sessions
-    case moderate  // 2–3 environments, none > 60%
-    case diverse   // 4+ environments fairly distributed
+    case focused // 1 dominant environment > 70% of sessions
+    case moderate // 2–3 environments, none > 60%
+    case diverse // 4+ environments fairly distributed
 }
 
 public struct BehavioralDiversityProfile: Codable, Hashable, Sendable {
-    public let uniquePreReadingEnvironments:  Int
+    public let uniquePreReadingEnvironments: Int
     public let uniquePostReadingEnvironments: Int
-    public let diversityClassification:       DiversityClassification
-    public let dominanceRatio:                Double   // fraction held by single dominant env
+    public let diversityClassification: DiversityClassification
+    public let dominanceRatio: Double // fraction held by single dominant env
 
     public init(
-        uniquePreReadingEnvironments:  Int,
+        uniquePreReadingEnvironments: Int,
         uniquePostReadingEnvironments: Int,
-        diversityClassification:       DiversityClassification,
-        dominanceRatio:                Double
+        diversityClassification: DiversityClassification,
+        dominanceRatio: Double
     ) {
-        self.uniquePreReadingEnvironments  = uniquePreReadingEnvironments
+        self.uniquePreReadingEnvironments = uniquePreReadingEnvironments
         self.uniquePostReadingEnvironments = uniquePostReadingEnvironments
-        self.diversityClassification       = diversityClassification
-        self.dominanceRatio                = dominanceRatio
+        self.diversityClassification = diversityClassification
+        self.dominanceRatio = dominanceRatio
     }
 }
 
 struct BehavioralDiversityProfileBuilder {
-
     func build(contexts: [ReadingContextRecord]) -> BehavioralDiversityProfile {
         guard !contexts.isEmpty else {
             return BehavioralDiversityProfile(
-                uniquePreReadingEnvironments:  0,
+                uniquePreReadingEnvironments: 0,
                 uniquePostReadingEnvironments: 0,
-                diversityClassification:       .focused,
-                dominanceRatio:                1.0
+                diversityClassification: .focused,
+                dominanceRatio: 1.0
             )
         }
 
         // Use existing analyzers — do NOT reimplement their logic.
         let distributionAnalyzer = ContextDistributionAnalyzer()
-        let diversityAnalyzer    = BehavioralDiversityAnalyzer()
+        let diversityAnalyzer = BehavioralDiversityAnalyzer()
 
         let distribution = distributionAnalyzer.analyze(contexts: contexts)
-        let diversity    = diversityAnalyzer.analyze(contexts: contexts)
+        let diversity = diversityAnalyzer.analyze(contexts: contexts)
 
-        let preTypes    = contexts.map(\.preReadingContext.type)
-        let postTypes   = contexts.map(\.postReadingContext.type)
-        let uniquePre   = Set(preTypes).count
-        let uniquePost  = Set(postTypes).count
+        let preTypes = contexts.map(\.preReadingContext.type)
+        let postTypes = contexts.map(\.postReadingContext.type)
+        let uniquePre = Set(preTypes).count
+        let uniquePost = Set(postTypes).count
 
-        let totalPre    = Double(preTypes.count)
+        let totalPre = Double(preTypes.count)
         let dominantPreCount = Dictionary(grouping: preTypes) { $0 }
             .values.map(\.count).max() ?? 0
         let dominanceRatio = totalPre > 0
@@ -4602,14 +4456,14 @@ struct BehavioralDiversityProfileBuilder {
             classification = .diverse
         }
 
-        _ = distribution   // referenced to satisfy use of existing analyzers
+        _ = distribution // referenced to satisfy use of existing analyzers
         _ = diversity
 
         return BehavioralDiversityProfile(
-            uniquePreReadingEnvironments:  uniquePre,
+            uniquePreReadingEnvironments: uniquePre,
             uniquePostReadingEnvironments: uniquePost,
-            diversityClassification:       classification,
-            dominanceRatio:                dominanceRatio
+            diversityClassification: classification,
+            dominanceRatio: dominanceRatio
         )
     }
 }
@@ -4617,19 +4471,17 @@ struct BehavioralDiversityProfileBuilder {
 // 7B — ProductiveContextResult + ProductiveContextFinder
 
 public struct ProductiveContextResult: Codable, Hashable, Sendable {
-    public let environment:           BehavioralEnvironmentType
+    public let environment: BehavioralEnvironmentType
     public let averageSessionQuality: Double
-    public let sampleCount:           Int
-    public let confidence:            ContextConfidence
+    public let sampleCount: Int
+    public let confidence: ContextConfidence
 }
 
 struct ProductiveContextFinder {
-
     func find(
-        contexts:   [ReadingContextRecord],
+        contexts: [ReadingContextRecord],
         enrichment: AnalyticsContextEnrichment
     ) -> ProductiveContextResult? {
-
         let grouped = Dictionary(grouping: contexts) { $0.preReadingContext.type }
 
         let scored: [(BehavioralEnvironmentType, Double, Int)] = grouped.compactMap { env, records in
@@ -4645,10 +4497,10 @@ struct ProductiveContextFinder {
         guard let best = scored.max(by: { $0.1 < $1.1 }) else { return nil }
 
         return ProductiveContextResult(
-            environment:           best.0,
+            environment: best.0,
             averageSessionQuality: best.1,
-            sampleCount:           best.2,
-            confidence:            ContextConfidence(
+            sampleCount: best.2,
+            confidence: ContextConfidence(
                 score: min(1.0, Double(best.2) / 20.0)
             )
         )
@@ -4658,14 +4510,13 @@ struct ProductiveContextFinder {
 // 7C — ConsistentContextResult + ConsistentContextFinder
 
 public struct ConsistentContextResult: Codable, Hashable, Sendable {
-    public let environment:      BehavioralEnvironmentType
-    public let consistencyScore: Double   // fraction of reading days this env appeared
-    public let sampleDays:       Int
-    public let confidence:       ContextConfidence
+    public let environment: BehavioralEnvironmentType
+    public let consistencyScore: Double // fraction of reading days this env appeared
+    public let sampleDays: Int
+    public let confidence: ContextConfidence
 }
 
 struct ConsistentContextFinder {
-
     func find(contexts: [ReadingContextRecord]) -> ConsistentContextResult? {
         guard !contexts.isEmpty else { return nil }
 
@@ -4693,66 +4544,64 @@ struct ConsistentContextFinder {
         let consistency = Double(bestCount) / Double(totalDays)
 
         return ConsistentContextResult(
-            environment:      bestEnv,
+            environment: bestEnv,
             consistencyScore: consistency,
-            sampleDays:       totalDays,
-            confidence:       ContextConfidence(
+            sampleDays: totalDays,
+            confidence: ContextConfidence(
                 score: min(1.0, Double(totalDays) / 30.0)
             )
         )
     }
 }
 
-
 // ============================================================================
 // MARK: - Confidence Engine V2
+
 // ============================================================================
 
 // 8A — ConfidenceBreakdown
 
 public struct ConfidenceBreakdown: Codable, Hashable, Sendable {
-    public let evidenceVolume:       Double   // 0–1: raw count of evidence items
-    public let evidenceRecency:      Double   // 0–1: decays over 90 days
-    public let evidenceConsistency:  Double   // 0–1: mean of BehaviorEvidence.consistency
-    public let historicalDepth:      Double   // 0–1: how far back evidence goes (max 365 days)
-    public let routineStrength:      Double   // 0–1: mean of routines' confidence scores
-    public let overallScore:         Double   // weighted composite
+    public let evidenceVolume: Double // 0–1: raw count of evidence items
+    public let evidenceRecency: Double // 0–1: decays over 90 days
+    public let evidenceConsistency: Double // 0–1: mean of BehaviorEvidence.consistency
+    public let historicalDepth: Double // 0–1: how far back evidence goes (max 365 days)
+    public let routineStrength: Double // 0–1: mean of routines' confidence scores
+    public let overallScore: Double // weighted composite
 
     public init(
-        evidenceVolume:      Double,
-        evidenceRecency:     Double,
+        evidenceVolume: Double,
+        evidenceRecency: Double,
         evidenceConsistency: Double,
-        historicalDepth:     Double,
-        routineStrength:     Double,
-        overallScore:        Double
+        historicalDepth: Double,
+        routineStrength: Double,
+        overallScore: Double
     ) {
-        self.evidenceVolume      = evidenceVolume
-        self.evidenceRecency     = evidenceRecency
+        self.evidenceVolume = evidenceVolume
+        self.evidenceRecency = evidenceRecency
         self.evidenceConsistency = evidenceConsistency
-        self.historicalDepth     = historicalDepth
-        self.routineStrength     = routineStrength
-        self.overallScore        = overallScore
+        self.historicalDepth = historicalDepth
+        self.routineStrength = routineStrength
+        self.overallScore = overallScore
     }
 }
 
 // 8B — EvidenceQualityScorer
 
 struct EvidenceQualityScorer {
-
     func score(
-        evidence:      [BehaviorEvidence],
-        routines:      [BehavioralRoutine],
+        evidence: [BehaviorEvidence],
+        routines: [BehavioralRoutine],
         asOf referenceDate: Date = Date()
     ) -> ConfidenceBreakdown {
-
         guard !evidence.isEmpty else {
             return ConfidenceBreakdown(
-                evidenceVolume:      0,
-                evidenceRecency:     0,
+                evidenceVolume: 0,
+                evidenceRecency: 0,
                 evidenceConsistency: 0,
-                historicalDepth:     0,
-                routineStrength:     0,
-                overallScore:        0
+                historicalDepth: 0,
+                routineStrength: 0,
+                overallScore: 0
             )
         }
 
@@ -4780,19 +4629,19 @@ struct EvidenceQualityScorer {
         }
 
         let overallScore =
-            (evidenceVolume      * 0.20) +
-            (evidenceRecency     * 0.25) +
+            (evidenceVolume * 0.20) +
+            (evidenceRecency * 0.25) +
             (evidenceConsistency * 0.20) +
-            (historicalDepth     * 0.20) +
-            (routineStrength     * 0.15)
+            (historicalDepth * 0.20) +
+            (routineStrength * 0.15)
 
         return ConfidenceBreakdown(
-            evidenceVolume:      evidenceVolume,
-            evidenceRecency:     evidenceRecency,
+            evidenceVolume: evidenceVolume,
+            evidenceRecency: evidenceRecency,
             evidenceConsistency: evidenceConsistency,
-            historicalDepth:     historicalDepth,
-            routineStrength:     routineStrength,
-            overallScore:        overallScore
+            historicalDepth: historicalDepth,
+            routineStrength: routineStrength,
+            overallScore: overallScore
         )
     }
 }
@@ -4800,48 +4649,47 @@ struct EvidenceQualityScorer {
 // 8C — HistoricalDepthReport + HistoricalDepthScorer
 
 public struct HistoricalDepthReport: Codable, Hashable, Sendable {
-    public let oldestEvidenceDate:       Date?
-    public let newestEvidenceDate:       Date?
-    public let observedSpanDays:          Int
-    public let observedSpanWeeks:         Int
-    public let isStatisticallyReliable:   Bool   // spanDays >= 30 && count >= 20
-    public let reliabilityNote:           String
+    public let oldestEvidenceDate: Date?
+    public let newestEvidenceDate: Date?
+    public let observedSpanDays: Int
+    public let observedSpanWeeks: Int
+    public let isStatisticallyReliable: Bool // spanDays >= 30 && count >= 20
+    public let reliabilityNote: String
 
     public init(
-        oldestEvidenceDate:     Date?,
-        newestEvidenceDate:     Date?,
-        observedSpanDays:        Int,
-        observedSpanWeeks:       Int,
+        oldestEvidenceDate: Date?,
+        newestEvidenceDate: Date?,
+        observedSpanDays: Int,
+        observedSpanWeeks: Int,
         isStatisticallyReliable: Bool,
-        reliabilityNote:         String
+        reliabilityNote: String
     ) {
-        self.oldestEvidenceDate     = oldestEvidenceDate
-        self.newestEvidenceDate     = newestEvidenceDate
-        self.observedSpanDays        = observedSpanDays
-        self.observedSpanWeeks       = observedSpanWeeks
+        self.oldestEvidenceDate = oldestEvidenceDate
+        self.newestEvidenceDate = newestEvidenceDate
+        self.observedSpanDays = observedSpanDays
+        self.observedSpanWeeks = observedSpanWeeks
         self.isStatisticallyReliable = isStatisticallyReliable
-        self.reliabilityNote         = reliabilityNote
+        self.reliabilityNote = reliabilityNote
     }
 }
 
 struct HistoricalDepthScorer {
-
     func score(evidence: [BehaviorEvidence]) -> HistoricalDepthReport {
         guard !evidence.isEmpty else {
             return HistoricalDepthReport(
-                oldestEvidenceDate:     nil,
-                newestEvidenceDate:     nil,
-                observedSpanDays:        0,
-                observedSpanWeeks:       0,
+                oldestEvidenceDate: nil,
+                newestEvidenceDate: nil,
+                observedSpanDays: 0,
+                observedSpanWeeks: 0,
                 isStatisticallyReliable: false,
-                reliabilityNote:         "No evidence recorded yet. Keep using the app to build your behavioral profile."
+                reliabilityNote: "No evidence recorded yet. Keep using the app to build your behavioral profile."
             )
         }
 
         let oldest = evidence.map(\.timestamp).min()!
         let newest = evidence.map(\.timestamp).max()!
 
-        let spanDays  = max(0, Calendar.current.dateComponents([.day], from: oldest, to: newest).day ?? 0)
+        let spanDays = max(0, Calendar.current.dateComponents([.day], from: oldest, to: newest).day ?? 0)
         let spanWeeks = spanDays / 7
         let isReliable = spanDays >= 30 && evidence.count >= 20
 
@@ -4855,56 +4703,56 @@ struct HistoricalDepthScorer {
         }
 
         return HistoricalDepthReport(
-            oldestEvidenceDate:     oldest,
-            newestEvidenceDate:     newest,
-            observedSpanDays:        spanDays,
-            observedSpanWeeks:       spanWeeks,
+            oldestEvidenceDate: oldest,
+            newestEvidenceDate: newest,
+            observedSpanDays: spanDays,
+            observedSpanWeeks: spanWeeks,
             isStatisticallyReliable: isReliable,
-            reliabilityNote:         note
+            reliabilityNote: note
         )
     }
 }
 
-
 // ============================================================================
 // MARK: - Narrative Engine V3
+
 // ============================================================================
 
 // 9A — NarrativeCategory + CitedContextNarrative
 
 public enum NarrativeCategory: String, Codable, Hashable, Sendable {
-    case routine       // recurring time-based pattern
-    case environment   // pre/post-reading environment pattern
-    case transition    // behavioral shift into reading
-    case disruption    // break from established routine
-    case productive    // which context yields best sessions
-    case evolution     // how patterns have changed over time
-    case device        // device-state patterns
-    case recovery      // inactivity/recovery patterns
+    case routine // recurring time-based pattern
+    case environment // pre/post-reading environment pattern
+    case transition // behavioral shift into reading
+    case disruption // break from established routine
+    case productive // which context yields best sessions
+    case evolution // how patterns have changed over time
+    case device // device-state patterns
+    case recovery // inactivity/recovery patterns
 }
 
 public struct CitedContextNarrative: Codable, Hashable, Identifiable, Sendable {
-    public let id:          UUID
-    public let text:        String
-    public let evidenceIDs: [UUID]    // BehaviorEvidence IDs that support this narrative
-    public let sessionIDs:  [UUID]    // ReadingSessionRecord IDs referenced
-    public let confidence:  ContextConfidence
-    public let category:    NarrativeCategory
+    public let id: UUID
+    public let text: String
+    public let evidenceIDs: [UUID] // BehaviorEvidence IDs that support this narrative
+    public let sessionIDs: [UUID] // ReadingSessionRecord IDs referenced
+    public let confidence: ContextConfidence
+    public let category: NarrativeCategory
 
     public init(
-        id:          UUID = UUID(),
-        text:        String,
+        id: UUID = UUID(),
+        text: String,
         evidenceIDs: [UUID],
-        sessionIDs:  [UUID],
-        confidence:  ContextConfidence,
-        category:    NarrativeCategory
+        sessionIDs: [UUID],
+        confidence: ContextConfidence,
+        category: NarrativeCategory
     ) {
-        self.id          = id
-        self.text        = text
+        self.id = id
+        self.text = text
         self.evidenceIDs = evidenceIDs
-        self.sessionIDs  = sessionIDs
-        self.confidence  = confidence
-        self.category    = category
+        self.sessionIDs = sessionIDs
+        self.confidence = confidence
+        self.category = category
     }
 }
 
@@ -4915,7 +4763,6 @@ public struct CitedContextNarrative: Codable, Hashable, Identifiable, Sendable {
 // that narrative type is skipped entirely.
 
 struct ExplainabilityNarrativeBuilder {
-
     /// Candidate generation (which categories exist, what each sentence
     /// says) and evidence recovery (real dates/counts per candidate) both
     /// now live in DataMaturityContextV3Adapter, alongside the inclusion
@@ -4928,16 +4775,16 @@ struct ExplainabilityNarrativeBuilder {
     /// and DataMaturityEngineAdapters.swift. Signature is unchanged, so
     /// NarrativePipeline.run() below needed no edits at all.
     func build(
-        contexts:           [ReadingContextRecord],
-        routines:           [BehavioralRoutine],
-        trends:             [ContextTrend],
-        disruptions:        [RoutineDisruption],
-        productiveContext:  ProductiveContextResult?,
-        consistentContext:  ConsistentContextResult?,
-        deviceProfiles:     [DeviceStateInfluenceProfile],
-        recoveryRecords:    [RecoverySessionRecord],
+        contexts: [ReadingContextRecord],
+        routines: [BehavioralRoutine],
+        trends: [ContextTrend],
+        disruptions: [RoutineDisruption],
+        productiveContext: ProductiveContextResult?,
+        consistentContext: ConsistentContextResult?,
+        deviceProfiles: [DeviceStateInfluenceProfile],
+        recoveryRecords: [RecoverySessionRecord],
         evolutionSnapshots: [EnvironmentEvolutionSnapshot],
-        evidence:           [BehaviorEvidence]
+        evidence: [BehaviorEvidence]
     ) -> [CitedContextNarrative] {
         DataMaturityContextV3Adapter.gate(
             contexts: contexts,
@@ -4954,52 +4801,50 @@ struct ExplainabilityNarrativeBuilder {
     }
 }
 
-
 // ============================================================================
 // MARK: - Analysis Pipelines
+
 // ============================================================================
 
 // 10A — ContextAnalysisResult + ContextAnalysisPipeline
 
 public struct ContextAnalysisResult: Sendable {
-    public let contexts:   [ReadingContextRecord]
-    public let sequences:  [SequenceRecurrenceRecord]
-    public let chains:     [TransitionChain]
+    public let contexts: [ReadingContextRecord]
+    public let sequences: [SequenceRecurrenceRecord]
+    public let chains: [TransitionChain]
     public let continuity: [ContextContinuityRecord]
-    public let trends:     [ContextTrend]
-    public let evolution:  [EnvironmentEvolutionSnapshot]
-    public let diversity:  BehavioralDiversityProfile
+    public let trends: [ContextTrend]
+    public let evolution: [EnvironmentEvolutionSnapshot]
+    public let diversity: BehavioralDiversityProfile
 }
 
 struct ContextAnalysisPipeline {
-
     func run(
         contexts: [ReadingContextRecord],
-        input:    FullIntegrationInput
+        input _: FullIntegrationInput
     ) -> ContextAnalysisResult {
-
-        let sequenceDB      = SequenceRecurrenceDatabase()
-        let chainRecon      = TransitionChainReconstructor()
-        let continuityAnal  = ContextContinuityAnalyzer()
-        let trendAnal       = ContextTrendAnalyzer()
-        let evolutionTrack  = LongitudinalEnvironmentTracker()
+        let sequenceDB = SequenceRecurrenceDatabase()
+        let chainRecon = TransitionChainReconstructor()
+        let continuityAnal = ContextContinuityAnalyzer()
+        let trendAnal = ContextTrendAnalyzer()
+        let evolutionTrack = LongitudinalEnvironmentTracker()
         let diversityBuilder = BehavioralDiversityProfileBuilder()
 
-        let sequences  = sequenceDB.build(contexts: contexts)
-        let chains     = chainRecon.reconstruct(contexts: contexts)
+        let sequences = sequenceDB.build(contexts: contexts)
+        let chains = chainRecon.reconstruct(contexts: contexts)
         let continuity = continuityAnal.analyze(contexts: contexts)
-        let trends     = trendAnal.analyze(contexts: contexts)
-        let evolution  = evolutionTrack.track(contexts: contexts)
-        let diversity  = diversityBuilder.build(contexts: contexts)
+        let trends = trendAnal.analyze(contexts: contexts)
+        let evolution = evolutionTrack.track(contexts: contexts)
+        let diversity = diversityBuilder.build(contexts: contexts)
 
         return ContextAnalysisResult(
-            contexts:   contexts,
-            sequences:  sequences,
-            chains:     chains,
+            contexts: contexts,
+            sequences: sequences,
+            chains: chains,
             continuity: continuity,
-            trends:     trends,
-            evolution:  evolution,
-            diversity:  diversity
+            trends: trends,
+            evolution: evolution,
+            diversity: diversity
         )
     }
 }
@@ -5007,48 +4852,46 @@ struct ContextAnalysisPipeline {
 // 10B — SignificanceResult + SignificancePipeline
 
 public struct SignificanceResult: Sendable {
-    public let evidenceChains:      [ContextEvidenceChain]
+    public let evidenceChains: [ContextEvidenceChain]
     public let confidenceBreakdown: ConfidenceBreakdown
-    public let historicalDepth:     HistoricalDepthReport
-    public let windowComparison:    [WindowComparisonResult]
+    public let historicalDepth: HistoricalDepthReport
+    public let windowComparison: [WindowComparisonResult]
 }
 
 struct SignificancePipeline {
-
     func run(
-        input:    FullIntegrationInput,
+        input: FullIntegrationInput,
         contexts: [ReadingContextRecord]
     ) -> SignificanceResult {
-
-        let chainBuilder    = ContextEvidenceChainBuilder()
-        let qualityScorer   = EvidenceQualityScorer()
-        let depthScorer     = HistoricalDepthScorer()
-        let windowComparer  = MultiWindowComparisonEngine()
+        let chainBuilder = ContextEvidenceChainBuilder()
+        let qualityScorer = EvidenceQualityScorer()
+        let depthScorer = HistoricalDepthScorer()
+        let windowComparer = MultiWindowComparisonEngine()
 
         // Build one ContextEvidenceChain per session
         let evidenceChains = input.sessions.map { session -> ContextEvidenceChain in
             let env = contexts.first { $0.sessionID == session.id }?
                 .preReadingContext.type ?? .unknown
             return chainBuilder.build(
-                session:    session,
-                evidence:   input.evidence,
+                session: session,
+                evidence: input.evidence,
                 environment: env
             )
         }
 
-        let routinesForScoring: [BehavioralRoutine] = []   // routines computed in RoutinePipeline
+        let routinesForScoring: [BehavioralRoutine] = [] // routines computed in RoutinePipeline
         let confidenceBreakdown = qualityScorer.score(
             evidence: input.evidence,
             routines: routinesForScoring
         )
-        let historicalDepth  = depthScorer.score(evidence: input.evidence)
+        let historicalDepth = depthScorer.score(evidence: input.evidence)
         let windowComparison = windowComparer.compare(contexts: contexts)
 
         return SignificanceResult(
-            evidenceChains:      evidenceChains,
+            evidenceChains: evidenceChains,
             confidenceBreakdown: confidenceBreakdown,
-            historicalDepth:     historicalDepth,
-            windowComparison:    windowComparison
+            historicalDepth: historicalDepth,
+            windowComparison: windowComparison
         )
     }
 }
@@ -5057,67 +4900,65 @@ struct SignificancePipeline {
 
 public struct RoutineResult: Sendable {
     public let advancedRoutines: AdvancedRoutineAnalysis
-    public let disruptions:      [RoutineDisruption]
-    public let deviceProfiles:   [DeviceStateInfluenceProfile]
-    public let inactivityGaps:   [InactivityGapRecord]
-    public let recoveryRecords:  [RecoverySessionRecord]
-    public let fatigueSignals:   [FatigueSignal]
-    public let clusters:         [EnvironmentCluster]
-    public let weatherPatterns:  [WeatherRoutinePattern]
-    public let correlations:     ContextCorrelationMatrix
+    public let disruptions: [RoutineDisruption]
+    public let deviceProfiles: [DeviceStateInfluenceProfile]
+    public let inactivityGaps: [InactivityGapRecord]
+    public let recoveryRecords: [RecoverySessionRecord]
+    public let fatigueSignals: [FatigueSignal]
+    public let clusters: [EnvironmentCluster]
+    public let weatherPatterns: [WeatherRoutinePattern]
+    public let correlations: ContextCorrelationMatrix
 }
 
 struct RoutinePipeline {
-
     func run(
-        input:         FullIntegrationInput,
+        input: FullIntegrationInput,
         contextResult: ContextAnalysisResult
     ) -> RoutineResult {
-
-        let routineDetector     = AdvancedRoutineDetector()
-        let disruptionAnalyzer  = RoutineDisruptionAnalyzer()
-        let deviceAnalyzer      = DeviceStateInfluenceAnalyzer()
-        let inactivityAnalyzer  = InactivityGapAnalyzer()
-        let recoveryDetector    = RecoverySessionDetector()
-        let fatigueAnalyzer     = FatigueIndicatorAnalyzer()
-        let clusterBuilder      = EnvironmentClusterBuilder()
-        let weatherAnalyzer     = WeatherRoutineAnalyzer()
+        let routineDetector = AdvancedRoutineDetector()
+        let disruptionAnalyzer = RoutineDisruptionAnalyzer()
+        let deviceAnalyzer = DeviceStateInfluenceAnalyzer()
+        let inactivityAnalyzer = InactivityGapAnalyzer()
+        let recoveryDetector = RecoverySessionDetector()
+        let fatigueAnalyzer = FatigueIndicatorAnalyzer()
+        let clusterBuilder = EnvironmentClusterBuilder()
+        let weatherAnalyzer = WeatherRoutineAnalyzer()
         let correlationAnalyzer = ContextCorrelationAnalyzer()
 
         let contexts = contextResult.contexts
 
         let advancedRoutines = routineDetector.analyze(contexts: contexts)
-        let disruptions      = disruptionAnalyzer.detect(
+        let disruptions = disruptionAnalyzer.detect(
             routines: advancedRoutines.detectedRoutines,
             contexts: contexts
         )
-        let deviceProfiles   = deviceAnalyzer.analyze(
-            sessions:     input.sessions,
+        let deviceProfiles = deviceAnalyzer.analyze(
+            sessions: input.sessions,
             deviceEvents: input.deviceStateEvents
         )
-        let inactivityGaps   = inactivityAnalyzer.analyze(
+        let inactivityGaps = inactivityAnalyzer.analyze(
             inactivityRecords: input.inactivityRecords,
-            sessions:          input.sessions
-        )
-        let recoveryRecords  = recoveryDetector.detect(
-            gaps:     inactivityGaps,
             sessions: input.sessions
         )
-        let fatigueSignals   = fatigueAnalyzer.analyze(gaps: inactivityGaps)
-        let clusters         = clusterBuilder.clusters(from: contexts)
-        let weatherPatterns  = weatherAnalyzer.analyze(contexts: contexts)
-        let correlations     = correlationAnalyzer.analyze(contexts: contexts)
+        let recoveryRecords = recoveryDetector.detect(
+            gaps: inactivityGaps,
+            sessions: input.sessions
+        )
+        let fatigueSignals = fatigueAnalyzer.analyze(gaps: inactivityGaps)
+        let clusters = clusterBuilder.clusters(from: contexts)
+        let weatherPatterns = weatherAnalyzer.analyze(contexts: contexts)
+        let correlations = correlationAnalyzer.analyze(contexts: contexts)
 
         return RoutineResult(
             advancedRoutines: advancedRoutines,
-            disruptions:      disruptions,
-            deviceProfiles:   deviceProfiles,
-            inactivityGaps:   inactivityGaps,
-            recoveryRecords:  recoveryRecords,
-            fatigueSignals:   fatigueSignals,
-            clusters:         clusters,
-            weatherPatterns:  weatherPatterns,
-            correlations:     correlations
+            disruptions: disruptions,
+            deviceProfiles: deviceProfiles,
+            inactivityGaps: inactivityGaps,
+            recoveryRecords: recoveryRecords,
+            fatigueSignals: fatigueSignals,
+            clusters: clusters,
+            weatherPatterns: weatherPatterns,
+            correlations: correlations
         )
     }
 }
@@ -5125,70 +4966,68 @@ struct RoutinePipeline {
 // 10D — NarrativeResult + NarrativePipeline
 
 public struct NarrativeResult: Sendable {
-    public let citedNarratives:   [CitedContextNarrative]
+    public let citedNarratives: [CitedContextNarrative]
     public let productiveContext: ProductiveContextResult?
     public let consistentContext: ConsistentContextResult?
-    public let diversityProfile:  BehavioralDiversityProfile
+    public let diversityProfile: BehavioralDiversityProfile
 }
 
 struct NarrativePipeline {
-
     func run(
         contextResult: ContextAnalysisResult,
         routineResult: RoutineResult,
-        significance:  SignificanceResult,
-        enrichment:    AnalyticsContextEnrichment
+        significance: SignificanceResult,
+        enrichment: AnalyticsContextEnrichment
     ) -> NarrativeResult {
-
-        let productiveFinder  = ProductiveContextFinder()
-        let consistentFinder  = ConsistentContextFinder()
-        let narrativeBuilder  = ExplainabilityNarrativeBuilder()
+        let productiveFinder = ProductiveContextFinder()
+        let consistentFinder = ConsistentContextFinder()
+        let narrativeBuilder = ExplainabilityNarrativeBuilder()
 
         let contexts = contextResult.contexts
 
         let productiveContext = productiveFinder.find(
-            contexts:   contexts,
+            contexts: contexts,
             enrichment: enrichment
         )
         let consistentContext = consistentFinder.find(contexts: contexts)
 
         let citedNarratives = narrativeBuilder.build(
-            contexts:           contexts,
-            routines:           routineResult.advancedRoutines.detectedRoutines,
-            trends:             contextResult.trends,
-            disruptions:        routineResult.disruptions,
-            productiveContext:  productiveContext,
-            consistentContext:  consistentContext,
-            deviceProfiles:     routineResult.deviceProfiles,
-            recoveryRecords:    routineResult.recoveryRecords,
+            contexts: contexts,
+            routines: routineResult.advancedRoutines.detectedRoutines,
+            trends: contextResult.trends,
+            disruptions: routineResult.disruptions,
+            productiveContext: productiveContext,
+            consistentContext: consistentContext,
+            deviceProfiles: routineResult.deviceProfiles,
+            recoveryRecords: routineResult.recoveryRecords,
             evolutionSnapshots: contextResult.evolution,
-            evidence:           significance.evidenceChains.map { chain in
+            evidence: significance.evidenceChains.map { chain in
                 BehaviorEvidence(
-                    id:                 chain.id,
-                    timestamp:          Date(),
-                    name:               chain.environment.rawValue,
-                    category:           .idle,
-                    totalDuration:      0,
-                    frequency:          1,
-                    recurrenceCount:    1,
-                    consistency:        chain.confidence.score,
+                    id: chain.id,
+                    timestamp: Date(),
+                    name: chain.environment.rawValue,
+                    category: .idle,
+                    totalDuration: 0,
+                    frequency: 1,
+                    recurrenceCount: 1,
+                    consistency: chain.confidence.score,
                     proximityToReading: chain.confidence.score
                 )
             }
         )
 
         return NarrativeResult(
-            citedNarratives:   citedNarratives,
+            citedNarratives: citedNarratives,
             productiveContext: productiveContext,
             consistentContext: consistentContext,
-            diversityProfile:  contextResult.diversity
+            diversityProfile: contextResult.diversity
         )
     }
 }
 
-
 // ============================================================================
 // MARK: - Unified Entry Point
+
 // ============================================================================
 
 // 10E — FullContextIntelligenceReport
@@ -5198,27 +5037,27 @@ struct NarrativePipeline {
 // four pipelines plus the legacy report.
 
 public struct FullContextIntelligenceReport: Sendable {
-    public let generatedAt:        Date
-    public let contextResult:      ContextAnalysisResult
+    public let generatedAt: Date
+    public let contextResult: ContextAnalysisResult
     public let significanceResult: SignificanceResult
-    public let routineResult:      RoutineResult
-    public let narrativeResult:    NarrativeResult
-    public let legacyReport:       ContextIntelligenceReport
+    public let routineResult: RoutineResult
+    public let narrativeResult: NarrativeResult
+    public let legacyReport: ContextIntelligenceReport
 
     public init(
-        generatedAt:        Date,
-        contextResult:      ContextAnalysisResult,
+        generatedAt: Date,
+        contextResult: ContextAnalysisResult,
         significanceResult: SignificanceResult,
-        routineResult:      RoutineResult,
-        narrativeResult:    NarrativeResult,
-        legacyReport:       ContextIntelligenceReport
+        routineResult: RoutineResult,
+        narrativeResult: NarrativeResult,
+        legacyReport: ContextIntelligenceReport
     ) {
-        self.generatedAt        = generatedAt
-        self.contextResult      = contextResult
+        self.generatedAt = generatedAt
+        self.contextResult = contextResult
         self.significanceResult = significanceResult
-        self.routineResult      = routineResult
-        self.narrativeResult    = narrativeResult
-        self.legacyReport       = legacyReport
+        self.routineResult = routineResult
+        self.narrativeResult = narrativeResult
+        self.legacyReport = legacyReport
     }
 }
 
@@ -5230,18 +5069,16 @@ public struct FullContextIntelligenceReport: Sendable {
 // Neither replaces the other.
 
 public extension BehaviorContextEngine {
-
     func analyzeWithIntelligence(
         input: FullIntegrationInput
     ) -> FullContextIntelligenceReport {
-
         // ── Step 1: Run existing analyze() ───────────────────────────────
         // This sets self.summary (the @Published property) and returns the
         // full BehavioralContextSummary with contexts, routines, transitions,
         // profiles, and narratives.
         let summary = analyze(
-            sessions:       input.sessions,
-            evidence:       input.evidence,
+            sessions: input.sessions,
+            evidence: input.evidence,
             weatherRecords: input.weatherRecords
         )
 
@@ -5249,29 +5086,29 @@ public extension BehaviorContextEngine {
 
         // ── Step 2: Context analysis pipeline ────────────────────────────
         let contextPipeline = ContextAnalysisPipeline()
-        let contextResult   = contextPipeline.run(contexts: contexts, input: input)
+        let contextResult = contextPipeline.run(contexts: contexts, input: input)
 
         // ── Step 3: Significance pipeline ─────────────────────────────────
         let significancePipeline = SignificancePipeline()
-        let significanceResult   = significancePipeline.run(
-            input:    input,
+        let significanceResult = significancePipeline.run(
+            input: input,
             contexts: contexts
         )
 
         // ── Step 4: Routine pipeline ──────────────────────────────────────
         let routinePipeline = RoutinePipeline()
-        let routineResult   = routinePipeline.run(
-            input:         input,
+        let routineResult = routinePipeline.run(
+            input: input,
             contextResult: contextResult
         )
 
         // ── Step 5: Narrative pipeline ────────────────────────────────────
         let narrativePipeline = NarrativePipeline()
-        let narrativeResult   = narrativePipeline.run(
+        let narrativeResult = narrativePipeline.run(
             contextResult: contextResult,
             routineResult: routineResult,
-            significance:  significanceResult,
-            enrichment:    input.enrichment
+            significance: significanceResult,
+            enrichment: input.enrichment
         )
 
         // ── Step 6: Legacy intelligence report ───────────────────────────
@@ -5284,19 +5121,19 @@ public extension BehaviorContextEngine {
 
         // ── Step 7: Assemble FullContextIntelligenceReport ───────────────
         return FullContextIntelligenceReport(
-            generatedAt:        Date(),
-            contextResult:      contextResult,
+            generatedAt: Date(),
+            contextResult: contextResult,
             significanceResult: significanceResult,
-            routineResult:      routineResult,
-            narrativeResult:    narrativeResult,
-            legacyReport:       legacyReport
+            routineResult: routineResult,
+            narrativeResult: narrativeResult,
+            legacyReport: legacyReport
         )
     }
 }
 
-
 // ============================================================================
 // MARK: - BEHAVIOR CONTEXT ENGINE APPEND — PHASE 2 UPGRADE — COMPLETE
+
 // ============================================================================
 //
 // Checklist status (from original BCE checklist near line 3200):

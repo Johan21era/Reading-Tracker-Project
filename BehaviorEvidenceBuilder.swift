@@ -2,14 +2,6 @@
 //  BehaviorEvidenceBuilder.swift
 //  Reading Tracker
 //
-//  Created by Johan Rembeci on 6/29/26.
-//
-
-
-//
-//  BehaviorEvidenceBuilder.swift
-//  Reading Tracker
-//
 //  Converts raw behavioral event data from BehaviorContextAccessKit into
 //  [BehaviorEvidence] format for BehaviorContextEngine.analyze().
 //
@@ -25,7 +17,6 @@
 import Foundation
 
 enum BehaviorEvidenceBuilder {
-
     // MARK: - ReadingSessionRecord
 
     /// Converts completed DataStore ReadingSessions to ReadingSessionRecord
@@ -52,17 +43,17 @@ enum BehaviorEvidenceBuilder {
         let completed = appSessions.filter { $0.endTime != nil }
         guard !completed.isEmpty else { return [] }
 
-        let grouped       = Dictionary(grouping: completed) { $0.application.applicationName }
-        let readingTimes  = readingSessions.compactMap(\.endTime)
-        let observedDays  = max(1, daySpan(from: completed))
+        let grouped = Dictionary(grouping: completed) { $0.application.applicationName }
+        let readingTimes = readingSessions.compactMap(\.endTime)
+        let observedDays = max(1, daySpan(from: completed))
 
         return grouped.compactMap { appName, sessions -> BehaviorEvidence? in
             guard let firstSession = sessions.first else { return nil }
 
             let totalDuration = sessions.compactMap(\.duration).reduce(0, +)
-            let distinctDays  = Set(sessions.map { Calendar.current.startOfDay(for: $0.startTime) })
-            let consistency   = Double(distinctDays.count) / Double(observedDays)
-            let proximity     = averageProximity(appSessions: sessions, readingTimes: readingTimes)
+            let distinctDays = Set(sessions.map { Calendar.current.startOfDay(for: $0.startTime) })
+            let consistency = Double(distinctDays.count) / Double(observedDays)
+            let proximity = averageProximity(appSessions: sessions, readingTimes: readingTimes)
 
             return BehaviorEvidence(
                 id: UUID(),
@@ -82,7 +73,7 @@ enum BehaviorEvidenceBuilder {
 
     private static func daySpan(from sessions: [ApplicationUsageSession]) -> Int {
         guard let first = sessions.map(\.startTime).min(),
-              let last  = sessions.compactMap(\.endTime).max()
+              let last = sessions.compactMap(\.endTime).max()
         else { return 1 }
         return max(1, Calendar.current.dateComponents([.day], from: first, to: last).day ?? 1)
     }
@@ -97,7 +88,7 @@ enum BehaviorEvidenceBuilder {
                 abs($0.timeIntervalSince(s.startTime)) < abs($1.timeIntervalSince(s.startTime))
             }) else { return 0.5 }
             let deltaMinutes = abs(nearest.timeIntervalSince(s.startTime)) / 60
-            return max(0, 1 - (deltaMinutes / 120))   // 0→close, decays over 2 hours
+            return max(0, 1 - (deltaMinutes / 120)) // 0→close, decays over 2 hours
         }
         return scores.reduce(0, +) / Double(max(1, scores.count))
     }
@@ -105,18 +96,18 @@ enum BehaviorEvidenceBuilder {
     /// Maps BehavioralCategory (BehavioralCategory.swift) → BehaviorCategory (BehaviorContextEngine.swift).
     private static func mapCategory(_ src: BehavioralCategory) -> BehaviorCategory {
         switch src {
-        case .productivity:  return .productivity
-        case .development:   return .development
-        case .browsing:      return .browsing
-        case .gaming:        return .gaming
+        case .productivity: return .productivity
+        case .development: return .development
+        case .browsing: return .browsing
+        case .gaming: return .gaming
         case .entertainment: return .entertainment
         case .communication: return .social
-        case .creativeWork:  return .creative
-        case .education:     return .learning
-        case .finance:       return .administrative
-        case .utility:       return .administrative
-        case .system:        return .administrative
-        case .unknown:       return .idle
+        case .creativeWork: return .creative
+        case .education: return .learning
+        case .finance: return .administrative
+        case .utility: return .administrative
+        case .system: return .administrative
+        case .unknown: return .idle
         }
     }
 }

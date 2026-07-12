@@ -1,11 +1,3 @@
-//
-//  BookImporter.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/16/26.
-//
-
-
 // BookImporter.swift
 // Handles importing EPUB and PDF files, extracting metadata and chapter structure.
 // PATCHED: B4 — security-scoped bookmark is now computed AND stored in Book.bookmarkData
@@ -19,10 +11,10 @@
 import Foundation
 import PDFKit
 #if canImport(ZIPFoundation)
-import ZIPFoundation
+    import ZIPFoundation
 #endif
 #if canImport(Compression)
-import Compression
+    import Compression
 #endif
 
 // MARK: - ImportError
@@ -37,24 +29,23 @@ enum ImportError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .unsupportedFileType(let ext): return "Unsupported file type: \(ext)"
-        case .fileNotReadable(let url):     return "Cannot read file at \(url.path)"
-        case .epubMissingOPF:               return "EPUB is missing OPF package document"
-        case .epubParseFailure(let msg):    return "EPUB parse error: \(msg)"
-        case .epubUnzipFailure(let msg):    return "Failed to unzip EPUB: \(msg)"
-        case .pdfOpenFailure:               return "Could not open PDF document"
+        case let .unsupportedFileType(ext): return "Unsupported file type: \(ext)"
+        case let .fileNotReadable(url): return "Cannot read file at \(url.path)"
+        case .epubMissingOPF: return "EPUB is missing OPF package document"
+        case let .epubParseFailure(msg): return "EPUB parse error: \(msg)"
+        case let .epubUnzipFailure(msg): return "Failed to unzip EPUB: \(msg)"
+        case .pdfOpenFailure: return "Could not open PDF document"
         }
     }
 }
 
 // MARK: - BookImporter
 
-struct BookImporter {
-
-    // TASK 21 (validated): Security scope is opened before the switch dispatch and
-    // released via defer when importBook returns. Since importEPUB is async, the
-    // defer fires only after `await importEPUB(url:)` completes — holding the scope
-    // for the full duration of both synchronous (PDF) and asynchronous (EPUB) imports.
+enum BookImporter {
+    /// TASK 21 (validated): Security scope is opened before the switch dispatch and
+    /// released via defer when importBook returns. Since importEPUB is async, the
+    /// defer fires only after `await importEPUB(url:)` completes — holding the scope
+    /// for the full duration of both synchronous (PDF) and asynchronous (EPUB) imports.
     static func importBook(from url: URL) async throws -> Book {
         guard url.startAccessingSecurityScopedResource() else {
             throw ImportError.fileNotReadable(url)
@@ -63,8 +54,8 @@ struct BookImporter {
 
         switch url.pathExtension.lowercased() {
         case "epub": return try await importEPUB(url: url)
-        case "pdf":  return try importPDF(url: url)
-        default:     throw ImportError.unsupportedFileType(url.pathExtension)
+        case "pdf": return try importPDF(url: url)
+        default: throw ImportError.unsupportedFileType(url.pathExtension)
         }
     }
 
@@ -74,10 +65,10 @@ struct BookImporter {
         guard let doc = PDFDocument(url: url) else { throw ImportError.pdfOpenFailure }
 
         let totalPages = doc.pageCount
-        let title  = (doc.documentAttributes?[PDFDocumentAttribute.titleAttribute]  as? String)
-                     ?? url.deletingPathExtension().lastPathComponent
+        let title = (doc.documentAttributes?[PDFDocumentAttribute.titleAttribute] as? String)
+            ?? url.deletingPathExtension().lastPathComponent
         let author = (doc.documentAttributes?[PDFDocumentAttribute.authorAttribute] as? String)
-                     ?? "Unknown"
+            ?? "Unknown"
 
         var chapters: [Chapter] = []
         if let outline = doc.outlineRoot {
@@ -105,9 +96,9 @@ struct BookImporter {
             )
         } catch {
             print("[BookImporter] Warning: could not create security-scoped bookmark " +
-                  "for PDF '\(url.lastPathComponent)': \(error). " +
-                  "File will not be accessible after app restart. " +
-                  "Check that the app has the com.apple.security.files.bookmarks.app-scope entitlement.")
+                "for PDF '\(url.lastPathComponent)': \(error). " +
+                "File will not be accessible after app restart. " +
+                "Check that the app has the com.apple.security.files.bookmarks.app-scope entitlement.")
         }
 
         return Book(
@@ -126,21 +117,24 @@ struct BookImporter {
         var index = 0
 
         func visit(_ node: PDFOutline) {
-            if let dest  = node.destination,
-               let page  = dest.page,
-               let doc   = page.document,
-               let label = node.label, !label.isEmpty {
+            if let dest = node.destination,
+               let page = dest.page,
+               let doc = page.document,
+               let label = node.label, !label.isEmpty
+            {
                 let pageNum = doc.index(for: page)
                 result.append(Chapter(title: label, index: index, startPage: pageNum, endPage: pageNum))
                 index += 1
             }
-            for i in 0..<node.numberOfChildren {
-                if let child = node.child(at: i) { visit(child) }
+            for i in 0 ..< node.numberOfChildren {
+                if let child = node.child(at: i) {
+                    visit(child)
+                }
             }
         }
         visit(outline)
 
-        for i in 0..<result.count {
+        for i in 0 ..< result.count {
             let nextStart = i + 1 < result.count ? result[i + 1].startPage - 1 : totalPages - 1
             result[i].endPage = max(result[i].startPage, nextStart)
         }
@@ -151,10 +145,10 @@ struct BookImporter {
 
     private static func unzipEPUB(at source: URL, to destination: URL) throws {
         #if canImport(ZIPFoundation)
-        do {
-            try FileManager.default.unzipItem(at: source, to: destination)
-            return
-        } catch { /* fall through */ }
+            do {
+                try FileManager.default.unzipItem(at: source, to: destination)
+                return
+            } catch { /* fall through */ }
         #endif
         do {
             guard let archive = Archive(url: source, accessMode: .read) else {
@@ -180,12 +174,12 @@ struct BookImporter {
         try unzipEPUB(at: url, to: tempDir)
 
         let containerURL = tempDir.appendingPathComponent("META-INF/container.xml")
-        let opfURL       = try findOPFURL(containerURL: containerURL, baseDir: tempDir)
-        let metadata     = try parseOPF(opfURL: opfURL, baseDir: tempDir)
+        let opfURL = try findOPFURL(containerURL: containerURL, baseDir: tempDir)
+        let metadata = try parseOPF(opfURL: opfURL, baseDir: tempDir)
 
-        let wordCount      = await estimateTotalWords(spineItems: metadata.spineItems)
+        let wordCount = await estimateTotalWords(spineItems: metadata.spineItems)
         let estimatedPages = max(1, wordCount / 250)
-        let chapters       = buildChapters(from: metadata, estimatedTotalPages: estimatedPages)
+        let chapters = buildChapters(from: metadata, estimatedTotalPages: estimatedPages)
 
         let sampleText = await extractSampleText(spineItems: metadata.spineItems, maxChars: 5000)
         let difficulty = DifficultyAnalyzer.analyze(text: sampleText)
@@ -203,9 +197,9 @@ struct BookImporter {
             )
         } catch {
             print("[BookImporter] Warning: could not create security-scoped bookmark " +
-                  "for EPUB '\(url.lastPathComponent)': \(error). " +
-                  "File will not be accessible after app restart. " +
-                  "Check that the app has the com.apple.security.files.bookmarks.app-scope entitlement.")
+                "for EPUB '\(url.lastPathComponent)': \(error). " +
+                "File will not be accessible after app restart. " +
+                "Check that the app has the com.apple.security.files.bookmarks.app-scope entitlement.")
         }
 
         return Book(
@@ -238,7 +232,7 @@ struct BookImporter {
         return baseDir.appendingPathComponent(opfPath)
     }
 
-    private static func parseOPF(opfURL: URL, baseDir: URL) throws -> OPFMetadata {
+    private static func parseOPF(opfURL: URL, baseDir _: URL) throws -> OPFMetadata {
         guard let data = try? Data(contentsOf: opfURL) else {
             throw ImportError.epubParseFailure("Cannot read OPF at \(opfURL.path)")
         }
@@ -248,15 +242,15 @@ struct BookImporter {
             throw ImportError.epubParseFailure(error.localizedDescription)
         }
 
-        let opfDir  = opfURL.deletingLastPathComponent()
-        let title   = (try? xml.nodes(forXPath: "//*[local-name()='title']").first?.stringValue)   ?? "Unknown Title"
+        let opfDir = opfURL.deletingLastPathComponent()
+        let title = (try? xml.nodes(forXPath: "//*[local-name()='title']").first?.stringValue) ?? "Unknown Title"
         let creator = (try? xml.nodes(forXPath: "//*[local-name()='creator']").first?.stringValue) ?? "Unknown Author"
 
         var manifest: [String: URL] = [:]
         if let items = try? xml.nodes(forXPath: "//*[local-name()='item']") {
             for item in items {
-                guard let el   = item as? XMLElement,
-                      let id   = el.attribute(forName: "id")?.stringValue,
+                guard let el = item as? XMLElement,
+                      let id = el.attribute(forName: "id")?.stringValue,
                       let href = el.attribute(forName: "href")?.stringValue else { continue }
                 let decoded = href.removingPercentEncoding ?? href
                 manifest[id] = opfDir.appendingPathComponent(decoded)
@@ -272,8 +266,9 @@ struct BookImporter {
         }
 
         var tocEntries: [(title: String, href: String)] = []
-        if let ncxID  = (try? xml.nodes(forXPath: "//*[local-name()='spine']/@toc").first?.stringValue),
-           let ncxURL = manifest[ncxID] {
+        if let ncxID = (try? xml.nodes(forXPath: "//*[local-name()='spine']/@toc").first?.stringValue),
+           let ncxURL = manifest[ncxID]
+        {
             tocEntries = parseTOCncx(ncxURL: ncxURL)
         }
 
@@ -283,14 +278,14 @@ struct BookImporter {
 
     private static func parseTOCncx(ncxURL: URL) -> [(title: String, href: String)] {
         guard let data = try? Data(contentsOf: ncxURL),
-              let xml  = try? XMLDocument(data: data, options: []) else { return [] }
+              let xml = try? XMLDocument(data: data, options: []) else { return [] }
 
         var entries: [(title: String, href: String)] = []
         if let points = try? xml.nodes(forXPath: "//*[local-name()='navPoint']") {
             for point in points {
                 guard let el = point as? XMLElement else { continue }
                 let label = (try? el.nodes(forXPath: ".//*[local-name()='text']").first?.stringValue) ?? "Chapter"
-                let href  = (try? el.nodes(forXPath: ".//*[local-name()='content']/@src").first?.stringValue) ?? ""
+                let href = (try? el.nodes(forXPath: ".//*[local-name()='content']/@src").first?.stringValue) ?? ""
                 entries.append((title: label, href: href))
             }
         }
@@ -298,21 +293,21 @@ struct BookImporter {
     }
 
     private static func buildChapters(from meta: OPFMetadata, estimatedTotalPages: Int) -> [Chapter] {
-        let spineCount        = max(1, meta.spineItems.count)
+        let spineCount = max(1, meta.spineItems.count)
         let pagesPerSpineItem = max(1, estimatedTotalPages / spineCount)
 
         if !meta.tocEntries.isEmpty {
-            return meta.tocEntries.enumerated().map { (idx, entry) in
+            return meta.tocEntries.enumerated().map { idx, entry in
                 let startPage = idx * pagesPerSpineItem
-                let endPage   = idx + 1 < meta.tocEntries.count
+                let endPage = idx + 1 < meta.tocEntries.count
                     ? (idx + 1) * pagesPerSpineItem - 1
                     : estimatedTotalPages - 1
                 return Chapter(title: entry.title, index: idx, startPage: startPage, endPage: endPage)
             }
         } else {
-            return meta.spineItems.enumerated().map { (idx, item) in
+            return meta.spineItems.enumerated().map { idx, _ in
                 let startPage = idx * pagesPerSpineItem
-                let endPage   = idx + 1 < meta.spineItems.count
+                let endPage = idx + 1 < meta.spineItems.count
                     ? (idx + 1) * pagesPerSpineItem - 1
                     : estimatedTotalPages - 1
                 return Chapter(title: "Chapter \(idx + 1)", index: idx, startPage: startPage, endPage: endPage)
@@ -360,37 +355,36 @@ struct BookImporter {
         result = result.replacingOccurrences(of: "<[^>]+>", with: " ", options: .regularExpression)
         return result
             .replacingOccurrences(of: "&nbsp;", with: " ")
-            .replacingOccurrences(of: "&amp;",  with: "&")
-            .replacingOccurrences(of: "&lt;",   with: "<")
-            .replacingOccurrences(of: "&gt;",   with: ">")
+            .replacingOccurrences(of: "&amp;", with: "&")
+            .replacingOccurrences(of: "&lt;", with: "<")
+            .replacingOccurrences(of: "&gt;", with: ">")
             .replacingOccurrences(of: "&quot;", with: "\"")
     }
 }
 
 // MARK: - DifficultyAnalyzer
 
-struct DifficultyAnalyzer {
-
+enum DifficultyAnalyzer {
     static func analyze(text: String) -> ReadingDifficultyProfile {
         guard !text.isEmpty else { return .baseline }
 
-        let words     = text.split { $0.isWhitespace }.map(String.init)
+        let words = text.split { $0.isWhitespace }.map(String.init)
         let sentences = text.components(separatedBy: .init(charactersIn: ".!?"))
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
 
-        let wordCount     = max(1, words.count)
+        let wordCount = max(1, words.count)
         let sentenceCount = max(1, sentences.count)
 
-        let avgWordLen     = Double(words.reduce(0) { $0 + $1.count }) / Double(wordCount)
+        let avgWordLen = Double(words.reduce(0) { $0 + $1.count }) / Double(wordCount)
         let avgSentenceLen = Double(wordCount) / Double(sentenceCount)
 
-        let rareCount        = words.filter { $0.count > 8 }.count
+        let rareCount = words.filter { $0.count > 8 }.count
         let rareLexiconRatio = Double(rareCount) / Double(wordCount)
 
-        let syllables    = words.reduce(0) { $0 + approximateSyllables($1) }
+        let syllables = words.reduce(0) { $0 + approximateSyllables($1) }
         let avgSyllables = Double(syllables) / Double(wordCount)
-        let gradeLevel   = 0.39 * avgSentenceLen + 11.8 * avgSyllables - 15.59
+        let gradeLevel = 0.39 * avgSentenceLen + 11.8 * avgSyllables - 15.59
 
         return ReadingDifficultyProfile(
             gradeLevel: max(0, gradeLevel),
@@ -401,20 +395,25 @@ struct DifficultyAnalyzer {
     }
 
     private static func approximateSyllables(_ word: String) -> Int {
-        let lower  = word.lowercased().filter { $0.isLetter }
+        let lower = word.lowercased().filter { $0.isLetter }
         guard !lower.isEmpty else { return 1 }
         let vowels = CharacterSet(charactersIn: "aeiouy")
-        var count  = 0
+        var count = 0
         var prevWasVowel = false
         for char in lower.unicodeScalars {
             let isVowel = vowels.contains(char)
-            if isVowel && !prevWasVowel { count += 1 }
+            if isVowel && !prevWasVowel {
+                count += 1
+            }
             prevWasVowel = isVowel
         }
-        if lower.hasSuffix("e") && count > 1 { count -= 1 }
+        if lower.hasSuffix("e") && count > 1 {
+            count -= 1
+        }
         return max(1, count)
     }
 }
+
 // MARK: - APPENDED IMPORT INTELLIGENCE LAYER (v2 FULL MODULE)
 
 import Foundation
@@ -431,10 +430,8 @@ struct ImportAnalyticsReport {
     let failureProbability: Double
 }
 
-struct ImportAnalyticsEngine {
-
+enum ImportAnalyticsEngine {
     static func analyze(book: Book, fileName: String, fileSizeBytes: Int?, fileType: String) -> ImportAnalyticsReport {
-
         let chapterCount = max(book.chapters.count, 1)
         let spineFactor = min(Double(chapterCount) / 25.0, 1.0)
 
@@ -444,15 +441,13 @@ struct ImportAnalyticsEngine {
         let richness = min(1.0, Double(book.totalPages) / 500.0 + Double(chapterCount) / 50.0)
 
         let complexity = min(1.0,
-            (Double(fileSizeBytes ?? 0) / 5_000_000.0) * 0.5 +
-            spineFactor * 0.5
-        )
+                             (Double(fileSizeBytes ?? 0) / 5_000_000.0) * 0.5 +
+                                 spineFactor * 0.5)
 
         let failure = min(1.0,
-            (fileSizeBytes == nil ? 0.2 : 0.0) +
-            (book.chapters.isEmpty ? 0.6 : 0.0) +
-            (complexity > 0.8 ? 0.2 : 0.0)
-        )
+                          (fileSizeBytes == nil ? 0.2 : 0.0) +
+                              (book.chapters.isEmpty ? 0.6 : 0.0) +
+                              (complexity > 0.8 ? 0.2 : 0.0))
 
         return ImportAnalyticsReport(
             fileName: fileName,
@@ -474,14 +469,13 @@ struct ImportSuggestion {
     let suggestion: String
 }
 
-struct SmartImportEnhancer {
-
+enum SmartImportEnhancer {
     static func analyze(book: Book) -> [ImportSuggestion] {
         var suggestions: [ImportSuggestion] = []
 
         if book.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-            book.title.lowercased().contains("unknown") {
-
+            book.title.lowercased().contains("unknown")
+        {
             suggestions.append(.init(
                 field: "title",
                 issue: "Low-quality or missing title",
@@ -490,8 +484,8 @@ struct SmartImportEnhancer {
         }
 
         if book.author.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
-            book.author.lowercased().contains("unknown") {
-
+            book.author.lowercased().contains("unknown")
+        {
             suggestions.append(.init(
                 field: "author",
                 issue: "Missing or unknown author",
@@ -513,8 +507,7 @@ struct SmartImportEnhancer {
 
 // MARK: - Chapter Refinement Engine
 
-struct ChapterRefinementEngine {
-
+enum ChapterRefinementEngine {
     struct ChapterIssue {
         let chapterIndex: Int
         let issue: String
@@ -556,8 +549,7 @@ struct ImportWarning {
     let level: ImportWarningLevel
 }
 
-struct ImportWarningEngine {
-
+enum ImportWarningEngine {
     static func evaluate(book: Book) -> [ImportWarning] {
         var warnings: [ImportWarning] = []
 
@@ -579,10 +571,8 @@ struct ImportWarningEngine {
 
 // MARK: - Page Estimation Model
 
-struct PageEstimationModel {
-
+enum PageEstimationModel {
     static func estimatePages(from text: String, difficultyMultiplier: Double = 1.0) -> (pages: Int, confidence: Double) {
-
         let words = text.split { $0.isWhitespace }.count
         let sentences = text.components(separatedBy: ".").count
 
@@ -599,7 +589,6 @@ struct PageEstimationModel {
 // MARK: - Debug Snapshot System
 
 struct ImportDebugSnapshot {
-
     let fileName: String
     let fileType: String
     let chapterCount: Int
@@ -630,8 +619,7 @@ protocol ImportPlugin {
     func execute(book: Book)
 }
 
-struct ImportPluginManager {
-
+enum ImportPluginManager {
     static var plugins: [ImportPlugin] = []
 
     static func register(plugin: ImportPlugin) {
@@ -647,8 +635,7 @@ struct ImportPluginManager {
 
 // MARK: - Import Intelligence Facade (ENTRY POINT)
 
-struct ImportIntelligenceFacade {
-
+enum ImportIntelligenceFacade {
     static func analyze(
         book: Book,
         fileName: String,
@@ -660,7 +647,6 @@ struct ImportIntelligenceFacade {
         warnings: [ImportWarning],
         chapterIssues: [ChapterRefinementEngine.ChapterIssue]
     ) {
-
         return (
             analytics: ImportAnalyticsEngine.analyze(
                 book: book,

@@ -2,14 +2,6 @@
 //  EstimationEngine.swift
 //  Reading Tracker
 //
-//  Created by Johan Rembeci on 6/17/26.
-//
-
-
-//
-//  EstimationEngine.swift
-//  Reading Tracker
-//
 //  Stateless deterministic prediction layer built on AnalyticsEngine
 //
 
@@ -87,8 +79,7 @@ struct BookEstimationResult {
 
 // MARK: - EstimationEngine
 
-struct EstimationEngine {
-
+enum EstimationEngine {
     // MARK: Public API
 
     static func estimate(for book: Book, allBooks: [Book]) -> BookEstimationResult {
@@ -179,9 +170,8 @@ struct EstimationEngine {
         trendMultiplier: Double,
         cross: Double
     ) -> SpeedModel {
-
         // Normalize speeds into weights
-        let components: SpeedComponents = SpeedComponents(
+        let components = SpeedComponents(
             base: base,
             genre: genre,
             trend: cross * trendMultiplier,
@@ -192,23 +182,23 @@ struct EstimationEngine {
             components.base,
             components.genre,
             components.trend,
-            components.crossBook
+            components.crossBook,
         ].compactMap { $0 }
 
-        let weightBase: Double = 0.40
-        let weightGenre: Double = 0.25
-        let weightTrend: Double = 0.20
-        let weightCross: Double = 0.15
+        let weightBase = 0.40
+        let weightGenre = 0.25
+        let weightTrend = 0.20
+        let weightCross = 0.15
 
         let totalWeight = Double(values.count)
 
-        let adjustedBase  = components.base ?? cross
+        let adjustedBase = components.base ?? cross
         let adjustedGenre = components.genre ?? adjustedBase
         let adjustedTrend = components.trend ?? adjustedBase
         let adjustedCross = components.crossBook ?? adjustedBase
 
         let effective =
-            adjustedBase  * weightBase +
+            adjustedBase * weightBase +
             adjustedGenre * weightGenre +
             adjustedTrend * weightTrend +
             adjustedCross * weightCross
@@ -294,10 +284,10 @@ struct EstimationEngine {
         }
     }
 }
+
 // MARK: - PART 2: CONTEXT + PAGE + CHAPTER REFINEMENTS
 
 extension EstimationEngine {
-
     // MARK: - Public Chapter APIs
 
     static func estimateAllChapters(for book: Book, allBooks: [Book]) -> [ChapterEstimation] {
@@ -328,7 +318,6 @@ extension EstimationEngine {
         chapterID: UUID,
         allBooks: [Book]
     ) -> ChapterEstimation? {
-
         guard let chapter = book.chapters.first(where: { $0.id == chapterID }) else {
             return nil
         }
@@ -357,11 +346,10 @@ extension EstimationEngine {
 
     static func estimatePageTime(
         for book: Book,
-        page: Int,
+        page _: Int,
         context: ReadingContext?,
         allBooks: [Book]
     ) -> TimeInterval {
-
         let baseSpeed = resolveEffectiveSpeed(book: book, allBooks: allBooks)
 
         let volatility = computeVolatility(
@@ -371,9 +359,7 @@ extension EstimationEngine {
 
         let contextMultiplier = contextAdjustment(context: context)
 
-        let finalSpeed = baseSpeed * volatility * contextMultiplier
-
-        return finalSpeed
+        return baseSpeed * volatility * contextMultiplier
     }
 
     // MARK: - Context Adjustment
@@ -381,15 +367,15 @@ extension EstimationEngine {
     private static func contextAdjustment(context: ReadingContext?) -> Double {
         guard let context else { return 1.0 }
 
-        var multiplier: Double = 1.0
+        var multiplier = 1.0
 
         // Time of day adjustment
         if let hour = context.timeOfDay.map({ Calendar.current.component(.hour, from: $0) }) {
             switch hour {
-            case 6..<12:  multiplier *= 0.95   // morning faster
-            case 12..<17: multiplier *= 1.0
-            case 17..<22: multiplier *= 1.05   // evening slightly slower
-            default:      multiplier *= 1.1    // night slower
+            case 6 ..< 12: multiplier *= 0.95 // morning faster
+            case 12 ..< 17: multiplier *= 1.0
+            case 17 ..< 22: multiplier *= 1.05 // evening slightly slower
+            default: multiplier *= 1.1 // night slower
             }
         }
 
@@ -411,7 +397,6 @@ extension EstimationEngine {
     // MARK: - Speed Resolution
 
     private static func resolveEffectiveSpeed(book: Book, allBooks: [Book]) -> Double {
-
         let base = AnalyticsEngine.adjustedReadingSpeed(for: book)
         let genre = AnalyticsEngine.genreAdjustedReadingSpeed(for: book, books: allBooks)
         let cross = AnalyticsEngine.crossBookReadingSpeed(allBooks: allBooks)
@@ -419,19 +404,15 @@ extension EstimationEngine {
         let trend = AnalyticsEngine.trendAnalysis(books: allBooks)
         let trendMultiplier = trendMultiplier(from: trend)
 
-        let weighted =
-            base  * 0.40 +
+        return base * 0.40 +
             genre * 0.25 +
             cross * 0.15 +
             (base * trendMultiplier) * 0.20
-
-        return weighted
     }
 
     // MARK: - Volatility (context-aware)
 
     private static func computeVolatility(book: Book, allBooks: [Book]) -> Double {
-
         let sessions = book.sessions.filter { $0.endTime != nil }
         guard sessions.count >= 2 else { return 1.0 }
 
@@ -462,7 +443,6 @@ extension EstimationEngine {
         total: Int,
         baseSpeed: Double
     ) -> Double {
-
         guard total > 1 else { return baseSpeed }
 
         let position = Double(chapterIndex) / Double(total - 1)
@@ -476,14 +456,13 @@ extension EstimationEngine {
         return baseSpeed * adjustment
     }
 }
+
 // MARK: - PART 3: CONFIDENCE + FINAL UTILITIES + CLEANUP
 
 extension EstimationEngine {
-
     // MARK: - Confidence Mapping (deterministic refinement)
 
     private static func mapConfidence(_ confidence: ConfidenceAnalytics) -> ConfidenceModel {
-
         let clamped = min(1.0, max(0.0, confidence.value))
 
         let level: ConfidenceLevel =
@@ -514,7 +493,6 @@ extension EstimationEngine {
 
     /// Ensures all outputs are deterministic and bounded.
     static func validate(result: BookEstimationResult) -> BookEstimationResult {
-
         let safeRemaining = max(0, result.remainingSeconds)
         let safeHours = max(0, result.remainingHours)
 
@@ -556,7 +534,6 @@ extension EstimationEngine {
     // MARK: - Debug Snapshot (optional utility)
 
     static func debugSnapshot(for book: Book, allBooks: [Book]) -> String {
-
         let result = estimate(for: book, allBooks: allBooks)
 
         return """
@@ -573,4 +550,3 @@ extension EstimationEngine {
         """
     }
 }
-

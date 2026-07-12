@@ -1,12 +1,4 @@
-//
-//  AnnualReportView.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/19/26.
-//
 
-
-//
 //  AnnualReportView.swift
 //  Reading Tracker
 //
@@ -34,12 +26,12 @@ import SwiftUI
 // MARK: - Color Constants
 
 private extension Color {
-    static let reportBackground = Color(red: 0.051, green: 0.059, blue: 0.078)   // #0D0F14
-    static let reportAccent     = Color(red: 0.294, green: 0.482, blue: 0.925)   // #4B7BEC
-    static let reportSecondary  = Color(red: 0.659, green: 0.722, blue: 0.847)   // #A8B8D8
-    static let reportSurface    = Color(red: 0.102, green: 0.118, blue: 0.149)   // #1A1E26
-    static let reportHighlight  = Color(red: 0.945, green: 0.953, blue: 0.969)   // #F1F3F7
-    static let reportSubtle     = Color(red: 0.200, green: 0.224, blue: 0.278)   // #333947
+    static let reportBackground = Color(red: 0.051, green: 0.059, blue: 0.078) // #0D0F14
+    static let reportAccent = Color(red: 0.294, green: 0.482, blue: 0.925) // #4B7BEC
+    static let reportSecondary = Color(red: 0.659, green: 0.722, blue: 0.847) // #A8B8D8
+    static let reportSurface = Color(red: 0.102, green: 0.118, blue: 0.149) // #1A1E26
+    static let reportHighlight = Color(red: 0.945, green: 0.953, blue: 0.969) // #F1F3F7
+    static let reportSubtle = Color(red: 0.200, green: 0.224, blue: 0.278) // #333947
 }
 
 // MARK: - Annual Report View
@@ -77,8 +69,8 @@ struct AnnualReportView: View {
         }
         .preferredColorScheme(.dark)
         .onKeyPress(.rightArrow) { advanceSlide(); return .handled }
-        .onKeyPress(.leftArrow)  { retreatSlide(); return .handled }
-        .onKeyPress(.escape)     { onDismiss(); return .handled }
+        .onKeyPress(.leftArrow) { retreatSlide(); return .handled }
+        .onKeyPress(.escape) { onDismiss(); return .handled }
     }
 
     // MARK: - Top Bar
@@ -108,7 +100,7 @@ struct AnnualReportView: View {
 
             // Slide progress dots
             HStack(spacing: 6) {
-                ForEach(0..<totalSlides, id: \.self) { i in
+                ForEach(0 ..< totalSlides, id: \.self) { i in
                     Circle()
                         .fill(i == currentSlide ? Color.reportAccent : Color.reportSubtle)
                         .frame(width: i == currentSlide ? 8 : 5, height: i == currentSlide ? 8 : 5)
@@ -170,15 +162,15 @@ struct AnnualReportView: View {
     @ViewBuilder
     private var reportSlideContent: some View {
         switch currentSlide {
-        case 0:  VolumeSlide(data: data)
-        case 1:  RhythmSlide(data: data)
-        case 2:  LibrarySlide(data: data)
-        case 3:  PaceSlide(data: data)
-        case 4:  HighlightsSlide(data: data)
-        case 5:  StreakSlide(data: data)
-        case 6:  AchievementsSlide(data: data)
-        case 7:  GoalsSlide(data: data)
-        case 8:  NarrativeSlide(data: data)
+        case 0: VolumeSlide(data: data)
+        case 1: RhythmSlide(data: data)
+        case 2: LibrarySlide(data: data)
+        case 3: PaceSlide(data: data)
+        case 4: HighlightsSlide(data: data)
+        case 5: StreakSlide(data: data)
+        case 6: AchievementsSlide(data: data)
+        case 7: GoalsSlide(data: data)
+        case 8: NarrativeSlide(data: data)
         default: EmptyView()
         }
     }
@@ -208,7 +200,7 @@ private struct VolumeSlide: View {
             Spacer()
 
             // Primary number — total reading time
-            let hours   = Int(data.totalReadingTime / 3600)
+            let hours = Int(data.totalReadingTime / 3600)
             let minutes = Int((data.totalReadingTime.truncatingRemainder(dividingBy: 3600)) / 60)
 
             VStack(alignment: .leading, spacing: 8) {
@@ -330,19 +322,19 @@ private struct RhythmSlide: View {
 
     private var bestWindowLabel: String {
         switch data.bestReadingWindow {
-        case .morning:   return "Morning"
+        case .morning: return "Morning"
         case .afternoon: return "Afternoon"
-        case .evening:   return "Evening"
-        case .night:     return "Night"
+        case .evening: return "Evening"
+        case .night: return "Night"
         }
     }
 
     private var bestWindowIcon: String {
         switch data.bestReadingWindow {
-        case .morning:   return "sunrise.fill"
+        case .morning: return "sunrise.fill"
         case .afternoon: return "sun.max.fill"
-        case .evening:   return "sunset.fill"
-        case .night:     return "moon.fill"
+        case .evening: return "sunset.fill"
+        case .night: return "moon.fill"
         }
     }
 
@@ -556,17 +548,17 @@ private struct PaceSlide: View {
     private var paceDescription: String {
         let pph = data.averageSecondsPerPage > 0 ? 3600 / data.averageSecondsPerPage : 0
         switch pph {
-        case 0..<20:  return "A deliberate, deep reading pace — you savour the text."
-        case 20..<30: return "A measured pace. Thorough, not rushed."
-        case 30..<50: return "A solid, well-calibrated reading pace."
-        case 50..<70: return "A confident, efficient pace."
-        default:      return "A fast, well-trained reading pace."
+        case 0 ..< 20: return "A deliberate, deep reading pace — you savour the text."
+        case 20 ..< 30: return "A measured pace. Thorough, not rushed."
+        case 30 ..< 50: return "A solid, well-calibrated reading pace."
+        case 50 ..< 70: return "A confident, efficient pace."
+        default: return "A fast, well-trained reading pace."
         }
     }
 
     private var trendLabel: String {
         switch data.speedTrend.direction {
-        case .growth:  return "↑ Growing"
+        case .growth: return "↑ Growing"
         case .decline: return "↓ Slowing"
         case .plateau: return "→ Steady"
         }
@@ -604,7 +596,7 @@ private struct HighlightsSlide: View {
                 LazyVGrid(
                     columns: [
                         GridItem(.flexible(), spacing: 20),
-                        GridItem(.flexible(), spacing: 20)
+                        GridItem(.flexible(), spacing: 20),
                     ],
                     spacing: 20
                 ) {
@@ -795,7 +787,7 @@ private struct StreakSlide: View {
 
     private var weeklyPatternBars: some View {
         let maxValue = data.weeklyPatternScores.values.max() ?? 1
-        let days = [1, 2, 3, 4, 5, 6, 7]  // Sun…Sat
+        let days = [1, 2, 3, 4, 5, 6, 7] // Sun…Sat
         let abbreviations = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
 
         return VStack(alignment: .leading, spacing: 8) {
@@ -806,7 +798,7 @@ private struct StreakSlide: View {
                 .tracking(1)
 
             HStack(alignment: .bottom, spacing: 10) {
-                ForEach(0..<7, id: \.self) { i in
+                ForEach(0 ..< 7, id: \.self) { i in
                     let value = data.weeklyPatternScores[days[i]] ?? 0
                     let height = maxValue > 0 ? (value / maxValue) * 60 : 4
                     let isActive = days[i] == data.mostActiveDayOfWeek
@@ -885,7 +877,7 @@ private struct AchievementsSlide: View {
                     columns: [
                         GridItem(.flexible(), spacing: 12),
                         GridItem(.flexible(), spacing: 12),
-                        GridItem(.flexible(), spacing: 12)
+                        GridItem(.flexible(), spacing: 12),
                     ],
                     spacing: 12
                 ) {
@@ -938,9 +930,9 @@ private struct AchievementsSlide: View {
 
     private func tierColor(_ tier: AchievementDefinition.AchievementTier) -> Color {
         switch tier {
-        case .bronze:   return Color(red: 0.72, green: 0.45, blue: 0.20)
-        case .silver:   return Color(red: 0.72, green: 0.72, blue: 0.75)
-        case .gold:     return Color(red: 0.85, green: 0.72, blue: 0.25)
+        case .bronze: return Color(red: 0.72, green: 0.45, blue: 0.20)
+        case .silver: return Color(red: 0.72, green: 0.72, blue: 0.75)
+        case .gold: return Color(red: 0.85, green: 0.72, blue: 0.25)
         case .platinum: return Color(red: 0.70, green: 0.88, blue: 0.98)
         }
     }
@@ -1147,16 +1139,16 @@ private struct ActivityHeatmapView: View {
 
     private let columns = 53
     private let cellSize: CGFloat = 11
-    private let spacing: CGFloat  = 2
+    private let spacing: CGFloat = 2
 
     var body: some View {
         let maxValue = activities.map(\.totalDuration).max() ?? 1
 
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .top, spacing: spacing) {
-                ForEach(0..<columns, id: \.self) { col in
+                ForEach(0 ..< columns, id: \.self) { col in
                     VStack(spacing: spacing) {
-                        ForEach(0..<7, id: \.self) { row in
+                        ForEach(0 ..< 7, id: \.self) { row in
                             let index = col * 7 + row
                             if index < activities.count {
                                 let activity = activities[index]
@@ -1177,13 +1169,15 @@ private struct ActivityHeatmapView: View {
     }
 
     private func cellColor(intensity: Double) -> Color {
-        if intensity <= 0 { return Color.reportSurface }
+        if intensity <= 0 {
+            return Color.reportSurface
+        }
         switch intensity {
-        case 0..<0.2:  return Color.reportAccent.opacity(0.15)
-        case 0.2..<0.4: return Color.reportAccent.opacity(0.30)
-        case 0.4..<0.6: return Color.reportAccent.opacity(0.55)
-        case 0.6..<0.8: return Color.reportAccent.opacity(0.75)
-        default:        return Color.reportAccent
+        case 0 ..< 0.2: return Color.reportAccent.opacity(0.15)
+        case 0.2 ..< 0.4: return Color.reportAccent.opacity(0.30)
+        case 0.4 ..< 0.6: return Color.reportAccent.opacity(0.55)
+        case 0.6 ..< 0.8: return Color.reportAccent.opacity(0.75)
+        default: return Color.reportAccent
         }
     }
 }

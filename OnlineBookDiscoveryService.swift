@@ -1,13 +1,4 @@
-//
-//  BookDiscoveryService.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
-
-
-//
-//  BookDiscoveryService.swift
+//  OnlineBookDiscoveryService.swift
 //  Online Book Discovery System
 //
 //  Responsibilities:
@@ -21,12 +12,10 @@
 import Foundation
 
 struct BookDiscoveryService {
-
     private let openLibraryProvider = OpenLibraryProvider()
     private let gutenbergProvider = GutenbergProvider()
 
     func searchBooks(query: String) async -> [OnlineBook] {
-
         let normalizedQuery = query.trimmingCharacters(
             in: .whitespacesAndNewlines
         )
@@ -40,7 +29,6 @@ struct BookDiscoveryService {
         )
 
         if results.count < 10 {
-
             let gutenbergResults = await gutenbergProvider.searchBooks(
                 query: normalizedQuery
             )
@@ -60,22 +48,19 @@ struct BookDiscoveryService {
 // MARK: - Deduplication
 
 private extension BookDiscoveryService {
-
     func deduplicate(
         _ books: [OnlineBook]
     ) -> [OnlineBook] {
-
         var seenISBNs = Set<String>()
         var seenTitleAuthor = Set<String>()
 
         var uniqueBooks: [OnlineBook] = []
 
         for book in books {
-
             if let isbn = book.isbn?
                 .trimmingCharacters(in: .whitespacesAndNewlines),
-               !isbn.isEmpty {
-
+                !isbn.isEmpty
+            {
                 if seenISBNs.contains(isbn) {
                     continue
                 }
@@ -105,16 +90,13 @@ private extension BookDiscoveryService {
 // MARK: - Ranking
 
 private extension BookDiscoveryService {
-
     func rank(
         _ books: [OnlineBook],
         query: String
     ) -> [OnlineBook] {
-
         let normalizedQuery = normalize(query)
 
         return books.sorted { lhs, rhs in
-
             let lhsScore = score(
                 lhs,
                 query: normalizedQuery
@@ -139,7 +121,6 @@ private extension BookDiscoveryService {
         _ book: OnlineBook,
         query: String
     ) -> Int {
-
         var score = 0
 
         let normalizedTitle = normalize(book.title)
@@ -161,8 +142,9 @@ private extension BookDiscoveryService {
 
         if let description = book.description,
            !description.trimmingCharacters(
-                in: .whitespacesAndNewlines
-           ).isEmpty {
+               in: .whitespacesAndNewlines
+           ).isEmpty
+        {
             score += 15
         }
 
@@ -181,19 +163,16 @@ private extension BookDiscoveryService {
 // MARK: - Helpers
 
 private extension BookDiscoveryService {
-
     func normalizedTitleAuthorKey(
         title: String,
         author: String
     ) -> String {
-
         "\(normalize(title))|\(normalize(author))"
     }
 
     func normalize(
         _ value: String
     ) -> String {
-
         value
             .lowercased()
             .trimmingCharacters(
@@ -210,7 +189,6 @@ private extension BookDiscoveryService {
         title: String,
         query: String
     ) -> Bool {
-
         let queryTokens = query
             .split(separator: " ")
             .map(String.init)

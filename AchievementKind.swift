@@ -1,10 +1,9 @@
 //
-//  AchievementEngine.swift
+//  AchievementKind.swift
 //  Reading Tracker
 //
 //  Created by Johan Rembeci on 6/16/26.
 //
-
 
 //
 //  AchievementEngine.swift
@@ -48,41 +47,41 @@ import Foundation
 /// The category taxonomy for achievements.
 enum AchievementKind: String, Codable, CaseIterable {
     // Page milestones
-    case pages100      = "First Hundred"
-    case pages500      = "Five Hundred Pages"
-    case pages1000     = "One Thousand Pages"
-    case pages5000     = "Five Thousand Pages"
-    case pages10000    = "Ten Thousand Pages"
+    case pages100 = "First Hundred"
+    case pages500 = "Five Hundred Pages"
+    case pages1000 = "One Thousand Pages"
+    case pages5000 = "Five Thousand Pages"
+    case pages10000 = "Ten Thousand Pages"
 
     // Session milestones
-    case sessions5     = "Regular Reader"
-    case sessions25    = "Committed Reader"
-    case sessions100   = "Dedicated Reader"
-    case sessions365   = "Year of Reading"
+    case sessions5 = "Regular Reader"
+    case sessions25 = "Committed Reader"
+    case sessions100 = "Dedicated Reader"
+    case sessions365 = "Year of Reading"
 
     // Streak milestones
-    case streak3       = "3-Day Streak"
-    case streak7       = "One Week Streak"
-    case streak14      = "Two Week Streak"
-    case streak30      = "Monthly Streak"
-    case streak100     = "Century Streak"
+    case streak3 = "3-Day Streak"
+    case streak7 = "One Week Streak"
+    case streak14 = "Two Week Streak"
+    case streak30 = "Monthly Streak"
+    case streak100 = "Century Streak"
 
     // Completion milestones
-    case firstBook     = "First Book Finished"
-    case books5        = "Bookworm"
-    case books10       = "Bibliophile"
-    case books25       = "Voracious Reader"
-    case books52       = "Book a Week"
+    case firstBook = "First Book Finished"
+    case books5 = "Bookworm"
+    case books10 = "Bibliophile"
+    case books25 = "Voracious Reader"
+    case books52 = "Book a Week"
 
     // Speed milestones
-    case speedReader   = "Speed Reader"      // avg < 45s/page
-    case deepReader    = "Deep Reader"       // avg > 180s/page in a session
+    case speedReader = "Speed Reader" // avg < 45s/page
+    case deepReader = "Deep Reader" // avg > 180s/page in a session
     case marathonSession = "Marathon Session" // single session > 2 hours
 
     // Goal milestones
     case firstDailyGoal = "First Daily Goal Met"
-    case weekGoalStreak = "Goal Week"        // 7 consecutive days of meeting daily goal
-    case annualGoalMet  = "Annual Goal Met"
+    case weekGoalStreak = "Goal Week" // 7 consecutive days of meeting daily goal
+    case annualGoalMet = "Annual Goal Met"
 }
 
 /// Metadata associated with an achievement kind.
@@ -90,7 +89,7 @@ struct AchievementDefinition {
     let kind: AchievementKind
     let title: String
     let description: String
-    let symbolName: String  // SF Symbols name for the badge icon
+    let symbolName: String // SF Symbols name for the badge icon
     let tier: AchievementTier
 
     enum AchievementTier: String, Codable {
@@ -103,12 +102,12 @@ struct EarnedAchievement: Identifiable, Codable, Hashable {
     var id: UUID
     var kind: AchievementKind
     var earnedAt: Date
-    var relatedBookID: UUID?  // optional: which book triggered it
+    var relatedBookID: UUID? // optional: which book triggered it
 
     init(id: UUID = UUID(), kind: AchievementKind, earnedAt: Date = Date(), relatedBookID: UUID? = nil) {
-        self.id            = id
-        self.kind          = kind
-        self.earnedAt      = earnedAt
+        self.id = id
+        self.kind = kind
+        self.earnedAt = earnedAt
         self.relatedBookID = relatedBookID
     }
 }
@@ -116,7 +115,6 @@ struct EarnedAchievement: Identifiable, Codable, Hashable {
 // MARK: - Achievement Definitions Registry
 
 extension AchievementDefinition {
-
     /// All achievement definitions. Authoritative list — add here to add an achievement.
     static let all: [AchievementKind: AchievementDefinition] = [
         .pages100: .init(kind: .pages100, title: "First Hundred",
@@ -211,7 +209,6 @@ extension AchievementDefinition {
 /// Pure computation namespace for achievement detection.
 /// All detection functions are idempotent and side-effect free.
 enum AchievementEngine {
-
     // MARK: - Primary Entry Point
 
     /// Detects all achievements the user qualifies for and returns:
@@ -230,10 +227,10 @@ enum AchievementEngine {
     ) -> (allEarned: [EarnedAchievement], newlyEarned: [EarnedAchievement]) {
         let existingKinds = Set(existing.map(\.kind))
         var earned = existing
-        var newly:  [EarnedAchievement] = []
+        var newly: [EarnedAchievement] = []
 
-        let profile  = AnalyticsEngine.readerProfile(books: books)
-        let streak   = AnalyticsEngine.streak(books: books)
+        let profile = AnalyticsEngine.readerProfile(books: books)
+        let streak = AnalyticsEngine.streak(books: books)
         let sessions = books.flatMap(\.sessions).filter { $0.endTime != nil }
 
         func award(_ kind: AchievementKind, bookID: UUID? = nil) {
@@ -244,41 +241,85 @@ enum AchievementEngine {
         }
 
         // MARK: Page Milestones
+
         let totalPages = profile.totalPagesRead
-        if totalPages >= 100   { award(.pages100) }
-        if totalPages >= 500   { award(.pages500) }
-        if totalPages >= 1000  { award(.pages1000) }
-        if totalPages >= 5000  { award(.pages5000) }
-        if totalPages >= 10000 { award(.pages10000) }
+        if totalPages >= 100 {
+            award(.pages100)
+        }
+        if totalPages >= 500 {
+            award(.pages500)
+        }
+        if totalPages >= 1000 {
+            award(.pages1000)
+        }
+        if totalPages >= 5000 {
+            award(.pages5000)
+        }
+        if totalPages >= 10000 {
+            award(.pages10000)
+        }
 
         // MARK: Session Milestones
+
         let sessionCount = sessions.count
-        if sessionCount >= 5   { award(.sessions5) }
-        if sessionCount >= 25  { award(.sessions25) }
-        if sessionCount >= 100 { award(.sessions100) }
-        if sessionCount >= 365 { award(.sessions365) }
+        if sessionCount >= 5 {
+            award(.sessions5)
+        }
+        if sessionCount >= 25 {
+            award(.sessions25)
+        }
+        if sessionCount >= 100 {
+            award(.sessions100)
+        }
+        if sessionCount >= 365 {
+            award(.sessions365)
+        }
 
         // MARK: Streak Milestones
-        let currentStreak = streak.longestStreak  // use all-time longest streak
-        if currentStreak >= 3   { award(.streak3) }
-        if currentStreak >= 7   { award(.streak7) }
-        if currentStreak >= 14  { award(.streak14) }
-        if currentStreak >= 30  { award(.streak30) }
-        if currentStreak >= 100 { award(.streak100) }
+
+        let currentStreak = streak.longestStreak // use all-time longest streak
+        if currentStreak >= 3 {
+            award(.streak3)
+        }
+        if currentStreak >= 7 {
+            award(.streak7)
+        }
+        if currentStreak >= 14 {
+            award(.streak14)
+        }
+        if currentStreak >= 30 {
+            award(.streak30)
+        }
+        if currentStreak >= 100 {
+            award(.streak100)
+        }
 
         // MARK: Completion Milestones
+
         let completedBooks = books.filter(\.isCompleted)
         let completedCount = completedBooks.count
-        if completedCount >= 1  { award(.firstBook, bookID: completedBooks.first?.id) }
-        if completedCount >= 5  { award(.books5) }
-        if completedCount >= 10 { award(.books10) }
-        if completedCount >= 25 { award(.books25) }
-        if completedCount >= 52 { award(.books52) }
+        if completedCount >= 1 {
+            award(.firstBook, bookID: completedBooks.first?.id)
+        }
+        if completedCount >= 5 {
+            award(.books5)
+        }
+        if completedCount >= 10 {
+            award(.books10)
+        }
+        if completedCount >= 25 {
+            award(.books25)
+        }
+        if completedCount >= 52 {
+            award(.books52)
+        }
 
         // MARK: Speed Milestones
+
         detectSpeedAchievements(sessions: sessions, existing: existingKinds, award: award)
 
         // MARK: Goal Milestones
+
         detectGoalAchievements(
             books: books, goalSet: goalSet,
             existing: existingKinds, award: award
@@ -291,14 +332,20 @@ enum AchievementEngine {
 
     private static func detectSpeedAchievements(
         sessions: [ReadingSession],
-        existing: Set<AchievementKind>,
+        existing _: Set<AchievementKind>,
         award: (AchievementKind, UUID?) -> Void
     ) {
         for session in sessions {
             let avg = session.averageSecondsPerPage
-            if avg > 0 && avg < 45  { award(.speedReader, nil) }
-            if avg > 180            { award(.deepReader, nil) }
-            if session.duration > 7200 { award(.marathonSession, nil) }
+            if avg > 0, avg < 45 {
+                award(.speedReader, nil)
+            }
+            if avg > 180 {
+                award(.deepReader, nil)
+            }
+            if session.duration > 7200 {
+                award(.marathonSession, nil)
+            }
         }
     }
 
@@ -307,7 +354,7 @@ enum AchievementEngine {
     private static func detectGoalAchievements(
         books: [Book],
         goalSet: ReadingGoalSet,
-        existing: Set<AchievementKind>,
+        existing _: Set<AchievementKind>,
         award: (AchievementKind, UUID?) -> Void
     ) {
         // Annual goal
@@ -319,11 +366,15 @@ enum AchievementEngine {
             // First daily goal: check if user has met the daily page target today.
             if let dailyTarget = goalSet.dailyPageTarget {
                 let todayPages = AnalyticsEngine.pagesRead(books: books, in: .today)
-                if todayPages >= dailyTarget { award(.firstDailyGoal, nil) }
+                if todayPages >= dailyTarget {
+                    award(.firstDailyGoal, nil)
+                }
             }
         } else if let dailyTarget = goalSet.dailyPageTarget {
             let todayPages = AnalyticsEngine.pagesRead(books: books, in: .today)
-            if todayPages >= dailyTarget { award(.firstDailyGoal, nil) }
+            if todayPages >= dailyTarget {
+                award(.firstDailyGoal, nil)
+            }
         }
     }
 
@@ -346,45 +397,45 @@ enum AchievementEngine {
         limit: Int = 3
     ) -> [AchievementKind] {
         let earnedKinds = Set(earned.map(\.kind))
-        let profile     = AnalyticsEngine.readerProfile(books: books)
-        let streak      = AnalyticsEngine.streak(books: books)
+        let profile = AnalyticsEngine.readerProfile(books: books)
+        let streak = AnalyticsEngine.streak(books: books)
 
         // Score each un-earned achievement by closeness (0..1).
         var scores: [(AchievementKind, Double)] = []
 
         func addIfNeeded(_ kind: AchievementKind, progress: Double) {
             guard !earnedKinds.contains(kind) else { return }
-            scores.append((kind, progress.clamped(to: 0...1)))
+            scores.append((kind, progress.clamped(to: 0 ... 1)))
         }
 
         // Pages
-        addIfNeeded(.pages100,   progress: Double(profile.totalPagesRead) / 100)
-        addIfNeeded(.pages500,   progress: Double(profile.totalPagesRead) / 500)
-        addIfNeeded(.pages1000,  progress: Double(profile.totalPagesRead) / 1000)
-        addIfNeeded(.pages5000,  progress: Double(profile.totalPagesRead) / 5000)
+        addIfNeeded(.pages100, progress: Double(profile.totalPagesRead) / 100)
+        addIfNeeded(.pages500, progress: Double(profile.totalPagesRead) / 500)
+        addIfNeeded(.pages1000, progress: Double(profile.totalPagesRead) / 1000)
+        addIfNeeded(.pages5000, progress: Double(profile.totalPagesRead) / 5000)
         addIfNeeded(.pages10000, progress: Double(profile.totalPagesRead) / 10000)
 
         // Sessions
         let sessionCount = books.flatMap(\.sessions).filter { $0.endTime != nil }.count
-        addIfNeeded(.sessions5,   progress: Double(sessionCount) / 5)
-        addIfNeeded(.sessions25,  progress: Double(sessionCount) / 25)
+        addIfNeeded(.sessions5, progress: Double(sessionCount) / 5)
+        addIfNeeded(.sessions25, progress: Double(sessionCount) / 25)
         addIfNeeded(.sessions100, progress: Double(sessionCount) / 100)
         addIfNeeded(.sessions365, progress: Double(sessionCount) / 365)
 
         // Streaks
-        addIfNeeded(.streak3,   progress: Double(streak.currentStreak) / 3)
-        addIfNeeded(.streak7,   progress: Double(streak.currentStreak) / 7)
-        addIfNeeded(.streak14,  progress: Double(streak.currentStreak) / 14)
-        addIfNeeded(.streak30,  progress: Double(streak.currentStreak) / 30)
+        addIfNeeded(.streak3, progress: Double(streak.currentStreak) / 3)
+        addIfNeeded(.streak7, progress: Double(streak.currentStreak) / 7)
+        addIfNeeded(.streak14, progress: Double(streak.currentStreak) / 14)
+        addIfNeeded(.streak30, progress: Double(streak.currentStreak) / 30)
         addIfNeeded(.streak100, progress: Double(streak.currentStreak) / 100)
 
         // Books completed
         let completed = books.filter(\.isCompleted).count
         addIfNeeded(.firstBook, progress: Double(completed) / 1)
-        addIfNeeded(.books5,    progress: Double(completed) / 5)
-        addIfNeeded(.books10,   progress: Double(completed) / 10)
-        addIfNeeded(.books25,   progress: Double(completed) / 25)
-        addIfNeeded(.books52,   progress: Double(completed) / 52)
+        addIfNeeded(.books5, progress: Double(completed) / 5)
+        addIfNeeded(.books10, progress: Double(completed) / 10)
+        addIfNeeded(.books25, progress: Double(completed) / 25)
+        addIfNeeded(.books52, progress: Double(completed) / 52)
 
         // Sort by closest (descending progress score) and return top `limit`.
         return scores

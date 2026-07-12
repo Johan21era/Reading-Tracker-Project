@@ -1,12 +1,4 @@
-//
-//  NotificationScheduler.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/29/26.
-//
 
-
-//
 //  NotificationScheduler.swift
 //  Reading Tracker
 //
@@ -24,7 +16,6 @@ import UserNotifications
 
 @MainActor
 final class NotificationScheduler {
-
     static let shared = NotificationScheduler()
     private init() {}
 
@@ -59,10 +50,10 @@ final class NotificationScheduler {
     /// Each notification receives a unique identifier so concurrent candidates
     /// don't silently replace each other in the pending queue.
     func schedule(candidate: NotificationCandidate) async {
-        let content       = UNMutableNotificationContent()
-        content.title     = candidate.title
-        content.body      = candidate.message
-        content.sound     = .default
+        let content = UNMutableNotificationContent()
+        content.title = candidate.title
+        content.body = candidate.message
+        content.sound = .default
 
         let secondsUntilDelivery = candidate.recommendedDeliveryTime.timeIntervalSinceNow
         let trigger: UNNotificationTrigger? = secondsUntilDelivery > 60

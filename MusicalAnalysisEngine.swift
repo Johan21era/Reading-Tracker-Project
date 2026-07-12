@@ -1,18 +1,4 @@
-//
-//  AudioFactor 2.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/23/26.
-//
-
-
-//
 //  MusicalAnalysisEngine.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
-//
 //  PURPOSE
 //  Audio-reading intelligence layer. Pure analytics — no I/O, no side effects.
 //  Analogous to WeatherAnalysisEngine for environmental correlations.
@@ -35,21 +21,21 @@ import Foundation
 
 /// The audio-side dimensions this engine correlates against reading behavior metrics.
 public enum AudioFactor: String, Codable, CaseIterable, Hashable, Sendable {
-    case audioCategory       // silence vs. music vs. podcast vs. …
-    case audioSource         // which application produced the audio
-    case listeningIntensity  // fraction of session with audio present
-    case silenceFraction     // complement of listeningIntensity
-    case genreMood           // inferred mood from genre metadata
-    case genreEnergy         // inferred energy from genre metadata
-    case trackDiversity      // number of distinct tracks heard
+    case audioCategory // silence vs. music vs. podcast vs. …
+    case audioSource // which application produced the audio
+    case listeningIntensity // fraction of session with audio present
+    case silenceFraction // complement of listeningIntensity
+    case genreMood // inferred mood from genre metadata
+    case genreEnergy // inferred energy from genre metadata
+    case trackDiversity // number of distinct tracks heard
     case transitionFrequency // how often audio category or source changed
-    case artistIdentity      // a specific named artist
-    case albumIdentity       // a specific named album
-    case genreCategory       // audio genre string (e.g. "Classical", "Hip-Hop")
-    case playlistIdentity    // a named playlist (Music.app only)
-    case hourOfDay           // hour of day reading occurred
-    case dayOfWeek           // weekday reading occurred
-    case season              // seasonal period
+    case artistIdentity // a specific named artist
+    case albumIdentity // a specific named album
+    case genreCategory // audio genre string (e.g. "Classical", "Hip-Hop")
+    case playlistIdentity // a named playlist (Music.app only)
+    case hourOfDay // hour of day reading occurred
+    case dayOfWeek // weekday reading occurred
+    case season // seasonal period
 }
 
 // MARK: - AudioCorrelation
@@ -59,12 +45,12 @@ public enum AudioFactor: String, Codable, CaseIterable, Hashable, Sendable {
 public struct AudioCorrelation: Codable, Identifiable, Hashable, Sendable {
     public let id: UUID
     public let factor: AudioFactor
-    public let metric: ReadingBehaviorMetric      // public type from WeatherAnalysisEngine
-    public let coefficient: Double                // Pearson r, −1.0 to +1.0
-    public let significance: Double               // 0–1 composite significance
-    public let influenceScore: Double             // abs(coefficient) × significance
-    public let lifecycle: CorrelationLifecycle    // public type from WeatherAnalysisEngine
-    public let confidence: ConfidenceReport       // public type from WeatherAnalysisEngine
+    public let metric: ReadingBehaviorMetric // public type from WeatherAnalysisEngine
+    public let coefficient: Double // Pearson r, −1.0 to +1.0
+    public let significance: Double // 0–1 composite significance
+    public let influenceScore: Double // abs(coefficient) × significance
+    public let lifecycle: CorrelationLifecycle // public type from WeatherAnalysisEngine
+    public let confidence: ConfidenceReport // public type from WeatherAnalysisEngine
     public let firstObserved: Date
     public let lastObserved: Date
     public let supportingSampleCount: Int
@@ -85,18 +71,18 @@ public struct AudioCorrelation: Codable, Identifiable, Hashable, Sendable {
         supportingSampleCount: Int,
         contextLabel: String? = nil
     ) {
-        self.id                   = id
-        self.factor               = factor
-        self.metric               = metric
-        self.coefficient          = coefficient
-        self.significance         = significance
-        self.influenceScore       = influenceScore
-        self.lifecycle            = lifecycle
-        self.confidence           = confidence
-        self.firstObserved        = firstObserved
-        self.lastObserved         = lastObserved
+        self.id = id
+        self.factor = factor
+        self.metric = metric
+        self.coefficient = coefficient
+        self.significance = significance
+        self.influenceScore = influenceScore
+        self.lifecycle = lifecycle
+        self.confidence = confidence
+        self.firstObserved = firstObserved
+        self.lastObserved = lastObserved
         self.supportingSampleCount = supportingSampleCount
-        self.contextLabel         = contextLabel
+        self.contextLabel = contextLabel
     }
 }
 
@@ -122,16 +108,16 @@ public struct AudioConditionProfile: Codable, Hashable, Sendable {
         averageListeningIntensity: Double, completionRate: Double,
         supportingSessions: Int, confidence: ConfidenceReport
     ) {
-        self.label                    = label
-        self.category                 = category
-        self.averageReadingSpeed      = averageReadingSpeed
-        self.averageSessionDuration   = averageSessionDuration
-        self.averageEngagement        = averageEngagement
-        self.averageSessionQuality    = averageSessionQuality
+        self.label = label
+        self.category = category
+        self.averageReadingSpeed = averageReadingSpeed
+        self.averageSessionDuration = averageSessionDuration
+        self.averageEngagement = averageEngagement
+        self.averageSessionQuality = averageSessionQuality
         self.averageListeningIntensity = averageListeningIntensity
-        self.completionRate           = completionRate
-        self.supportingSessions       = supportingSessions
-        self.confidence               = confidence
+        self.completionRate = completionRate
+        self.supportingSessions = supportingSessions
+        self.confidence = confidence
     }
 }
 
@@ -171,14 +157,14 @@ public struct PreferredSoundtrackProfile: Codable, Identifiable, Hashable, Senda
         averageSessionDuration: TimeInterval, averageEngagement: Double,
         supportingSessions: Int, confidence: ConfidenceReport
     ) {
-        self.id                     = id; self.label = label; self.category = category
-        self.artistName             = artistName; self.genreName = genreName
-        self.averageSessionQuality  = averageSessionQuality
-        self.averageReadingSpeed    = averageReadingSpeed
+        self.id = id; self.label = label; self.category = category
+        self.artistName = artistName; self.genreName = genreName
+        self.averageSessionQuality = averageSessionQuality
+        self.averageReadingSpeed = averageReadingSpeed
         self.averageSessionDuration = averageSessionDuration
-        self.averageEngagement      = averageEngagement
-        self.supportingSessions     = supportingSessions
-        self.confidence             = confidence
+        self.averageEngagement = averageEngagement
+        self.supportingSessions = supportingSessions
+        self.confidence = confidence
     }
 }
 
@@ -210,13 +196,13 @@ public struct AudioBehaviorEvolution: Codable, Hashable, Sendable {
         listeningIntensityTrend: Double?, categorySwitchTrend: Double?,
         evolutionState: BehaviorEvolutionState
     ) {
-        self.hasMeaningfulData        = hasMeaningfulData
+        self.hasMeaningfulData = hasMeaningfulData
         self.dominantShiftDescription = dominantShiftDescription
-        self.oldDominantCategory      = oldDominantCategory
-        self.newDominantCategory      = newDominantCategory
-        self.listeningIntensityTrend  = listeningIntensityTrend
-        self.categorySwitchTrend      = categorySwitchTrend
-        self.evolutionState           = evolutionState
+        self.oldDominantCategory = oldDominantCategory
+        self.newDominantCategory = newDominantCategory
+        self.listeningIntensityTrend = listeningIntensityTrend
+        self.categorySwitchTrend = categorySwitchTrend
+        self.evolutionState = evolutionState
     }
 }
 
@@ -338,30 +324,29 @@ public struct AudioPredictiveContext: Codable, Sendable {
 /// Pure analytics engine. No I/O, no async, no side effects.
 /// Call buildAudioProfile(from:) to produce all analytical outputs.
 public final class MusicalAnalysisEngine {
-
     public init() {}
 
     // MARK: - Primary Entry Point
 
     /// Builds the complete AudioReadingProfile from all audio session records.
     public func buildAudioProfile(from records: [AudioSessionRecord]) -> AudioReadingProfile {
-        let catCorrs      = analyzeCategoryCorrelations(from: records)
-        let artistCorrs   = analyzeArtistCorrelations(from: records)
-        let albumCorrs    = analyzeAlbumCorrelations(from: records)
+        let catCorrs = analyzeCategoryCorrelations(from: records)
+        let artistCorrs = analyzeArtistCorrelations(from: records)
+        let albumCorrs = analyzeAlbumCorrelations(from: records)
         let playlistCorrs = analyzePlaylistCorrelations(from: records)
-        let genreCorrs    = analyzeGenreCorrelations(from: records)
-        let patternCorrs  = analyzeListeningPatternCorrelations(from: records)
-        let silenceCorrs  = analyzeSilenceCorrelations(from: records)
+        let genreCorrs = analyzeGenreCorrelations(from: records)
+        let patternCorrs = analyzeListeningPatternCorrelations(from: records)
+        let silenceCorrs = analyzeSilenceCorrelations(from: records)
         let temporalCorrs = analyzeTemporalCorrelations(from: records)
 
         let conditionProfiles = buildConditionProfiles(from: records)
-        let highFocus         = identifyHighFocusConditions(from: conditionProfiles)
-        let distraction       = identifyDistractionConditions(from: conditionProfiles)
-        let optimal           = conditionProfiles.max { $0.averageSessionQuality < $1.averageSessionQuality }
-        let soundtracks       = buildPreferredSoundtracks(from: records)
-        let genreEnvs         = buildGenreSpecificEnvironments(from: records)
-        let hourlyHabits      = buildHourlyListeningHabits(from: records)
-        let evolution         = buildBehaviorEvolution(from: records)
+        let highFocus = identifyHighFocusConditions(from: conditionProfiles)
+        let distraction = identifyDistractionConditions(from: conditionProfiles)
+        let optimal = conditionProfiles.max { $0.averageSessionQuality < $1.averageSessionQuality }
+        let soundtracks = buildPreferredSoundtracks(from: records)
+        let genreEnvs = buildGenreSpecificEnvironments(from: records)
+        let hourlyHabits = buildHourlyListeningHabits(from: records)
+        let evolution = buildBehaviorEvolution(from: records)
 
         let allCorrs = catCorrs + artistCorrs + albumCorrs + playlistCorrs +
             genreCorrs + patternCorrs + silenceCorrs + temporalCorrs
@@ -417,7 +402,8 @@ public final class MusicalAnalysisEngine {
 
         // Best soundtrack
         if let top = profile.preferredReadingSoundtracks.first,
-           top.supportingSessions >= 5, top.confidence.overallConfidence > 0.4 {
+           top.supportingSessions >= 5, top.confidence.overallConfidence > 0.4
+        {
             let label = top.artistName ?? top.label
             insights.append(AudioInsight(
                 category: .preferredSoundtrack,
@@ -443,7 +429,8 @@ public final class MusicalAnalysisEngine {
 
         // Behavior shift
         if profile.behaviorEvolution.hasMeaningfulData,
-           let shift = profile.behaviorEvolution.dominantShiftDescription {
+           let shift = profile.behaviorEvolution.dominantShiftDescription
+        {
             let trend = abs(profile.behaviorEvolution.listeningIntensityTrend ?? 0)
             insights.append(AudioInsight(
                 category: .behaviorShift,
@@ -461,7 +448,8 @@ public final class MusicalAnalysisEngine {
         // Genre-specific environment
         if let (genreKey, env) = profile.genreSpecificEnvironments
             .max(by: { $0.value.averageSessionQuality < $1.value.averageSessionQuality }),
-           env.supportingSessions >= 3 {
+            env.supportingSessions >= 3
+        {
             insights.append(AudioInsight(
                 category: .genrePreference,
                 title: "For \(genreKey) books, \(env.label.lowercased()) works best",
@@ -475,8 +463,9 @@ public final class MusicalAnalysisEngine {
         // Temporal pattern
         if let best = profile.listeningHabitsByHour.values
             .max(by: { $0.averageReadingQuality < $1.averageReadingQuality }),
-           best.sessionCount >= 3 {
-            let h12  = best.hour == 0 ? 12 : (best.hour > 12 ? best.hour - 12 : best.hour)
+            best.sessionCount >= 3
+        {
+            let h12 = best.hour == 0 ? 12 : (best.hour > 12 ? best.hour - 12 : best.hour)
             let ampm = best.hour < 12 ? "AM" : "PM"
             insights.append(AudioInsight(
                 category: .temporalPattern,
@@ -511,7 +500,6 @@ public final class MusicalAnalysisEngine {
         allAudioRecords: [AudioSessionRecord] = [],
         year: Int? = nil
     ) -> AudioPredictiveContext {
-
         let optimalByGenre = profile.genreSpecificEnvironments.mapValues(\.category)
 
         let speedMultiplier = computeSpeedMultiplier(
@@ -578,31 +566,31 @@ public final class MusicalAnalysisEngine {
         let dominant = dominantAudioCategory(in: records)
 
         let totalListening = records.map(\.audioContext.totalAudioDuration).reduce(0, +)
-        let totalSession   = records.map(\.audioContext.sessionDuration).reduce(0, +)
+        let totalSession = records.map(\.audioContext.sessionDuration).reduce(0, +)
         let silenceFraction = totalSession > 0
             ? max(0, min(1, (totalSession - totalListening) / totalSession)) : 1.0
 
-        let allArtists   = records.flatMap(\.audioContext.artistsHeard)
+        let allArtists = records.flatMap(\.audioContext.artistsHeard)
         let artistCounts = Dictionary(grouping: allArtists, by: { $0 }).mapValues(\.count)
-        let topArtists   = Array(artistCounts.sorted { $0.value > $1.value }.prefix(5).map(\.key))
+        let topArtists = Array(artistCounts.sorted { $0.value > $1.value }.prefix(5).map(\.key))
 
         let conditionProfiles = buildConditionProfiles(from: records)
-        let bestCondition     = conditionProfiles.max { $0.averageSessionQuality < $1.averageSessionQuality }
+        let bestCondition = conditionProfiles.max { $0.averageSessionQuality < $1.averageSessionQuality }
 
-        let audioRecs   = records.filter(\.audioContext.wasAudioPresent)
+        let audioRecs = records.filter(\.audioContext.wasAudioPresent)
         let silenceRecs = records.filter { !$0.audioContext.wasAudioPresent }
-        let audioSpeed  = audioRecs.isEmpty ? 0 : audioRecs.map(\.readingSpeed).average
-        let silSpeed    = silenceRecs.isEmpty ? 0 : silenceRecs.map(\.readingSpeed).average
+        let audioSpeed = audioRecs.isEmpty ? 0 : audioRecs.map(\.readingSpeed).average
+        let silSpeed = silenceRecs.isEmpty ? 0 : silenceRecs.map(\.readingSpeed).average
         // Lower seconds/page = faster. speedImpact > 1 means audio context was faster.
         let speedImpact = silSpeed > 0 && audioSpeed > 0 ? silSpeed / audioSpeed : 1.0
 
-        let audioLen   = audioRecs.isEmpty ? 0 : audioRecs.map(\.readingDurationMinutes).average
-        let silLen     = silenceRecs.isEmpty ? 0 : silenceRecs.map(\.readingDurationMinutes).average
-        let lenImpact  = silLen > 0 && audioLen > 0 ? audioLen / silLen : 1.0
+        let audioLen = audioRecs.isEmpty ? 0 : audioRecs.map(\.readingDurationMinutes).average
+        let silLen = silenceRecs.isEmpty ? 0 : silenceRecs.map(\.readingDurationMinutes).average
+        let lenImpact = silLen > 0 && audioLen > 0 ? audioLen / silLen : 1.0
 
-        let allMoods    = records.flatMap { $0.audioContext.snapshots.filter(\.isPlaying).map(\.characteristics.inferredMood) }
-        let moodCounts  = Dictionary(grouping: allMoods, by: { $0 }).mapValues(\.count)
-        let domMood     = moodCounts.max(by: { $0.value < $1.value })?.key ?? .unavailable
+        let allMoods = records.flatMap { $0.audioContext.snapshots.filter(\.isPlaying).map(\.characteristics.inferredMood) }
+        let moodCounts = Dictionary(grouping: allMoods, by: { $0 }).mapValues(\.count)
+        let domMood = moodCounts.max(by: { $0.value < $1.value })?.key ?? .unavailable
 
         let summary = buildAnnualSummary(
             dominant: dominant, silenceFraction: silenceFraction,
@@ -655,16 +643,18 @@ public final class MusicalAnalysisEngine {
                 // Only include sessions that have a captured audio context.
                 guard let audioContext = profilesBySession[session.id] else { continue }
 
-                let consistency  = computeConsistency(session: session)
-                let engagement   = computeEngagement(session: session)
-                let quality      = (consistency * 0.55 + engagement * 0.45)
-                    .clamped(to: 0...1)
-                let frequency    = computeReadingFrequency(
-                    session: session, allSessions: allCompletedSessions)
-                let momentum     = computeMomentum(
-                    session: session, allSessions: allCompletedSessions)
+                let consistency = computeConsistency(session: session)
+                let engagement = computeEngagement(session: session)
+                let quality = (consistency * 0.55 + engagement * 0.45)
+                    .clamped(to: 0 ... 1)
+                let frequency = computeReadingFrequency(
+                    session: session, allSessions: allCompletedSessions
+                )
+                let momentum = computeMomentum(
+                    session: session, allSessions: allCompletedSessions
+                )
 
-                let completionProb = book.progressFraction.clamped(to: 0...1)
+                let completionProb = book.progressFraction.clamped(to: 0 ... 1)
 
                 let chaptersCompleted = Double(book.chapters.filter { chapter in
                     chapter.startPage >= session.startPage && chapter.endPage <= session.endPage
@@ -676,7 +666,7 @@ public final class MusicalAnalysisEngine {
                     .last?.id == session.id
                 let booksCompleted = (book.isCompleted && isLastSession) ? 1.0 : 0.0
 
-                let sessionEnd    = session.endTime ?? Date()
+                let sessionEnd = session.endTime ?? Date()
                 let notesInWindow = book.notes.filter {
                     $0.createdAt >= session.startTime && $0.createdAt <= sessionEnd
                 }.count
@@ -687,9 +677,9 @@ public final class MusicalAnalysisEngine {
                 // reread: book was completed before this session started
                 let priorCompletionExists = book.sessions.contains { s in
                     s.id != session.id &&
-                    s.endTime != nil &&
-                    (s.endTime! < session.startTime) &&
-                    s.endPage >= (book.totalPages - 2)
+                        s.endTime != nil &&
+                        (s.endTime! < session.startTime) &&
+                        s.endPage >= (book.totalPages - 2)
                 }
 
                 records.append(AudioSessionRecord(
@@ -708,8 +698,8 @@ public final class MusicalAnalysisEngine {
                     sessionQualityScore: quality,
                     momentumScore: momentum,
                     completionProbability: completionProb,
-                    abandonmentProbability: (1.0 - completionProb).clamped(to: 0...1),
-                    difficultyScore: difficulty.clamped(to: 0...2),
+                    abandonmentProbability: (1.0 - completionProb).clamped(to: 0 ... 1),
+                    difficultyScore: difficulty.clamped(to: 0 ... 2),
                     complexityScore: complexity,
                     bookLength: Double(book.totalPages),
                     genre: book.genre.rawValue,
@@ -726,13 +716,12 @@ public final class MusicalAnalysisEngine {
 // MARK: - Correlation Analysis
 
 extension MusicalAnalysisEngine {
-
     func analyzeCategoryCorrelations(from records: [AudioSessionRecord]) -> [AudioCorrelation] {
         guard records.count >= 5 else { return [] }
         var out: [AudioCorrelation] = []
         for cat in AudioCategory.allCases {
             let metricsToTest: [ReadingBehaviorMetric] = [
-                .sessionQuality, .readingDuration, .readingSpeed, .engagement
+                .sessionQuality, .readingDuration, .readingSpeed, .engagement,
             ]
             for metric in metricsToTest {
                 if let c = binaryCorrelation(
@@ -741,7 +730,9 @@ extension MusicalAnalysisEngine {
                     metricFn: metricFn(metric),
                     factor: .audioCategory, metric: metric,
                     label: cat.rawValue
-                ) { out.append(c) }
+                ) {
+                    out.append(c)
+                }
             }
         }
         return out
@@ -760,7 +751,9 @@ extension MusicalAnalysisEngine {
                 metricFn: metricFn(.sessionQuality),
                 factor: .artistIdentity, metric: .sessionQuality,
                 label: artist
-            ) { out.append(c) }
+            ) {
+                out.append(c)
+            }
         }
         return out.sorted { $0.influenceScore > $1.influenceScore }
     }
@@ -778,7 +771,9 @@ extension MusicalAnalysisEngine {
                 metricFn: metricFn(.sessionQuality),
                 factor: .albumIdentity, metric: .sessionQuality,
                 label: album
-            ) { out.append(c) }
+            ) {
+                out.append(c)
+            }
         }
         return out.sorted { $0.influenceScore > $1.influenceScore }
     }
@@ -796,7 +791,9 @@ extension MusicalAnalysisEngine {
                 metricFn: metricFn(.sessionQuality),
                 factor: .playlistIdentity, metric: .sessionQuality,
                 label: pl
-            ) { out.append(c) }
+            ) {
+                out.append(c)
+            }
         }
         return out
     }
@@ -815,7 +812,9 @@ extension MusicalAnalysisEngine {
                     metricFn: metricFn(metric),
                     factor: .genreCategory, metric: metric,
                     label: genre
-                ) { out.append(c) }
+                ) {
+                    out.append(c)
+                }
             }
         }
         return out.sorted { $0.influenceScore > $1.influenceScore }
@@ -831,7 +830,9 @@ extension MusicalAnalysisEngine {
                 xFn: { $0.audioContext.listeningIntensity },
                 yFn: metricFn(metric),
                 factor: .listeningIntensity, metric: metric
-            ) { out.append(c) }
+            ) {
+                out.append(c)
+            }
         }
         // Track diversity vs. engagement
         if let c = continuousCorrelation(
@@ -839,14 +840,18 @@ extension MusicalAnalysisEngine {
             xFn: { Double($0.audioContext.trackTransitionCount) },
             yFn: metricFn(.engagement),
             factor: .trackDiversity, metric: .engagement
-        ) { out.append(c) }
+        ) {
+            out.append(c)
+        }
         // Category transition frequency vs. session quality
         if let c = continuousCorrelation(
             records: records,
             xFn: { Double($0.audioContext.categoryTransitionCount) },
             yFn: metricFn(.sessionQuality),
             factor: .transitionFrequency, metric: .sessionQuality
-        ) { out.append(c) }
+        ) {
+            out.append(c)
+        }
         return out
     }
 
@@ -854,7 +859,7 @@ extension MusicalAnalysisEngine {
         guard records.count >= 5 else { return [] }
         var out: [AudioCorrelation] = []
         let metricsToTest: [ReadingBehaviorMetric] = [
-            .sessionQuality, .readingDuration, .readingSpeed, .engagement
+            .sessionQuality, .readingDuration, .readingSpeed, .engagement,
         ]
         for metric in metricsToTest {
             if let c = continuousCorrelation(
@@ -862,7 +867,9 @@ extension MusicalAnalysisEngine {
                 xFn: { 1.0 - $0.audioContext.listeningIntensity }, // silence fraction
                 yFn: metricFn(metric),
                 factor: .silenceFraction, metric: metric
-            ) { out.append(c) }
+            ) {
+                out.append(c)
+            }
         }
         return out
     }
@@ -875,13 +882,17 @@ extension MusicalAnalysisEngine {
             xFn: { Double($0.audioContext.snapshots.first?.hourOfDay ?? 12) },
             yFn: metricFn(.sessionQuality),
             factor: .hourOfDay, metric: .sessionQuality
-        ) { out.append(c) }
+        ) {
+            out.append(c)
+        }
         if let c = continuousCorrelation(
             records: records,
             xFn: { Double($0.audioContext.snapshots.first?.dayOfWeek ?? 4) },
             yFn: metricFn(.engagement),
             factor: .dayOfWeek, metric: .engagement
-        ) { out.append(c) }
+        ) {
+            out.append(c)
+        }
         return out
     }
 }
@@ -889,7 +900,6 @@ extension MusicalAnalysisEngine {
 // MARK: - Profile Building
 
 extension MusicalAnalysisEngine {
-
     func buildConditionProfiles(from records: [AudioSessionRecord]) -> [AudioConditionProfile] {
         AudioCategory.allCases.compactMap { cat -> AudioConditionProfile? in
             let group = records.filter { $0.audioContext.primaryCategory == cat }
@@ -946,7 +956,7 @@ extension MusicalAnalysisEngine {
             let group = audioRecs.filter { $0.audioContext.artistsHeard.contains(artist) }
             guard group.count >= 3 else { return nil }
             let avgQ = group.map(\.sessionQualityScore).average
-            let cat  = dominantAudioCategory(in: group)
+            let cat = dominantAudioCategory(in: group)
             let conf = makeConfidence(
                 sampleCount: group.count,
                 recurrence: min(1.0, Double(group.count) / 20.0),
@@ -979,14 +989,16 @@ extension MusicalAnalysisEngine {
             let genreRecs = records.filter { $0.genre == bookGenre }
             guard genreRecs.count >= 5 else { continue }
 
-            var bestCat  = AudioCategory.silence
-            var bestQ    = -Double.infinity
+            var bestCat = AudioCategory.silence
+            var bestQ = -Double.infinity
 
             for audioCat in AudioCategory.allCases {
                 let g = genreRecs.filter { $0.audioContext.primaryCategory == audioCat }
                 guard g.count >= 2 else { continue }
                 let q = g.map(\.sessionQualityScore).average
-                if q > bestQ { bestQ = q; bestCat = audioCat }
+                if q > bestQ {
+                    bestQ = q; bestCat = audioCat
+                }
             }
 
             let bestGroup = genreRecs.filter { $0.audioContext.primaryCategory == bestCat }
@@ -1019,10 +1031,10 @@ extension MusicalAnalysisEngine {
         }
         var result: [Int: AudioHourProfile] = [:]
         for (hour, group) in byHour where group.count >= 2 {
-            let cats     = group.map(\.audioContext.primaryCategory)
+            let cats = group.map(\.audioContext.primaryCategory)
             let dominant = Dictionary(grouping: cats, by: { $0 })
                 .max(by: { $0.value.count < $1.value.count })?.key ?? .silence
-            let dist     = Dictionary(grouping: cats, by: { $0 })
+            let dist = Dictionary(grouping: cats, by: { $0 })
                 .mapValues { Double($0.count) / Double(group.count) }
             result[hour] = AudioHourProfile(
                 hour: hour,
@@ -1040,8 +1052,8 @@ extension MusicalAnalysisEngine {
     func buildBehaviorEvolution(from records: [AudioSessionRecord]) -> AudioBehaviorEvolution {
         guard records.count >= 20 else { return .insufficient }
         let sorted = records.sorted { $0.timestamp < $1.timestamp }
-        let half   = sorted.count / 2
-        let early  = Array(sorted.prefix(half))
+        let half = sorted.count / 2
+        let early = Array(sorted.prefix(half))
         let recent = Array(sorted.suffix(half))
 
         let oldCat = dominantAudioCategory(in: early)
@@ -1056,17 +1068,23 @@ extension MusicalAnalysisEngine {
         let switchTrend = newSwitches - oldSwitches
 
         let state: BehaviorEvolutionState
-        if abs(intensityTrend) < 0.05 && oldCat == newCat { state = .stable }
-        else if intensityTrend > 0.10 { state = .strengthening }
-        else if intensityTrend < -0.10 { state = .weakening }
-        else if oldCat != newCat { state = .evolving }
-        else { state = .stable }
+        if abs(intensityTrend) < 0.05 && oldCat == newCat {
+            state = .stable
+        } else if intensityTrend > 0.10 {
+            state = .strengthening
+        } else if intensityTrend < -0.10 {
+            state = .weakening
+        } else if oldCat != newCat {
+            state = .evolving
+        } else {
+            state = .stable
+        }
 
         let shift: String? = oldCat != newCat
             ? "You've shifted from \(oldCat.displayName.lowercased()) to \(newCat.displayName.lowercased()) while reading."
             : abs(intensityTrend) >= 0.15
-                ? "You're reading with \(intensityTrend > 0 ? "more" : "less") audio present over time (\(String(format: "%+.0f%%", intensityTrend * 100)))."
-                : nil
+            ? "You're reading with \(intensityTrend > 0 ? "more" : "less") audio present over time (\(String(format: "%+.0f%%", intensityTrend * 100)))."
+            : nil
 
         return AudioBehaviorEvolution(
             hasMeaningfulData: true,
@@ -1092,7 +1110,7 @@ extension MusicalAnalysisEngine {
         // Joined pairs: (audio, conditionLabel, tempCelsius)
         struct Joined {
             let audio: AudioSessionRecord
-            let conditionLabel: String  // String(describing:) for safe enum case access
+            let conditionLabel: String // String(describing:) for safe enum case access
             let tempCelsius: Double
         }
 
@@ -1128,7 +1146,6 @@ extension MusicalAnalysisEngine {
 // MARK: - Statistical Core
 
 extension MusicalAnalysisEngine {
-
     func continuousCorrelation(
         records: [AudioSessionRecord],
         xFn: (AudioSessionRecord) -> Double,
@@ -1166,13 +1183,13 @@ extension MusicalAnalysisEngine {
         label: String?
     ) -> AudioCorrelation? {
         guard records.count >= 5 else { return nil }
-        let trueG  = records.filter(condition)
+        let trueG = records.filter(condition)
         let falseG = records.filter { !condition($0) }
         guard !trueG.isEmpty, !falseG.isEmpty else { return nil }
         let tA = trueG.map(metricFn).average
         let fA = falseG.map(metricFn).average
         let denom = max(tA + fA, 1e-6)
-        let r   = (tA - fA) / denom
+        let r = (tA - fA) / denom
         let sig = significance(n: records.count, r: r)
         let inf = abs(r) * sig
         guard inf > 0.05 else { return nil }
@@ -1192,23 +1209,23 @@ extension MusicalAnalysisEngine {
 
     func pearson(_ x: [Double], _ y: [Double]) -> Double {
         guard x.count == y.count, x.count > 1 else { return 0 }
-        let n  = Double(x.count)
+        let n = Double(x.count)
         let sx = x.reduce(0, +); let sy = y.reduce(0, +)
         let sxy = zip(x, y).map(*).reduce(0, +)
         let sx2 = x.map { $0 * $0 }.reduce(0, +)
         let sy2 = y.map { $0 * $0 }.reduce(0, +)
         let num = n * sxy - sx * sy
         let den = sqrt((n * sx2 - sx * sx) * (n * sy2 - sy * sy))
-        return den == 0 ? 0 : (num / den).clamped(to: -1...1)
+        return den == 0 ? 0 : (num / den).clamped(to: -1 ... 1)
     }
 
     func significance(n: Int, r: Double) -> Double {
-        let base     = min(1.0, Double(n) / 50.0)
+        let base = min(1.0, Double(n) / 50.0)
         let strength = abs(r)
-        return (base * 0.6 + strength * 0.4).clamped(to: 0...1)
+        return (base * 0.6 + strength * 0.4).clamped(to: 0 ... 1)
     }
 
-    func consistency(_ x: [Double], _ y: [Double]) -> Double {
+    func consistency(_ x: [Double], _: [Double]) -> Double {
         guard x.count > 2 else { return 0.5 }
         let diffs = zip(x.dropFirst(), x).map { abs($0 - $1) }
         return 1.0 / (1.0 + diffs.average)
@@ -1216,11 +1233,21 @@ extension MusicalAnalysisEngine {
 
     func lifecycle(r: Double, sig: Double) -> CorrelationLifecycle {
         let s = abs(r)
-        if sig < 0.2             { return .temporary }
-        if s > 0.8 && sig > 0.7 { return .persistent }
-        if s > 0.6               { return .strengthening }
-        if s > 0.4               { return .stable }
-        if s > 0.2               { return .weakening }
+        if sig < 0.2 {
+            return .temporary
+        }
+        if s > 0.8 && sig > 0.7 {
+            return .persistent
+        }
+        if s > 0.6 {
+            return .strengthening
+        }
+        if s > 0.4 {
+            return .stable
+        }
+        if s > 0.2 {
+            return .weakening
+        }
         return .emerging
     }
 
@@ -1232,13 +1259,13 @@ extension MusicalAnalysisEngine {
     ) -> ConfidenceReport {
         let sampleScore = min(1.0, Double(sampleCount) / 100.0)
         let overall = ((sampleScore + recurrence + stability + consistency) / 4.0)
-            .clamped(to: 0...1)
+            .clamped(to: 0 ... 1)
         return ConfidenceReport(
             overallConfidence: overall,
             sampleSizeScore: sampleScore,
-            recurrenceScore: recurrence.clamped(to: 0...1),
-            stabilityScore: stability.clamped(to: 0...1),
-            consistencyScore: consistency.clamped(to: 0...1),
+            recurrenceScore: recurrence.clamped(to: 0 ... 1),
+            stabilityScore: stability.clamped(to: 0 ... 1),
+            consistencyScore: consistency.clamped(to: 0 ... 1),
             dataCoverageScore: 1.0,
             supportingSamples: sampleCount
         )
@@ -1248,41 +1275,40 @@ extension MusicalAnalysisEngine {
 // MARK: - Private Helpers
 
 extension MusicalAnalysisEngine {
-
     private func metricFn(_ metric: ReadingBehaviorMetric) -> (AudioSessionRecord) -> Double {
         switch metric {
-        case .readingDuration:        return { $0.readingDurationMinutes }
-        case .pagesRead:              return { $0.pagesRead }
-        case .chaptersCompleted:      return { $0.chaptersCompleted }
-        case .booksCompleted:         return { $0.booksCompleted }
-        case .readingSpeed:           return { $0.readingSpeed }
-        case .readingConsistency:     return { $0.consistencyScore }
-        case .readingFrequency:       return { $0.readingFrequencyScore }
-        case .engagement:             return { $0.engagementScore }
-        case .sessionQuality:         return { $0.sessionQualityScore }
-        case .momentum:               return { $0.momentumScore }
-        case .completionLikelihood:   return { $0.completionProbability }
-        case .abandonmentLikelihood:  return { $0.abandonmentProbability }
-        case .difficulty:             return { $0.difficultyScore }
-        case .complexity:             return { $0.complexityScore }
-        case .bookLength:             return { $0.bookLength }
-        case .rereadingBehavior:      return { $0.reread ? 1.0 : 0.0 }
-        default:                      return { _ in 0 }
+        case .readingDuration: return { $0.readingDurationMinutes }
+        case .pagesRead: return { $0.pagesRead }
+        case .chaptersCompleted: return { $0.chaptersCompleted }
+        case .booksCompleted: return { $0.booksCompleted }
+        case .readingSpeed: return { $0.readingSpeed }
+        case .readingConsistency: return { $0.consistencyScore }
+        case .readingFrequency: return { $0.readingFrequencyScore }
+        case .engagement: return { $0.engagementScore }
+        case .sessionQuality: return { $0.sessionQualityScore }
+        case .momentum: return { $0.momentumScore }
+        case .completionLikelihood: return { $0.completionProbability }
+        case .abandonmentLikelihood: return { $0.abandonmentProbability }
+        case .difficulty: return { $0.difficultyScore }
+        case .complexity: return { $0.complexityScore }
+        case .bookLength: return { $0.bookLength }
+        case .rereadingBehavior: return { $0.reread ? 1.0 : 0.0 }
+        default: return { _ in 0 }
         }
     }
 
     private func computeSpeedMultiplier(
         currentContext: AudioContextProfile?,
         profile: AudioReadingProfile,
-        records: [AudioSessionRecord]
+        records _: [AudioSessionRecord]
     ) -> Double {
         guard let ctx = currentContext else { return 1.0 }
         let cat = ctx.primaryCategory
         // Find binary correlation for this category vs. reading speed
         if let cor = profile.audioCategoryCorrelations.first(where: {
             $0.factor == .audioCategory &&
-            $0.metric == .readingSpeed &&
-            $0.contextLabel == cat.rawValue
+                $0.metric == .readingSpeed &&
+                $0.contextLabel == cat.rawValue
         }) {
             // coefficient > 0 → faster reading speed with this category
             // Lower seconds/page = faster, so negative coefficient = faster
@@ -1303,8 +1329,8 @@ extension MusicalAnalysisEngine {
         topArtists: [String],
         totalSessions: Int
     ) -> String {
-        let audioPct  = Int((1.0 - silenceFraction) * 100)
-        let silPct    = Int(silenceFraction * 100)
+        let audioPct = Int((1.0 - silenceFraction) * 100)
+        let silPct = Int(silenceFraction * 100)
         if silenceFraction > 0.7 {
             return "You primarily read in silence in \(totalSessions) sessions (\(silPct)% of your reading time). Quiet is your natural reading state."
         }
@@ -1324,19 +1350,19 @@ extension MusicalAnalysisEngine {
             return d > 0 ? d : nil
         }
         guard durations.count > 1 else { return 0.5 }
-        let mean   = durations.reduce(0, +) / Double(durations.count)
+        let mean = durations.reduce(0, +) / Double(durations.count)
         guard mean > 0 else { return 0.5 }
         let variance = durations.map { pow($0 - mean, 2) }.reduce(0, +) / Double(durations.count)
-        let cv = sqrt(variance) / mean  // coefficient of variation
-        return max(0, 1.0 - min(1.0, cv)).clamped(to: 0...1)
+        let cv = sqrt(variance) / mean // coefficient of variation
+        return max(0, 1.0 - min(1.0, cv)).clamped(to: 0 ... 1)
     }
 
     private static func computeEngagement(session: ReadingSession) -> Double {
         // 60 minutes = 1.0; 30 minutes = 0.5; scales linearly.
         let durationScore = min(1.0, session.duration / 3600.0)
         // Pages read contribution: 30 pages ≈ a good session.
-        let pagesScore    = min(1.0, Double(session.pagesRead) / 30.0)
-        return (durationScore * 0.6 + pagesScore * 0.4).clamped(to: 0...1)
+        let pagesScore = min(1.0, Double(session.pagesRead) / 30.0)
+        return (durationScore * 0.6 + pagesScore * 0.4).clamped(to: 0 ... 1)
     }
 
     private static func computeReadingFrequency(
@@ -1346,8 +1372,8 @@ extension MusicalAnalysisEngine {
         let windowStart = session.startTime.addingTimeInterval(-7 * 86400)
         let recent = allSessions.filter {
             $0.endTime != nil &&
-            $0.startTime >= windowStart &&
-            $0.startTime < session.startTime
+                $0.startTime >= windowStart &&
+                $0.startTime < session.startTime
         }
         return min(1.0, Double(recent.count) / 7.0)
     }
@@ -1360,8 +1386,8 @@ extension MusicalAnalysisEngine {
         let recentDays = Set(
             allSessions.filter {
                 $0.endTime != nil &&
-                $0.startTime >= windowStart &&
-                $0.startTime < session.startTime
+                    $0.startTime >= windowStart &&
+                    $0.startTime < session.startTime
             }.map { Calendar.current.startOfDay(for: $0.startTime) }
         )
         return min(1.0, Double(recentDays.count) / 7.0)
@@ -1370,10 +1396,9 @@ extension MusicalAnalysisEngine {
 
 // MARK: - Formatting helper
 
-extension Date {
+private extension Date {
     /// Returns a new date by subtracting the given number of seconds.
-    fileprivate func subtracting(seconds: TimeInterval) -> Date {
-        self.addingTimeInterval(-seconds)
+    func subtracting(seconds: TimeInterval) -> Date {
+        addingTimeInterval(-seconds)
     }
 }
-

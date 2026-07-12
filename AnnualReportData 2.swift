@@ -1,21 +1,6 @@
+
 //
 //  AnnualReportData 2.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/23/26.
-//
-
-
-//
-//  AnnualReportData.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/19/26.
-//
-
-
-//
-//  AnnualReportData.swift
 //  Reading Tracker
 //
 //  Annual Reading Report — data model and generator.
@@ -46,11 +31,11 @@ import Foundation
 /// Returns a custom AnalyticsPeriod for a specific calendar year.
 func analyticsPeriod(for year: Int) -> AnalyticsPeriod {
     var comps = DateComponents()
-    comps.year  = year
+    comps.year = year
     comps.month = 1
-    comps.day   = 1
+    comps.day = 1
     let start = Calendar.current.date(from: comps)!
-    comps.year  = year + 1
+    comps.year = year + 1
     let end = Calendar.current.date(from: comps)! - 1
     return .custom(start: start, end: end)
 }
@@ -58,7 +43,7 @@ func analyticsPeriod(for year: Int) -> AnalyticsPeriod {
 /// Filters sessions to those that started within a calendar year.
 func sessions(in books: [Book], year: Int) -> [ReadingSession] {
     let period = analyticsPeriod(for: year)
-    let range  = period.dateRange
+    let range = period.dateRange
     return books.flatMap(\.sessions).filter { s in
         guard let end = s.endTime else { return false }
         return s.startTime >= range.lowerBound && s.startTime <= range.upperBound
@@ -75,7 +60,7 @@ func booksRead(in books: [Book], year: Int) -> [Book] {
 /// Books completed in the given year.
 func booksCompleted(in books: [Book], year: Int) -> [Book] {
     let period = analyticsPeriod(for: year)
-    let range  = period.dateRange
+    let range = period.dateRange
     return books.filter { book in
         guard book.isCompleted else { return false }
         return book.lastReadDate.map { range.contains($0) } ?? false
@@ -91,64 +76,74 @@ struct AnnualReportData {
     let generatedAt: Date
 
     // MARK: Slide 1 — Volume: How much did I read?
-    let totalReadingTime: TimeInterval            // Source: AnalyticsEngine.readingTime
-    let totalPagesRead: Int                       // Source: AnalyticsEngine.pagesRead
-    let totalBooksStarted: Int                    // Source: booksRead(year:)
-    let totalBooksCompleted: Int                  // Source: booksCompleted(year:)
-    let totalReadingDays: Int                     // Source: distinct calendar days with sessions
-    let totalSessions: Int                        // Source: sessions(year:).count
+
+    let totalReadingTime: TimeInterval // Source: AnalyticsEngine.readingTime
+    let totalPagesRead: Int // Source: AnalyticsEngine.pagesRead
+    let totalBooksStarted: Int // Source: booksRead(year:)
+    let totalBooksCompleted: Int // Source: booksCompleted(year:)
+    let totalReadingDays: Int // Source: distinct calendar days with sessions
+    let totalSessions: Int // Source: sessions(year:).count
 
     // MARK: Slide 2 — Rhythm: When did I read?
-    let timeOfDayAnalysis: TimeOfDayAnalytics     // Source: AnalyticsEngine.timeOfDayAnalysis
-    let bestReadingWindow: ReadingWindow          // Source: timeOfDayAnalysis.bestWindow
-    let dailyActivityForYear: [DailyActivity]     // Source: AnalyticsEngine.dailyActivity (year-filtered)
-    let mostActiveDayOfWeek: Int                  // Source: computed from sessions
-    let longestSingleSession: TimeInterval        // Source: max session duration in year
-    let averageSessionLength: TimeInterval        // Source: mean session duration
+
+    let timeOfDayAnalysis: TimeOfDayAnalytics // Source: AnalyticsEngine.timeOfDayAnalysis
+    let bestReadingWindow: ReadingWindow // Source: timeOfDayAnalysis.bestWindow
+    let dailyActivityForYear: [DailyActivity] // Source: AnalyticsEngine.dailyActivity (year-filtered)
+    let mostActiveDayOfWeek: Int // Source: computed from sessions
+    let longestSingleSession: TimeInterval // Source: max session duration in year
+    let averageSessionLength: TimeInterval // Source: mean session duration
 
     // MARK: Slide 3 — Library: What did I read?
-    let booksReadThisYear: [Book]                 // Source: booksRead(year:)
-    let booksCompletedThisYear: [Book]            // Source: booksCompleted(year:)
-    let genreSummary: GenreAnalyticsSummary       // Source: AnalyticsEngine.genreSummary (year subset)
-    let dominantGenre: ReadingGenre?              // Source: genreSummary.dominantGenre
-    let formatBreakdown: (epub: Int, pdf: Int)    // Source: booksReadThisYear partition by fileType
+
+    let booksReadThisYear: [Book] // Source: booksRead(year:)
+    let booksCompletedThisYear: [Book] // Source: booksCompleted(year:)
+    let genreSummary: GenreAnalyticsSummary // Source: AnalyticsEngine.genreSummary (year subset)
+    let dominantGenre: ReadingGenre? // Source: genreSummary.dominantGenre
+    let formatBreakdown: (epub: Int, pdf: Int) // Source: booksReadThisYear partition by fileType
 
     // MARK: Slide 4 — Pace: How did I read?
-    let averageSecondsPerPage: Double             // Source: AnalyticsEngine.crossBookReadingSpeed
-    let speedTrend: TrendAnalytics                // Source: AnalyticsEngine.trendAnalysis (year subset)
+
+    let averageSecondsPerPage: Double // Source: AnalyticsEngine.crossBookReadingSpeed
+    let speedTrend: TrendAnalytics // Source: AnalyticsEngine.trendAnalysis (year subset)
     let improvementAnalysis: ImprovementAnalytics // Source: AnalyticsEngine.improvementAnalysis
-    let averagePagesPerHour: Double               // Source: readerProfile.averagePagesPerHour
+    let averagePagesPerHour: Double // Source: readerProfile.averagePagesPerHour
 
     // MARK: Slide 5 — Highlights: Which books mattered most?
-    let mostReadBook: Book?                       // Source: most total time in year
-    let longestBook: Book?                        // Source: most pages among completed
-    let fastestBook: Book?                        // Source: fastest avg seconds/page
-    let deepestBook: Book?                        // Source: slowest avg seconds/page (most deliberate)
+
+    let mostReadBook: Book? // Source: most total time in year
+    let longestBook: Book? // Source: most pages among completed
+    let fastestBook: Book? // Source: fastest avg seconds/page
+    let deepestBook: Book? // Source: slowest avg seconds/page (most deliberate)
 
     // MARK: Slide 6 — Streak & Consistency
-    let streak: ReadingStreak                     // Source: AnalyticsEngine.streak
-    let longestYearStreak: Int                    // Source: computed from year sessions only
-    let readingDaysPercentage: Double             // Source: totalReadingDays / daysInYear
-    let weeklyPatternScores: [Int: Double]        // Source: weekday → avg session duration
+
+    let streak: ReadingStreak // Source: AnalyticsEngine.streak
+    let longestYearStreak: Int // Source: computed from year sessions only
+    let readingDaysPercentage: Double // Source: totalReadingDays / daysInYear
+    let weeklyPatternScores: [Int: Double] // Source: weekday → avg session duration
 
     // MARK: Slide 7 — Achievements
-    let achievementsEarnedThisYear: [EarnedAchievement]  // Source: EarnedAchievements filtered to year
-    let totalAchievementsEarned: Int                     // Source: achievementsEarnedThisYear.count
+
+    let achievementsEarnedThisYear: [EarnedAchievement] // Source: EarnedAchievements filtered to year
+    let totalAchievementsEarned: Int // Source: achievementsEarnedThisYear.count
     let highestTierEarned: AchievementDefinition.AchievementTier? // Source: max tier in year
 
     // MARK: Slide 8 — Goals
-    let annualGoalStatus: GoalStatus?             // Source: ReadingGoalManager.annualBookStatus
-    let goalMetCount: Int                         // Source: statuses where isAchieved
-    let hadAnnualGoal: Bool                       // Source: goalSet.annualBookTarget != nil
-    let annualBookTarget: Int?                    // Source: goalSet.annualBookTarget
+
+    let annualGoalStatus: GoalStatus? // Source: ReadingGoalManager.annualBookStatus
+    let goalMetCount: Int // Source: statuses where isAchieved
+    let hadAnnualGoal: Bool // Source: goalSet.annualBookTarget != nil
+    let annualBookTarget: Int? // Source: goalSet.annualBookTarget
 
     // MARK: Slide 9 — Narrative: Who did I become as a reader?
-    let narrativeProfile: ReaderNarrativeProfile  // Source: deterministic from all metrics
+
+    let narrativeProfile: ReaderNarrativeProfile // Source: deterministic from all metrics
 
     // MARK: Slide 10 — Audio Environment: What was the soundtrack to your reading?
-    // nil when audioProfiles were not passed to generate() or fewer than 3 audio-linked
-    // sessions exist for the year. MusicalAnalysisEngine is the authoritative source.
-    let audioReport: AudioAnnualReport?           // Source: MusicalAnalysisEngine.generateAnnualReport
+
+    /// nil when audioProfiles were not passed to generate() or fewer than 3 audio-linked
+    /// sessions exist for the year. MusicalAnalysisEngine is the authoritative source.
+    let audioReport: AudioAnnualReport? // Source: MusicalAnalysisEngine.generateAnnualReport
 }
 
 // MARK: - Reader Narrative Profile
@@ -158,30 +153,29 @@ struct AnnualReportData {
 /// Every field has an identifiable source in the analytics engines.
 struct ReaderNarrativeProfile {
     // Reading Identity
-    let identityLabel: String        // e.g. "Consistent Evening Reader"
-    let identitySubtitle: String     // supporting evidence phrase
+    let identityLabel: String // e.g. "Consistent Evening Reader"
+    let identitySubtitle: String // supporting evidence phrase
 
     // Key stats that define the year
-    let standoutStat: String         // the single most impressive measurement
-    let standoutContext: String      // what that measurement means
+    let standoutStat: String // the single most impressive measurement
+    let standoutContext: String // what that measurement means
 
     // Trajectory
-    let trajectoryLabel: String      // "Growing", "Consistent", "Rebuilding"
-    let trajectoryDetail: String     // one-sentence evidence
+    let trajectoryLabel: String // "Growing", "Consistent", "Rebuilding"
+    let trajectoryDetail: String // one-sentence evidence
 
     // Character observation (from data)
     let characterObservation: String // e.g. "You finish what you start." based on completion rate
-    let characterEvidence: String    // backing statistic
+    let characterEvidence: String // backing statistic
 
     // Growth signal
-    let growthSignal: String?        // nil if insufficient data for year-over-year
+    let growthSignal: String? // nil if insufficient data for year-over-year
     let growthDetail: String?
 }
 
 // MARK: - AnnualReportGenerator
 
 enum AnnualReportGenerator {
-
     /// Generates the complete report data for the given year from live DataStore state.
     /// This is the only entry point. Call once; store result in @StateObject.
     ///
@@ -197,56 +191,55 @@ enum AnnualReportGenerator {
         earnedAchievements: [EarnedAchievement],
         audioProfiles: [AudioContextProfile] = []
     ) -> AnnualReportData {
-
-        let calendar  = Calendar.current
-        let period    = analyticsPeriod(for: year)
+        let calendar = Calendar.current
+        let period = analyticsPeriod(for: year)
         let yearRange = period.dateRange
 
         // ── Filter to year ────────────────────────────────────────────────
-        let yearBooks      = booksRead(in: books, year: year)
-        let yearCompleted  = booksCompleted(in: books, year: year)
-        let yearSessions   = sessions(in: books, year: year).filter { $0.endTime != nil }
+        let yearBooks = booksRead(in: books, year: year)
+        let yearCompleted = booksCompleted(in: books, year: year)
+        let yearSessions = sessions(in: books, year: year).filter { $0.endTime != nil }
 
         // ── Slide 1: Volume ───────────────────────────────────────────────
-        let totalTime     = AnalyticsEngine.readingTime(books: books, in: period)
-        let totalPages    = AnalyticsEngine.pagesRead(books: books, in: period)
-        let totalDays     = distinctReadingDays(sessions: yearSessions, calendar: calendar)
+        let totalTime = AnalyticsEngine.readingTime(books: books, in: period)
+        let totalPages = AnalyticsEngine.pagesRead(books: books, in: period)
+        let totalDays = distinctReadingDays(sessions: yearSessions, calendar: calendar)
         let totalSessions = yearSessions.count
 
         // ── Slide 2: Rhythm ───────────────────────────────────────────────
         // Build a year-subset books array so time-of-day analysis uses only year data.
         let yearSubsetBooks = booksWithYearSessions(books: yearBooks, yearSessions: yearSessions)
-        let todAnalysis     = AnalyticsEngine.timeOfDayAnalysis(books: yearSubsetBooks)
-        let dailyActivity   = dailyActivityForYear(yearSessions: yearSessions, year: year, calendar: calendar)
-        let mostActiveDay   = mostActiveDayOfWeek(sessions: yearSessions, calendar: calendar)
-        let longestSession  = yearSessions.map(\.duration).max() ?? 0
-        let avgSession      = yearSessions.isEmpty ? 0 :
+        let todAnalysis = AnalyticsEngine.timeOfDayAnalysis(books: yearSubsetBooks)
+        let dailyActivity = dailyActivityForYear(yearSessions: yearSessions, year: year, calendar: calendar)
+        let mostActiveDay = mostActiveDayOfWeek(sessions: yearSessions, calendar: calendar)
+        let longestSession = yearSessions.map(\.duration).max() ?? 0
+        let avgSession = yearSessions.isEmpty ? 0 :
             yearSessions.map(\.duration).reduce(0, +) / Double(yearSessions.count)
 
         // ── Slide 3: Library ──────────────────────────────────────────────
         let yearGenreBooks = yearSubsetBooks
-        let genreSummary   = AnalyticsEngine.genreSummary(from: yearGenreBooks)
-        let epubCount      = yearBooks.filter { $0.fileType == .epub }.count
-        let pdfCount       = yearBooks.filter { $0.fileType == .pdf }.count
+        let genreSummary = AnalyticsEngine.genreSummary(from: yearGenreBooks)
+        let epubCount = yearBooks.filter { $0.fileType == .epub }.count
+        let pdfCount = yearBooks.filter { $0.fileType == .pdf }.count
 
         // ── Slide 4: Pace ─────────────────────────────────────────────────
-        let crossSpeed     = AnalyticsEngine.crossBookReadingSpeed(allBooks: yearSubsetBooks)
-        let trendAnalysis  = AnalyticsEngine.trendAnalysis(books: yearSubsetBooks)
-        let improvement    = AnalyticsEngine.improvementAnalysis(books: yearSubsetBooks)
-        let profile        = AnalyticsEngine.readerProfile(books: yearSubsetBooks)
+        let crossSpeed = AnalyticsEngine.crossBookReadingSpeed(allBooks: yearSubsetBooks)
+        let trendAnalysis = AnalyticsEngine.trendAnalysis(books: yearSubsetBooks)
+        let improvement = AnalyticsEngine.improvementAnalysis(books: yearSubsetBooks)
+        let profile = AnalyticsEngine.readerProfile(books: yearSubsetBooks)
 
         // ── Slide 5: Highlights ───────────────────────────────────────────
-        let mostRead  = mostReadBook(yearBooks: yearBooks, yearSessions: yearSessions)
-        let longest   = yearCompleted.max(by: { $0.totalPages < $1.totalPages })
-        let fastest   = fastestBook(yearBooks: yearBooks, yearSessions: yearSessions)
-        let deepest   = deepestBook(yearBooks: yearBooks, yearSessions: yearSessions)
+        let mostRead = mostReadBook(yearBooks: yearBooks, yearSessions: yearSessions)
+        let longest = yearCompleted.max(by: { $0.totalPages < $1.totalPages })
+        let fastest = fastestBook(yearBooks: yearBooks, yearSessions: yearSessions)
+        let deepest = deepestBook(yearBooks: yearBooks, yearSessions: yearSessions)
 
         // ── Slide 6: Streak & Consistency ────────────────────────────────
-        let overallStreak   = AnalyticsEngine.streak(books: books)
-        let yearStreakLen    = longestStreakInYear(sessions: yearSessions, calendar: calendar)
-        let daysInYear      = daysInCalendarYear(year)
-        let readingDaysPct  = daysInYear > 0 ? Double(totalDays) / Double(daysInYear) : 0
-        let weeklyPattern   = weeklyPatternScores(sessions: yearSessions, calendar: calendar)
+        let overallStreak = AnalyticsEngine.streak(books: books)
+        let yearStreakLen = longestStreakInYear(sessions: yearSessions, calendar: calendar)
+        let daysInYear = daysInCalendarYear(year)
+        let readingDaysPct = daysInYear > 0 ? Double(totalDays) / Double(daysInYear) : 0
+        let weeklyPattern = weeklyPatternScores(sessions: yearSessions, calendar: calendar)
 
         // ── Slide 7: Achievements ─────────────────────────────────────────
         let yearAchievements = earnedAchievements.filter { a in
@@ -265,7 +258,7 @@ enum AnnualReportGenerator {
                 target: tgt,
                 period: String(year),
                 isAchieved: cur >= tgt,
-                percentComplete: (cur / max(1, tgt)).clamped(to: 0...1)
+                percentComplete: (cur / max(1, tgt)).clamped(to: 0 ... 1)
             )
         }
         let allGoalStatuses = ReadingGoalManager.allStatuses(for: goalSet, books: yearSubsetBooks)
@@ -399,12 +392,12 @@ enum AnnualReportGenerator {
             let day = calendar.startOfDay(for: session.startTime)
             var entry = buckets[day] ?? (0, 0, [])
             entry.duration += session.duration
-            entry.pages    += session.pagesRead
+            entry.pages += session.pagesRead
             entry.bookIDs.insert(session.bookID)
             buckets[day] = entry
         }
 
-        return (0..<days).compactMap { offset in
+        return (0 ..< days).compactMap { offset in
             guard let date = calendar.date(byAdding: .day, value: offset, to: yearStart) else { return nil }
             let entry = buckets[date] ?? (0, 0, [])
             return DailyActivity(
@@ -436,7 +429,7 @@ enum AnnualReportGenerator {
         for session in sessions {
             let weekday = calendar.component(.weekday, from: session.startTime)
             var entry = dayTotals[weekday] ?? (0, 0)
-            entry.sum   += session.duration
+            entry.sum += session.duration
             entry.count += 1
             dayTotals[weekday] = entry
         }
@@ -493,7 +486,7 @@ enum AnnualReportGenerator {
             }
     }
 
-    private static func averageSpeed(book: Book, sessions: [ReadingSession]) -> Double {
+    private static func averageSpeed(book _: Book, sessions: [ReadingSession]) -> Double {
         let timings = sessions.flatMap(\.pageTimes).map(\.duration).filter { $0 > 0.5 && $0 < 60 }
         guard !timings.isEmpty else { return AnalyticsConstants.defaultSecondsPerPage }
         return timings.reduce(0, +) / Double(timings.count)
@@ -512,8 +505,8 @@ enum AnnualReportGenerator {
 
         var longest = 1
         var current = 1
-        for i in 1..<days.count {
-            let diff = calendar.dateComponents([.day], from: days[i-1], to: days[i]).day ?? 0
+        for i in 1 ..< days.count {
+            let diff = calendar.dateComponents([.day], from: days[i - 1], to: days[i]).day ?? 0
             if diff == 1 {
                 current += 1
                 longest = max(longest, current)
@@ -541,10 +534,18 @@ enum AnnualReportGenerator {
             AchievementDefinition.definition(for: a.kind)?.tier
         }
         // Platinum > Gold > Silver > Bronze
-        if tiers.contains(.platinum) { return .platinum }
-        if tiers.contains(.gold)     { return .gold }
-        if tiers.contains(.silver)   { return .silver }
-        if tiers.contains(.bronze)   { return .bronze }
+        if tiers.contains(.platinum) {
+            return .platinum
+        }
+        if tiers.contains(.gold) {
+            return .gold
+        }
+        if tiers.contains(.silver) {
+            return .silver
+        }
+        if tiers.contains(.bronze) {
+            return .bronze
+        }
         return nil
     }
 
@@ -557,18 +558,17 @@ enum AnnualReportGenerator {
         totalTime: TimeInterval,
         totalPages: Int,
         totalBooksCompleted: Int,
-        totalDays: Int,
+        totalDays _: Int,
         avgSession: TimeInterval,
         bestWindow: ReadingWindow,
         readingDaysPct: Double,
         trend: TrendAnalytics,
         improvement: ImprovementAnalytics,
         longestStreak: Int,
-        profile: ReaderProfileAnalytics,
-        crossSpeed: Double,
+        profile _: ReaderProfileAnalytics,
+        crossSpeed _: Double,
         completionRate: Double
     ) -> ReaderNarrativeProfile {
-
         // ── Identity ──────────────────────────────────────────────────────
         let windowName = windowDisplayName(bestWindow)
 
@@ -576,26 +576,26 @@ enum AnnualReportGenerator {
         let identitySubtitle: String
 
         switch (readingDaysPct, avgSession, bestWindow) {
-        case (let pct, _, _) where pct >= 0.80:
-            identityLabel    = "The Daily Reader"
+        case let (pct, _, _) where pct >= 0.80:
+            identityLabel = "The Daily Reader"
             identitySubtitle = "You read on \(Int(readingDaysPct * 100))% of all days in \(year)."
-        case (_, let avg, _) where avg >= 3600:
-            identityLabel    = "The Deep Diver"
+        case let (_, avg, _) where avg >= 3600:
+            identityLabel = "The Deep Diver"
             identitySubtitle = "Your average session ran over an hour — you read in long, immersive blocks."
         case (_, _, .morning):
-            identityLabel    = "The Morning Reader"
+            identityLabel = "The Morning Reader"
             identitySubtitle = "Your most productive sessions consistently happened in the morning."
         case (_, _, .night):
-            identityLabel    = "The Night Owl"
+            identityLabel = "The Night Owl"
             identitySubtitle = "You did most of your reading after dark, when the world was quiet."
         case (_, _, .evening):
-            identityLabel    = "The Evening Reader"
+            identityLabel = "The Evening Reader"
             identitySubtitle = "You settled into your reading habit in the evenings."
-        case (let pct, _, _) where pct >= 0.40:
-            identityLabel    = "The Steady Reader"
+        case let (pct, _, _) where pct >= 0.40:
+            identityLabel = "The Steady Reader"
             identitySubtitle = "You read consistently across the year, making it a real habit."
         default:
-            identityLabel    = "The Intentional Reader"
+            identityLabel = "The Intentional Reader"
             identitySubtitle = "When you picked up a book, you made it count."
         }
 
@@ -607,21 +607,21 @@ enum AnnualReportGenerator {
         let minutes = Int((totalTime.truncatingRemainder(dividingBy: 3600)) / 60)
 
         if longestStreak >= 30 {
-            standoutStat    = "\(longestStreak)-day streak"
+            standoutStat = "\(longestStreak)-day streak"
             standoutContext = "You read every single day for \(longestStreak) consecutive days in \(year). That kind of momentum is rare."
         } else if totalBooksCompleted >= 20 {
-            standoutStat    = "\(totalBooksCompleted) books finished"
+            standoutStat = "\(totalBooksCompleted) books finished"
             standoutContext = "Completing \(totalBooksCompleted) books in a year puts you well ahead of most readers."
         } else if totalPages >= 5000 {
-            standoutStat    = "\(totalPages.formatted()) pages"
+            standoutStat = "\(totalPages.formatted()) pages"
             standoutContext = "You turned more than \(totalPages.formatted()) pages in \(year). That's a serious body of reading."
         } else if hours >= 100 {
             let formatted = hours > 0 ? "\(hours)h \(minutes)m" : "\(minutes)m"
-            standoutStat    = formatted + " reading"
+            standoutStat = formatted + " reading"
             standoutContext = "You spent over \(hours) hours reading in \(year) — more than four full days of your life."
         } else {
             let formatted = hours > 0 ? "\(hours)h \(minutes)m" : "\(minutes)m"
-            standoutStat    = formatted + " reading"
+            standoutStat = formatted + " reading"
             standoutContext = "Every minute counted: \(formatted) of focused reading added up across your year."
         }
 
@@ -632,14 +632,14 @@ enum AnnualReportGenerator {
         switch trend.direction {
         case .growth:
             let pct = Int(trend.dailyTrend * 100)
-            trajectoryLabel  = "Growing"
+            trajectoryLabel = "Growing"
             trajectoryDetail = "Your reading pace increased by about \(pct)% over the course of the year."
         case .decline:
             let pct = Int(abs(trend.dailyTrend) * 100)
-            trajectoryLabel  = "Ebbing"
+            trajectoryLabel = "Ebbing"
             trajectoryDetail = "Your reading pace slowed by about \(pct)% through the year — a natural rhythm, not a failure."
         case .plateau:
-            trajectoryLabel  = "Consistent"
+            trajectoryLabel = "Consistent"
             trajectoryDetail = "Your reading pace was remarkably steady all year — a sign of a well-anchored habit."
         }
 
@@ -650,20 +650,20 @@ enum AnnualReportGenerator {
         switch completionRate {
         case 0.8...:
             characterObservation = "You finish what you start."
-            characterEvidence    = "\(Int(completionRate * 100))% of the books you picked up this year, you finished."
-        case 0.5..<0.8:
+            characterEvidence = "\(Int(completionRate * 100))% of the books you picked up this year, you finished."
+        case 0.5 ..< 0.8:
             characterObservation = "You're selective about what holds your attention."
-            characterEvidence    = "You completed \(totalBooksCompleted) books and left others behind when they weren't the right fit."
-        case 0..<0.5 where totalBooksCompleted >= 3:
+            characterEvidence = "You completed \(totalBooksCompleted) books and left others behind when they weren't the right fit."
+        case 0 ..< 0.5 where totalBooksCompleted >= 3:
             characterObservation = "You read widely and move on."
-            characterEvidence    = "You explored many books and finished the ones that truly grabbed you."
+            characterEvidence = "You explored many books and finished the ones that truly grabbed you."
         default:
             if avgSession >= 1800 {
                 characterObservation = "When you read, you commit."
-                characterEvidence    = "Your sessions averaged \(Int(avgSession / 60)) minutes — substantial, focused blocks."
+                characterEvidence = "Your sessions averaged \(Int(avgSession / 60)) minutes — substantial, focused blocks."
             } else {
                 characterObservation = "You fit reading into the margins of life."
-                characterEvidence    = "Shorter sessions still accumulated into real reading time across the year."
+                characterEvidence = "Shorter sessions still accumulated into real reading time across the year."
             }
         }
 
@@ -703,10 +703,10 @@ enum AnnualReportGenerator {
 
     private static func windowDisplayName(_ window: ReadingWindow) -> String {
         switch window {
-        case .morning:   return "Morning"
+        case .morning: return "Morning"
         case .afternoon: return "Afternoon"
-        case .evening:   return "Evening"
-        case .night:     return "Night"
+        case .evening: return "Evening"
+        case .night: return "Night"
         }
     }
 }
@@ -722,23 +722,27 @@ func availableReportYears(books: [Book]) -> [Int] {
             .compactMap(\.endTime)
             .map { calendar.component(.year, from: $0) }
     )
-    return years.sorted(by: >)  // Most recent first
+    return years.sorted(by: >) // Most recent first
 }
 
 // MARK: - Format Helpers (shared across report slides)
 
 func formatDuration(_ seconds: TimeInterval) -> String {
     let totalMinutes = Int(seconds / 60)
-    let hours   = totalMinutes / 60
+    let hours = totalMinutes / 60
     let minutes = totalMinutes % 60
-    if hours > 0 { return "\(hours)h \(minutes)m" }
+    if hours > 0 {
+        return "\(hours)h \(minutes)m"
+    }
     return "\(minutes)m"
 }
 
 func formatDurationVerbose(_ seconds: TimeInterval) -> String {
-    let hours   = Int(seconds / 3600)
+    let hours = Int(seconds / 3600)
     let minutes = Int((seconds.truncatingRemainder(dividingBy: 3600)) / 60)
-    if hours > 0 { return "\(hours) hours, \(minutes) minutes" }
+    if hours > 0 {
+        return "\(hours) hours, \(minutes) minutes"
+    }
     return "\(minutes) minutes"
 }
 

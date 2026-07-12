@@ -1,13 +1,5 @@
-//
+
 //  NewYearTransitionMonitor.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/19/26.
-//
-
-
-//
-//  NewYearTransition.swift
 //  Reading Tracker
 //
 //  Feature C: New Year Transition Celebration
@@ -34,8 +26,8 @@
 //  It overlays the active reading view and removes itself automatically.
 //  DataStore and SessionCoordinator state is untouched during the celebration.
 
-import SwiftUI
 import Combine
+import SwiftUI
 
 // MARK: - New Year Transition Monitor
 
@@ -71,8 +63,8 @@ final class NewYearTransitionMonitor: ObservableObject {
     }
 
     func dismissCelebration() {
-        celebrationActive  = false
-        hasFiredThisSession = true  // Don't re-trigger on same session
+        celebrationActive = false
+        hasFiredThisSession = true // Don't re-trigger on same session
     }
 
     private func checkMidnight() {
@@ -104,7 +96,7 @@ final class NewYearTransitionMonitor: ObservableObject {
 /// Phase 3: Full screen (8–10 seconds)
 /// After completion: auto-dismisses and returns to reading session.
 struct NewYearCelebrationOverlay: View {
-    let onComplete: () -> Void  // Called when celebration ends; reading resumes
+    let onComplete: () -> Void // Called when celebration ends; reading resumes
 
     @State private var phase: CelebrationPhase = .toast
     @State private var particles: [SnowParticle] = []
@@ -201,7 +193,7 @@ struct NewYearCelebrationOverlay: View {
             RadialGradient(
                 gradient: Gradient(colors: [
                     Color(red: 0.18, green: 0.35, blue: 0.85).opacity(0.22 * mistOpacity),
-                    Color.clear
+                    Color.clear,
                 ]),
                 center: .center,
                 startRadius: 20,
@@ -253,7 +245,7 @@ struct NewYearCelebrationOverlay: View {
         .onAppear {
             withAnimation(.easeOut(duration: 0.8)) {
                 contentOpacity = 1
-                scaleFactor    = 1.0
+                scaleFactor = 1.0
             }
         }
     }
@@ -306,7 +298,7 @@ struct NewYearCelebrationOverlay: View {
 
     private func spawnParticles() {
         // Initial burst
-        particles = (0..<40).map { _ in SnowParticle.random() }
+        particles = (0 ..< 40).map { _ in SnowParticle.random() }
 
         // Continuous trickle
         particleTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: true) { _ in
@@ -323,21 +315,21 @@ struct NewYearCelebrationOverlay: View {
 // MARK: - Snowflake Particle Model
 
 struct SnowParticle: Identifiable {
-    let id: UUID = UUID()
+    let id: UUID = .init()
     let x: CGFloat
     let size: CGFloat
     let opacity: Double
-    let speed: Double   // seconds to fall across screen
-    let birthTime: Date = Date()
+    let speed: Double // seconds to fall across screen
+    let birthTime: Date = .init()
     let wobble: CGFloat // horizontal drift amplitude
 
     static func random() -> SnowParticle {
         SnowParticle(
-            x: CGFloat.random(in: 0...1),
-            size: CGFloat.random(in: 6...20),
-            opacity: Double.random(in: 0.3...0.85),
-            speed: Double.random(in: 8...18),
-            wobble: CGFloat.random(in: -30...30)
+            x: CGFloat.random(in: 0 ... 1),
+            size: CGFloat.random(in: 6 ... 20),
+            opacity: Double.random(in: 0.3 ... 0.85),
+            speed: Double.random(in: 8 ... 18),
+            wobble: CGFloat.random(in: -30 ... 30)
         )
     }
 }
@@ -348,7 +340,7 @@ private struct SnowflakeParticleView: View {
     let particle: SnowParticle
 
     @State private var yOffset: CGFloat = -50
-    @State private var xDrift: CGFloat  = 0
+    @State private var xDrift: CGFloat = 0
     @State private var rotation: Double = 0
 
     var body: some View {
@@ -364,19 +356,19 @@ private struct SnowflakeParticleView: View {
                 .onAppear {
                     withAnimation(
                         .linear(duration: particle.speed)
-                        .repeatForever(autoreverses: false)
+                            .repeatForever(autoreverses: false)
                     ) {
-                        yOffset   = geo.size.height + 60
+                        yOffset = geo.size.height + 60
                     }
                     withAnimation(
                         .easeInOut(duration: particle.speed * 0.4)
-                        .repeatForever(autoreverses: true)
+                            .repeatForever(autoreverses: true)
                     ) {
                         xDrift = particle.wobble
                     }
                     withAnimation(
                         .linear(duration: particle.speed * 0.6)
-                        .repeatForever(autoreverses: false)
+                            .repeatForever(autoreverses: false)
                     ) {
                         rotation = 360
                     }
@@ -398,7 +390,7 @@ struct NewYearTransitionAwareModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .onAppear  { monitor.startMonitoring() }
+            .onAppear { monitor.startMonitoring() }
             .onDisappear { monitor.stopMonitoring() }
             .overlay {
                 if monitor.celebrationActive {

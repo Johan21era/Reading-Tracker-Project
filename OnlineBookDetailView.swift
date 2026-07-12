@@ -1,28 +1,16 @@
 //
 //  OnlineBookDetailView.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
-
-
-//
-//  OnlineBookDetailView.swift
 //  Online Book Discovery System
 //
 
 import SwiftUI
 
 struct OnlineBookDetailView: View {
-
     let book: OnlineBook
 
     var body: some View {
-
         ScrollView {
-
             VStack(alignment: .leading, spacing: 16) {
-
                 if let coverURL = book.coverURL {
                     AsyncImage(url: coverURL) { phase in
                         switch phase {
@@ -30,7 +18,7 @@ struct OnlineBookDetailView: View {
                             ProgressView()
                                 .frame(height: 220)
 
-                        case .success(let image):
+                        case let .success(image):
                             image
                                 .resizable()
                                 .scaledToFit()
@@ -48,7 +36,6 @@ struct OnlineBookDetailView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-
                     Text(book.title)
                         .font(.title2)
                         .bold()
@@ -96,7 +83,6 @@ struct OnlineBookDetailView: View {
 // MARK: - Helpers
 
 private extension OnlineBook {
-
     var sourceLabel: String {
         switch source {
         case .openLibrary: return "Open Library"

@@ -1,21 +1,7 @@
+
+
 //
 //  AnnualReportArchiveView 2.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/23/26.
-//
-
-
-//
-//  AnnualReportArchiveView.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/19/26.
-//
-
-
-//
-//  AnnualReportArchive.swift
 //  Reading Tracker
 //
 //  Feature B: Annual Report Archive — browse past years
@@ -56,7 +42,7 @@ struct AnnualReportArchiveView: View {
             } else if let report = reportData {
                 AnnualReportView(data: report) {
                     selectedYear = nil
-                    reportData   = nil
+                    reportData = nil
                 }
             } else {
                 archiveEmptyDetail
@@ -89,10 +75,10 @@ struct AnnualReportArchiveView: View {
     }
 
     private func archiveYearRow(year: Int) -> some View {
-        let yearBooks     = booksRead(in: dataStore.books, year: year)
+        let yearBooks = booksRead(in: dataStore.books, year: year)
         let yearCompleted = booksCompleted(in: dataStore.books, year: year)
-        let period        = analyticsPeriod(for: year)
-        let yearTime      = AnalyticsEngine.readingTime(books: dataStore.books, in: period)
+        let period = analyticsPeriod(for: year)
+        let yearTime = AnalyticsEngine.readingTime(books: dataStore.books, in: period)
 
         return VStack(alignment: .leading, spacing: 4) {
             Text(String(year))
@@ -161,13 +147,13 @@ struct AnnualReportArchiveView: View {
 
     private func generateReport(for year: Int) {
         isGenerating = true
-        reportData   = nil
+        reportData = nil
 
         // Run on background thread; generation is synchronous but can be slow for large libraries.
         Task.detached(priority: .userInitiated) {
-            let books         = await dataStore.books
-            let goalSet       = await dataStore.libraryState.goalSet
-            let achievements  = await dataStore.libraryState.earnedAchievements
+            let books = await dataStore.books
+            let goalSet = await dataStore.libraryState.goalSet
+            let achievements = await dataStore.libraryState.earnedAchievements
             // Load persisted audio profiles so MusicalAnalysisEngine can populate Slide 10.
             let audioProfiles = await dataStore.allAudioProfiles()
 
@@ -180,7 +166,7 @@ struct AnnualReportArchiveView: View {
             )
 
             await MainActor.run {
-                reportData   = generated
+                reportData = generated
                 isGenerating = false
             }
         }
@@ -263,7 +249,7 @@ struct JanuaryFirstBannerView: View {
                 LinearGradient(
                     gradient: Gradient(colors: [
                         Color.accentColor.opacity(0.08),
-                        Color.accentColor.opacity(0.04)
+                        Color.accentColor.opacity(0.04),
                     ]),
                     startPoint: .leading,
                     endPoint: .trailing
@@ -302,9 +288,9 @@ struct JanuaryFirstBannerView: View {
         // Mark dismissed so app-close removes it next launch
         UserDefaults.standard.set(previousYear, forKey: "annualReport.bannerDismissedYear")
 
-        let books         = dataStore.books
-        let goalSet       = dataStore.libraryState.goalSet
-        let achievements  = dataStore.libraryState.earnedAchievements
+        let books = dataStore.books
+        let goalSet = dataStore.libraryState.goalSet
+        let achievements = dataStore.libraryState.earnedAchievements
         // Load audio profiles so Slide 10 is populated when opened from the banner.
         let audioProfiles = dataStore.allAudioProfiles()
 
@@ -317,7 +303,7 @@ struct JanuaryFirstBannerView: View {
                 audioProfiles: audioProfiles
             )
             await MainActor.run {
-                reportData   = generated
+                reportData = generated
                 showingReport = true
             }
         }
@@ -325,6 +311,7 @@ struct JanuaryFirstBannerView: View {
 }
 
 // MARK: - App Lifecycle Integration (Banner Persistence)
+
 //
 // The spec says: "After the application closes, the banner disappears permanently for that year."
 // This means: on app launch (AppDelegate / SceneDelegate), check if today is January 1 and if

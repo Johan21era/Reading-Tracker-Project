@@ -1,12 +1,4 @@
-//
-//  ReadingGoalSet.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/16/26.
-//
 
-
-//
 //  ReadingGoalManager.swift
 //  Reading Tracker
 //
@@ -41,8 +33,8 @@
 //    • Reads Book.sessions for per-book progress
 //    • Writes nothing (pure computation layer)
 
-import Foundation
 import Combine
+import Foundation
 
 // MARK: - Goal Models
 
@@ -68,28 +60,28 @@ struct BookDeadline: Identifiable, Codable, Hashable {
     var reminderEnabled: Bool
 
     init(id: UUID = UUID(), bookID: UUID, targetDate: Date, reminderEnabled: Bool = false) {
-        self.id               = id
-        self.bookID           = bookID
-        self.targetDate       = targetDate
-        self.reminderEnabled  = reminderEnabled
+        self.id = id
+        self.bookID = bookID
+        self.targetDate = targetDate
+        self.reminderEnabled = reminderEnabled
     }
 }
 
 /// The progress status of a single goal at a point in time.
 struct GoalStatus {
     let goal: GoalKind
-    let current: Double      // what the user has achieved in the current period
-    let target: Double       // what the goal requires
-    let period: String       // human-readable period label (e.g. "Today", "This week")
+    let current: Double // what the user has achieved in the current period
+    let target: Double // what the goal requires
+    let period: String // human-readable period label (e.g. "Today", "This week")
     let isAchieved: Bool
-    let percentComplete: Double  // current/target, clamped [0,1]
+    let percentComplete: Double // current/target, clamped [0,1]
 
     enum GoalKind: String {
-        case dailyPages      = "Daily Pages"
-        case dailyTime       = "Daily Reading Time"
-        case annualBooks     = "Books This Year"
-        case weeklyStreak    = "Reading Days This Week"
-        case bookDeadline    = "Book Deadline"
+        case dailyPages = "Daily Pages"
+        case dailyTime = "Daily Reading Time"
+        case annualBooks = "Books This Year"
+        case weeklyStreak = "Reading Days This Week"
+        case bookDeadline = "Book Deadline"
     }
 }
 
@@ -99,8 +91,8 @@ struct BookDeadlineStatus {
     let book: Book
     let daysRemaining: Int
     let pagesRemaining: Int
-    let requiredPagesPerDay: Double   // pages/day needed to hit the deadline
-    let isAchievable: Bool            // based on historical reading speed
+    let requiredPagesPerDay: Double // pages/day needed to hit the deadline
+    let isAchievable: Bool // based on historical reading speed
     let isOverdue: Bool
 }
 
@@ -110,7 +102,6 @@ struct BookDeadlineStatus {
 /// The manager reads from the user's goals and the current books array,
 /// and returns GoalStatus values that the UI and AchievementEngine consume.
 enum ReadingGoalManager {
-
     // MARK: - Current Status
 
     /// Returns the current status of all active library-level goals.
@@ -150,21 +141,21 @@ enum ReadingGoalManager {
     // MARK: - Individual Goal Computations
 
     private static func dailyPageStatus(books: [Book], target: Int) -> GoalStatus {
-        let today  = AnalyticsPeriod.today
-        let pages  = Double(AnalyticsEngine.pagesRead(books: books, in: today))
-        let tgt    = Double(target)
+        let today = AnalyticsPeriod.today
+        let pages = Double(AnalyticsEngine.pagesRead(books: books, in: today))
+        let tgt = Double(target)
         return GoalStatus(
             goal: .dailyPages,
             current: pages,
             target: tgt,
             period: "Today",
             isAchieved: pages >= tgt,
-            percentComplete: (pages / tgt).clamped(to: 0...1)
+            percentComplete: (pages / tgt).clamped(to: 0 ... 1)
         )
     }
 
     private static func dailyTimeStatus(books: [Book], target: TimeInterval) -> GoalStatus {
-        let today   = AnalyticsPeriod.today
+        let today = AnalyticsPeriod.today
         let seconds = AnalyticsEngine.readingTime(books: books, in: today)
         return GoalStatus(
             goal: .dailyTime,
@@ -172,16 +163,16 @@ enum ReadingGoalManager {
             target: target,
             period: "Today",
             isAchieved: seconds >= target,
-            percentComplete: (seconds / max(1, target)).clamped(to: 0...1)
+            percentComplete: (seconds / max(1, target)).clamped(to: 0 ... 1)
         )
     }
 
     private static func annualBookStatus(books: [Book], target: Int) -> GoalStatus {
-        let year       = AnalyticsPeriod.thisYear
-        let yearRange  = year.dateRange
-        let completed  = books.filter { book in
+        let year = AnalyticsPeriod.thisYear
+        let yearRange = year.dateRange
+        let completed = books.filter { book in
             book.isCompleted &&
-            (book.lastReadDate.map { yearRange.contains($0) } ?? false)
+                (book.lastReadDate.map { yearRange.contains($0) } ?? false)
         }.count
         let tgt = Double(target)
         let cur = Double(completed)
@@ -191,15 +182,16 @@ enum ReadingGoalManager {
             target: tgt,
             period: "This Year",
             isAchieved: cur >= tgt,
-            percentComplete: (cur / max(1, tgt)).clamped(to: 0...1)
+            percentComplete: (cur / max(1, tgt)).clamped(to: 0 ... 1)
         )
     }
 
     private static func weeklyStreakStatus(books: [Book], target: Int) -> GoalStatus {
-        let calendar   = Calendar.current
-        let weekStart  = calendar.date(from: calendar.dateComponents(
-            [.yearForWeekOfYear, .weekOfYear], from: Date()))!
-        let weekEnd    = calendar.date(byAdding: .day, value: 7, to: weekStart)!
+        let calendar = Calendar.current
+        let weekStart = calendar.date(from: calendar.dateComponents(
+            [.yearForWeekOfYear, .weekOfYear], from: Date()
+        ))!
+        let weekEnd = calendar.date(byAdding: .day, value: 7, to: weekStart)!
 
         // Count distinct calendar days within the current week that had any session activity.
         let activeDays: Set<Date> = Set(
@@ -219,18 +211,18 @@ enum ReadingGoalManager {
             target: tgt,
             period: "This Week",
             isAchieved: cur >= tgt,
-            percentComplete: (cur / max(1, tgt)).clamped(to: 0...1)
+            percentComplete: (cur / max(1, tgt)).clamped(to: 0 ... 1)
         )
     }
 
     // MARK: - Deadline Status
 
     static func deadlineStatus(deadline: BookDeadline, book: Book) -> BookDeadlineStatus {
-        let now             = Date()
-        let calendar        = Calendar.current
-        let daysRemaining   = calendar.dateComponents([.day], from: now, to: deadline.targetDate).day ?? 0
-        let pagesRemaining  = max(0, book.totalPages - 1 - book.currentPage)
-        let isOverdue       = daysRemaining < 0
+        let now = Date()
+        let calendar = Calendar.current
+        let daysRemaining = calendar.dateComponents([.day], from: now, to: deadline.targetDate).day ?? 0
+        let pagesRemaining = max(0, book.totalPages - 1 - book.currentPage)
+        let isOverdue = daysRemaining < 0
 
         // Required pages per day to finish by the deadline.
         let required: Double
@@ -241,13 +233,13 @@ enum ReadingGoalManager {
         }
 
         // Achievability: compare required pace to historical pace.
-        let historicalSpeed = AnalyticsEngine.readingSpeed(for: book)  // seconds/page
-        let secondsAvailablePerDay: Double = 3600.0  // assume 1 hour/day available
+        let historicalSpeed = AnalyticsEngine.readingSpeed(for: book) // seconds/page
+        let secondsAvailablePerDay = 3600.0 // assume 1 hour/day available
         let achievablePagesPerDay = historicalSpeed > 0
             ? secondsAvailablePerDay / historicalSpeed
-            : 10.0  // default if no history
+            : 10.0 // default if no history
 
-        let isAchievable = required <= achievablePagesPerDay * 2.0  // 2x buffer
+        let isAchievable = required <= achievablePagesPerDay * 2.0 // 2x buffer
 
         return BookDeadlineStatus(
             deadline: deadline,
@@ -269,10 +261,10 @@ enum ReadingGoalManager {
         // Convert average daily reading time to pages using the most common reading speed.
         let speeds: [Double] = books.flatMap(\.sessions).map(\.averageSecondsPerPage).filter { $0 > 0 }
         guard !speeds.isEmpty else {
-            return 20  // sensible default with no history
+            return 20 // sensible default with no history
         }
-        let sorted  = speeds.sorted()
-        let median  = sorted[sorted.count / 2]
+        let sorted = speeds.sorted()
+        let median = sorted[sorted.count / 2]
         let dailyPages = median > 0
             ? Int(profile.averageDailyReadingTime / median)
             : 20
@@ -284,8 +276,8 @@ enum ReadingGoalManager {
 
     /// Projects how many books will be completed by year end at the current pace.
     static func projectedAnnualCompletions(books: [Book]) -> Int {
-        let profile     = AnalyticsEngine.readerProfile(books: books)
-        let completionRate = profile.completionRate  // fraction of books user finishes
+        let profile = AnalyticsEngine.readerProfile(books: books)
+        let completionRate = profile.completionRate // fraction of books user finishes
         guard completionRate > 0, profile.averageWeeklyReadingTime > 0 else { return 0 }
 
         // Average pages across all books as a proxy for "books the user reads".
@@ -295,7 +287,7 @@ enum ReadingGoalManager {
         // Average reading speed.
         let allTimings = books.flatMap(\.sessions).flatMap(\.pageTimes).map(\.duration).filter { $0 > 1 }
         let speed = allTimings.isEmpty ? AnalyticsConstants.defaultSecondsPerPage
-                  : allTimings.reduce(0, +) / Double(allTimings.count)
+            : allTimings.reduce(0, +) / Double(allTimings.count)
 
         // Pages per week at current pace.
         let pagesPerWeek = profile.averageWeeklyReadingTime / speed
@@ -325,7 +317,7 @@ final class GoalProgressViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     func bind(to dataStore: DataStore, goalSet: ReadingGoalSet, deadlines: [BookDeadline]) {
-        self.goalSet   = goalSet
+        self.goalSet = goalSet
         self.deadlines = deadlines
 
         // Refresh whenever books change.
@@ -343,9 +335,9 @@ final class GoalProgressViewModel: ObservableObject {
     }
 
     private func refresh(books: [Book]) {
-        statuses                  = ReadingGoalManager.allStatuses(for: goalSet, books: books)
-        deadlineStatuses          = ReadingGoalManager.deadlineStatuses(deadlines: deadlines, books: books)
-        recommendedDailyTarget    = ReadingGoalManager.recommendedDailyTarget(books: books)
+        statuses = ReadingGoalManager.allStatuses(for: goalSet, books: books)
+        deadlineStatuses = ReadingGoalManager.deadlineStatuses(deadlines: deadlines, books: books)
+        recommendedDailyTarget = ReadingGoalManager.recommendedDailyTarget(books: books)
         projectedAnnualCompletions = ReadingGoalManager.projectedAnnualCompletions(books: books)
     }
 }
@@ -368,11 +360,11 @@ extension GoalStatus {
     /// Human-readable representation of `target` appropriate to the goal kind.
     var formattedTarget: String {
         switch goal {
-        case .dailyPages:    return "\(Int(target)) pages"
-        case .annualBooks:   return "\(Int(target)) books"
-        case .weeklyStreak:  return "\(Int(target)) days"
-        case .dailyTime:     return formatDuration(target)
-        case .bookDeadline:  return "\(Int(target)) days"
+        case .dailyPages: return "\(Int(target)) pages"
+        case .annualBooks: return "\(Int(target)) books"
+        case .weeklyStreak: return "\(Int(target)) days"
+        case .dailyTime: return formatDuration(target)
+        case .bookDeadline: return "\(Int(target)) days"
         }
     }
 
@@ -390,9 +382,15 @@ extension BookDeadlineStatus {
     }
 
     var urgencyLabel: String {
-        if isOverdue    { return "Overdue" }
-        if daysRemaining <= 3  { return "Urgent" }
-        if daysRemaining <= 7  { return "This Week" }
+        if isOverdue {
+            return "Overdue"
+        }
+        if daysRemaining <= 3 {
+            return "Urgent"
+        }
+        if daysRemaining <= 7 {
+            return "This Week"
+        }
         return "\(daysRemaining) days left"
     }
 }

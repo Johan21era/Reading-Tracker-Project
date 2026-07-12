@@ -1,12 +1,3 @@
-//
-//  GutenbergProvider.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
-
-
-//
 //  GutenbergProvider.swift
 //  Online Book Discovery System
 //
@@ -19,7 +10,6 @@
 import Foundation
 
 struct GutenbergProvider: BookProvider {
-
     func searchBooks(query: String) async -> [OnlineBook] {
         let trimmedQuery = query.trimmingCharacters(
             in: .whitespacesAndNewlines
@@ -45,7 +35,7 @@ struct GutenbergProvider: BookProvider {
             let (data, response) = try await URLSession.shared.data(from: url)
 
             guard let httpResponse = response as? HTTPURLResponse,
-                  200...299 ~= httpResponse.statusCode
+                  200 ... 299 ~= httpResponse.statusCode
             else {
                 return []
             }
@@ -68,11 +58,9 @@ struct GutenbergProvider: BookProvider {
 // MARK: - Mapping
 
 private extension GutenbergProvider {
-
     func mapBook(
         _ book: GutendexBook
     ) -> OnlineBook? {
-
         let title = book.title.trimmingCharacters(
             in: .whitespacesAndNewlines
         )
@@ -126,7 +114,6 @@ private struct GutendexAuthor: Codable {
 }
 
 private struct GutendexFormats: Codable {
-
     let imageJPEG: String?
 
     enum CodingKeys: String, CodingKey {

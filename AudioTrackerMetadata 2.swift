@@ -1,17 +1,5 @@
 //
-//  AudioTrackMetadata 2.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/23/26.
-//
-
-//
-//  AudioMonitorService.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
-//
+//  AudioTrackerMetadata 2.swift
 //  PURPOSE
 //  The macOS audio-environment monitoring service.
 //  Analogous to WeatherKitService in the environmental intelligence subsystem.
@@ -47,22 +35,22 @@
 //
 //  TARGET: macOS 13+ (Ventura and later)
 
-import Foundation
 import AppKit
-import CoreAudio
 import Combine
+import CoreAudio
+import Foundation
 
 // MARK: - AudioTrackMetadata (Internal)
 
 /// Intermediate carrier returned by AppleScript query helpers.
 private struct AudioTrackMetadata {
-    let title:    String
-    let artist:   String
-    let album:    String
-    let genre:    String
+    let title: String
+    let artist: String
+    let album: String
+    let genre: String
     let playlist: String
-    let duration: TimeInterval   // total track duration in seconds
-    let position: TimeInterval   // current playback position in seconds
+    let duration: TimeInterval // total track duration in seconds
+    let position: TimeInterval // current playback position in seconds
 }
 
 // MARK: - AudioProfileStore
@@ -71,7 +59,6 @@ private struct AudioTrackMetadata {
 /// Stored at: ~/Library/Application Support/ReadTracker/audio-profiles.json
 /// One flat array; profiles are keyed by sessionID for fast lookup.
 public final class AudioProfileStore {
-
     private let fileURL: URL
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
@@ -80,12 +67,12 @@ public final class AudioProfileStore {
     private var cache: [AudioContextProfile]?
 
     public init(directory: URL) {
-        self.fileURL = directory.appendingPathComponent("audio-profiles.json")
-        self.encoder = JSONEncoder()
-        self.decoder = JSONDecoder()
-        encoder.dateEncodingStrategy  = .iso8601
-        encoder.outputFormatting      = [.prettyPrinted, .sortedKeys]
-        decoder.dateDecodingStrategy  = .iso8601
+        fileURL = directory.appendingPathComponent("audio-profiles.json")
+        encoder = JSONEncoder()
+        decoder = JSONDecoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        decoder.dateDecodingStrategy = .iso8601
     }
 
     /// Saves a profile, replacing any existing profile for the same sessionID.
@@ -105,13 +92,15 @@ public final class AudioProfileStore {
 
     /// Returns all stored profiles. Cached after the first disk read.
     public func fetchAll() -> [AudioContextProfile] {
-        if let hit = cache { return hit }
+        if let hit = cache {
+            return hit
+        }
         guard FileManager.default.fileExists(atPath: fileURL.path) else {
             cache = []
             return []
         }
         do {
-            let data   = try Data(contentsOf: fileURL)
+            let data = try Data(contentsOf: fileURL)
             let loaded = try decoder.decode([AudioContextProfile].self, from: data)
             cache = loaded
             return loaded
@@ -143,7 +132,6 @@ public final class AudioProfileStore {
 ///
 @MainActor
 public final class AudioMonitorService: ObservableObject {
-
     // MARK: - Published
 
     @Published public private(set) var isMonitoring: Bool = false
@@ -157,7 +145,7 @@ public final class AudioMonitorService: ObservableObject {
     private var lastCategory: AudioCategory = .silence
 
     /// Snapshot cap: 120 entries = 2 hours at one-per-minute. Prevents unbounded growth.
-    private let maxSnapshots: Int         = 120
+    private let maxSnapshots: Int = 120
     private let pollingInterval: TimeInterval = 60.0
 
     // MARK: - Public API
@@ -167,17 +155,17 @@ public final class AudioMonitorService: ObservableObject {
     public func startMonitoring(sessionID: UUID) {
         stopCurrentMonitor()
 
-        currentSessionID     = sessionID
+        currentSessionID = sessionID
         accumulatedSnapshots = []
-        lastTrackTitle       = nil
-        lastCategory         = .silence
-        isMonitoring         = true
+        lastTrackTitle = nil
+        lastCategory = .silence
+        isMonitoring = true
 
         // Baseline snapshot immediately (t = 0).
         if let snapshot = captureAudioSnapshot() {
             accumulatedSnapshots.append(snapshot)
             lastTrackTitle = snapshot.trackTitle
-            lastCategory   = snapshot.category
+            lastCategory = snapshot.category
         }
 
         pollingTimer = Timer.scheduledTimer(
@@ -213,7 +201,9 @@ public final class AudioMonitorService: ObservableObject {
         if let last = captureAudioSnapshot() {
             // Avoid duplicate if polled within the last few seconds.
             let gap = last.timestamp.timeIntervalSince(accumulatedSnapshots.last?.timestamp ?? .distantPast)
-            if gap > 10 { accumulatedSnapshots.append(last) }
+            if gap > 10 {
+                accumulatedSnapshots.append(last)
+            }
         }
 
         let profile = buildContextProfile(
@@ -224,9 +214,9 @@ public final class AudioMonitorService: ObservableObject {
         stopCurrentMonitor()
 
         print("[AudioMonitorService] Finalized — session \(sessionID.uuidString.prefix(8)) " +
-              "primary=\(profile.primaryCategory.rawValue) " +
-              "intensity=\(String(format: "%.0f%%", profile.listeningIntensity * 100)) " +
-              "snapshots=\(profile.snapshots.count)")
+            "primary=\(profile.primaryCategory.rawValue) " +
+            "intensity=\(String(format: "%.0f%%", profile.listeningIntensity * 100)) " +
+            "snapshots=\(profile.snapshots.count)")
 
         return profile
     }
@@ -243,23 +233,23 @@ public final class AudioMonitorService: ObservableObject {
         }
 
         lastTrackTitle = snapshot.trackTitle
-        lastCategory   = snapshot.category
+        lastCategory = snapshot.category
     }
 
     // MARK: - Snapshot Capture
 
     private func captureAudioSnapshot() -> AudioSnapshot? {
-        let now      = Date()
+        let now = Date()
         let calendar = Calendar.current
-        let hour     = calendar.component(.hour,    from: now)
-        let weekday  = calendar.component(.weekday, from: now)
-        let month    = calendar.component(.month,   from: now)
-        let season   = deriveSeason(month: month)
+        let hour = calendar.component(.hour, from: now)
+        let weekday = calendar.component(.weekday, from: now)
+        let month = calendar.component(.month, from: now)
+        let season = deriveSeason(month: month)
 
         let detection = detectAudioEnvironment()
-        let isActive  = detection.isPlaying || (!detection.isPlaying && isAudioOutputActive())
-        let category  = isActive ? detection.category : .silence
-        let chars     = inferCharacteristics(genreString: detection.metadata?.genre)
+        let isActive = detection.isPlaying || (!detection.isPlaying && isAudioOutputActive())
+        let category = isActive ? detection.category : .silence
+        let chars = inferCharacteristics(genreString: detection.metadata?.genre)
 
         return AudioSnapshot(
             timestamp: now,
@@ -325,7 +315,7 @@ public final class AudioMonitorService: ObservableObject {
 
         // Priority 3: Other known audio apps — category only, no metadata.
         let sourceResult = identifyAudioSource(from: running)
-        let hasAudio     = isAudioOutputActive()
+        let hasAudio = isAudioOutputActive()
 
         return DetectionResult(
             source: sourceResult.source,
@@ -341,14 +331,14 @@ public final class AudioMonitorService: ObservableObject {
     ) -> (source: AudioSource, name: String?) {
         // Ordered by specificity — most specific audio apps checked first.
         let candidates: [(bundleID: String, source: AudioSource, name: String)] = [
-            ("com.apple.podcasts",           .podcastsApp,     "Podcasts"),
-            ("com.apple.Audiobooks",         .audiobooksApp,   "Books"),
-            ("com.apple.QuickTimePlayerX",   .quickTimePlayer, "QuickTime Player"),
-            ("org.videolan.vlc",             .vlcPlayer,       "VLC"),
-            ("com.colliderli.iina",          .iinaPlayer,      "IINA"),
-            ("com.apple.Safari",             .safariBrowser,   "Safari"),
-            ("com.google.Chrome",            .chromeBrowser,   "Chrome"),
-            ("org.mozilla.firefox",          .firefoxBrowser,  "Firefox"),
+            ("com.apple.podcasts", .podcastsApp, "Podcasts"),
+            ("com.apple.Audiobooks", .audiobooksApp, "Books"),
+            ("com.apple.QuickTimePlayerX", .quickTimePlayer, "QuickTime Player"),
+            ("org.videolan.vlc", .vlcPlayer, "VLC"),
+            ("com.colliderli.iina", .iinaPlayer, "IINA"),
+            ("com.apple.Safari", .safariBrowser, "Safari"),
+            ("com.google.Chrome", .chromeBrowser, "Chrome"),
+            ("org.mozilla.firefox", .firefoxBrowser, "Firefox"),
         ]
         for c in candidates where apps.contains(where: { $0.bundleIdentifier == c.bundleID }) {
             return (c.source, c.name)
@@ -367,7 +357,7 @@ public final class AudioMonitorService: ObservableObject {
         case .quickTimePlayer, .vlcPlayer, .iinaPlayer:
             return .videoAudio
         case .safariBrowser, .chromeBrowser, .firefoxBrowser:
-            return .unknown    // Could be music, video, or podcast — can't tell without metadata
+            return .unknown // Could be music, video, or podcast — can't tell without metadata
         case .systemAudio, .unknown:
             return .unknown
         }
@@ -375,13 +365,24 @@ public final class AudioMonitorService: ObservableObject {
 
     private func classifyCategory(source: AudioSource, genre: String) -> AudioCategory {
         let lower = genre.lowercased()
-        if lower.contains("podcast")                            { return .podcast }
-        if lower.contains("audiobook") || lower.contains("audio book") { return .audioBook }
-        if lower.contains("spoken") || lower.contains("lecture") { return .spokenWord }
+        if lower.contains("podcast") {
+            return .podcast
+        }
+        if lower.contains("audiobook") || lower.contains("audio book") {
+            return .audioBook
+        }
+        if lower.contains("spoken") || lower.contains("lecture") {
+            return .spokenWord
+        }
         if lower.contains("ambient") || lower.contains("nature") ||
-           lower.contains("soundscape") || lower.contains("white noise") { return .ambientSoundscape }
+            lower.contains("soundscape") || lower.contains("white noise")
+        {
+            return .ambientSoundscape
+        }
         // Music.app / Spotify with non-overriding genre → music.
-        if source == .appleMusicApp || source == .spotifyApp   { return .music }
+        if source == .appleMusicApp || source == .spotifyApp {
+            return .music
+        }
         return defaultCategory(for: source)
     }
 
@@ -410,10 +411,10 @@ public final class AudioMonitorService: ObservableObject {
         """
         return runAppleScript(source) { desc in
             guard desc.numberOfItems >= 6 else { return nil }
-            let title    = desc.atIndex(1)?.stringValue ?? ""
-            let artist   = desc.atIndex(2)?.stringValue ?? ""
-            let album    = desc.atIndex(3)?.stringValue ?? ""
-            let genre    = desc.atIndex(4)?.stringValue ?? ""
+            let title = desc.atIndex(1)?.stringValue ?? ""
+            let artist = desc.atIndex(2)?.stringValue ?? ""
+            let album = desc.atIndex(3)?.stringValue ?? ""
+            let genre = desc.atIndex(4)?.stringValue ?? ""
             let position = desc.atIndex(5)?.doubleValue ?? 0
             let duration = desc.atIndex(6)?.doubleValue ?? 0
             let playlist = desc.atIndex(7)?.stringValue ?? ""
@@ -447,9 +448,9 @@ public final class AudioMonitorService: ObservableObject {
         """
         return runAppleScript(source) { desc in
             guard desc.numberOfItems >= 4 else { return nil }
-            let title    = desc.atIndex(1)?.stringValue ?? ""
-            let artist   = desc.atIndex(2)?.stringValue ?? ""
-            let album    = desc.atIndex(3)?.stringValue ?? ""
+            let title = desc.atIndex(1)?.stringValue ?? ""
+            let artist = desc.atIndex(2)?.stringValue ?? ""
+            let album = desc.atIndex(3)?.stringValue ?? ""
             let position = desc.atIndex(4)?.doubleValue ?? 0
             let duration = desc.atIndex(5)?.doubleValue ?? 0
             guard !title.isEmpty else { return nil }
@@ -471,7 +472,9 @@ public final class AudioMonitorService: ObservableObject {
         var errorInfo: NSDictionary?
         guard let script = NSAppleScript(source: source) else { return nil }
         let descriptor = script.executeAndReturnError(&errorInfo)
-        if let _ = errorInfo { return nil }
+        if let _ = errorInfo {
+            return nil
+        }
         return parser(descriptor)
     }
 
@@ -481,11 +484,11 @@ public final class AudioMonitorService: ObservableObject {
     /// This is a presence check only — it does not identify what is playing.
     private func isAudioOutputActive() -> Bool {
         var deviceID = AudioDeviceID(0)
-        var size     = UInt32(MemoryLayout<AudioDeviceID>.size)
-        var address  = AudioObjectPropertyAddress(
+        var size = UInt32(MemoryLayout<AudioDeviceID>.size)
+        var address = AudioObjectPropertyAddress(
             mSelector: kAudioHardwarePropertyDefaultOutputDevice,
-            mScope:    kAudioObjectPropertyScopeGlobal,
-            mElement:  kAudioObjectPropertyElementMain
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
         )
         let deviceStatus = AudioObjectGetPropertyData(
             AudioObjectID(kAudioObjectSystemObject),
@@ -494,11 +497,11 @@ public final class AudioMonitorService: ObservableObject {
         guard deviceStatus == noErr, deviceID != kAudioObjectUnknown else { return false }
 
         var isRunning: UInt32 = 0
-        size    = UInt32(MemoryLayout<UInt32>.size)
+        size = UInt32(MemoryLayout<UInt32>.size)
         address = AudioObjectPropertyAddress(
             mSelector: kAudioDevicePropertyDeviceIsRunningSomewhere,
-            mScope:    kAudioObjectPropertyScopeGlobal,
-            mElement:  kAudioObjectPropertyElementMain
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
         )
         let runStatus = AudioObjectGetPropertyData(
             deviceID, &address, 0, nil, &size, &isRunning
@@ -510,62 +513,95 @@ public final class AudioMonitorService: ObservableObject {
 
     private func inferCharacteristics(genreString: String?) -> AudioCharacteristics {
         guard let genre = genreString, !genre.isEmpty else { return .unavailable }
-        let lower  = genre.lowercased()
-        let mood   = inferMood(lower)
+        let lower = genre.lowercased()
+        let mood = inferMood(lower)
         let energy = inferEnergy(lower)
         return AudioCharacteristics(inferredMood: mood, inferredEnergy: energy)
     }
 
     private func inferMood(_ lower: String) -> InferredMood {
-        if lower.contains("classical") || lower.contains("ambient")  ||
-           lower.contains("new age")   || lower.contains("acoustic") ||
-           lower.contains("folk")      || lower.contains("chamber")  { return .calm }
+        if lower.contains("classical") || lower.contains("ambient") ||
+            lower.contains("new age") || lower.contains("acoustic") ||
+            lower.contains("folk") || lower.contains("chamber")
+        {
+            return .calm
+        }
 
-        if lower.contains("electronic")   || lower.contains("instrumental") ||
-           lower.contains("lo-fi")        || lower.contains("lo fi")        ||
-           lower.contains("minimal")      || lower.contains("chillout")     ||
-           lower.contains("study")        || lower.contains("focus")        { return .focused }
+        if lower.contains("electronic") || lower.contains("instrumental") ||
+            lower.contains("lo-fi") || lower.contains("lo fi") ||
+            lower.contains("minimal") || lower.contains("chillout") ||
+            lower.contains("study") || lower.contains("focus")
+        {
+            return .focused
+        }
 
-        if lower.contains("rock")     || lower.contains("metal")  ||
-           lower.contains("edm")      || lower.contains("dance")  ||
-           lower.contains("hip-hop")  || lower.contains("hip hop") ||
-           lower.contains("punk")     || lower.contains("trap")   { return .energetic }
+        if lower.contains("rock") || lower.contains("metal") ||
+            lower.contains("edm") || lower.contains("dance") ||
+            lower.contains("hip-hop") || lower.contains("hip hop") ||
+            lower.contains("punk") || lower.contains("trap")
+        {
+            return .energetic
+        }
 
-        if lower.contains("blues")             ||
-           lower.contains("country")           ||
-           lower.contains("singer-songwriter") ||
-           lower.contains("emo")               { return .melancholic }
+        if lower.contains("blues") ||
+            lower.contains("country") ||
+            lower.contains("singer-songwriter") ||
+            lower.contains("emo")
+        {
+            return .melancholic
+        }
 
-        if lower.contains("pop")    || lower.contains("reggae")  ||
-           lower.contains("soul")   || lower.contains("funk")    ||
-           lower.contains("gospel") || lower.contains("r&b")     { return .upbeat }
+        if lower.contains("pop") || lower.contains("reggae") ||
+            lower.contains("soul") || lower.contains("funk") ||
+            lower.contains("gospel") || lower.contains("r&b")
+        {
+            return .upbeat
+        }
 
         return .neutral
     }
 
     private func inferEnergy(_ lower: String) -> Double {
         // Heuristic energy buckets. Not an acoustic measurement.
-        if lower.contains("metal") || lower.contains("edm")  ||
-           lower.contains("trap")  || lower.contains("punk") { return 0.90 }
-        if lower.contains("rock")  || lower.contains("dance") ||
-           lower.contains("hip-hop") || lower.contains("hip hop") { return 0.75 }
-        if lower.contains("pop")   || lower.contains("reggae") ||
-           lower.contains("soul")  || lower.contains("funk")  { return 0.60 }
+        if lower.contains("metal") || lower.contains("edm") ||
+            lower.contains("trap") || lower.contains("punk")
+        {
+            return 0.90
+        }
+        if lower.contains("rock") || lower.contains("dance") ||
+            lower.contains("hip-hop") || lower.contains("hip hop")
+        {
+            return 0.75
+        }
+        if lower.contains("pop") || lower.contains("reggae") ||
+            lower.contains("soul") || lower.contains("funk")
+        {
+            return 0.60
+        }
         if lower.contains("electronic") || lower.contains("lo-fi") ||
-           lower.contains("lo fi") || lower.contains("instrumental") { return 0.40 }
-        if lower.contains("acoustic") || lower.contains("folk")    ||
-           lower.contains("blues")    || lower.contains("country") { return 0.30 }
+            lower.contains("lo fi") || lower.contains("instrumental")
+        {
+            return 0.40
+        }
+        if lower.contains("acoustic") || lower.contains("folk") ||
+            lower.contains("blues") || lower.contains("country")
+        {
+            return 0.30
+        }
         if lower.contains("classical") || lower.contains("ambient") ||
-           lower.contains("new age")   || lower.contains("chamber") { return 0.20 }
-        return 0.50  // default
+            lower.contains("new age") || lower.contains("chamber")
+        {
+            return 0.20
+        }
+        return 0.50 // default
     }
 
     private func deriveSeason(month: Int) -> SeasonalPeriod {
         switch month {
-        case 3, 4, 5:   return .spring
-        case 6, 7, 8:   return .summer
+        case 3, 4, 5: return .spring
+        case 6, 7, 8: return .summer
         case 9, 10, 11: return .autumn
-        default:         return .winter
+        default: return .winter
         }
     }
 
@@ -606,18 +642,20 @@ public final class AudioMonitorService: ObservableObject {
             categorySeconds[cat, default: 0] += segmentSeconds
         }
 
-        let totalAudio  = categorySeconds.filter { $0.key != .silence }.values.reduce(0, +)
-        let silence     = sessionDuration - totalAudio
-        let total       = max(1, sessionDuration)
+        let totalAudio = categorySeconds.filter { $0.key != .silence }.values.reduce(0, +)
+        let silence = sessionDuration - totalAudio
+        let total = max(1, sessionDuration)
         let distribution = categorySeconds.mapValues { $0 / total }
-        let primary     = categorySeconds.max(by: { $0.value < $1.value })?.key ?? .silence
+        let primary = categorySeconds.max(by: { $0.value < $1.value })?.key ?? .silence
 
         // Track transitions: consecutive distinct track title changes.
-        var trackTransitions  = 0
+        var trackTransitions = 0
         var prevTitle: String? = nil
         for snap in snaps where snap.isPlaying {
             if let t = snap.trackTitle, !t.isEmpty {
-                if prevTitle != nil && t != prevTitle { trackTransitions += 1 }
+                if prevTitle != nil && t != prevTitle {
+                    trackTransitions += 1
+                }
                 prevTitle = t
             }
         }
@@ -627,15 +665,17 @@ public final class AudioMonitorService: ObservableObject {
         var prevCat: AudioCategory? = nil
         for snap in snaps {
             let cat = snap.isPlaying ? snap.category : .silence
-            if let pc = prevCat, cat != pc { catTransitions += 1 }
+            if let pc = prevCat, cat != pc {
+                catTransitions += 1
+            }
             prevCat = cat
         }
 
-        let tracks    = Array(Set(snaps.compactMap(\.trackTitle).filter    { !$0.isEmpty }))
-        let artists   = Array(Set(snaps.compactMap(\.artistName).filter    { !$0.isEmpty }))
-        let albums    = Array(Set(snaps.compactMap(\.albumTitle).filter    { !$0.isEmpty }))
-        let genres    = Array(Set(snaps.compactMap(\.genreString).filter   { !$0.isEmpty }))
-        let playlists = Array(Set(snaps.compactMap(\.playlistName).filter  { !$0.isEmpty }))
+        let tracks = Array(Set(snaps.compactMap(\.trackTitle).filter { !$0.isEmpty }))
+        let artists = Array(Set(snaps.compactMap(\.artistName).filter { !$0.isEmpty }))
+        let albums = Array(Set(snaps.compactMap(\.albumTitle).filter { !$0.isEmpty }))
+        let genres = Array(Set(snaps.compactMap(\.genreString).filter { !$0.isEmpty }))
+        let playlists = Array(Set(snaps.compactMap(\.playlistName).filter { !$0.isEmpty }))
 
         return AudioContextProfile(
             sessionID: sessionID,
@@ -660,9 +700,8 @@ public final class AudioMonitorService: ObservableObject {
 
     private func stopCurrentMonitor() {
         pollingTimer?.invalidate()
-        pollingTimer     = nil
+        pollingTimer = nil
         currentSessionID = nil
-        isMonitoring     = false
+        isMonitoring = false
     }
 }
-

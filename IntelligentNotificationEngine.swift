@@ -1,10 +1,4 @@
-//
-//  IntelligentNotificationEngine.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/17/26.
-//
-//
+
 //  IntelligentNotificationEngine.swift
 //  Reading Tracker
 //
@@ -21,7 +15,6 @@ import Foundation
 // MARK: - Notification Categories
 
 enum NotificationCategory: String, CaseIterable, Codable {
-
     case readingOpportunity
     case streakProtection
     case completionEncouragement
@@ -35,7 +28,6 @@ enum NotificationCategory: String, CaseIterable, Codable {
 // MARK: - Notification Score Breakdown
 
 struct NotificationScoreBreakdown {
-
     let timeAffinity: Double
     let weekdayAffinity: Double
 
@@ -49,22 +41,20 @@ struct NotificationScoreBreakdown {
     let engagementLikelihood: Double
 
     var totalContribution: Double {
-
         timeAffinity +
-        weekdayAffinity +
-        momentumScore +
-        streakScore +
-        sessionFitScore +
-        completionScore +
-        inactivityUrgency +
-        engagementLikelihood
+            weekdayAffinity +
+            momentumScore +
+            streakScore +
+            sessionFitScore +
+            completionScore +
+            inactivityUrgency +
+            engagementLikelihood
     }
 }
 
 // MARK: - Notification Confidence
 
 struct NotificationConfidence {
-
     let score: Double
     let sessionCount: Int
     let completedSessions: Int
@@ -74,7 +64,6 @@ struct NotificationConfidence {
 // MARK: - Notification Candidate
 
 struct NotificationCandidate {
-
     let category: NotificationCategory
 
     let title: String
@@ -125,7 +114,6 @@ extension NotificationCandidate {
 // MARK: - Notification Result
 
 struct IntelligentNotificationResult {
-
     let generatedAt: Date
 
     let shouldNotify: Bool
@@ -142,7 +130,6 @@ struct IntelligentNotificationResult {
 // MARK: - Behavioral Profile
 
 struct NotificationBehaviorProfile {
-
     let preferredHours: [Int: Double]
 
     let preferredWeekdays: [Int: Double]
@@ -165,10 +152,10 @@ struct NotificationBehaviorProfile {
 
     let totalSessions: Int
 }
+
 // MARK: - Opportunity Window
 
 struct ReadingOpportunityWindow {
-
     let hour: Int
 
     let probability: Double
@@ -193,16 +180,14 @@ struct NotificationAnalytics {
 
 // MARK: - IntelligentNotificationEngine
 
-struct IntelligentNotificationEngine {
-
+enum IntelligentNotificationEngine {
     // MARK: Public API
 
     static func evaluate(
         books: [Book],
-        notificationHistory: [NotificationCandidate] = [],
+        notificationHistory _: [NotificationCandidate] = [],
         date: Date = Date()
     ) -> IntelligentNotificationResult {
-
         let profile = buildBehaviorProfile(
             books: books,
             date: date
@@ -259,25 +244,23 @@ struct IntelligentNotificationEngine {
             rankedNotifications: ranked,
             confidence: confidence,
             explanation: selected?.explanation ??
-            "No notification opportunity detected."
+                "No notification opportunity detected."
         )
     }
 }
+
 // MARK: - Behavioral Profile Builder
 
 extension IntelligentNotificationEngine {
-
     static func buildBehaviorProfile(
         books: [Book],
         date: Date
     ) -> NotificationBehaviorProfile {
-
         let sessions =
             books.flatMap { $0.sessions }
                 .filter { $0.endTime != nil }
 
         guard !sessions.isEmpty else {
-
             return NotificationBehaviorProfile(
                 preferredHours: [:],
                 preferredWeekdays: [:],
@@ -309,7 +292,6 @@ extension IntelligentNotificationEngine {
         }
 
         for session in sessions {
-
             let hour =
                 calendar.component(
                     .hour,
@@ -342,11 +324,11 @@ extension IntelligentNotificationEngine {
 
         let avgDuration =
             durations.reduce(0,+) /
-            Double(max(1,durations.count))
+            Double(max(1, durations.count))
 
         let avgPages =
             pages.reduce(0,+) /
-            Double(max(1,pages.count))
+            Double(max(1, pages.count))
 
         let consistency =
             computeConsistency(
@@ -372,7 +354,6 @@ extension IntelligentNotificationEngine {
         func computeLongestStreak(
             sessions: [ReadingSession]
         ) -> Int {
-
             let calendar = Calendar.current
 
             let days = Set(
@@ -390,8 +371,7 @@ extension IntelligentNotificationEngine {
             var longest = 1
             var current = 1
 
-            for index in 1..<sortedDays.count {
-
+            for index in 1 ..< sortedDays.count {
                 let previous = sortedDays[index - 1]
                 let currentDay = sortedDays[index]
 
@@ -432,14 +412,13 @@ extension IntelligentNotificationEngine {
         )
     }
 }
+
 // MARK: - Confidence
 
 extension IntelligentNotificationEngine {
-
     static func buildConfidence(
         books: [Book]
     ) -> NotificationConfidence {
-
         let sessions =
             books.flatMap { $0.sessions }
 
@@ -474,30 +453,28 @@ extension IntelligentNotificationEngine {
             (dayFactor * 0.4)
 
         return NotificationConfidence(
-            score: min(1,max(0,score)),
+            score: min(1, max(0, score)),
             sessionCount: sessions.count,
             completedSessions: completed.count,
             activeDays: activeDays.count
         )
     }
 }
+
 // MARK: - Reading Opportunity Detection
 
 extension IntelligentNotificationEngine {
-
     static func detectReadingOpportunities(
-        books: [Book],
+        books _: [Book],
         profile: NotificationBehaviorProfile
     ) -> [ReadingOpportunityWindow] {
-
         profile.preferredHours
             .map { hour, score in
-
                 ReadingOpportunityWindow(
                     hour: hour,
                     probability: score,
                     averageDuration:
-                        profile.averageSessionDuration
+                    profile.averageSessionDuration
                 )
             }
             .sorted {
@@ -505,86 +482,82 @@ extension IntelligentNotificationEngine {
             }
     }
 }
+
 // MARK: - Utilities
 
 extension IntelligentNotificationEngine {
-    
     static func normalize(
-        _ values: [Int:Int]
-    ) -> [Int:Double] {
-        
+        _ values: [Int: Int]
+    ) -> [Int: Double] {
         let total =
-        Double(
-            values.values.reduce(0,+)
-        )
-        
+            Double(
+                values.values.reduce(0,+)
+            )
+
         guard total > 0 else {
             return [:]
         }
-        
+
         return values.mapValues {
             Double($0) / total
         }
     }
-    
+
     static func computeInactivity(
         sessions: [ReadingSession],
         date: Date
     ) -> Double {
-        
         guard let last =
-                sessions.map(\.startTime).max()
+            sessions.map(\.startTime).max()
         else {
             return 999
         }
-        
+
         return date.timeIntervalSince(last) / 86400
     }
-    
+
     static func computeWeeklyFrequency(
         sessions: [ReadingSession]
     ) -> Double {
-        
         guard
             let first = sessions.map(\.startTime).min(),
             let last = sessions.map(\.startTime).max()
         else {
             return 0
         }
-        
+
         let weeks =
-        max(
-            1.0,
-            last.timeIntervalSince(first)
-            / 604800
-        )
-        
+            max(
+                1.0,
+                last.timeIntervalSince(first)
+                    / 604_800
+            )
+
         return Double(
             sessions.count
         ) / weeks
     }
-    
+
     static func computeMomentum(
         sessions: [ReadingSession],
         date: Date
     ) -> Double {
-        
         let recent =
-        sessions.filter {
-            date.timeIntervalSince(
-                $0.startTime
-            ) <= 86400 * 7
-        }
-        
+            sessions.filter {
+                date.timeIntervalSince(
+                    $0.startTime
+                ) <= 86400 * 7
+            }
+
         guard !recent.isEmpty else {
             return 0
         }
-        
+
         let duration =
-        recent.reduce(0) {
-            $0 + $1.duration
-        }
-        
+            recent.reduce(0) {
+                $0 + $1.duration
+            }
+
         return min(
             1,
             duration / 14400
@@ -610,7 +583,9 @@ extension IntelligentNotificationEngine {
 
         // Mean sessions per active day
         let mean = Double(counts.reduce(0, +)) / Double(counts.count)
-        if mean == 0 { return 0 }
+        if mean == 0 {
+            return 0
+        }
 
         // Population standard deviation
         let variance = counts.reduce(0.0) { partial, c in
@@ -631,6 +606,7 @@ extension IntelligentNotificationEngine {
         return max(0.0, min(1.0, score))
     }
 }
+
 //
 //  IntelligentNotificationEngine.swift
 //  Reading Tracker
@@ -644,14 +620,12 @@ import Foundation
 // MARK: - Candidate Generation
 
 extension IntelligentNotificationEngine {
-
     static func buildCandidates(
         books: [Book],
         analytics: NotificationAnalytics,
-        recommendation: RecommendationResultV3?,
+        recommendation _: RecommendationResultV3?,
         estimationResults: [UUID: BookEstimationResult]
     ) -> [NotificationCandidate] {
-
         var candidates: [NotificationCandidate] = []
 
         if let opportunity = buildReadingOpportunity(
@@ -719,12 +693,10 @@ extension IntelligentNotificationEngine {
 // MARK: - Reading Opportunity
 
 private extension IntelligentNotificationEngine {
-
     static func buildReadingOpportunity(
-        books: [Book],
+        books _: [Book],
         analytics: NotificationAnalytics
     ) -> NotificationCandidate? {
-
         guard analytics.timeAffinity > 0.55 else {
             return nil
         }
@@ -761,12 +733,10 @@ private extension IntelligentNotificationEngine {
 // MARK: - Streak Protection
 
 private extension IntelligentNotificationEngine {
-
     static func buildStreakProtection(
         books: [Book],
         analytics: NotificationAnalytics
     ) -> NotificationCandidate? {
-
         let streak = AnalyticsEngine.streak(books: books)
 
         guard streak.currentStreak > 0 else {
@@ -783,7 +753,7 @@ private extension IntelligentNotificationEngine {
             min(
                 1.0,
                 Double(daysSinceRead) /
-                Double(max(streak.currentStreak, 1))
+                    Double(max(streak.currentStreak, 1))
             )
 
         let breakdown = NotificationScoreBreakdown(
@@ -814,13 +784,11 @@ private extension IntelligentNotificationEngine {
 // MARK: - Completion Encouragement
 
 private extension IntelligentNotificationEngine {
-
     static func buildCompletionEncouragement(
         books: [Book],
         analytics: NotificationAnalytics,
-        estimationResults: [UUID: BookEstimationResult]
+        estimationResults _: [UUID: BookEstimationResult]
     ) -> NotificationCandidate? {
-
         let activeBooks = books.filter {
             !$0.isCompleted
         }
@@ -845,7 +813,7 @@ private extension IntelligentNotificationEngine {
             min(
                 1.0,
                 target.progressFraction +
-                analytics.completionProbability * 0.25
+                    analytics.completionProbability * 0.25
             )
 
         let breakdown = NotificationScoreBreakdown(
@@ -876,12 +844,10 @@ private extension IntelligentNotificationEngine {
 // MARK: - Momentum Reinforcement
 
 private extension IntelligentNotificationEngine {
-
     static func buildMomentumReinforcement(
-        books: [Book],
+        books _: [Book],
         analytics: NotificationAnalytics
     ) -> NotificationCandidate? {
-
         guard analytics.momentum >= 0.65 else {
             return nil
         }
@@ -914,12 +880,10 @@ private extension IntelligentNotificationEngine {
 // MARK: - Inactivity Recovery
 
 private extension IntelligentNotificationEngine {
-
     static func buildInactivityRecovery(
-        books: [Book],
+        books _: [Book],
         analytics: NotificationAnalytics
     ) -> NotificationCandidate? {
-
         guard analytics.daysSinceLastSession >= 3 else {
             return nil
         }
@@ -958,15 +922,12 @@ private extension IntelligentNotificationEngine {
 // MARK: - Chapter Opportunity
 
 private extension IntelligentNotificationEngine {
-
     static func buildChapterOpportunity(
         books: [Book],
         analytics: NotificationAnalytics,
         estimationResults: [UUID: BookEstimationResult]
     ) -> NotificationCandidate? {
-
         for book in books {
-
             guard let estimate = estimationResults[book.id] else {
                 continue
             }
@@ -981,7 +942,6 @@ private extension IntelligentNotificationEngine {
                 chapter.estimatedSeconds / 60.0
 
             if estimatedMinutes <= 20 {
-
                 let breakdown = NotificationScoreBreakdown(
                     timeAffinity: analytics.timeAffinity,
                     weekdayAffinity: analytics.weekdayAffinity,
@@ -1014,20 +974,18 @@ private extension IntelligentNotificationEngine {
 // MARK: - Session Continuation
 
 private extension IntelligentNotificationEngine {
-
     static func buildSessionContinuation(
         books: [Book],
         analytics: NotificationAnalytics
     ) -> NotificationCandidate? {
-
         guard
             let recentBook = books
-                .filter({ !$0.isCompleted })
-                .sorted(by: {
-                    ($0.lastReadDate ?? .distantPast) >
+            .filter({ !$0.isCompleted })
+            .sorted(by: {
+                ($0.lastReadDate ?? .distantPast) >
                     ($1.lastReadDate ?? .distantPast)
-                })
-                .first
+            })
+            .first
         else {
             return nil
         }
@@ -1039,7 +997,7 @@ private extension IntelligentNotificationEngine {
         let hours =
             Date().timeIntervalSince(lastRead) / 3600
 
-        guard hours >= 6 && hours <= 48 else {
+        guard hours >= 6, hours <= 48 else {
             return nil
         }
 
@@ -1071,12 +1029,10 @@ private extension IntelligentNotificationEngine {
 // MARK: - Achievement Milestone
 
 private extension IntelligentNotificationEngine {
-
     static func buildAchievementMilestone(
         books: [Book],
         analytics: NotificationAnalytics
     ) -> NotificationCandidate? {
-
         let completed =
             books.filter(\.isCompleted).count
 
@@ -1115,14 +1071,15 @@ private extension IntelligentNotificationEngine {
         )
     }
 }
+
 func clamp(_ value: Double) -> Double {
     max(0.0, min(1.0, value))
 }
+
 // MARK: - Ranking Engine
 
 extension IntelligentNotificationEngine {
-
-    // Ensures candidate scores are valid and returns a sanitized candidate
+    /// Ensures candidate scores are valid and returns a sanitized candidate
     static func validateCandidate(_ candidate: NotificationCandidate) -> NotificationCandidate {
         // Clamp rankingScore to [0,1] to keep ordering stable
         let clampedScore = max(0.0, min(1.0, candidate.rankingScore))
@@ -1146,19 +1103,17 @@ extension IntelligentNotificationEngine {
     static func rankCandidates(
         _ candidates: [NotificationCandidate]
     ) -> [NotificationCandidate] {
-
         candidates
             .map { validateCandidate($0) }
             .sorted {
                 $0.rankingScore >
-                $1.rankingScore
+                    $1.rankingScore
             }
     }
 
     static func weightedScore(
         from breakdown: NotificationScoreBreakdown
     ) -> Double {
-
         let score =
             breakdown.timeAffinity * 0.18 +
             breakdown.weekdayAffinity * 0.10 +

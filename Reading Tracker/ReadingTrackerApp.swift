@@ -5,7 +5,6 @@
 //  Created by Johan Rembeci on 6/29/26.
 //
 
-
 //
 //  ReadingTrackerApp.swift
 //  Reading Tracker
@@ -28,19 +27,19 @@ import SwiftUI
 
 @main
 struct ReadingTrackerApp: App {
-
     // MARK: - Owned State
 
-    @StateObject private var dataStore:        DataStore
-    @StateObject private var coordinator:      SessionCoordinator
-    @StateObject private var goalVM            = GoalProgressViewModel()
-    @StateObject private var eventRouter       = SessionEventRouter()
-    @StateObject private var behaviorKit       = BehaviorContextAccessKit()
-    @StateObject private var contextEngine     = BehaviorContextEngine()
+    @StateObject private var dataStore: DataStore
+    @StateObject private var coordinator: SessionCoordinator
+    @StateObject private var goalVM = GoalProgressViewModel()
+    @StateObject private var eventRouter = SessionEventRouter()
+    @StateObject private var behaviorKit = BehaviorContextAccessKit()
+    @StateObject private var contextEngine = BehaviorContextEngine()
 
     @Environment(\.scenePhase) private var scenePhase
 
     // MARK: - Init
+
     //
     // SessionCoordinator must receive the exact same DataStore instance owned
     // by the App — not a second ephemeral copy. Two-step StateObject init is
@@ -48,7 +47,7 @@ struct ReadingTrackerApp: App {
 
     init() {
         let store = DataStore()
-        _dataStore   = StateObject(wrappedValue: store)
+        _dataStore = StateObject(wrappedValue: store)
         _coordinator = StateObject(wrappedValue: SessionCoordinator(dataStore: store))
     }
 
@@ -60,7 +59,7 @@ struct ReadingTrackerApp: App {
                 .environmentObject(dataStore)
                 .environmentObject(coordinator)
                 .environmentObject(goalVM)
-                .environmentObject(contextEngine)   // read by ContextInsightPanel
+                .environmentObject(contextEngine) // read by ContextInsightPanel
                 .task {
                     // ── One-time pipeline bindings ──────────────────────────
                     // GoalProgressViewModel: subscribes to dataStore.$books via Combine.

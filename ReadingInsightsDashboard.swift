@@ -1,12 +1,3 @@
-//
-//  ReadingInsightsDashboard.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/29/26.
-//
-
-
-//
 //  ReadingInsightsDashboard.swift
 //  Reading Tracker
 //
@@ -25,28 +16,32 @@
 import SwiftUI
 
 struct ReadingInsightsDashboard: View {
-
     @EnvironmentObject private var dataStore: DataStore
     @Environment(\.dismiss) private var dismiss
 
-    // Computed lazily in the view body from DataStore state.
-    // No @State caching needed — these are pure functions on value types and
-    // SwiftUI's body diffing prevents unnecessary recomputation.
+    /// Computed lazily in the view body from DataStore state.
+    /// No @State caching needed — these are pure functions on value types and
+    /// SwiftUI's body diffing prevents unnecessary recomputation.
     private var profile: ReaderProfileAnalytics {
         AnalyticsEngine.readerProfile(books: dataStore.books)
     }
+
     private var streak: ReadingStreak {
         AnalyticsEngine.streak(books: dataStore.books)
     }
+
     private var trend: TrendAnalytics {
         AnalyticsEngine.trendAnalysis(books: dataStore.books)
     }
+
     private var timeOfDay: TimeOfDayAnalytics {
         AnalyticsEngine.timeOfDayAnalysis(books: dataStore.books)
     }
+
     private var activity: [DailyActivity] {
         AnalyticsEngine.dailyActivity(books: dataStore.books, days: 30)
     }
+
     private var insights: [ReadingInsight] {
         InsightEngine.generateAll(
             books: dataStore.books,
@@ -64,7 +59,9 @@ struct ReadingInsightsDashboard: View {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 28) {
                             statsHeader
-                            if !insights.isEmpty { insightsSection }
+                            if !insights.isEmpty {
+                                insightsSection
+                            }
                             activitySection
                             timeOfDaySection
                         }
@@ -133,12 +130,12 @@ struct ReadingInsightsDashboard: View {
 
     private var trendBanner: some View {
         HStack(spacing: 10) {
-            Image(systemName: trend.direction == .growth   ? "arrow.up.right"
-                           : trend.direction == .decline  ? "arrow.down.right"
-                                                          : "minus")
-                .foregroundColor(trend.direction == .growth   ? .green
-                               : trend.direction == .decline  ? .red
-                                                              : .secondary)
+            Image(systemName: trend.direction == .growth ? "arrow.up.right"
+                : trend.direction == .decline ? "arrow.down.right"
+                : "minus")
+                .foregroundColor(trend.direction == .growth ? .green
+                    : trend.direction == .decline ? .red
+                    : .secondary)
 
             Text(trendLabel)
                 .font(.subheadline)
@@ -157,7 +154,7 @@ struct ReadingInsightsDashboard: View {
     private var trendLabel: String {
         let pct = Int(abs(trend.dailyTrend) * 100)
         switch trend.direction {
-        case .growth:  return "Up \(pct)% — you're reading more than usual"
+        case .growth: return "Up \(pct)% — you're reading more than usual"
         case .decline: return "Down \(pct)% — reading pace has slowed"
         case .plateau: return "Steady pace — consistent reading this month"
         }
@@ -226,9 +223,9 @@ struct ReadingInsightsDashboard: View {
             let maxScore = timeOfDay.scores.values.max() ?? 1
 
             ForEach(windows, id: \.self) { window in
-                let score    = timeOfDay.scores[window] ?? 0
+                let score = timeOfDay.scores[window] ?? 0
                 let fraction = maxScore > 0 ? score / maxScore : 0
-                let isBest   = window == timeOfDay.bestWindow
+                let isBest = window == timeOfDay.bestWindow
 
                 HStack(spacing: 10) {
                     Image(systemName: windowSymbol(window))
@@ -275,19 +272,19 @@ struct ReadingInsightsDashboard: View {
 
     private func windowName(_ w: ReadingWindow) -> String {
         switch w {
-        case .morning:   return "Morning"
+        case .morning: return "Morning"
         case .afternoon: return "Afternoon"
-        case .evening:   return "Evening"
-        case .night:     return "Night"
+        case .evening: return "Evening"
+        case .night: return "Night"
         }
     }
 
     private func windowSymbol(_ w: ReadingWindow) -> String {
         switch w {
-        case .morning:   return "sunrise"
+        case .morning: return "sunrise"
         case .afternoon: return "sun.max"
-        case .evening:   return "sunset"
-        case .night:     return "moon.stars"
+        case .evening: return "sunset"
+        case .night: return "moon.stars"
         }
     }
 
@@ -299,8 +296,8 @@ struct ReadingInsightsDashboard: View {
 
     private func activityTooltip(for day: DailyActivity) -> String {
         let pages = day.pagesRead
-        let time  = formatDuration(day.totalDuration)
-        let f     = DateFormatter()
+        let time = formatDuration(day.totalDuration)
+        let f = DateFormatter()
         f.dateFormat = "MMM d"
         return "\(f.string(from: day.date)): \(pages) pages · \(time)"
     }
@@ -309,8 +306,8 @@ struct ReadingInsightsDashboard: View {
 // MARK: - StatCard
 
 private struct StatCard: View {
-    let value:  String
-    let label:  String
+    let value: String
+    let label: String
     let symbol: String
 
     var body: some View {
@@ -373,28 +370,28 @@ private struct InsightCard: View {
 
     private func insightSymbol(_ kind: ReadingInsight.InsightKind) -> String {
         switch kind {
-        case .bestReadingTime:   return "clock.badge.checkmark"
-        case .readingTrend:      return "chart.line.uptrend.xyaxis"
-        case .difficultyMatch:   return "brain.head.profile"
-        case .streakRisk:        return "flame.fill"
-        case .speedImprovement:  return "hare"
-        case .goalOnTrack:       return "checkmark.circle"
-        case .goalBehind:        return "exclamationmark.circle"
-        case .sessionLength:     return "timer"
+        case .bestReadingTime: return "clock.badge.checkmark"
+        case .readingTrend: return "chart.line.uptrend.xyaxis"
+        case .difficultyMatch: return "brain.head.profile"
+        case .streakRisk: return "flame.fill"
+        case .speedImprovement: return "hare"
+        case .goalOnTrack: return "checkmark.circle"
+        case .goalBehind: return "exclamationmark.circle"
+        case .sessionLength: return "timer"
         case .predictionQuality: return "chart.bar.xaxis"
-        case .genrePattern:      return "books.vertical"
-        case .milestoneNear:     return "flag.checkered"
+        case .genrePattern: return "books.vertical"
+        case .milestoneNear: return "flag.checkered"
         case .consistencyReward: return "calendar.badge.checkmark"
-        case .drySpell:          return "cloud.rain"
+        case .drySpell: return "cloud.rain"
         }
     }
 
     private func insightColor(_ priority: ReadingInsight.InsightPriority) -> Color {
         switch priority {
         case .critical: return .red
-        case .high:     return .orange
-        case .medium:   return .accentColor
-        case .low:      return .secondary
+        case .high: return .orange
+        case .medium: return .accentColor
+        case .low: return .secondary
         }
     }
 }
@@ -406,11 +403,11 @@ private struct ConfidencePip: View {
 
     var body: some View {
         HStack(spacing: 2) {
-            ForEach(0..<3, id: \.self) { i in
+            ForEach(0 ..< 3, id: \.self) { i in
                 Circle()
                     .fill(Double(i + 1) <= confidence * 3
-                          ? Color.accentColor
-                          : Color.secondary.opacity(0.3))
+                        ? Color.accentColor
+                        : Color.secondary.opacity(0.3))
                     .frame(width: 5, height: 5)
             }
         }

@@ -1,12 +1,4 @@
-//
-//  ReadingComplexityHints.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/16/26.
-//
 
-
-//
 //  SharedTextUtilities.swift
 //  Reading Tracker
 //
@@ -79,23 +71,23 @@ func decodeHTMLEntities(_ text: String) -> String {
 
     // Named entities — most common in EPUB/HTML documents.
     let named: [(String, String)] = [
-        ("&nbsp;",  " "),
-        ("&amp;",   "&"),
-        ("&lt;",    "<"),
-        ("&gt;",    ">"),
-        ("&quot;",  "\""),
-        ("&apos;",  "'"),
+        ("&nbsp;", " "),
+        ("&amp;", "&"),
+        ("&lt;", "<"),
+        ("&gt;", ">"),
+        ("&quot;", "\""),
+        ("&apos;", "'"),
         ("&mdash;", "—"),
         ("&ndash;", "–"),
         ("&lsquo;", "\u{2018}"),
         ("&rsquo;", "\u{2019}"),
         ("&ldquo;", "\u{201C}"),
         ("&rdquo;", "\u{201D}"),
-        ("&hellip;","…"),
-        ("&copy;",  "©"),
-        ("&reg;",   "®"),
+        ("&hellip;", "…"),
+        ("&copy;", "©"),
+        ("&reg;", "®"),
         ("&trade;", "™"),
-        ("&bull;",  "•"),
+        ("&bull;", "•"),
     ]
     for (entity, replacement) in named {
         result = result.replacingOccurrences(of: entity, with: replacement)
@@ -121,12 +113,13 @@ private func decodeNumericEntities(_ text: String) -> String {
     // Decimal: &#NNN;
     if let regex = try? NSRegularExpression(pattern: "&#(\\d+);") {
         let nsString = result as NSString
-        let matches  = regex.matches(in: result, range: NSRange(location: 0, length: nsString.length))
+        let matches = regex.matches(in: result, range: NSRange(location: 0, length: nsString.length))
         // Reverse so replacing doesn't shift indices
         for match in matches.reversed() {
             let codeRange = match.range(at: 1)
             if let codePoint = Int(nsString.substring(with: codeRange)),
-               let scalar = Unicode.Scalar(codePoint) {
+               let scalar = Unicode.Scalar(codePoint)
+            {
                 let char = String(Character(scalar))
                 result = (result as NSString).replacingCharacters(in: match.range, with: char)
             }
@@ -136,12 +129,13 @@ private func decodeNumericEntities(_ text: String) -> String {
     // Hexadecimal: &#xHHH;
     if let regex = try? NSRegularExpression(pattern: "&#x([0-9a-fA-F]+);") {
         let nsString = result as NSString
-        let matches  = regex.matches(in: result, range: NSRange(location: 0, length: nsString.length))
+        let matches = regex.matches(in: result, range: NSRange(location: 0, length: nsString.length))
         for match in matches.reversed() {
             let hexRange = match.range(at: 1)
-            let hexStr   = nsString.substring(with: hexRange)
+            let hexStr = nsString.substring(with: hexRange)
             if let codePoint = UInt32(hexStr, radix: 16),
-               let scalar = Unicode.Scalar(codePoint) {
+               let scalar = Unicode.Scalar(codePoint)
+            {
                 let char = String(Character(scalar))
                 result = (result as NSString).replacingCharacters(in: match.range, with: char)
             }
@@ -167,7 +161,9 @@ func normalizeWhitespace(_ text: String) -> String {
     for line in lines {
         if line.isEmpty {
             consecutiveBlanks += 1
-            if consecutiveBlanks <= 1 { result.append(line) }
+            if consecutiveBlanks <= 1 {
+                result.append(line)
+            }
         } else {
             consecutiveBlanks = 0
             result.append(line)
@@ -207,13 +203,17 @@ func extractPlainSentences(from text: String) -> [String] {
         if terminators.contains(c) {
             // Look ahead: if next non-space char is uppercase, treat as sentence boundary.
             var j = i + 1
-            while j < chars.count && chars[j] == " " { j += 1 }
+            while j < chars.count && chars[j] == " " {
+                j += 1
+            }
             let nextIsUpper = j < chars.count && chars[j].isUppercase
             let isEndOfText = j >= chars.count
 
             if nextIsUpper || isEndOfText {
                 let trimmed = current.trimmingCharacters(in: .whitespacesAndNewlines)
-               if !trimmed.isEmpty { sentences.append(trimmed) }
+                if !trimmed.isEmpty {
+                    sentences.append(trimmed)
+                }
                 current = ""
             }
         }
@@ -221,7 +221,9 @@ func extractPlainSentences(from text: String) -> [String] {
     }
     // Capture any trailing text without terminal punctuation.
     let trailing = current.trimmingCharacters(in: .whitespacesAndNewlines)
-    if !trailing.isEmpty { sentences.append(trailing) }
+    if !trailing.isEmpty {
+        sentences.append(trailing)
+    }
 
     return sentences
 }
@@ -247,13 +249,13 @@ struct ReadingComplexityHints {
     /// Not a replacement for `ReadingDifficultyProfile.difficultyMultiplier`;
     /// used as a cross-check signal in InsightEngine.
     var complexityScore: Double {
-        let wordFactor     = min(1.0, longWordRatio / 0.2)
+        let wordFactor = min(1.0, longWordRatio / 0.2)
         let sentenceFactor = min(1.0, avgSentenceLength / 25.0)
-        let tableFactor    = hasDataTables ? 0.1 : 0.0
-        let listFactor     = hasNestedLists ? 0.05 : 0.0
-        let densityFactor  = max(0.0, 1.0 - paragraphDensity * 10)
+        let tableFactor = hasDataTables ? 0.1 : 0.0
+        let listFactor = hasNestedLists ? 0.05 : 0.0
+        let densityFactor = max(0.0, 1.0 - paragraphDensity * 10)
         return (wordFactor * 0.35 + sentenceFactor * 0.35 + tableFactor + listFactor + densityFactor * 0.2)
-            .clamped(to: 0...1)
+            .clamped(to: 0 ... 1)
     }
 }
 
@@ -261,14 +263,14 @@ struct ReadingComplexityHints {
 /// Called once during import; result stored in the book's difficulty profile.
 func readingComplexityHints(fromHTML html: String) -> ReadingComplexityHints {
     let hasNested = html.range(of: "<ul[^>]*>.*?<ul", options: [.regularExpression, .caseInsensitive]) != nil
-                 || html.range(of: "<ol[^>]*>.*?<ol", options: [.regularExpression, .caseInsensitive]) != nil
+        || html.range(of: "<ol[^>]*>.*?<ol", options: [.regularExpression, .caseInsensitive]) != nil
     let hasTables = html.range(of: "<table", options: .caseInsensitive) != nil
 
-    let plain      = stripHTML(html)
-    let words      = plain.split { $0.isWhitespace }.map(String.init)
-    let total      = max(1, words.count)
-    let longWords  = words.filter { $0.count > 8 }.count
-    let sentences  = extractPlainSentences(from: plain)
+    let plain = stripHTML(html)
+    let words = plain.split { $0.isWhitespace }.map(String.init)
+    let total = max(1, words.count)
+    let longWords = words.filter { $0.count > 8 }.count
+    let sentences = extractPlainSentences(from: plain)
     let avgSentLen = sentences.isEmpty ? 0.0 : Double(total) / Double(sentences.count)
 
     // Paragraph count: count <p> tags in original HTML as a proxy.

@@ -1,13 +1,4 @@
-//
-//  BookProvider.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
-
-
-//
-//  BookProvider.swift
+//  OnlineBookProvider.swift
 //  Online Book Discovery System
 //
 //  Provider contract for all online book sources.
@@ -20,4 +11,3 @@ import Foundation
 protocol BookProvider {
     func searchBooks(query: String) async -> [OnlineBook]
 }
-

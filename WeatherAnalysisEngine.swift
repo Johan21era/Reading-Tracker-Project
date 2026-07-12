@@ -1,12 +1,5 @@
 //
 //  WeatherAnalysisEngine.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/18/26.
-//
-//
-//  WeatherAnalysisEngine.swift
-//
 //  Environmental intelligence layer for long-term reading behavior analysis.
 //  Designed to augment AnalyticsEngine, EstimationEngine,
 //  PredictiveRecommendationEngine, IntelligentNotificationEngine,
@@ -48,38 +41,37 @@ public enum DayPeriod: String, Codable, CaseIterable, Hashable {
 }
 
 public struct WeatherSnapshot: Codable, Hashable, Identifiable {
-    
     public let id: UUID
-    
+
     public let timestamp: Date
-    
+
     public let temperatureCelsius: Double
     public let feelsLikeTemperatureCelsius: Double
-    
+
     public let humidity: Double
     public let pressure: Double
-    
+
     public let cloudCover: Double
     public let visibilityKilometers: Double
-    
+
     public let windSpeedKPH: Double
-    
+
     public let precipitationMillimeters: Double
-    
+
     public let snowfallMillimeters: Double
-    
+
     public let stormActivityIndex: Double
-    
+
     public let condition: WeatherConditionCategory
-    
+
     public let season: SeasonalPeriod
-    
+
     public let month: Int
-    
+
     public let weekday: Int
-    
+
     public let dayPeriod: DayPeriod
-    
+
     public init(
         id: UUID = UUID(),
         timestamp: Date,
@@ -198,21 +190,20 @@ public enum EnvironmentalInsightCategory: String, Codable, CaseIterable {
 // MARK: - Confidence System
 
 public struct ConfidenceReport: Codable, Hashable {
-    
     public let overallConfidence: Double
-    
+
     public let sampleSizeScore: Double
-    
+
     public let recurrenceScore: Double
-    
+
     public let stabilityScore: Double
-    
+
     public let consistencyScore: Double
-    
+
     public let dataCoverageScore: Double
-    
+
     public let supportingSamples: Int
-    
+
     public init(
         overallConfidence: Double,
         sampleSizeScore: Double,
@@ -235,29 +226,28 @@ public struct ConfidenceReport: Codable, Hashable {
 // MARK: - Correlation Models
 
 public struct EnvironmentalCorrelation: Codable, Identifiable, Hashable {
-    
     public let id: UUID
-    
+
     public let factor: EnvironmentalFactor
-    
+
     public let metric: ReadingBehaviorMetric
-    
+
     public let coefficient: Double
-    
+
     public let significance: Double
-    
+
     public let influenceScore: Double
-    
+
     public let lifecycle: CorrelationLifecycle
-    
+
     public let confidence: ConfidenceReport
-    
+
     public let firstObserved: Date
-    
+
     public let lastObserved: Date
-    
+
     public let supportingSampleCount: Int
-    
+
     public init(
         id: UUID = UUID(),
         factor: EnvironmentalFactor,
@@ -288,89 +278,84 @@ public struct EnvironmentalCorrelation: Codable, Identifiable, Hashable {
 // MARK: - Environmental Profiles
 
 public struct TemperatureProfile: Codable, Hashable {
-    
     public let optimalRange: ClosedRange<Double>
-    
+
     public let peakReadingSpeed: Double
-    
+
     public let peakEngagement: Double
-    
+
     public let peakReadingVolume: Double
-    
+
     public let influenceScore: Double
-    
+
     public let confidence: ConfidenceReport
 }
 
 public struct SeasonalProfile: Codable, Hashable {
-    
     public let season: SeasonalPeriod
-    
+
     public let averageReadingDuration: Double
-    
+
     public let averageReadingSpeed: Double
-    
+
     public let averageEngagement: Double
-    
+
     public let averagePagesRead: Double
-    
+
     public let dominantGenres: [String]
-    
+
     public let avoidedGenres: [String]
-    
+
     public let confidence: ConfidenceReport
 }
 
 public struct WeatherInfluenceProfile: Codable, Hashable {
-    
     public let strongestPositiveFactors: [EnvironmentalCorrelation]
-    
+
     public let strongestNegativeFactors: [EnvironmentalCorrelation]
-    
+
     public let environmentalSensitivityScore: Double
-    
+
     public let dominantSeason: SeasonalPeriod?
-    
+
     public let dominantCondition: WeatherConditionCategory?
-    
+
     public let confidence: ConfidenceReport
 }
 
 public struct EnvironmentalReadingProfile: Codable, Hashable {
-    
     public let temperatureProfile: TemperatureProfile?
-    
+
     public let seasonalProfiles: [SeasonalProfile]
-    
+
     public let influenceProfile: WeatherInfluenceProfile
-    
+
     public let generatedAt: Date
 }
 
 // MARK: - Evolution Tracking
 
 public struct EnvironmentalBehaviorSnapshot: Codable, Identifiable, Hashable {
-    
     public let id: UUID
-    
+
     public let createdAt: Date
-    
+
     public let periodStart: Date
-    
+
     public let periodEnd: Date
-    
+
     public let influenceScore: Double
-    
+
     public let dominantGenres: [String]
-    
+
     public let dominantConditions: [WeatherConditionCategory]
-    
+
     public let averageReadingSpeed: Double
-    
+
     public let averageEngagement: Double
-    
+
     public let averageReadingDuration: Double
-    
+
     public init(
         id: UUID = UUID(),
         createdAt: Date = Date(),
@@ -397,19 +382,18 @@ public struct EnvironmentalBehaviorSnapshot: Codable, Identifiable, Hashable {
 }
 
 public struct EnvironmentalEvolutionFinding: Codable, Identifiable, Hashable {
-    
     public let id: UUID
-    
+
     public let state: BehaviorEvolutionState
-    
+
     public let title: String
-    
+
     public let description: String
-    
+
     public let magnitude: Double
-    
+
     public let confidence: ConfidenceReport
-    
+
     public init(
         id: UUID = UUID(),
         state: BehaviorEvolutionState,
@@ -428,62 +412,58 @@ public struct EnvironmentalEvolutionFinding: Codable, Identifiable, Hashable {
 }
 
 public struct EnvironmentalEvolutionReport: Codable, Hashable {
-    
     public let generatedAt: Date
-    
+
     public let findings: [EnvironmentalEvolutionFinding]
-    
+
     public let baselineSnapshot: EnvironmentalBehaviorSnapshot
-    
+
     public let currentSnapshot: EnvironmentalBehaviorSnapshot
 }
 
 // MARK: - Forecasting
 
 public struct EnvironmentalForecastInput: Codable, Hashable {
-    
     public let forecastWeather: WeatherSnapshot
-    
+
     public init(forecastWeather: WeatherSnapshot) {
         self.forecastWeather = forecastWeather
     }
 }
 
 public struct EnvironmentalForecast: Codable, Hashable {
-    
     public let expectedReadingDuration: Double
-    
+
     public let expectedPagesRead: Double
-    
+
     public let expectedReadingSpeed: Double
-    
+
     public let expectedEngagement: Double
-    
+
     public let expectedCompletionProbability: Double
-    
+
     public let predictedGenres: [String]
-    
+
     public let confidence: ConfidenceReport
 }
 
 // MARK: - Insight Objects
 
 public struct EnvironmentalInsight: Codable, Identifiable, Hashable {
-    
     public let id: UUID
-    
+
     public let category: EnvironmentalInsightCategory
-    
+
     public let title: String
-    
+
     public let summary: String
-    
+
     public let influenceScore: Double
-    
+
     public let confidence: ConfidenceReport
-    
+
     public let generatedAt: Date
-    
+
     public init(
         id: UUID = UUID(),
         category: EnvironmentalInsightCategory,
@@ -506,90 +486,83 @@ public struct EnvironmentalInsight: Codable, Identifiable, Hashable {
 // MARK: - Reports
 
 public struct WeatherTrendReport: Codable, Hashable {
-    
     public let generatedAt: Date
-    
+
     public let correlations: [EnvironmentalCorrelation]
-    
+
     public let strongestInfluences: [EnvironmentalCorrelation]
-    
+
     public let environmentalSensitivityScore: Double
-    
+
     public let confidence: ConfidenceReport
 }
 
 public struct EnvironmentalBehaviorReport: Codable, Hashable {
-    
     public let generatedAt: Date
-    
+
     public let profile: EnvironmentalReadingProfile
-    
+
     public let insights: [EnvironmentalInsight]
-    
+
     public let correlations: [EnvironmentalCorrelation]
-    
+
     public let confidence: ConfidenceReport
 }
 
 // MARK: - Internal Analysis Helpers
 
 struct CorrelationAccumulator {
-    
     var factor: EnvironmentalFactor
-    
+
     var metric: ReadingBehaviorMetric
-    
+
     var values: [(Double, Double)] = []
-    
+
     mutating func append(x: Double, y: Double) {
         values.append((x, y))
     }
 }
 
 struct SeasonalBucket {
-    
     let season: SeasonalPeriod
-    
+
     var sessionCount: Int = 0
-    
+
     var totalDuration: Double = 0
-    
+
     var totalPages: Double = 0
-    
+
     var totalSpeed: Double = 0
-    
+
     var totalEngagement: Double = 0
-    
+
     var genres: [String: Int] = [:]
 }
 
 struct ConditionBucket {
-    
     let condition: WeatherConditionCategory
-    
+
     var sessions: Int = 0
-    
+
     var totalDuration: Double = 0
-    
+
     var totalPages: Double = 0
-    
+
     var totalSpeed: Double = 0
 }
 
 // MARK: - Main Engine
 
 public final class WeatherAnalysisEngine {
-    
     public init() {}
 }
+
 // MARK: - Core Analysis Interfaces
 
-extension WeatherAnalysisEngine {
-
+public extension WeatherAnalysisEngine {
     // MARK: Environmental Session Record
 
-    public struct EnvironmentalSessionRecord: Codable, Identifiable, Hashable {
-
+    struct EnvironmentalSessionRecord: Codable, Identifiable, Hashable {
         public let id: UUID
 
         public let sessionID: UUID
@@ -693,10 +666,9 @@ extension WeatherAnalysisEngine {
 
     // MARK: Public Entry Point
 
-    public func buildEnvironmentalProfile(
+    func buildEnvironmentalProfile(
         from sessions: [EnvironmentalSessionRecord]
     ) -> EnvironmentalReadingProfile {
-
         let temperatureProfile = buildTemperatureProfile(
             from: sessions
         )
@@ -719,10 +691,9 @@ extension WeatherAnalysisEngine {
 
     // MARK: Full Correlation Analysis
 
-    public func analyzeCorrelations(
+    func analyzeCorrelations(
         from sessions: [EnvironmentalSessionRecord]
     ) -> [EnvironmentalCorrelation] {
-
         guard sessions.count >= 5 else {
             return []
         }
@@ -730,40 +701,31 @@ extension WeatherAnalysisEngine {
         var correlations: [EnvironmentalCorrelation] = []
 
         correlations.append(contentsOf:
-            analyzeTemperatureCorrelations(from: sessions)
-        )
+            analyzeTemperatureCorrelations(from: sessions))
 
         correlations.append(contentsOf:
-            analyzeHumidityCorrelations(from: sessions)
-        )
+            analyzeHumidityCorrelations(from: sessions))
 
         correlations.append(contentsOf:
-            analyzePressureCorrelations(from: sessions)
-        )
+            analyzePressureCorrelations(from: sessions))
 
         correlations.append(contentsOf:
-            analyzeCloudCoverCorrelations(from: sessions)
-        )
+            analyzeCloudCoverCorrelations(from: sessions))
 
         correlations.append(contentsOf:
-            analyzeVisibilityCorrelations(from: sessions)
-        )
+            analyzeVisibilityCorrelations(from: sessions))
 
         correlations.append(contentsOf:
-            analyzeWindSpeedCorrelations(from: sessions)
-        )
+            analyzeWindSpeedCorrelations(from: sessions))
 
         correlations.append(contentsOf:
-            analyzeRainCorrelations(from: sessions)
-        )
+            analyzeRainCorrelations(from: sessions))
 
         correlations.append(contentsOf:
-            analyzeSnowCorrelations(from: sessions)
-        )
+            analyzeSnowCorrelations(from: sessions))
 
         correlations.append(contentsOf:
-            analyzeStormCorrelations(from: sessions)
-        )
+            analyzeStormCorrelations(from: sessions))
 
         return correlations.sorted {
             abs($0.influenceScore) > abs($1.influenceScore)
@@ -772,10 +734,9 @@ extension WeatherAnalysisEngine {
 
     // MARK: Weather Trend Report
 
-    public func generateTrendReport(
+    func generateTrendReport(
         sessions: [EnvironmentalSessionRecord]
     ) -> WeatherTrendReport {
-
         let correlations = analyzeCorrelations(
             from: sessions
         )
@@ -783,7 +744,7 @@ extension WeatherAnalysisEngine {
         let strongest = correlations
             .sorted {
                 abs($0.influenceScore) >
-                abs($1.influenceScore)
+                    abs($1.influenceScore)
             }
             .prefix(10)
 
@@ -807,10 +768,9 @@ extension WeatherAnalysisEngine {
 
     // MARK: Environmental Report
 
-    public func generateBehaviorReport(
+    func generateBehaviorReport(
         sessions: [EnvironmentalSessionRecord]
     ) -> EnvironmentalBehaviorReport {
-
         let profile = buildEnvironmentalProfile(
             from: sessions
         )
@@ -842,12 +802,10 @@ extension WeatherAnalysisEngine {
 
 // MARK: - Temperature Analysis
 
-extension WeatherAnalysisEngine {
-
-    fileprivate func buildTemperatureProfile(
+private extension WeatherAnalysisEngine {
+    func buildTemperatureProfile(
         from sessions: [EnvironmentalSessionRecord]
     ) -> TemperatureProfile? {
-
         guard sessions.count >= 10 else {
             return nil
         }
@@ -890,7 +848,7 @@ extension WeatherAnalysisEngine {
         )
 
         return TemperatureProfile(
-            optimalRange: min...max,
+            optimalRange: min ... max,
             peakReadingSpeed: avgSpeed,
             peakEngagement: avgEngagement,
             peakReadingVolume: avgVolume,
@@ -902,12 +860,10 @@ extension WeatherAnalysisEngine {
 
 // MARK: - Seasonal Analysis
 
-extension WeatherAnalysisEngine {
-
-    fileprivate func buildSeasonalProfiles(
+private extension WeatherAnalysisEngine {
+    func buildSeasonalProfiles(
         from sessions: [EnvironmentalSessionRecord]
     ) -> [SeasonalProfile] {
-
         var buckets: [SeasonalPeriod: SeasonalBucket] = [:]
 
         for season in SeasonalPeriod.allCases {
@@ -917,7 +873,6 @@ extension WeatherAnalysisEngine {
         }
 
         for session in sessions {
-
             var bucket = buckets[
                 session.weather.season
             ] ?? SeasonalBucket(
@@ -938,7 +893,6 @@ extension WeatherAnalysisEngine {
         }
 
         return buckets.values.compactMap { bucket in
-
             guard bucket.sessionCount > 0 else {
                 return nil
             }
@@ -966,16 +920,16 @@ extension WeatherAnalysisEngine {
             return SeasonalProfile(
                 season: bucket.season,
                 averageReadingDuration:
-                    bucket.totalDuration /
+                bucket.totalDuration /
                     Double(bucket.sessionCount),
                 averageReadingSpeed:
-                    bucket.totalSpeed /
+                bucket.totalSpeed /
                     Double(bucket.sessionCount),
                 averageEngagement:
-                    bucket.totalEngagement /
+                bucket.totalEngagement /
                     Double(bucket.sessionCount),
                 averagePagesRead:
-                    bucket.totalPages /
+                bucket.totalPages /
                     Double(bucket.sessionCount),
                 dominantGenres: dominantGenres,
                 avoidedGenres: avoidedGenres,
@@ -984,19 +938,17 @@ extension WeatherAnalysisEngine {
         }
         .sorted {
             $0.season.rawValue <
-            $1.season.rawValue
+                $1.season.rawValue
         }
     }
 }
 
 // MARK: - Influence Profile
 
-extension WeatherAnalysisEngine {
-
-    fileprivate func buildInfluenceProfile(
+private extension WeatherAnalysisEngine {
+    func buildInfluenceProfile(
         from sessions: [EnvironmentalSessionRecord]
     ) -> WeatherInfluenceProfile {
-
         let correlations = analyzeCorrelations(
             from: sessions
         )
@@ -1005,7 +957,7 @@ extension WeatherAnalysisEngine {
             .filter { $0.coefficient > 0 }
             .sorted {
                 abs($0.coefficient) >
-                abs($1.coefficient)
+                    abs($1.coefficient)
             }
             .prefix(10)
 
@@ -1013,7 +965,7 @@ extension WeatherAnalysisEngine {
             .filter { $0.coefficient < 0 }
             .sorted {
                 abs($0.coefficient) >
-                abs($1.coefficient)
+                    abs($1.coefficient)
             }
             .prefix(10)
 
@@ -1032,29 +984,28 @@ extension WeatherAnalysisEngine {
 
         return WeatherInfluenceProfile(
             strongestPositiveFactors:
-                Array(strongestPositive),
+            Array(strongestPositive),
             strongestNegativeFactors:
-                Array(strongestNegative),
+            Array(strongestNegative),
             environmentalSensitivityScore:
-                calculateEnvironmentalSensitivity(
-                    correlations: correlations
-                ),
+            calculateEnvironmentalSensitivity(
+                correlations: correlations
+            ),
             dominantSeason: dominantSeason,
             dominantCondition: dominantCondition,
             confidence: confidence
         )
     }
 }
+
 // MARK: - Correlation Analysis Core
 
-extension WeatherAnalysisEngine {
-
+private extension WeatherAnalysisEngine {
     // MARK: Temperature Correlations
 
-    fileprivate func analyzeTemperatureCorrelations(
+    func analyzeTemperatureCorrelations(
         from sessions: [EnvironmentalSessionRecord]
     ) -> [EnvironmentalCorrelation] {
-
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.temperatureCelsius },
@@ -1064,10 +1015,9 @@ extension WeatherAnalysisEngine {
         )
     }
 
-    fileprivate func analyzeHumidityCorrelations(
+    func analyzeHumidityCorrelations(
         from sessions: [EnvironmentalSessionRecord]
     ) -> [EnvironmentalCorrelation] {
-
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.humidity },
@@ -1077,10 +1027,9 @@ extension WeatherAnalysisEngine {
         )
     }
 
-    fileprivate func analyzePressureCorrelations(
+    func analyzePressureCorrelations(
         from sessions: [EnvironmentalSessionRecord]
     ) -> [EnvironmentalCorrelation] {
-
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.pressure },
@@ -1090,10 +1039,9 @@ extension WeatherAnalysisEngine {
         )
     }
 
-    fileprivate func analyzeCloudCoverCorrelations(
+    func analyzeCloudCoverCorrelations(
         from sessions: [EnvironmentalSessionRecord]
     ) -> [EnvironmentalCorrelation] {
-
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.cloudCover },
@@ -1103,10 +1051,9 @@ extension WeatherAnalysisEngine {
         )
     }
 
-    fileprivate func analyzeVisibilityCorrelations(
+    func analyzeVisibilityCorrelations(
         from sessions: [EnvironmentalSessionRecord]
     ) -> [EnvironmentalCorrelation] {
-
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.visibilityKilometers },
@@ -1116,10 +1063,9 @@ extension WeatherAnalysisEngine {
         )
     }
 
-    fileprivate func analyzeWindSpeedCorrelations(
+    func analyzeWindSpeedCorrelations(
         from sessions: [EnvironmentalSessionRecord]
     ) -> [EnvironmentalCorrelation] {
-
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.windSpeedKPH },
@@ -1129,10 +1075,9 @@ extension WeatherAnalysisEngine {
         )
     }
 
-    fileprivate func analyzeRainCorrelations(
+    func analyzeRainCorrelations(
         from sessions: [EnvironmentalSessionRecord]
     ) -> [EnvironmentalCorrelation] {
-
         return buildBinaryConditionCorrelation(
             sessions: sessions,
             conditionExtractor: { $0.weather.precipitationMillimeters > 0 },
@@ -1142,10 +1087,9 @@ extension WeatherAnalysisEngine {
         )
     }
 
-    fileprivate func analyzeSnowCorrelations(
+    func analyzeSnowCorrelations(
         from sessions: [EnvironmentalSessionRecord]
     ) -> [EnvironmentalCorrelation] {
-
         return buildBinaryConditionCorrelation(
             sessions: sessions,
             conditionExtractor: { $0.weather.snowfallMillimeters > 0 },
@@ -1155,10 +1099,9 @@ extension WeatherAnalysisEngine {
         )
     }
 
-    fileprivate func analyzeStormCorrelations(
+    func analyzeStormCorrelations(
         from sessions: [EnvironmentalSessionRecord]
     ) -> [EnvironmentalCorrelation] {
-
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.stormActivityIndex },
@@ -1171,16 +1114,14 @@ extension WeatherAnalysisEngine {
 
 // MARK: - Generic Correlation Engine
 
-extension WeatherAnalysisEngine {
-
-    fileprivate func buildCorrelation(
+private extension WeatherAnalysisEngine {
+    func buildCorrelation(
         sessions: [EnvironmentalSessionRecord],
         factorExtractor: (EnvironmentalSessionRecord) -> Double,
         metricExtractor: (EnvironmentalSessionRecord) -> Double,
         factor: EnvironmentalFactor,
         metric: ReadingBehaviorMetric
     ) -> [EnvironmentalCorrelation] {
-
         guard sessions.count >= 5 else { return [] }
 
         let pairs = sessions.map {
@@ -1220,18 +1161,17 @@ extension WeatherAnalysisEngine {
                 firstObserved: sessions.first?.timestamp ?? Date(),
                 lastObserved: sessions.last?.timestamp ?? Date(),
                 supportingSampleCount: sessions.count
-            )
+            ),
         ]
     }
 
-    fileprivate func buildBinaryConditionCorrelation(
+    func buildBinaryConditionCorrelation(
         sessions: [EnvironmentalSessionRecord],
         conditionExtractor: (EnvironmentalSessionRecord) -> Bool,
         metricExtractor: (EnvironmentalSessionRecord) -> Double,
         factor: EnvironmentalFactor,
         metric: ReadingBehaviorMetric
     ) -> [EnvironmentalCorrelation] {
-
         guard sessions.count >= 5 else { return [] }
 
         let trueGroup = sessions.filter(conditionExtractor)
@@ -1275,20 +1215,18 @@ extension WeatherAnalysisEngine {
                 firstObserved: sessions.first?.timestamp ?? Date(),
                 lastObserved: sessions.last?.timestamp ?? Date(),
                 supportingSampleCount: sessions.count
-            )
+            ),
         ]
     }
 }
 
 // MARK: - Statistical Core
 
-extension WeatherAnalysisEngine {
-
-    fileprivate func pearsonCorrelation(
+private extension WeatherAnalysisEngine {
+    func pearsonCorrelation(
         _ x: [Double],
         _ y: [Double]
     ) -> Double {
-
         guard x.count == y.count,
               x.count > 1
         else { return 0 }
@@ -1305,7 +1243,7 @@ extension WeatherAnalysisEngine {
         let numerator = n * sumXY - sumX * sumY
         let denominator = sqrt(
             (n * sumX2 - sumX * sumX) *
-            (n * sumY2 - sumY * sumY)
+                (n * sumY2 - sumY * sumY)
         )
 
         guard denominator != 0 else { return 0 }
@@ -1313,21 +1251,19 @@ extension WeatherAnalysisEngine {
         return numerator / denominator
     }
 
-    fileprivate func calculateSignificance(
+    func calculateSignificance(
         sampleSize: Int,
         coefficient: Double
     ) -> Double {
-
         let base = min(1.0, Double(sampleSize) / 50.0)
         let strength = abs(coefficient)
 
         return (base * 0.6) + (strength * 0.4)
     }
 
-    fileprivate func averageConsistency(
+    func averageConsistency(
         _ values: [(Double, Double, Date)]
     ) -> Double {
-
         guard values.count > 2 else { return 0.5 }
 
         let diffs = zip(values, values.dropFirst()).map { a, b in
@@ -1339,18 +1275,27 @@ extension WeatherAnalysisEngine {
         return 1.0 / (1.0 + avg)
     }
 
-    fileprivate func determineLifecycle(
+    func determineLifecycle(
         coefficient: Double,
         significance: Double
     ) -> CorrelationLifecycle {
-
         let strength = abs(coefficient)
 
-        if significance < 0.2 { return .temporary }
-        if strength > 0.8 && significance > 0.7 { return .persistent }
-        if strength > 0.6 { return .strengthening }
-        if strength > 0.4 { return .stable }
-        if strength > 0.2 { return .weakening }
+        if significance < 0.2 {
+            return .temporary
+        }
+        if strength > 0.8 && significance > 0.7 {
+            return .persistent
+        }
+        if strength > 0.6 {
+            return .strengthening
+        }
+        if strength > 0.4 {
+            return .stable
+        }
+        if strength > 0.2 {
+            return .weakening
+        }
 
         return .emerging
     }
@@ -1359,28 +1304,26 @@ extension WeatherAnalysisEngine {
 // MARK: - Utilities
 
 extension Array where Element == Double {
-
     var average: Double {
         guard !isEmpty else { return 0 }
         return reduce(0, +) / Double(count)
     }
 }
-extension WeatherAnalysisEngine {
 
-    fileprivate func calculateConfidence(
+private extension WeatherAnalysisEngine {
+    func calculateConfidence(
         sampleCount: Int,
         recurrence: Double,
         stability: Double,
         consistency: Double
     ) -> ConfidenceReport {
-
         let sampleSizeScore = min(1.0, Double(sampleCount) / 100.0)
 
         let overall =
             (sampleSizeScore +
-             recurrence +
-             stability +
-             consistency) / 4.0
+                recurrence +
+                stability +
+                consistency) / 4.0
 
         return ConfidenceReport(
             overallConfidence: overall,
@@ -1393,11 +1336,10 @@ extension WeatherAnalysisEngine {
         )
     }
 
-    fileprivate func calculateAggregateConfidence(
+    func calculateAggregateConfidence(
         sessions: [EnvironmentalSessionRecord],
-        correlations: [EnvironmentalCorrelation]
+        correlations _: [EnvironmentalCorrelation]
     ) -> ConfidenceReport {
-
         calculateConfidence(
             sampleCount: sessions.count,
             recurrence: 0.8,
@@ -1406,10 +1348,9 @@ extension WeatherAnalysisEngine {
         )
     }
 
-    fileprivate func calculateEnvironmentalSensitivity(
+    func calculateEnvironmentalSensitivity(
         correlations: [EnvironmentalCorrelation]
     ) -> Double {
-
         guard !correlations.isEmpty else { return 0 }
 
         return correlations
@@ -1417,10 +1358,9 @@ extension WeatherAnalysisEngine {
             .average
     }
 
-    fileprivate func determineDominantSeason(
+    func determineDominantSeason(
         sessions: [EnvironmentalSessionRecord]
     ) -> SeasonalPeriod? {
-
         Dictionary(
             grouping: sessions,
             by: { $0.weather.season }
@@ -1429,10 +1369,9 @@ extension WeatherAnalysisEngine {
         .key
     }
 
-    fileprivate func determineDominantCondition(
+    func determineDominantCondition(
         sessions: [EnvironmentalSessionRecord]
     ) -> WeatherConditionCategory? {
-
         Dictionary(
             grouping: sessions,
             by: { $0.weather.condition }
@@ -1441,12 +1380,11 @@ extension WeatherAnalysisEngine {
         .key
     }
 
-    fileprivate func generateInsights(
-        sessions: [EnvironmentalSessionRecord],
-        profile: EnvironmentalReadingProfile,
-        correlations: [EnvironmentalCorrelation]
+    func generateInsights(
+        sessions _: [EnvironmentalSessionRecord],
+        profile _: EnvironmentalReadingProfile,
+        correlations _: [EnvironmentalCorrelation]
     ) -> [EnvironmentalInsight] {
-
         return []
     }
 }

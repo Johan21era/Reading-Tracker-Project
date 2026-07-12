@@ -1,12 +1,3 @@
-//
-//  EPUBReaderScreen.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 7/6/26.
-//
-
-
-//
 //  EPUBReaderScreen.swift
 //  Reading Tracker
 //
@@ -22,9 +13,9 @@
 //  and the dead-in-practice LibraryView) keep compiling untouched.
 //
 
+import os
 import SwiftUI
 import WebKit
-import os
 
 // MARK: - EPUBReaderScreen
 
@@ -133,7 +124,9 @@ struct EPUBReaderScreen: View {
 
     // MARK: - Chapter navigation
 
-    private var canGoToPreviousChapter: Bool { currentChapterIndex > 0 }
+    private var canGoToPreviousChapter: Bool {
+        currentChapterIndex > 0
+    }
 
     private var canGoToNextChapter: Bool {
         guard let package else { return false }
@@ -346,12 +339,13 @@ private struct EPUBChapterWebView: NSViewRepresentable {
         /// handed to the system browser instead of navigating the reader
         /// away from the book.
         func webView(
-            _ webView: WKWebView,
+            _: WKWebView,
             decidePolicyFor navigationAction: WKNavigationAction,
             decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
         ) {
             if navigationAction.navigationType == .linkActivated,
-               let url = navigationAction.request.url {
+               let url = navigationAction.request.url
+            {
                 onExternalLink(url)
                 decisionHandler(.cancel)
                 return
@@ -359,11 +353,11 @@ private struct EPUBChapterWebView: NSViewRepresentable {
             decisionHandler(.allow)
         }
 
-        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        func webView(_: WKWebView, didFailProvisionalNavigation _: WKNavigation!, withError error: Error) {
             onLoadError(error.localizedDescription)
         }
 
-        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        func webView(_: WKWebView, didFail _: WKNavigation!, withError error: Error) {
             onLoadError(error.localizedDescription)
         }
     }

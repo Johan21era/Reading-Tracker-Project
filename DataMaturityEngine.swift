@@ -1,19 +1,8 @@
-//
-//
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 7/9/26.
-//
-
-
-//
-//  DataMaturityEngine.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 7/7/26.
+// DataMaturityEngine.swift
 //
 //  -----------------------------------------------------------------------------
 //  MARK: - What this file is
+
 //  -----------------------------------------------------------------------------
 //
 //  DataMaturityEngine is an authority layer, not an analysis layer.
@@ -43,6 +32,7 @@
 //
 //  -----------------------------------------------------------------------------
 //  MARK: - Why evidence, never time
+
 //  -----------------------------------------------------------------------------
 //
 //  Nothing in this file reads Date() and asks "how long has this account
@@ -58,6 +48,7 @@
 //
 //  -----------------------------------------------------------------------------
 //  MARK: - Why this file is domain-agnostic
+
 //  -----------------------------------------------------------------------------
 //
 //  BehaviorContextEngine's narratives, InsightEngine's ReadingInsight cards,
@@ -74,6 +65,7 @@
 //
 //  -----------------------------------------------------------------------------
 //  MARK: - Composition over one big switch
+
 //  -----------------------------------------------------------------------------
 //
 //  Two things in this app are the "correct" answer for different reasons,
@@ -117,19 +109,21 @@ public struct MaturityDomain: Hashable, Codable, Sendable, CustomStringConvertib
         self.rawValue = rawValue
     }
 
-    public var description: String { rawValue }
+    public var description: String {
+        rawValue
+    }
 
     // Known domains as of this integration pass. Every one of these maps
     // to an engine that already exists in this codebase today.
-    public static let reading         = MaturityDomain("reading")          // Book/ReadingSession history
-    public static let behaviorContext = MaturityDomain("behaviorContext")  // BehaviorContextEngine environments/routines
-    public static let environmental   = MaturityDomain("environmental")   // WeatherAnalysisEngine
-    public static let audio           = MaturityDomain("audio")           // MusicalAnalysisEngine (AudioFactor 2.swift)
-    public static let device          = MaturityDomain("device")          // Device-state influence (screen lock/sleep)
-    public static let routine         = MaturityDomain("routine")         // Timing/recurrence routines
-    public static let library         = MaturityDomain("library")         // Genre/book-level composition
-    public static let session         = MaturityDomain("session")         // Per-session quality/consistency
-    public static let notification    = MaturityDomain("notification")    // IntelligentNotificationEngine
+    public static let reading = MaturityDomain("reading") // Book/ReadingSession history
+    public static let behaviorContext = MaturityDomain("behaviorContext") // BehaviorContextEngine environments/routines
+    public static let environmental = MaturityDomain("environmental") // WeatherAnalysisEngine
+    public static let audio = MaturityDomain("audio") // MusicalAnalysisEngine (AudioFactor 2.swift)
+    public static let device = MaturityDomain("device") // Device-state influence (screen lock/sleep)
+    public static let routine = MaturityDomain("routine") // Timing/recurrence routines
+    public static let library = MaturityDomain("library") // Genre/book-level composition
+    public static let session = MaturityDomain("session") // Per-session quality/consistency
+    public static let notification = MaturityDomain("notification") // IntelligentNotificationEngine
 }
 
 // MARK: - Claim Type Identifier
@@ -148,7 +142,9 @@ public struct ClaimTypeIdentifier: Hashable, Codable, Sendable, CustomStringConv
         self.rawValue = rawValue
     }
 
-    public var description: String { rawValue }
+    public var description: String {
+        rawValue
+    }
 }
 
 // MARK: - Narrative Strength Tier
@@ -171,23 +167,25 @@ public struct NarrativeStrengthTier: Hashable, Codable, Sendable, CustomStringCo
         self.rank = rank
     }
 
-    public var description: String { rawValue }
+    public var description: String {
+        rawValue
+    }
 
     /// Not enough evidence to say anything. Never used for display —
     /// a claim at this tier is, by construction, blocked.
     public static let insufficient = NarrativeStrengthTier("insufficient", rank: 0)
     /// "You have occasionally read more during evenings."
-    public static let emerging     = NarrativeStrengthTier("emerging",     rank: 1)
+    public static let emerging = NarrativeStrengthTier("emerging", rank: 1)
     /// "You often read more during evenings."
-    public static let moderate     = NarrativeStrengthTier("moderate",     rank: 2)
+    public static let moderate = NarrativeStrengthTier("moderate", rank: 2)
     /// "Evenings are consistently your strongest reading period."
-    public static let established  = NarrativeStrengthTier("established", rank: 3)
+    public static let established = NarrativeStrengthTier("established", rank: 3)
     /// A step past "established" for claims with unusually deep, unusually
     /// consistent replication — still short of the full-history ceiling.
-    public static let strong       = NarrativeStrengthTier("strong",      rank: 4)
+    public static let strong = NarrativeStrengthTier("strong", rank: 4)
     /// "Evenings have remained your strongest reading period across
     /// multiple months."
-    public static let definitive   = NarrativeStrengthTier("definitive",  rank: 5)
+    public static let definitive = NarrativeStrengthTier("definitive", rank: 5)
 
     /// A short adverbial phrase a narrative template can drop straight
     /// into a sentence. Falls back to a neutral phrase for any custom
@@ -196,12 +194,12 @@ public struct NarrativeStrengthTier: Hashable, Codable, Sendable, CustomStringCo
     public var qualifier: String {
         switch rawValue {
         case "insufficient": return ""
-        case "emerging":     return "occasionally"
-        case "moderate":     return "often"
-        case "established":  return "consistently"
-        case "strong":       return "reliably"
-        case "definitive":   return "consistently across multiple months"
-        default:             return "recently"
+        case "emerging": return "occasionally"
+        case "moderate": return "often"
+        case "established": return "consistently"
+        case "strong": return "reliably"
+        case "definitive": return "consistently across multiple months"
+        default: return "recently"
         }
     }
 }
@@ -246,19 +244,21 @@ public struct ClaimDecision: Hashable, Codable, Sendable, CustomStringConvertibl
         self.disposition = disposition
     }
 
-    public var description: String { identifier }
+    public var description: String {
+        identifier
+    }
 
-    public static let approved          = ClaimDecision(identifier: "approved",          disposition: .displayableFull)
-    public static let approvedSoftened  = ClaimDecision(identifier: "approvedSoftened",  disposition: .displayableSoftened)
-    public static let contextSpecific   = ClaimDecision(identifier: "contextSpecific",   disposition: .displayableSoftened)
-    public static let seasonalOnly      = ClaimDecision(identifier: "seasonalOnly",      disposition: .displayableSoftened)
-    public static let recentlyChanged   = ClaimDecision(identifier: "recentlyChanged",   disposition: .displayableSoftened)
+    public static let approved = ClaimDecision(identifier: "approved", disposition: .displayableFull)
+    public static let approvedSoftened = ClaimDecision(identifier: "approvedSoftened", disposition: .displayableSoftened)
+    public static let contextSpecific = ClaimDecision(identifier: "contextSpecific", disposition: .displayableSoftened)
+    public static let seasonalOnly = ClaimDecision(identifier: "seasonalOnly", disposition: .displayableSoftened)
+    public static let recentlyChanged = ClaimDecision(identifier: "recentlyChanged", disposition: .displayableSoftened)
     public static let needsMoreEvidence = ClaimDecision(identifier: "needsMoreEvidence", disposition: .blocked)
-    public static let postponed         = ClaimDecision(identifier: "postponed",         disposition: .blocked)
-    public static let contradicted      = ClaimDecision(identifier: "contradicted",      disposition: .blocked)
-    public static let unstablePattern   = ClaimDecision(identifier: "unstablePattern",   disposition: .blocked)
-    public static let expired           = ClaimDecision(identifier: "expired",           disposition: .blocked)
-    public static let rejected          = ClaimDecision(identifier: "rejected",          disposition: .blocked)
+    public static let postponed = ClaimDecision(identifier: "postponed", disposition: .blocked)
+    public static let contradicted = ClaimDecision(identifier: "contradicted", disposition: .blocked)
+    public static let unstablePattern = ClaimDecision(identifier: "unstablePattern", disposition: .blocked)
+    public static let expired = ClaimDecision(identifier: "expired", disposition: .blocked)
+    public static let rejected = ClaimDecision(identifier: "rejected", disposition: .blocked)
 }
 
 // MARK: - Evidence Observation
@@ -302,7 +302,6 @@ public struct MaturityEvidenceObservation: Hashable, Codable, Sendable {
 /// contradictions isn't assumed to have zero contradictions, but it also
 /// isn't assumed to be lying. See `ContradictionEvaluator`.
 public struct MaturityEvidenceDigest: Hashable, Codable, Sendable {
-
     /// Total observations backing this claim, supporting and contradicting.
     public var sampleCount: Int
     /// Observations that support the claim.
@@ -408,7 +407,6 @@ public struct MaturityEvidenceDigest: Hashable, Codable, Sendable {
         involvedDomains: Set<MaturityDomain> = [],
         priorConfidenceHint: Double? = nil
     ) -> MaturityEvidenceDigest {
-
         guard !observations.isEmpty else { return .empty }
 
         let sorted = observations.sorted { $0.date < $1.date }
@@ -496,7 +494,7 @@ public struct EvidenceVolumeEvaluator: MaturityEvaluating {
     public init() {}
     public let name = "evidenceVolume"
 
-    public func evaluate(digest: MaturityEvidenceDigest, requirement: ClaimRequirement, referenceDate: Date) -> MaturitySignal {
+    public func evaluate(digest: MaturityEvidenceDigest, requirement: ClaimRequirement, referenceDate _: Date) -> MaturitySignal {
         let floor = max(requirement.minimumSampleCount, 1)
         // Reaching 3x the required minimum is treated as "comfortable" (1.0).
         let comfortable = Double(floor) * 3.0
@@ -540,7 +538,7 @@ public struct ConsistencyEvaluator: MaturityEvaluating {
     public init() {}
     public let name = "consistency"
 
-    public func evaluate(digest: MaturityEvidenceDigest, requirement: ClaimRequirement, referenceDate: Date) -> MaturitySignal {
+    public func evaluate(digest: MaturityEvidenceDigest, requirement _: ClaimRequirement, referenceDate _: Date) -> MaturitySignal {
         guard digest.sampleCount > 0 else {
             return MaturitySignal(name: name, score: 0, weight: 1.0, rationale: "no evidence")
         }
@@ -562,7 +560,7 @@ public struct ContradictionEvaluator: MaturityEvaluating {
     public init() {}
     public let name = "contradiction"
 
-    public func evaluate(digest: MaturityEvidenceDigest, requirement: ClaimRequirement, referenceDate: Date) -> MaturitySignal {
+    public func evaluate(digest: MaturityEvidenceDigest, requirement: ClaimRequirement, referenceDate _: Date) -> MaturitySignal {
         guard let contradicting = digest.contradictingCount else {
             return MaturitySignal(name: name, score: 0.6, weight: 0.75, rationale: "source does not track contradictions")
         }
@@ -588,7 +586,7 @@ public struct ReplicationEvaluator: MaturityEvaluating {
     public init() {}
     public let name = "replication"
 
-    public func evaluate(digest: MaturityEvidenceDigest, requirement: ClaimRequirement, referenceDate: Date) -> MaturitySignal {
+    public func evaluate(digest: MaturityEvidenceDigest, requirement: ClaimRequirement, referenceDate _: Date) -> MaturitySignal {
         guard requirement.minimumReplication > 0 else {
             return MaturitySignal(name: name, score: 1.0, weight: 0.5, rationale: "replication not required for this claim type")
         }
@@ -609,7 +607,7 @@ public struct HistoricalDepthEvaluator: MaturityEvaluating {
     public init() {}
     public let name = "historicalDepth"
 
-    public func evaluate(digest: MaturityEvidenceDigest, requirement: ClaimRequirement, referenceDate: Date) -> MaturitySignal {
+    public func evaluate(digest: MaturityEvidenceDigest, requirement: ClaimRequirement, referenceDate _: Date) -> MaturitySignal {
         guard requirement.minimumHistoricalSpanDays > 0 else {
             return MaturitySignal(name: name, score: 1.0, weight: 0.5, rationale: "historical span not required for this claim type")
         }
@@ -631,7 +629,7 @@ public struct TrendStabilityEvaluator: MaturityEvaluating {
     public init() {}
     public let name = "trendStability"
 
-    public func evaluate(digest: MaturityEvidenceDigest, requirement: ClaimRequirement, referenceDate: Date) -> MaturitySignal {
+    public func evaluate(digest: MaturityEvidenceDigest, requirement: ClaimRequirement, referenceDate _: Date) -> MaturitySignal {
         guard digest.sampleCount > 0 else {
             return MaturitySignal(name: name, score: 0.5, weight: 0.5, rationale: "no evidence for trend comparison")
         }
@@ -668,7 +666,7 @@ public struct CrossDomainCorroborationEvaluator: MaturityEvaluating {
     public init() {}
     public let name = "crossDomainCorroboration"
 
-    public func evaluate(digest: MaturityEvidenceDigest, requirement: ClaimRequirement, referenceDate: Date) -> MaturitySignal {
+    public func evaluate(digest: MaturityEvidenceDigest, requirement: ClaimRequirement, referenceDate _: Date) -> MaturitySignal {
         guard !requirement.requiredDomains.isEmpty else {
             return MaturitySignal(name: name, score: 1.0, weight: 0.5, rationale: "no cross-domain corroboration required")
         }
@@ -861,7 +859,9 @@ public struct MaturityVerdict: Sendable {
     /// Convenience: whether the caller may show anything at all for this
     /// claim. Prefer switching on `disposition` directly when the
     /// difference between full and softened display matters.
-    public var maySurface: Bool { disposition != .blocked }
+    public var maySurface: Bool {
+        disposition != .blocked
+    }
 
     public init(
         claimType: ClaimTypeIdentifier,
@@ -874,7 +874,7 @@ public struct MaturityVerdict: Sendable {
     ) {
         self.claimType = claimType
         self.decision = decision
-        self.disposition = decision.disposition
+        disposition = decision.disposition
         self.allowedConfidence = max(0, min(allowedConfidence, 1))
         self.narrativeStrength = narrativeStrength
         self.breakdown = breakdown
@@ -916,7 +916,6 @@ public struct ClaimRule: Sendable {
 /// that history (see `MaturityEvidenceDigest.aggregate`), not by asking
 /// this engine to remember anything between calls.
 public struct DataMaturityEngine: Sendable {
-
     public let registry: ClaimRegistry
     public let evaluators: [MaturityEvaluating]
     public let rules: [ClaimRule]
@@ -939,7 +938,7 @@ public struct DataMaturityEngine: Sendable {
         ReplicationEvaluator(),
         HistoricalDepthEvaluator(),
         TrendStabilityEvaluator(),
-        CrossDomainCorroborationEvaluator()
+        CrossDomainCorroborationEvaluator(),
     ]
 
     // MARK: Public API
@@ -1018,7 +1017,6 @@ public struct DataMaturityEngine: Sendable {
     }
 
     public static let defaultRules: [ClaimRule] = [
-
         ClaimRule(name: "minimumSampleCount") { digest, requirement, _, _ in
             guard digest.sampleCount < requirement.minimumSampleCount else { return nil }
             let ratio = requirement.minimumSampleCount > 0
@@ -1048,7 +1046,7 @@ public struct DataMaturityEngine: Sendable {
             return .needsMoreEvidence
         },
 
-        ClaimRule(name: "requiredDomainCorroboration") { digest, requirement, _, domains in
+        ClaimRule(name: "requiredDomainCorroboration") { _, requirement, _, domains in
             guard !requirement.requiredDomains.isEmpty,
                   !requirement.requiredDomains.isSubset(of: domains) else { return nil }
             return .needsMoreEvidence
@@ -1069,10 +1067,14 @@ public struct DataMaturityEngine: Sendable {
             return .expired
         },
 
-        ClaimRule(name: "trendSeverity") { digest, requirement, breakdown, _ in
+        ClaimRule(name: "trendSeverity") { _, _, breakdown, _ in
             guard let trendSignal = breakdown.signals.first(where: { $0.name == "trendStability" }) else { return nil }
-            if trendSignal.score < 0.3 { return .unstablePattern }
-            if trendSignal.score < 0.6 { return .recentlyChanged }
+            if trendSignal.score < 0.3 {
+                return .unstablePattern
+            }
+            if trendSignal.score < 0.6 {
+                return .recentlyChanged
+            }
             return nil
         },
 
@@ -1086,7 +1088,7 @@ public struct DataMaturityEngine: Sendable {
             guard requirement.requiresMultiSeasonCoverage,
                   let periods = digest.distinctCalendarPeriodsObserved else { return nil }
             return periods < 2 ? .seasonalOnly : nil
-        }
+        },
     ]
 
     // MARK: Scoring helpers
@@ -1103,7 +1105,7 @@ public struct DataMaturityEngine: Sendable {
         decision: ClaimDecision,
         breakdown: MaturityBreakdown,
         requirement: ClaimRequirement,
-        digest: MaturityEvidenceDigest
+        digest _: MaturityEvidenceDigest
     ) -> Double {
         guard decision.disposition != .blocked else { return 0 }
         let base = breakdown.compositeScore * requirement.maximumConfidence
@@ -1124,11 +1126,11 @@ public struct DataMaturityEngine: Sendable {
 
         let tier: NarrativeStrengthTier
         switch confidence {
-        case ..<0.35:  tier = .emerging
-        case ..<0.55:  tier = .moderate
-        case ..<0.72:  tier = .established
-        case ..<0.85:  tier = .strong
-        default:       tier = .definitive
+        case ..<0.35: tier = .emerging
+        case ..<0.55: tier = .moderate
+        case ..<0.72: tier = .established
+        case ..<0.85: tier = .strong
+        default: tier = .definitive
         }
 
         return min(tier, requirement.maximumNarrativeStrength)
@@ -1138,7 +1140,7 @@ public struct DataMaturityEngine: Sendable {
         signals: [MaturitySignal],
         decision: ClaimDecision,
         requirement: ClaimRequirement,
-        digest: MaturityEvidenceDigest
+        digest _: MaturityEvidenceDigest
     ) -> [String] {
         var lines = ["Decision: \(decision.identifier) (\(decision.disposition.rawValue))"]
         if !requirement.notes.isEmpty {

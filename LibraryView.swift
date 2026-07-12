@@ -2,9 +2,8 @@
 //  LibraryView.swift
 //  Reading Tracker
 //
-//  Created by Johan Rembeci on 6/17/26.
+//  
 //
-
 
 import SwiftUI
 
@@ -22,7 +21,7 @@ struct LibraryView: View {
         if !searchText.isEmpty {
             books = books.filter {
                 $0.title.localizedCaseInsensitiveContains(searchText) ||
-                $0.author.localizedCaseInsensitiveContains(searchText)
+                    $0.author.localizedCaseInsensitiveContains(searchText)
             }
         }
 
@@ -74,7 +73,6 @@ struct LibraryView: View {
                     .padding(.top, 12)
                 }
             }
-            
         }
     }
 

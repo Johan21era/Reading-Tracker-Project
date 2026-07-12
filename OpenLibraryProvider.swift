@@ -1,12 +1,3 @@
-//
-//  OpenLibraryProvider.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
-
-
-//
 //  OpenLibraryProvider.swift
 //  Online Book Discovery System
 //
@@ -19,7 +10,6 @@
 import Foundation
 
 struct OpenLibraryProvider: BookProvider {
-
     func searchBooks(query: String) async -> [OnlineBook] {
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -43,7 +33,7 @@ struct OpenLibraryProvider: BookProvider {
             let (data, response) = try await URLSession.shared.data(from: url)
 
             guard let httpResponse = response as? HTTPURLResponse,
-                  200...299 ~= httpResponse.statusCode
+                  200 ... 299 ~= httpResponse.statusCode
             else {
                 return []
             }
@@ -66,11 +56,9 @@ struct OpenLibraryProvider: BookProvider {
 // MARK: - Mapping
 
 private extension OpenLibraryProvider {
-
     func mapDocumentToOnlineBook(
         _ document: OpenLibraryDocument
     ) -> OnlineBook? {
-
         let title = document.title?.trimmingCharacters(
             in: .whitespacesAndNewlines
         )
@@ -83,8 +71,8 @@ private extension OpenLibraryProvider {
 
         let author =
             document.authorName?.first?
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            ?? "Unknown Author"
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+                ?? "Unknown Author"
 
         let isbn = document.isbn?.first
 
@@ -123,7 +111,6 @@ private struct OpenLibrarySearchResponse: Codable {
 }
 
 private struct OpenLibraryDocument: Codable {
-
     let key: String?
 
     let title: String?

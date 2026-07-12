@@ -1,13 +1,4 @@
-//
-//  BookSearchDrawer.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
-
-
-//
-//  BookSearchDrawer.swift
+//  OnlineBookSearchDrawer.swift
 //  Online Book Discovery System
 //
 //  Left-side expandable discovery drawer.
@@ -18,19 +9,18 @@
 import SwiftUI
 
 struct BookSearchDrawer: View {
-
     @ObservedObject var viewModel: BookDiscoveryViewModel
 
     @State private var isDrawerOpen = false
 
     var body: some View {
-
         ZStack(alignment: .leading) {
-
             // MARK: - Main Content Placeholder
+
             Color.clear
 
             // MARK: - Overlay
+
             if isDrawerOpen {
                 Color.black.opacity(0.25)
                     .ignoresSafeArea()
@@ -43,8 +33,8 @@ struct BookSearchDrawer: View {
             }
 
             // MARK: - Drawer
-            HStack(spacing: 0) {
 
+            HStack(spacing: 0) {
                 if isDrawerOpen {
                     drawer
                         .frame(
@@ -58,6 +48,7 @@ struct BookSearchDrawer: View {
             }
 
             // MARK: - Tab
+
             tab
         }
         .animation(.easeInOut, value: isDrawerOpen)
@@ -67,11 +58,8 @@ struct BookSearchDrawer: View {
 // MARK: - Drawer UI
 
 private extension BookSearchDrawer {
-
     var drawer: some View {
-
         VStack(alignment: .leading, spacing: 12) {
-
             searchField
 
             if viewModel.isOffline {
@@ -87,9 +75,7 @@ private extension BookSearchDrawer {
             }
 
             ScrollView {
-
                 LazyVStack(alignment: .leading, spacing: 8) {
-
                     ForEach(viewModel.results) { book in
                         OnlineBookRow(book: book)
                             .onTapGesture {
@@ -114,11 +100,8 @@ private extension BookSearchDrawer {
 // MARK: - Tab
 
 private extension BookSearchDrawer {
-
     var tab: some View {
-
         VStack {
-
             Spacer()
 
             Button(action: {
@@ -145,7 +128,6 @@ private extension BookSearchDrawer {
 // MARK: - Layout
 
 private extension BookSearchDrawer {
-
     var calculatedWidth: CGFloat {
         let screenWidth = NSScreen.main?.visibleFrame.width ?? 1000
         return min(max(screenWidth * 0.35, 320), 450)
@@ -155,6 +137,5 @@ private extension BookSearchDrawer {
 // MARK: - Selection State (temporary internal bridge)
 
 private extension BookSearchDrawer {
-
     @State var selectedBook: OnlineBook? = nil
 }
