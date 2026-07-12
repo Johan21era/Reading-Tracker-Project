@@ -2,22 +2,6 @@
 //  WeatherInsightPanel 2.swift
 //  Reading Tracker
 //
-//  Created by Johan Rembeci on 7/9/26.
-//
-
-
-//
-//  WeatherInsightPanel.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/29/26.
-//
-
-
-//
-//  WeatherInsightPanel.swift
-//  Reading Tracker
-//
 //  Fetches stored WeatherSnapshots, assembles EnvironmentalSessionRecord arrays
 //  by joining them with DataStore reading sessions, then calls WeatherAnalysisEngine
 //  to produce an EnvironmentalReadingProfile.
@@ -38,15 +22,14 @@ import SwiftUI
 private let minimumSessionsForWeather = 5
 
 struct WeatherInsightPanel: View {
-
     @EnvironmentObject private var dataStore: DataStore
     @Environment(\.dismiss) private var dismiss
 
-    @State private var profile:      EnvironmentalReadingProfile?
+    @State private var profile: EnvironmentalReadingProfile?
     @State private var correlations: [EnvironmentalCorrelation] = []
-    @State private var trend:        WeatherTrendReport?
-    @State private var isLoading     = true
-    @State private var sessionCount  = 0
+    @State private var trend: WeatherTrendReport?
+    @State private var isLoading = true
+    @State private var sessionCount = 0
     @State private var errorMessage: String?
 
     var body: some View {
@@ -87,7 +70,6 @@ struct WeatherInsightPanel: View {
     private func content(profile: EnvironmentalReadingProfile) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-
                 // ── Temperature profile ──────────────────────────────────
                 if let temp = profile.temperatureProfile {
                     temperatureSection(temp)
@@ -284,8 +266,8 @@ struct WeatherInsightPanel: View {
                 return
             }
 
-            let engine   = WeatherAnalysisEngine()
-            profile      = engine.buildEnvironmentalProfile(from: records)
+            let engine = WeatherAnalysisEngine()
+            profile = engine.buildEnvironmentalProfile(from: records)
             // analyzeCorrelations() itself is completely untouched — this
             // only decides which of its results have earned the right to
             // be shown. WeatherAnalysisEngine's own gate here was a single
@@ -297,7 +279,7 @@ struct WeatherInsightPanel: View {
             correlations = DataMaturityWeatherAdapter
                 .gate(engine.analyzeCorrelations(from: records))
                 .map(\.correlation)
-            trend        = engine.generateTrendReport(from: records)
+            trend = engine.generateTrendReport(from: records)
         } catch {
             errorMessage = "Could not load weather data: \(error.localizedDescription)"
         }
@@ -321,12 +303,12 @@ struct WeatherInsightPanel: View {
 
         // Fetch all snapshots in the span of the recorded sessions
         guard let earliest = allSessions.map(\.session.startTime).min(),
-              let latest   = allSessions.compactMap(\.session.endTime).max()
+              let latest = allSessions.compactMap(\.session.endTime).max()
         else { return [] }
 
         let snapshots = try WeatherKitService.shared.snapshots(
             from: earliest.addingTimeInterval(-3600),
-            to:   latest.addingTimeInterval(3600)
+            to: latest.addingTimeInterval(3600)
         )
 
         // Index snapshots by their sessionID for O(1) lookup
@@ -336,7 +318,7 @@ struct WeatherInsightPanel: View {
 
         for pair in allSessions {
             let session = pair.session
-            let book    = pair.book
+            let book = pair.book
             guard let end = session.endTime else { continue }
 
             // Prefer an exact sessionID match; fall back to closest-by-timestamp
@@ -346,7 +328,7 @@ struct WeatherInsightPanel: View {
             } else {
                 snapshot = snapshots.min {
                     abs($0.timestamp.timeIntervalSince(session.startTime))
-                  < abs($1.timestamp.timeIntervalSince(session.startTime))
+                        < abs($1.timestamp.timeIntervalSince(session.startTime))
                 }
             }
 
@@ -358,28 +340,28 @@ struct WeatherInsightPanel: View {
 
             records.append(
                 WeatherAnalysisEngine.EnvironmentalSessionRecord(
-                    sessionID:              session.id,
-                    bookID:                 book.id,
-                    timestamp:              session.startTime,
-                    weather:                snap,
+                    sessionID: session.id,
+                    bookID: book.id,
+                    timestamp: session.startTime,
+                    weather: snap,
                     readingDurationMinutes: end.timeIntervalSince(session.startTime) / 60,
-                    pagesRead:              Double(session.pagesRead),
-                    chaptersCompleted:      0,
-                    booksCompleted:         0,
-                    readingSpeed:           pagesPerHour,
-                    consistencyScore:       0.5,    // approximation
-                    readingFrequencyScore:  0.5,    // approximation
-                    engagementScore:        min(1.0, Double(session.pagesRead) / 30.0),
-                    sessionQualityScore:    0.5,    // approximation
-                    momentumScore:          0.5,    // approximation
-                    completionProbability:  0.5,    // approximation
+                    pagesRead: Double(session.pagesRead),
+                    chaptersCompleted: 0,
+                    booksCompleted: 0,
+                    readingSpeed: pagesPerHour,
+                    consistencyScore: 0.5, // approximation
+                    readingFrequencyScore: 0.5, // approximation
+                    engagementScore: min(1.0, Double(session.pagesRead) / 30.0),
+                    sessionQualityScore: 0.5, // approximation
+                    momentumScore: 0.5, // approximation
+                    completionProbability: 0.5, // approximation
                     abandonmentProbability: 0.5,
-                    difficultyScore:        max(0, min(1, secsPerPage / 300)),
-                    complexityScore:        0.5,
-                    bookLength:             Double(book.totalPages),
-                    genre:                  book.genre.rawValue,
-                    seriesIdentifier:       nil,
-                    reread:                 false
+                    difficultyScore: max(0, min(1, secsPerPage / 300)),
+                    complexityScore: 0.5,
+                    bookLength: Double(book.totalPages),
+                    genre: book.genre.rawValue,
+                    seriesIdentifier: nil,
+                    reread: false
                 )
             )
         }
@@ -411,8 +393,8 @@ struct WeatherInsightPanel: View {
 // MARK: - WeatherStatCard
 
 private struct WeatherStatCard: View {
-    let value:  String
-    let label:  String
+    let value: String
+    let label: String
     let symbol: String
 
     var body: some View {
@@ -444,7 +426,9 @@ private struct CorrelationRow: View {
         "\(correlation.factor.rawValue.capitalized) → \(correlation.metric.rawValue.capitalized)"
     }
 
-    private var isPositive: Bool { correlation.coefficient >= 0 }
+    private var isPositive: Bool {
+        correlation.coefficient >= 0
+    }
 
     var body: some View {
         HStack(spacing: 12) {

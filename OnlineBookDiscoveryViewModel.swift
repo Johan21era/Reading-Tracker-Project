@@ -1,13 +1,4 @@
-//
-//  BookDiscoveryViewModel.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
-
-
-//
-//  BookDiscoveryViewModel.swift
+//  OnlineBookDiscoveryViewModel.swift
 //  Online Book Discovery System
 //
 //  Swift Concurrency only.
@@ -16,13 +7,12 @@
 //  Network monitoring via NWPathMonitor.
 //
 
+import Combine
 import Foundation
 import Network
-import Combine
 
 @MainActor
 final class BookDiscoveryViewModel: ObservableObject {
-
     @Published var query = "" {
         didSet {
             scheduleSearch()
@@ -59,11 +49,9 @@ final class BookDiscoveryViewModel: ObservableObject {
 // MARK: - Search
 
 private extension BookDiscoveryViewModel {
-
     func scheduleSearch(
         immediate: Bool = false
     ) {
-
         searchTask?.cancel()
 
         let trimmedQuery = query.trimmingCharacters(
@@ -85,11 +73,9 @@ private extension BookDiscoveryViewModel {
         }
 
         searchTask = Task { [weak self] in
-
             guard let self else { return }
 
             if !immediate {
-
                 do {
                     try await Task.sleep(
                         for: .milliseconds(500)
@@ -112,7 +98,6 @@ private extension BookDiscoveryViewModel {
     func performSearch(
         query: String
     ) async {
-
         isLoading = true
         errorMessage = nil
 
@@ -136,13 +121,9 @@ private extension BookDiscoveryViewModel {
 // MARK: - Network Monitoring
 
 private extension BookDiscoveryViewModel {
-
     func startNetworkMonitoring() {
-
         monitor.pathUpdateHandler = { [weak self] path in
-
             Task { @MainActor in
-
                 guard let self else { return }
 
                 let offline = path.status != .satisfied
@@ -150,17 +131,15 @@ private extension BookDiscoveryViewModel {
                 self.isOffline = offline
 
                 if offline {
-
                     self.results = []
                     self.isLoading = false
                     self.errorMessage =
                         "No internet connection available."
 
                 } else {
-
                     if self.errorMessage ==
-                        "No internet connection available." {
-
+                        "No internet connection available."
+                    {
                         self.errorMessage = nil
                     }
 

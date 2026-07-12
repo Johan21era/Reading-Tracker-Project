@@ -1,10 +1,3 @@
-//
-//  GoalsDashboard.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/29/26.
-//
-
 
 //
 //  GoalsDashboard.swift
@@ -22,8 +15,7 @@
 import SwiftUI
 
 struct GoalsDashboard: View {
-
-    @EnvironmentObject private var goalVM:    GoalProgressViewModel
+    @EnvironmentObject private var goalVM: GoalProgressViewModel
     @EnvironmentObject private var dataStore: DataStore
     @Environment(\.dismiss) private var dismiss
 
@@ -31,7 +23,6 @@ struct GoalsDashboard: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
-
                     // ── Projection banner ──────────────────────────────────
                     projectionBanner
 
@@ -129,7 +120,8 @@ struct GoalsDashboard: View {
                 .fontWeight(.semibold)
 
             ForEach(goalVM.deadlineStatuses.sorted { $0.daysRemaining < $1.daysRemaining },
-                    id: \.deadline.id) { status in
+                    id: \.deadline.id)
+            { status in
                 BookDeadlineRow(status: status)
             }
         }
@@ -143,7 +135,6 @@ private struct GoalStatusCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-
             // Header
             HStack {
                 Image(systemName: goalSymbol(status.goal))
@@ -196,11 +187,11 @@ private struct GoalStatusCard: View {
 
     private func goalSymbol(_ kind: GoalStatus.GoalKind) -> String {
         switch kind {
-        case .dailyPages:    return "book.pages"
-        case .dailyTime:     return "clock"
-        case .annualBooks:   return "books.vertical"
-        case .weeklyStreak:  return "calendar.badge.checkmark"
-        case .bookDeadline:  return "calendar"
+        case .dailyPages: return "book.pages"
+        case .dailyTime: return "clock"
+        case .annualBooks: return "books.vertical"
+        case .weeklyStreak: return "calendar.badge.checkmark"
+        case .bookDeadline: return "calendar"
         }
     }
 }
@@ -252,9 +243,15 @@ private struct BookDeadlineRow: View {
     }
 
     private var urgencyColor: Color {
-        if status.isOverdue              { return .red }
-        if status.daysRemaining <= 3     { return .orange }
-        if !status.isAchievable         { return .yellow }
+        if status.isOverdue {
+            return .red
+        }
+        if status.daysRemaining <= 3 {
+            return .orange
+        }
+        if !status.isAchievable {
+            return .yellow
+        }
         return .green
     }
 }

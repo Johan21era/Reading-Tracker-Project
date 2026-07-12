@@ -1,20 +1,5 @@
-//
-//  SessionCoordinator 2.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/23/26.
-//
 
-
-//
-//  SessionCoordinator.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/16/26.
-//
-
-
-// SessionCoordinator.swift
+// SessionCoordinator 2.swift
 // Manages the lifecycle of the currently-active reading session.
 // PATCHED:
 //   B2 — currentPage is the single authoritative source; PDFReaderScreen must
@@ -26,12 +11,11 @@
 //   Task 15 — restoreSession elapsed timer behaviour confirmed correct (B3 patch).
 //   Task 25 — endAllActiveSessions added so the app lifecycle can reset all state.
 
-import Foundation
 import Combine
+import Foundation
 
 @MainActor
 final class SessionCoordinator: ObservableObject {
-
     // MARK: - Published State
 
     @Published private(set) var activeBookID: UUID?
@@ -62,7 +46,9 @@ final class SessionCoordinator: ObservableObject {
 
     // MARK: - Public API
 
-    var isReading: Bool { activeBookID != nil }
+    var isReading: Bool {
+        activeBookID != nil
+    }
 
     func startReading(bookID: UUID, page: Int) {
         // TASK 8 FIX: Guard against same-book re-entry.
@@ -94,11 +80,12 @@ final class SessionCoordinator: ObservableObject {
 
         dataStore?.startSession(bookID: bookID, onPage: page)
         activeBookID = bookID
-        currentPage  = page
+        currentPage = page
         sessionStartDate = Date()
 
         if let book = dataStore?.book(id: bookID),
-           let sid  = book.activeSessionID {
+           let sid = book.activeSessionID
+        {
             activeSessionID = sid
             // Begin audio environment monitoring for this session.
             // AudioMonitorService captures a baseline snapshot immediately and
@@ -135,7 +122,7 @@ final class SessionCoordinator: ObservableObject {
         dataStore?.endSession(bookID: bookID)
 
         if activeBookID == bookID {
-            activeBookID    = nil
+            activeBookID = nil
             activeSessionID = nil
             stopElapsedTimer()
         }
@@ -155,7 +142,7 @@ final class SessionCoordinator: ObservableObject {
         }
 
         dataStore?.endAllActiveSessions()
-        activeBookID    = nil
+        activeBookID = nil
         activeSessionID = nil
         stopElapsedTimer()
     }
@@ -168,11 +155,12 @@ final class SessionCoordinator: ObservableObject {
     /// closed cleanly before crash), this method starts a brand-new session so
     /// subsequent page turns are recorded correctly.
     func restoreSession(bookID: UUID, sessionID: UUID, page: Int) {
-        activeBookID    = bookID
-        currentPage     = page
+        activeBookID = bookID
+        currentPage = page
 
         if let book = dataStore?.book(id: bookID),
-           book.activeSessionID == sessionID {
+           book.activeSessionID == sessionID
+        {
             // The session survived serialization — hook into it.
             activeSessionID = sessionID
         } else {
@@ -195,7 +183,7 @@ final class SessionCoordinator: ObservableObject {
 
     private func startElapsedTimer() {
         stopElapsedTimer()
-        elapsedTime  = 0
+        elapsedTime = 0
         elapsedTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             guard let self, let start = self.sessionStartDate else { return }
             Task { @MainActor in
@@ -206,8 +194,8 @@ final class SessionCoordinator: ObservableObject {
 
     private func stopElapsedTimer() {
         elapsedTimer?.invalidate()
-        elapsedTimer     = nil
-        elapsedTime      = 0
+        elapsedTimer = nil
+        elapsedTime = 0
         sessionStartDate = nil
     }
 }

@@ -1,12 +1,3 @@
-//
-//  OnlineBookRow.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
-
-
-//
 //  OnlineBookRow.swift
 //  Online Book Discovery System
 //
@@ -14,16 +5,13 @@
 import SwiftUI
 
 struct OnlineBookRow: View {
-
     let book: OnlineBook
 
     var body: some View {
-
         VStack(
             alignment: .leading,
             spacing: 6
         ) {
-
             Text(book.title)
                 .font(.headline)
                 .lineLimit(2)
@@ -34,7 +22,6 @@ struct OnlineBookRow: View {
                 .lineLimit(1)
 
             HStack(spacing: 8) {
-
                 Text(sourceLabel)
                     .font(.caption)
                     .padding(.horizontal, 8)
@@ -68,9 +55,7 @@ struct OnlineBookRow: View {
 // MARK: - Labels
 
 private extension OnlineBookRow {
-
     var sourceLabel: String {
-
         switch book.source {
         case .openLibrary:
             return "Open Library"
@@ -84,7 +69,6 @@ private extension OnlineBookRow {
     }
 
     var availabilityLabel: String {
-
         switch book.availability {
         case .free:
             return "Free"
@@ -98,7 +82,6 @@ private extension OnlineBookRow {
     }
 
     var availabilityColor: Color {
-
         switch book.availability {
         case .free:
             return .green

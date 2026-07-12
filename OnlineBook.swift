@@ -1,18 +1,9 @@
-//
-//  BookSource.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
 
-
-//
 //  OnlineBook.swift
 //  Online Book Discovery System
 //
 //  Created for isolated discovery subsystem.
 //  No dependencies on existing reader infrastructure.
-//
 
 import Foundation
 

@@ -1,10 +1,3 @@
-//
-//  AchievementPanel.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/29/26.
-//
-
 
 //
 //  AchievementPanel.swift
@@ -22,7 +15,6 @@
 import SwiftUI
 
 struct AchievementPanel: View {
-
     @EnvironmentObject private var dataStore: DataStore
     @Environment(\.dismiss) private var dismiss
 
@@ -42,9 +34,9 @@ struct AchievementPanel: View {
         )
     }
 
-    // Tier display order: platinum → gold → silver → bronze
+    /// Tier display order: platinum → gold → silver → bronze
     private let tierOrder: [AchievementDefinition.AchievementTier] = [
-        .platinum, .gold, .silver, .bronze
+        .platinum, .gold, .silver, .bronze,
     ]
 
     var body: some View {
@@ -172,27 +164,27 @@ struct AchievementPanel: View {
 
     private func tierName(_ tier: AchievementDefinition.AchievementTier) -> String {
         switch tier {
-        case .bronze:   return "Bronze"
-        case .silver:   return "Silver"
-        case .gold:     return "Gold"
+        case .bronze: return "Bronze"
+        case .silver: return "Silver"
+        case .gold: return "Gold"
         case .platinum: return "Platinum"
         }
     }
 
     private func tierColor(_ tier: AchievementDefinition.AchievementTier) -> Color {
         switch tier {
-        case .bronze:   return Color(red: 0.80, green: 0.50, blue: 0.20)
-        case .silver:   return Color(red: 0.70, green: 0.70, blue: 0.75)
-        case .gold:     return Color(red: 0.90, green: 0.75, blue: 0.10)
+        case .bronze: return Color(red: 0.80, green: 0.50, blue: 0.20)
+        case .silver: return Color(red: 0.70, green: 0.70, blue: 0.75)
+        case .gold: return Color(red: 0.90, green: 0.75, blue: 0.10)
         case .platinum: return Color(red: 0.60, green: 0.85, blue: 0.90)
         }
     }
 
     private func tierSymbol(_ tier: AchievementDefinition.AchievementTier) -> String {
         switch tier {
-        case .bronze:   return "medal"
-        case .silver:   return "medal.fill"
-        case .gold:     return "trophy"
+        case .bronze: return "medal"
+        case .silver: return "medal.fill"
+        case .gold: return "trophy"
         case .platinum: return "crown.fill"
         }
     }
@@ -202,7 +194,7 @@ struct AchievementPanel: View {
 
 private struct AchievementBadge: View {
     let definition: AchievementDefinition
-    let earnedAt:   Date
+    let earnedAt: Date
 
     @State private var showingDetail = false
 
@@ -241,9 +233,9 @@ private struct AchievementBadge: View {
 
     private func tierColor(_ tier: AchievementDefinition.AchievementTier) -> Color {
         switch tier {
-        case .bronze:   return Color(red: 0.80, green: 0.50, blue: 0.20)
-        case .silver:   return Color(red: 0.70, green: 0.70, blue: 0.75)
-        case .gold:     return Color(red: 0.90, green: 0.75, blue: 0.10)
+        case .bronze: return Color(red: 0.80, green: 0.50, blue: 0.20)
+        case .silver: return Color(red: 0.70, green: 0.70, blue: 0.75)
+        case .gold: return Color(red: 0.90, green: 0.75, blue: 0.10)
         case .platinum: return Color(red: 0.60, green: 0.85, blue: 0.90)
         }
     }
@@ -253,7 +245,7 @@ private struct AchievementBadge: View {
 
 private struct AchievementDetailPopover: View {
     let definition: AchievementDefinition
-    let earnedAt:   Date
+    let earnedAt: Date
 
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()

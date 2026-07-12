@@ -1,18 +1,6 @@
 //
-//  AudioCategory 2.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/23/26.
-//
-
-
-//
 //  AudioSnapshot.swift
 //  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
-//
 //  PURPOSE
 //  All model types for the audio intelligence layer.
 //  Consumed by AudioMonitorService (collection) and MusicalAnalysisEngine (analysis).
@@ -39,14 +27,14 @@ import Foundation
 /// The classification of audio present at a single observation point.
 /// Derived from media type, app identity, and genre-string heuristics.
 public enum AudioCategory: String, Codable, CaseIterable, Hashable, Sendable {
-    case silence            // No audio detected on the default output device
-    case music              // Music (Music.app, Spotify, or genre-confirmed music)
-    case podcast            // Podcast app or genre-confirmed podcast content
-    case audioBook          // Audiobook app or genre-confirmed audiobook
-    case spokenWord         // Other spoken-word (lectures, radio, interviews)
-    case videoAudio         // Audio from video playback (QuickTime, VLC, IINA, browser)
-    case ambientSoundscape  // Ambient / white-noise / nature-sounds apps
-    case unknown            // Audio detected but source not classifiable
+    case silence // No audio detected on the default output device
+    case music // Music (Music.app, Spotify, or genre-confirmed music)
+    case podcast // Podcast app or genre-confirmed podcast content
+    case audioBook // Audiobook app or genre-confirmed audiobook
+    case spokenWord // Other spoken-word (lectures, radio, interviews)
+    case videoAudio // Audio from video playback (QuickTime, VLC, IINA, browser)
+    case ambientSoundscape // Ambient / white-noise / nature-sounds apps
+    case unknown // Audio detected but source not classifiable
 }
 
 // MARK: - AudioSource
@@ -54,18 +42,18 @@ public enum AudioCategory: String, Codable, CaseIterable, Hashable, Sendable {
 /// Which application category is producing the audio.
 /// Determined via NSWorkspace.shared.runningApplications.
 public enum AudioSource: String, Codable, CaseIterable, Hashable, Sendable {
-    case appleMusicApp      // com.apple.Music
-    case spotifyApp         // com.spotify.client
-    case podcastsApp        // com.apple.podcasts
-    case audiobooksApp      // com.apple.Audiobooks
-    case quickTimePlayer    // com.apple.QuickTimePlayerX
-    case vlcPlayer          // org.videolan.vlc
-    case iinaPlayer         // com.colliderli.iina
-    case safariBrowser      // com.apple.Safari
-    case chromeBrowser      // com.google.Chrome
-    case firefoxBrowser     // org.mozilla.firefox
-    case systemAudio        // System alert / UI sounds
-    case unknown            // No identifiable audio-producing application
+    case appleMusicApp // com.apple.Music
+    case spotifyApp // com.spotify.client
+    case podcastsApp // com.apple.podcasts
+    case audiobooksApp // com.apple.Audiobooks
+    case quickTimePlayer // com.apple.QuickTimePlayerX
+    case vlcPlayer // org.videolan.vlc
+    case iinaPlayer // com.colliderli.iina
+    case safariBrowser // com.apple.Safari
+    case chromeBrowser // com.google.Chrome
+    case firefoxBrowser // org.mozilla.firefox
+    case systemAudio // System alert / UI sounds
+    case unknown // No identifiable audio-producing application
 }
 
 // MARK: - InferredMood
@@ -74,13 +62,13 @@ public enum AudioSource: String, Codable, CaseIterable, Hashable, Sendable {
 /// This is a heuristic mapping, NOT an acoustic measurement.
 /// All cases other than .unavailable are approximations based on genre taxonomy.
 public enum InferredMood: String, Codable, CaseIterable, Hashable, Sendable {
-    case calm           // Classical, Ambient, New Age, Acoustic, Folk, Chamber
-    case focused        // Electronic, Instrumental, Lo-Fi, Minimal, Study, Chillout
-    case energetic      // Rock, Metal, EDM, Dance, Hip-Hop, Punk, Trap
-    case melancholic    // Blues, Country, Singer-Songwriter, Emo
-    case upbeat         // Pop, Reggae, Soul, Funk, Gospel
-    case neutral        // Genre present but not mappable to a mood cluster
-    case unavailable    // No genre metadata in the audio source
+    case calm // Classical, Ambient, New Age, Acoustic, Folk, Chamber
+    case focused // Electronic, Instrumental, Lo-Fi, Minimal, Study, Chillout
+    case energetic // Rock, Metal, EDM, Dance, Hip-Hop, Punk, Trap
+    case melancholic // Blues, Country, Singer-Songwriter, Emo
+    case upbeat // Pop, Reggae, Soul, Funk, Gospel
+    case neutral // Genre present but not mappable to a mood cluster
+    case unavailable // No genre metadata in the audio source
 }
 
 // MARK: - AudioCharacteristics
@@ -88,7 +76,6 @@ public enum InferredMood: String, Codable, CaseIterable, Hashable, Sendable {
 /// Audio traits inferrable from macOS public APIs without audio capture entitlements.
 /// Every field has a documented derivation path. Nothing is computed from audio signal.
 public struct AudioCharacteristics: Codable, Hashable, Sendable {
-
     /// Mood inferred from genre string. .unavailable when genre metadata is absent.
     public let inferredMood: InferredMood
 
@@ -97,7 +84,7 @@ public struct AudioCharacteristics: Codable, Hashable, Sendable {
     public let inferredEnergy: Double?
 
     public init(inferredMood: InferredMood, inferredEnergy: Double?) {
-        self.inferredMood   = inferredMood
+        self.inferredMood = inferredMood
         self.inferredEnergy = inferredEnergy
     }
 
@@ -114,11 +101,11 @@ public struct AudioCharacteristics: Codable, Hashable, Sendable {
 /// Recorded every 60 seconds by AudioMonitorService.
 /// Analogous to WeatherSnapshot in the environmental intelligence subsystem.
 public struct AudioSnapshot: Codable, Hashable, Identifiable, Sendable {
-
     public let id: UUID
     public let timestamp: Date
 
     // MARK: Playback State
+
     /// True if any audio was actively playing at capture time.
     public let isPlaying: Bool
     /// 0.0 = paused or stopped; 1.0 = normal playback speed.
@@ -129,11 +116,13 @@ public struct AudioSnapshot: Codable, Hashable, Identifiable, Sendable {
     public let trackDuration: TimeInterval?
 
     // MARK: Source
+
     public let audioSource: AudioSource
     /// Human-readable application name, if identifiable via NSWorkspace.
     public let applicationDisplayName: String?
 
     // MARK: Track Metadata
+
     // Available only from Music.app and Spotify via AppleScript.
     // nil for all other audio sources (browsers, video players, etc.).
     public let trackTitle: String?
@@ -145,13 +134,15 @@ public struct AudioSnapshot: Codable, Hashable, Identifiable, Sendable {
     public let playlistName: String?
 
     // MARK: Classification
+
     public let category: AudioCategory
     public let characteristics: AudioCharacteristics
 
     // MARK: Temporal Context
-    public let hourOfDay: Int           // 0–23
-    public let dayOfWeek: Int           // 1 (Sunday) – 7 (Saturday)
-    public let month: Int               // 1–12
+
+    public let hourOfDay: Int // 0–23
+    public let dayOfWeek: Int // 1 (Sunday) – 7 (Saturday)
+    public let month: Int // 1–12
     /// Reuses SeasonalPeriod from WeatherAnalysisEngine (same module).
     public let season: SeasonalPeriod
 
@@ -176,25 +167,25 @@ public struct AudioSnapshot: Codable, Hashable, Identifiable, Sendable {
         month: Int,
         season: SeasonalPeriod
     ) {
-        self.id                     = id
-        self.timestamp              = timestamp
-        self.isPlaying              = isPlaying
-        self.playbackRate           = playbackRate
-        self.elapsedPlaybackTime    = elapsedPlaybackTime
-        self.trackDuration          = trackDuration
-        self.audioSource            = audioSource
+        self.id = id
+        self.timestamp = timestamp
+        self.isPlaying = isPlaying
+        self.playbackRate = playbackRate
+        self.elapsedPlaybackTime = elapsedPlaybackTime
+        self.trackDuration = trackDuration
+        self.audioSource = audioSource
         self.applicationDisplayName = applicationDisplayName
-        self.trackTitle             = trackTitle
-        self.artistName             = artistName
-        self.albumTitle             = albumTitle
-        self.genreString            = genreString
-        self.playlistName           = playlistName
-        self.category               = category
-        self.characteristics        = characteristics
-        self.hourOfDay              = hourOfDay
-        self.dayOfWeek              = dayOfWeek
-        self.month                  = month
-        self.season                 = season
+        self.trackTitle = trackTitle
+        self.artistName = artistName
+        self.albumTitle = albumTitle
+        self.genreString = genreString
+        self.playlistName = playlistName
+        self.category = category
+        self.characteristics = characteristics
+        self.hourOfDay = hourOfDay
+        self.dayOfWeek = dayOfWeek
+        self.month = month
+        self.season = season
     }
 }
 
@@ -204,12 +195,12 @@ public struct AudioSnapshot: Codable, Hashable, Identifiable, Sendable {
 /// Created by AudioMonitorService when a session ends.
 /// Every session receives a profile — even sessions in complete silence.
 public struct AudioContextProfile: Codable, Hashable, Identifiable, Sendable {
-
     public let id: UUID
     public let sessionID: UUID
     public let createdAt: Date
 
     // MARK: Presence
+
     /// True if any audio was playing at any point during the session.
     public let wasAudioPresent: Bool
     /// The audio category with the most time-weighted presence.
@@ -218,6 +209,7 @@ public struct AudioContextProfile: Codable, Hashable, Identifiable, Sendable {
     public let categoryDistribution: [AudioCategory: Double]
 
     // MARK: Duration
+
     /// Total seconds audio was present (all categories except silence).
     public let totalAudioDuration: TimeInterval
     /// Total seconds the session was silent.
@@ -226,21 +218,24 @@ public struct AudioContextProfile: Codable, Hashable, Identifiable, Sendable {
     public let sessionDuration: TimeInterval
 
     // MARK: Change Frequency
+
     /// Number of distinct track titles observed (proxy for playlist size / listening variety).
     public let trackTransitionCount: Int
     /// Number of times the primary audio category changed during the session.
     public let categoryTransitionCount: Int
 
     // MARK: Listening Conditions (sampled throughout session)
+
     /// One snapshot per 60-second poll interval, capped at 120 snapshots (2 hours).
     public let snapshots: [AudioSnapshot]
 
     // MARK: Metadata Fingerprints (deduplicated sets)
+
     public let tracksHeard: [String]
     public let artistsHeard: [String]
     public let albumsHeard: [String]
     public let genresHeard: [String]
-    public let playlistsHeard: [String]   // Music.app only
+    public let playlistsHeard: [String] // Music.app only
 
     // MARK: Computed
 
@@ -277,23 +272,23 @@ public struct AudioContextProfile: Codable, Hashable, Identifiable, Sendable {
         genresHeard: [String],
         playlistsHeard: [String]
     ) {
-        self.id                     = id
-        self.sessionID              = sessionID
-        self.createdAt              = createdAt
-        self.wasAudioPresent        = wasAudioPresent
-        self.primaryCategory        = primaryCategory
-        self.categoryDistribution   = categoryDistribution
-        self.totalAudioDuration     = totalAudioDuration
-        self.silenceDuration        = silenceDuration
-        self.sessionDuration        = sessionDuration
-        self.trackTransitionCount   = trackTransitionCount
+        self.id = id
+        self.sessionID = sessionID
+        self.createdAt = createdAt
+        self.wasAudioPresent = wasAudioPresent
+        self.primaryCategory = primaryCategory
+        self.categoryDistribution = categoryDistribution
+        self.totalAudioDuration = totalAudioDuration
+        self.silenceDuration = silenceDuration
+        self.sessionDuration = sessionDuration
+        self.trackTransitionCount = trackTransitionCount
         self.categoryTransitionCount = categoryTransitionCount
-        self.snapshots              = snapshots
-        self.tracksHeard            = tracksHeard
-        self.artistsHeard           = artistsHeard
-        self.albumsHeard            = albumsHeard
-        self.genresHeard            = genresHeard
-        self.playlistsHeard         = playlistsHeard
+        self.snapshots = snapshots
+        self.tracksHeard = tracksHeard
+        self.artistsHeard = artistsHeard
+        self.albumsHeard = albumsHeard
+        self.genresHeard = genresHeard
+        self.playlistsHeard = playlistsHeard
     }
 }
 
@@ -303,7 +298,6 @@ public struct AudioContextProfile: Codable, Hashable, Identifiable, Sendable {
 /// Pairs one completed reading session with its audio context and reading performance metrics.
 /// Mirrors WeatherAnalysisEngine.EnvironmentalSessionRecord in structure and purpose.
 public struct AudioSessionRecord: Codable, Identifiable, Sendable {
-
     public let id: UUID
     public let sessionID: UUID
     public let bookID: UUID
@@ -311,29 +305,31 @@ public struct AudioSessionRecord: Codable, Identifiable, Sendable {
     public let timestamp: Date
 
     // MARK: Audio Input
+
     public let audioContext: AudioContextProfile
 
     // MARK: Reading Performance
+
     // These fields are supplied by the caller (DataStore / MusicalAnalysisEngine.buildSessionRecords).
     // MusicalAnalysisEngine does NOT compute reading metrics — it consumes them.
 
     public let readingDurationMinutes: Double
     public let pagesRead: Double
     public let chaptersCompleted: Double
-    public let booksCompleted: Double       // 0.0 or 1.0
-    public let readingSpeed: Double         // average seconds per page
-    public let consistencyScore: Double     // 0–1 pace consistency (low variance = 1.0)
+    public let booksCompleted: Double // 0.0 or 1.0
+    public let readingSpeed: Double // average seconds per page
+    public let consistencyScore: Double // 0–1 pace consistency (low variance = 1.0)
     public let readingFrequencyScore: Double // sessions per week in surrounding 7-day window, normalized 0–1
-    public let engagementScore: Double      // 0–1 derived from session length and depth
-    public let sessionQualityScore: Double  // 0–1 composite quality
-    public let momentumScore: Double        // 0–1 reading streak momentum at session time
+    public let engagementScore: Double // 0–1 derived from session length and depth
+    public let sessionQualityScore: Double // 0–1 composite quality
+    public let momentumScore: Double // 0–1 reading streak momentum at session time
     public let completionProbability: Double // book.progressFraction at session end
     public let abandonmentProbability: Double // 1 - completionProbability
-    public let difficultyScore: Double      // ReadingDifficultyProfile.difficultyMultiplier
-    public let complexityScore: Double      // normalized 0–1
-    public let bookLength: Double           // book.totalPages
-    public let genre: String?              // ReadingGenre.rawValue
-    public let annotationCount: Int         // notes created during this session
+    public let difficultyScore: Double // ReadingDifficultyProfile.difficultyMultiplier
+    public let complexityScore: Double // normalized 0–1
+    public let bookLength: Double // book.totalPages
+    public let genre: String? // ReadingGenre.rawValue
+    public let annotationCount: Int // notes created during this session
     public let reread: Bool
 
     public init(
@@ -361,46 +357,46 @@ public struct AudioSessionRecord: Codable, Identifiable, Sendable {
         annotationCount: Int,
         reread: Bool
     ) {
-        self.id                     = id
-        self.sessionID              = sessionID
-        self.bookID                 = bookID
-        self.timestamp              = timestamp
-        self.audioContext           = audioContext
+        self.id = id
+        self.sessionID = sessionID
+        self.bookID = bookID
+        self.timestamp = timestamp
+        self.audioContext = audioContext
         self.readingDurationMinutes = readingDurationMinutes
-        self.pagesRead              = pagesRead
-        self.chaptersCompleted      = chaptersCompleted
-        self.booksCompleted         = booksCompleted
-        self.readingSpeed           = readingSpeed
-        self.consistencyScore       = consistencyScore
-        self.readingFrequencyScore  = readingFrequencyScore
-        self.engagementScore        = engagementScore
-        self.sessionQualityScore    = sessionQualityScore
-        self.momentumScore          = momentumScore
-        self.completionProbability  = completionProbability
+        self.pagesRead = pagesRead
+        self.chaptersCompleted = chaptersCompleted
+        self.booksCompleted = booksCompleted
+        self.readingSpeed = readingSpeed
+        self.consistencyScore = consistencyScore
+        self.readingFrequencyScore = readingFrequencyScore
+        self.engagementScore = engagementScore
+        self.sessionQualityScore = sessionQualityScore
+        self.momentumScore = momentumScore
+        self.completionProbability = completionProbability
         self.abandonmentProbability = abandonmentProbability
-        self.difficultyScore        = difficultyScore
-        self.complexityScore        = complexityScore
-        self.bookLength             = bookLength
-        self.genre                  = genre
-        self.annotationCount        = annotationCount
-        self.reread                 = reread
+        self.difficultyScore = difficultyScore
+        self.complexityScore = complexityScore
+        self.bookLength = bookLength
+        self.genre = genre
+        self.annotationCount = annotationCount
+        self.reread = reread
     }
 }
 
 // MARK: - AudioCategory Helpers
 
-extension AudioCategory {
+public extension AudioCategory {
     /// Human-readable display name.
-    public var displayName: String {
+    var displayName: String {
         switch self {
-        case .silence:          return "Silence"
-        case .music:            return "Music"
-        case .podcast:          return "Podcasts"
-        case .audioBook:        return "Audiobook"
-        case .spokenWord:       return "Spoken Word"
-        case .videoAudio:       return "Video Audio"
+        case .silence: return "Silence"
+        case .music: return "Music"
+        case .podcast: return "Podcasts"
+        case .audioBook: return "Audiobook"
+        case .spokenWord: return "Spoken Word"
+        case .videoAudio: return "Video Audio"
         case .ambientSoundscape: return "Ambient Sounds"
-        case .unknown:          return "Background Audio"
+        case .unknown: return "Background Audio"
         }
     }
 }

@@ -1,12 +1,3 @@
-//
-//  SessionHistoryView.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/29/26.
-//
-
-
-//
 //  SessionHistoryView.swift
 //  Reading Tracker
 //
@@ -29,14 +20,13 @@
 import SwiftUI
 
 struct SessionHistoryView: View {
-
     @EnvironmentObject private var dataStore: DataStore
     @Environment(\.dismiss) private var dismiss
 
-    // Sort options
+    /// Sort options
     @State private var sortNewestFirst = true
 
-    // Total sessions across all books
+    /// Total sessions across all books
     private var totalSessionCount: Int {
         dataStore.books.flatMap(\.sessions).filter { $0.endTime != nil }.count
     }
@@ -127,7 +117,7 @@ struct SessionHistoryView: View {
 // MARK: - SessionHistoryRow
 
 private struct SessionHistoryRow: View {
-    let session:      ReadingSession
+    let session: ReadingSession
     let audioProfile: AudioContextProfile?
 
     @State private var isExpanded = false
@@ -227,27 +217,27 @@ private struct AudioPill: View {
 
     private var audioSymbol: String {
         switch profile.primaryCategory {
-        case .silence:           return "speaker.slash"
-        case .music:             return "music.note"
-        case .podcast:           return "mic"
-        case .audioBook:         return "book"
-        case .spokenWord:        return "bubble.left"
-        case .videoAudio:        return "play.rectangle"
+        case .silence: return "speaker.slash"
+        case .music: return "music.note"
+        case .podcast: return "mic"
+        case .audioBook: return "book"
+        case .spokenWord: return "bubble.left"
+        case .videoAudio: return "play.rectangle"
         case .ambientSoundscape: return "cloud"
-        case .unknown:           return "waveform"
+        case .unknown: return "waveform"
         }
     }
 
     private var audioColor: Color {
         switch profile.primaryCategory {
-        case .silence:           return .secondary
-        case .music:             return .purple
-        case .podcast:           return .orange
-        case .audioBook:         return .brown
-        case .spokenWord:        return .teal
-        case .videoAudio:        return .blue
+        case .silence: return .secondary
+        case .music: return .purple
+        case .podcast: return .orange
+        case .audioBook: return .brown
+        case .spokenWord: return .teal
+        case .videoAudio: return .blue
         case .ambientSoundscape: return .green
-        case .unknown:           return .secondary
+        case .unknown: return .secondary
         }
     }
 }
@@ -259,7 +249,6 @@ private struct AudioDetailView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-
             // Listening intensity bar
             HStack(spacing: 8) {
                 Text("Audio presence")

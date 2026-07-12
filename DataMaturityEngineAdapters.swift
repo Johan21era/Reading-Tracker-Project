@@ -1,17 +1,7 @@
-//
-//
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 7/9/26.
-//
-//
 //  DataMaturityEngineAdapters.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 7/7/26.
-//
 //  -----------------------------------------------------------------------------
 //  MARK: - What this file is
+
 //  -----------------------------------------------------------------------------
 //
 //  DataMaturityEngine.swift is deliberately domain-agnostic — it has never
@@ -58,61 +48,60 @@ import Foundation
 /// as the product spec asks: "This registry becomes the application's
 /// behavioral constitution."
 public enum AppClaimType {
-
     // BehaviorContextEngine (V1 profiles + V3 narrative categories share
     // the same underlying claim types — a routine claim is a routine
     // claim whether it surfaces as a plain ContextNarrative or a cited
     // NarrativeCategory.routine entry).
-    public static let routine        = ClaimTypeIdentifier("behaviorContext.routine")
-    public static let environment    = ClaimTypeIdentifier("behaviorContext.environment")
-    public static let transition     = ClaimTypeIdentifier("behaviorContext.transition")
-    public static let disruption     = ClaimTypeIdentifier("behaviorContext.disruption")
-    public static let productive     = ClaimTypeIdentifier("behaviorContext.productive")
-    public static let evolution      = ClaimTypeIdentifier("behaviorContext.evolution")
-    public static let device         = ClaimTypeIdentifier("behaviorContext.device")
-    public static let recovery       = ClaimTypeIdentifier("behaviorContext.recovery")
+    public static let routine = ClaimTypeIdentifier("behaviorContext.routine")
+    public static let environment = ClaimTypeIdentifier("behaviorContext.environment")
+    public static let transition = ClaimTypeIdentifier("behaviorContext.transition")
+    public static let disruption = ClaimTypeIdentifier("behaviorContext.disruption")
+    public static let productive = ClaimTypeIdentifier("behaviorContext.productive")
+    public static let evolution = ClaimTypeIdentifier("behaviorContext.evolution")
+    public static let device = ClaimTypeIdentifier("behaviorContext.device")
+    public static let recovery = ClaimTypeIdentifier("behaviorContext.recovery")
 
-    // WeatherAnalysisEngine — one claim type for every factor/metric pair.
-    // The evidentiary bar is the same regardless of which two variables
-    // are being correlated (confounding risk is structural, not
-    // per-variable), so this stays a single registry entry rather than
-    // one per EnvironmentalFactor × ReadingBehaviorMetric combination.
+    /// WeatherAnalysisEngine — one claim type for every factor/metric pair.
+    /// The evidentiary bar is the same regardless of which two variables
+    /// are being correlated (confounding risk is structural, not
+    /// per-variable), so this stays a single registry entry rather than
+    /// one per EnvironmentalFactor × ReadingBehaviorMetric combination.
     public static let weatherCorrelation = ClaimTypeIdentifier("environmental.correlation")
 
     // InsightEngine — one entry per InsightKind so each can be tuned
     // independently (a streak-risk claim and a genre-pattern claim do not
     // deserve the same evidentiary bar).
-    public static let insightBestReadingTime   = ClaimTypeIdentifier("insight.bestReadingTime")
-    public static let insightReadingTrend      = ClaimTypeIdentifier("insight.readingTrend")
-    public static let insightDifficultyMatch   = ClaimTypeIdentifier("insight.difficultyMatch")
-    public static let insightStreakRisk        = ClaimTypeIdentifier("insight.streakRisk")
-    public static let insightSpeedImprovement  = ClaimTypeIdentifier("insight.speedImprovement")
-    public static let insightGoalOnTrack       = ClaimTypeIdentifier("insight.goalOnTrack")
-    public static let insightGoalBehind        = ClaimTypeIdentifier("insight.goalBehind")
-    public static let insightSessionLength     = ClaimTypeIdentifier("insight.sessionLength")
+    public static let insightBestReadingTime = ClaimTypeIdentifier("insight.bestReadingTime")
+    public static let insightReadingTrend = ClaimTypeIdentifier("insight.readingTrend")
+    public static let insightDifficultyMatch = ClaimTypeIdentifier("insight.difficultyMatch")
+    public static let insightStreakRisk = ClaimTypeIdentifier("insight.streakRisk")
+    public static let insightSpeedImprovement = ClaimTypeIdentifier("insight.speedImprovement")
+    public static let insightGoalOnTrack = ClaimTypeIdentifier("insight.goalOnTrack")
+    public static let insightGoalBehind = ClaimTypeIdentifier("insight.goalBehind")
+    public static let insightSessionLength = ClaimTypeIdentifier("insight.sessionLength")
     public static let insightPredictionQuality = ClaimTypeIdentifier("insight.predictionQuality")
-    public static let insightGenrePattern      = ClaimTypeIdentifier("insight.genrePattern")
-    public static let insightMilestoneNear     = ClaimTypeIdentifier("insight.milestoneNear")
+    public static let insightGenrePattern = ClaimTypeIdentifier("insight.genrePattern")
+    public static let insightMilestoneNear = ClaimTypeIdentifier("insight.milestoneNear")
     public static let insightConsistencyReward = ClaimTypeIdentifier("insight.consistencyReward")
-    public static let insightDrySpell          = ClaimTypeIdentifier("insight.drySpell")
+    public static let insightDrySpell = ClaimTypeIdentifier("insight.drySpell")
 
-    // IntelligentNotificationEngine — one entry per NotificationCategory.
+    /// IntelligentNotificationEngine — one entry per NotificationCategory.
     public static let notification = ClaimTypeIdentifier("notification.candidate")
 
-    // MusicalAnalysisEngine — not wired to a live UI pathway yet (see file
-    // header), registered in advance so the bar is already correct the
-    // day something calls AudioFactor 2.swift's generateInsights(from:).
+    /// MusicalAnalysisEngine — not wired to a live UI pathway yet (see file
+    /// header), registered in advance so the bar is already correct the
+    /// day something calls AudioFactor 2.swift's generateInsights(from:).
     public static let audioGenreInteraction = ClaimTypeIdentifier("audio.genreInteraction")
 }
 
 // MARK: - Populated Claim Registry
 
-extension ClaimRequirement {
+private extension ClaimRequirement {
     /// Shorthand used repeatedly below: start from the baseline and
     /// override only the fields that differ, so each registry entry reads
     /// as "what's different about this claim" rather than restating every
     /// knob every time.
-    fileprivate static func policy(
+    static func policy(
         minimumSampleCount: Int = 5,
         minimumDistinctDays: Int = 3,
         minimumReplication: Int = 0,
@@ -141,65 +130,55 @@ extension ClaimRequirement {
     }
 }
 
-extension ClaimRegistry {
-
+public extension ClaimRegistry {
     /// The app's actual behavioral constitution. Calibrated directly
     /// against the product spec's own worked examples: a time-of-night
     /// routine claim needs "very little evidence"; a genre-speed
     /// comparison needs "moderate evidence"; a weather correlation needs
     /// "high evidence"; a cross-dimensional audio+genre claim needs "very
     /// high evidence" and explicit cross-domain corroboration.
-    public static let appStandard: ClaimRegistry = ClaimRegistry.standard
-
+    static let appStandard: ClaimRegistry = ClaimRegistry.standard
         // ── BehaviorContextEngine ────────────────────────────────────
         .registering(.policy(
             minimumSampleCount: 4, minimumDistinctDays: 3, minimumHistoricalSpanDays: 7,
             maximumConfidence: 0.85,
             notes: "Timing routines ('you usually read around 8pm') — the spec's own low-evidence example. A handful of recurrences across less than a week is enough to say something soft."
         ), for: AppClaimType.routine)
-
         .registering(.policy(
             minimumSampleCount: 6, minimumDistinctDays: 4, minimumHistoricalSpanDays: 10,
             maximumConfidence: 0.85,
             notes: "Pre/post-reading environment association. Moderate bar — environments repeat quickly but a single day's coincidence shouldn't become a claim."
         ), for: AppClaimType.environment)
-
         .registering(.policy(
             minimumSampleCount: 5, minimumDistinctDays: 3, minimumHistoricalSpanDays: 7,
             maximumConfidence: 0.8,
             notes: "Recurring behavioral transition immediately surrounding reading sessions."
         ), for: AppClaimType.transition)
-
         .registering(.policy(
             minimumSampleCount: 3, minimumDistinctDays: 2,
             maximumConfidence: 0.75, maximumNarrativeStrength: .established,
             notes: "Departure from an established routine. Low volume is fine — a disruption claim is about deviation, not depth — but it should never claim definitive strength; it is describing an exception, not a law."
         ), for: AppClaimType.disruption)
-
         .registering(.policy(
             minimumSampleCount: 9, minimumDistinctDays: 5, minimumReplication: 3, minimumHistoricalSpanDays: 14,
             maximumConfidence: 0.85,
             notes: "\"This environment produces your best sessions\" is a comparative quality claim across environments — needs real replication (matches ProductiveContextFinder's own guard qualities.count >= 3), not just volume in one environment."
         ), for: AppClaimType.productive)
-
         .registering(.policy(
             minimumSampleCount: 6, minimumDistinctDays: 4,
             maximumConfidence: 0.8, maximumNarrativeStrength: .established,
             notes: "\"Sessions were largely uninterrupted\" — a device-focus claim. Capped below definitive because device state is inherently noisy session to session."
         ), for: AppClaimType.device)
-
         .registering(.policy(
             minimumSampleCount: 3, minimumDistinctDays: 2,
             maximumConfidence: 0.75, maximumNarrativeStrength: .established,
             notes: "\"Reading follows inactivity\" recovery pattern — meaningful with modest volume, capped below definitive."
         ), for: AppClaimType.recovery)
-
         .registering(.policy(
             minimumSampleCount: 2, minimumDistinctDays: 2, minimumHistoricalSpanDays: 21,
             maximumConfidence: 0.8, maximumNarrativeStrength: .established,
             notes: "\"Your dominant environment shifted\" — an evolution claim is inherently about change over a real span; two snapshots is the floor, but it needs weeks, not days, to mean anything."
         ), for: AppClaimType.evolution)
-
         // ── WeatherAnalysisEngine ─────────────────────────────────────
         .registering(.policy(
             minimumSampleCount: 12, minimumDistinctDays: 8, minimumReplication: 4, minimumHistoricalSpanDays: 21,
@@ -207,87 +186,73 @@ extension ClaimRegistry {
             requiresMultiSeasonCoverage: false,
             notes: "\"Cold weather improves reading speed\" — the spec's own high-evidence example. Environmental correlations are exactly the kind of claim easiest to get from a coincidence, so the floor sits well above WeatherAnalysisEngine's own internal minimum of 5 sessions."
         ), for: AppClaimType.weatherCorrelation)
-
         // ── InsightEngine ─────────────────────────────────────────────
         .registering(.policy(
             minimumSampleCount: 5, minimumDistinctDays: 4,
             maximumConfidence: 0.85,
             notes: "Best-reading-time-of-day. Low-to-moderate bar, matching the spec's 'you usually read at night' example."
         ), for: AppClaimType.insightBestReadingTime)
-
         .registering(.policy(
             minimumSampleCount: 6, minimumDistinctDays: 5, minimumHistoricalSpanDays: 14,
             maximumConfidence: 0.85,
             notes: "Growing/slowing pace trend — needs enough span to distinguish a trend from a single good or bad week."
         ), for: AppClaimType.insightReadingTrend)
-
         .registering(.policy(
             minimumSampleCount: 8, minimumDistinctDays: 5, minimumReplication: 3,
             maximumConfidence: 0.8,
             notes: "Not yet constructed anywhere in InsightEngine today (reserved InsightKind case) — registered in advance so whoever implements it inherits a calibrated bar instead of the conservative unregistered default."
         ), for: AppClaimType.insightDifficultyMatch)
-
         .registering(.policy(
             minimumSampleCount: 1, minimumDistinctDays: 1,
             maximumContradictionRatio: 0.9, maximumConfidence: 0.95,
             decayHalfLifeDays: 3,
             notes: "Streak-at-risk is a same-day factual read of streak state, not an inferred pattern — the bar is deliberately almost nonexistent, but it decays fast (half-life days, not weeks) since it is only meaningful today."
         ), for: AppClaimType.insightStreakRisk)
-
         .registering(.policy(
             minimumSampleCount: 10, minimumDistinctDays: 6, minimumHistoricalSpanDays: 14,
             maximumConfidence: 0.85,
             notes: "\"You're reading N% faster\" compares recent to earlier sessions — needs enough on both sides of that comparison to be trustworthy."
         ), for: AppClaimType.insightSpeedImprovement)
-
         .registering(.policy(
             minimumSampleCount: 1, minimumDistinctDays: 1,
             maximumConfidence: 0.95,
             notes: "Goal-period progress is deterministic arithmetic against a target the user set, not a behavioral inference — treated permissively and registered explicitly rather than silently skipped, so the constitution says why."
         ), for: AppClaimType.insightGoalOnTrack)
-
         .registering(.policy(
             minimumSampleCount: 1, minimumDistinctDays: 1,
             maximumConfidence: 0.9,
             notes: "Same reasoning as goalOnTrack — factual progress-vs-target, not pattern inference."
         ), for: AppClaimType.insightGoalBehind)
-
         .registering(.policy(
             minimumSampleCount: 6, minimumDistinctDays: 4,
             maximumConfidence: 0.8,
             notes: "Session-length pattern (too short / lengthening) — moderate-low bar."
         ), for: AppClaimType.insightSessionLength)
-
         .registering(.policy(
             minimumSampleCount: 1, minimumDistinctDays: 1,
             maximumConfidence: 0.7, maximumNarrativeStrength: .moderate,
             notes: "\"Predictions will improve\" is a meta-statement about estimate reliability for one active book, not a behavioral claim — capped at moderate strength since it is inherently a hedge."
         ), for: AppClaimType.insightPredictionQuality)
-
         .registering(.policy(
             minimumSampleCount: 10, minimumDistinctDays: 6, minimumReplication: 3,
             maximumConfidence: 0.85,
             notes: "\"You read fantasy faster than literary fiction\" — the spec's own moderate-evidence example. Not yet constructed anywhere in InsightEngine today; registered in advance."
         ), for: AppClaimType.insightGenrePattern)
-
         .registering(.policy(
             minimumSampleCount: 1, minimumDistinctDays: 1,
             maximumConfidence: 0.85,
             notes: "Achievement-proximity is a deterministic count-vs-threshold read, not an inference — same permissive treatment as goal insights."
         ), for: AppClaimType.insightMilestoneNear)
-
         .registering(.policy(
             minimumSampleCount: 7, minimumDistinctDays: 7,
             maximumConfidence: 0.9,
             notes: "A streak IS its own evidence by construction (N consecutive days) — the sample/day floor matches the engine's own >= 7 threshold for surfacing this insight at all."
         ), for: AppClaimType.insightConsistencyReward)
-
         .registering(.policy(
             minimumSampleCount: 1, minimumDistinctDays: 1,
             maximumConfidence: 0.95,
             notes: "A dry spell is a direct read of 'days since last session' — factual, not inferred. Permissive by design."
         ), for: AppClaimType.insightDrySpell)
-
         // ── IntelligentNotificationEngine ─────────────────────────────
         .registering(.policy(
             minimumSampleCount: 4, minimumDistinctDays: 3,
@@ -341,6 +306,7 @@ private extension Date {
 
 // =============================================================================
 // MARK: - Adapter 1: BehaviorContextEngine (V1 — buildNarratives)
+
 // =============================================================================
 
 /// Bridges BehaviorContextEngine's V1 pipeline (ContextProfile ->
@@ -355,7 +321,6 @@ private extension Date {
 /// data `buildProfiles` used to pick a winner in the first place — see
 /// BehaviorContextEngine.swift's `buildProfiles`).
 enum DataMaturityContextV1Adapter {
-
     static func gate(
         profiles: [ContextProfile],
         routines: [BehavioralRoutine],
@@ -364,7 +329,6 @@ enum DataMaturityContextV1Adapter {
         evidence: [BehaviorEvidence],
         asOf referenceDate: Date = Date()
     ) -> [ContextNarrative] {
-
         var results: [ContextNarrative] = []
 
         for profile in profiles {
@@ -393,9 +357,7 @@ enum DataMaturityContextV1Adapter {
         contexts: [ReadingContextRecord],
         evidence: [BehaviorEvidence]
     ) -> ProposedClaim {
-
         switch profile.kind {
-
         case .mostCommonPreReadingEnvironment:
             let matching = contexts.filter { $0.preReadingContext.type.rawValue == profile.value }
             let observations = matching.map {
@@ -429,7 +391,7 @@ enum DataMaturityContextV1Adapter {
 
         case .mostFrequentTransition:
             guard let transition = transitions.first(where: {
-                "\($0.from.rawValue) → \($0.to.rawValue)" == profile.value
+                profile.value == "\($0.from.rawValue) → \($0.to.rawValue)"
             }) else {
                 return ProposedClaim(claimType: AppClaimType.transition, digest: .empty)
             }
@@ -482,6 +444,7 @@ enum DataMaturityContextV1Adapter {
 
 // =============================================================================
 // MARK: - Adapter 2: BehaviorContextEngine (V3 — ExplainabilityNarrativeBuilder)
+
 // =============================================================================
 
 /// Bridges the richer V3 pipeline. Unlike V1, every input type here
@@ -495,21 +458,19 @@ enum DataMaturityContextV1Adapter {
 /// correct the moment something starts calling
 /// `BehaviorContextEngine.analyzeWithIntelligence`.
 enum DataMaturityContextV3Adapter {
-
     static func gate(
         contexts: [ReadingContextRecord],
         routines: [BehavioralRoutine],
         trends: [ContextTrend],
         disruptions: [RoutineDisruption],
         productiveContext: ProductiveContextResult?,
-        consistentContext: ConsistentContextResult?,
+        consistentContext _: ConsistentContextResult?,
         deviceProfiles: [DeviceStateInfluenceProfile],
         recoveryRecords: [RecoverySessionRecord],
         evolutionSnapshots: [EnvironmentEvolutionSnapshot],
         evidence: [BehaviorEvidence],
         asOf referenceDate: Date = Date()
     ) -> [CitedContextNarrative] {
-
         var narratives: [CitedContextNarrative] = []
         let allEvidenceIDs = evidence.map(\.id)
         let allSessionIDs = contexts.map(\.sessionID)
@@ -658,8 +619,8 @@ enum DataMaturityContextV3Adapter {
         if evolutionSnapshots.count >= 2,
            let first = evolutionSnapshots.first,
            let last = evolutionSnapshots.last,
-           first.dominantEnvironment != last.dominantEnvironment {
-
+           first.dominantEnvironment != last.dominantEnvironment
+        {
             let observations = evolutionSnapshots.map {
                 MaturityEvidenceObservation(date: $0.periodStart, supports: true, contextKey: $0.dominantEnvironment.rawValue, weight: $0.distributionScore)
             }
@@ -702,6 +663,7 @@ enum DataMaturityContextV3Adapter {
 
 // =============================================================================
 // MARK: - Adapter 3: InsightEngine (ReadingInsight)
+
 // =============================================================================
 
 /// Bridges InsightEngine's flat, per-kind ad hoc confidence numbers to
@@ -717,13 +679,11 @@ enum DataMaturityContextV3Adapter {
 /// DataMaturityEngine's `allowedConfidence` — never the original number —
 /// is what a caller should treat as authoritative going forward.
 enum DataMaturityInsightAdapter {
-
     static func gate(
         _ insights: [ReadingInsight],
         books: [Book],
         asOf referenceDate: Date = Date()
     ) -> [ReadingInsight] {
-
         let allSessions = books.flatMap(\.sessions)
         let generalDigest = generalReadingDigest(sessions: allSessions, asOf: referenceDate)
 
@@ -753,19 +713,19 @@ enum DataMaturityInsightAdapter {
 
     private static func claimType(for kind: ReadingInsight.InsightKind) -> ClaimTypeIdentifier {
         switch kind {
-        case .bestReadingTime:   return AppClaimType.insightBestReadingTime
-        case .readingTrend:      return AppClaimType.insightReadingTrend
-        case .difficultyMatch:   return AppClaimType.insightDifficultyMatch
-        case .streakRisk:        return AppClaimType.insightStreakRisk
-        case .speedImprovement:  return AppClaimType.insightSpeedImprovement
-        case .goalOnTrack:       return AppClaimType.insightGoalOnTrack
-        case .goalBehind:        return AppClaimType.insightGoalBehind
-        case .sessionLength:     return AppClaimType.insightSessionLength
+        case .bestReadingTime: return AppClaimType.insightBestReadingTime
+        case .readingTrend: return AppClaimType.insightReadingTrend
+        case .difficultyMatch: return AppClaimType.insightDifficultyMatch
+        case .streakRisk: return AppClaimType.insightStreakRisk
+        case .speedImprovement: return AppClaimType.insightSpeedImprovement
+        case .goalOnTrack: return AppClaimType.insightGoalOnTrack
+        case .goalBehind: return AppClaimType.insightGoalBehind
+        case .sessionLength: return AppClaimType.insightSessionLength
         case .predictionQuality: return AppClaimType.insightPredictionQuality
-        case .genrePattern:      return AppClaimType.insightGenrePattern
-        case .milestoneNear:     return AppClaimType.insightMilestoneNear
+        case .genrePattern: return AppClaimType.insightGenrePattern
+        case .milestoneNear: return AppClaimType.insightMilestoneNear
         case .consistencyReward: return AppClaimType.insightConsistencyReward
-        case .drySpell:          return AppClaimType.insightDrySpell
+        case .drySpell: return AppClaimType.insightDrySpell
         }
     }
 
@@ -786,12 +746,10 @@ enum DataMaturityInsightAdapter {
         for insight: ReadingInsight,
         generalDigest: MaturityEvidenceDigest,
         books: [Book],
-        sessions: [ReadingSession],
+        sessions _: [ReadingSession],
         referenceDate: Date
     ) -> MaturityEvidenceDigest {
-
         switch insight.kind {
-
         case .predictionQuality:
             // Scoped to whichever active book InsightEngine evaluated —
             // recovered by matching the book named in the insight body
@@ -839,6 +797,7 @@ enum DataMaturityInsightAdapter {
 
 // =============================================================================
 // MARK: - Adapter 4: WeatherAnalysisEngine (EnvironmentalCorrelation)
+
 // =============================================================================
 
 /// Bridges WeatherAnalysisEngine's correlations. Unlike InsightEngine,
@@ -848,18 +807,19 @@ enum DataMaturityInsightAdapter {
 /// itself. `analyzeCorrelations()` is never called or modified here; this
 /// only gates its output before WeatherInsightPanel displays it.
 enum DataMaturityWeatherAdapter {
+    struct GatedCorrelation: Identifiable {
+        var id: UUID {
+            correlation.id
+        }
 
-    public struct GatedCorrelation: Identifiable {
-        public var id: UUID { correlation.id }
-        public let correlation: EnvironmentalCorrelation
-        public let verdict: MaturityVerdict
+        let correlation: EnvironmentalCorrelation
+        let verdict: MaturityVerdict
     }
 
     static func gate(
         _ correlations: [EnvironmentalCorrelation],
         asOf referenceDate: Date = Date()
     ) -> [GatedCorrelation] {
-
         correlations.compactMap { correlation in
             let digest = MaturityEvidenceDigest(
                 sampleCount: correlation.supportingSampleCount,
@@ -898,6 +858,7 @@ enum DataMaturityWeatherAdapter {
 
 // =============================================================================
 // MARK: - Adapter 5: IntelligentNotificationEngine (NotificationCandidate)
+
 // =============================================================================
 
 /// Bridges a NotificationCandidate before SessionEventRouter hands it to
@@ -905,7 +866,6 @@ enum DataMaturityWeatherAdapter {
 /// app where a "claim" reaches the user completely outside SwiftUI —
 /// gating it here closes that gap.
 enum DataMaturityNotificationAdapter {
-
     static func evaluate(_ candidate: NotificationCandidate, asOf referenceDate: Date = Date()) -> MaturityVerdict {
         let digest = MaturityEvidenceDigest(
             sampleCount: candidate.confidence.sessionCount,

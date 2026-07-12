@@ -1,20 +1,4 @@
-//
-//  ReadingInsight 2.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 7/10/26.
-//
 
-
-//
-//  ReadingInsight.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/16/26.
-//
-
-
-//
 //  InsightEngine.swift
 //  Reading Tracker
 //
@@ -57,35 +41,35 @@ import Foundation
 
 /// A human-readable insight card derived from analytics.
 struct ReadingInsight: Identifiable {
-    var id: UUID = UUID()
+    var id: UUID = .init()
     let kind: InsightKind
     let title: String
     let body: String
-    let actionSuggestion: String?   // nil = purely informational
-    let confidence: Double          // 0–1; filter at 0.4 before display
-    let priority: InsightPriority   // determines display order
+    let actionSuggestion: String? // nil = purely informational
+    let confidence: Double // 0–1; filter at 0.4 before display
+    let priority: InsightPriority // determines display order
 
     enum InsightKind: String {
-        case bestReadingTime    = "Best Reading Time"
-        case readingTrend       = "Reading Trend"
-        case difficultyMatch    = "Difficulty Match"
-        case streakRisk         = "Streak at Risk"
-        case speedImprovement   = "Speed Improvement"
-        case goalOnTrack        = "Goal on Track"
-        case goalBehind         = "Goal Behind"
-        case sessionLength      = "Session Length"
-        case predictionQuality  = "Prediction Reliability"
-        case genrePattern       = "Genre Pattern"
-        case milestoneNear      = "Milestone Near"
-        case consistencyReward  = "Consistency"
-        case drySpell           = "Reading Dry Spell"
+        case bestReadingTime = "Best Reading Time"
+        case readingTrend = "Reading Trend"
+        case difficultyMatch = "Difficulty Match"
+        case streakRisk = "Streak at Risk"
+        case speedImprovement = "Speed Improvement"
+        case goalOnTrack = "Goal on Track"
+        case goalBehind = "Goal Behind"
+        case sessionLength = "Session Length"
+        case predictionQuality = "Prediction Reliability"
+        case genrePattern = "Genre Pattern"
+        case milestoneNear = "Milestone Near"
+        case consistencyReward = "Consistency"
+        case drySpell = "Reading Dry Spell"
     }
 
     enum InsightPriority: Int, Comparable {
-        case critical = 0    // streak at risk, goal overdue
-        case high     = 1    // goal behind, dry spell
-        case medium   = 2    // trend, improvement
-        case low      = 3    // informational patterns
+        case critical = 0 // streak at risk, goal overdue
+        case high = 1 // goal behind, dry spell
+        case medium = 2 // trend, improvement
+        case low = 3 // informational patterns
 
         static func < (lhs: InsightPriority, rhs: InsightPriority) -> Bool {
             lhs.rawValue < rhs.rawValue
@@ -97,7 +81,6 @@ struct ReadingInsight: Identifiable {
 
 /// Pure computation namespace. All methods return insights from analytics data.
 enum InsightEngine {
-
     /// Minimum confidence threshold for an insight to be included in results.
     static let minimumConfidence: Double = 0.35
 
@@ -121,10 +104,10 @@ enum InsightEngine {
         // Only generate meaningful insights if there's sufficient data.
         guard !books.isEmpty else { return [] }
 
-        let profile   = AnalyticsEngine.readerProfile(books: books)
-        let streak    = AnalyticsEngine.streak(books: books)
-        let trend     = AnalyticsEngine.trendAnalysis(books: books)
-        let todOfDay  = AnalyticsEngine.timeOfDayAnalysis(books: books)
+        let profile = AnalyticsEngine.readerProfile(books: books)
+        let streak = AnalyticsEngine.streak(books: books)
+        let trend = AnalyticsEngine.trendAnalysis(books: books)
+        let todOfDay = AnalyticsEngine.timeOfDayAnalysis(books: books)
         let improvement = AnalyticsEngine.improvementAnalysis(books: books)
 
         insights += bestReadingTimeInsight(todOfDay: todOfDay, profile: profile)
@@ -161,20 +144,20 @@ enum InsightEngine {
         guard confidence >= minimumConfidence else { return [] }
 
         let windowName = windowLabel(todOfDay.bestWindow)
-        let worstName  = windowLabel(todOfDay.worstWindow)
+        let worstName = windowLabel(todOfDay.worstWindow)
 
-        let bestScore  = todOfDay.scores[todOfDay.bestWindow] ?? 0
+        let bestScore = todOfDay.scores[todOfDay.bestWindow] ?? 0
         let worstScore = todOfDay.scores[todOfDay.worstWindow] ?? 0
-        let delta      = worstScore > 0 ? ((bestScore - worstScore) / worstScore) * 100 : 0
+        let delta = worstScore > 0 ? ((bestScore - worstScore) / worstScore) * 100 : 0
 
-        guard delta > 10 else { return [] }  // Don't surface if times are nearly equal.
+        guard delta > 10 else { return [] } // Don't surface if times are nearly equal.
 
         return [ReadingInsight(
             kind: .bestReadingTime,
             title: "You Read Best in the \(windowName)",
             body: "Your reading output in the \(windowName.lowercased()) is " +
-                  "\(Int(delta))% higher than the \(worstName.lowercased()). " +
-                  "Your pace is most consistent when you read during that time.",
+                "\(Int(delta))% higher than the \(worstName.lowercased()). " +
+                "Your pace is most consistent when you read during that time.",
             actionSuggestion: "Try to schedule your sessions in the \(windowName.lowercased()).",
             confidence: confidence,
             priority: .medium
@@ -183,10 +166,10 @@ enum InsightEngine {
 
     private static func windowLabel(_ window: ReadingWindow) -> String {
         switch window {
-        case .morning:   return "Morning"
+        case .morning: return "Morning"
         case .afternoon: return "Afternoon"
-        case .evening:   return "Evening"
-        case .night:     return "Night"
+        case .evening: return "Evening"
+        case .night: return "Night"
         }
     }
 
@@ -206,7 +189,7 @@ enum InsightEngine {
                 kind: .readingTrend,
                 title: "Your Reading is Growing 📈",
                 body: "You've increased your reading pace by about \(pct)% over the past 30 days. " +
-                      "Keep it up — sustained growth like this compounds quickly over a year.",
+                    "Keep it up — sustained growth like this compounds quickly over a year.",
                 actionSuggestion: nil,
                 confidence: confidence,
                 priority: .low
@@ -218,14 +201,14 @@ enum InsightEngine {
                 kind: .readingTrend,
                 title: "Reading Pace Has Slowed",
                 body: "Your reading activity is down about \(pct)% compared to a month ago. " +
-                      "Even short sessions — 10 minutes a day — prevent momentum loss.",
+                    "Even short sessions — 10 minutes a day — prevent momentum loss.",
                 actionSuggestion: "Set a small daily target to rebuild the habit.",
                 confidence: confidence,
                 priority: .high
             )]
 
         case .plateau:
-            return []  // Plateau is uninteresting; don't surface it.
+            return [] // Plateau is uninteresting; don't surface it.
         }
     }
 
@@ -237,12 +220,12 @@ enum InsightEngine {
         let daysSinceLast = Calendar.current.dateComponents([.day], from: lastRead, to: Date()).day ?? 0
 
         // Streak at risk: haven't read today and current streak > 3.
-        if daysSinceLast == 1 && streak.currentStreak >= 3 {
+        if daysSinceLast == 1, streak.currentStreak >= 3 {
             return [ReadingInsight(
                 kind: .streakRisk,
                 title: "Your \(streak.currentStreak)-Day Streak is at Risk",
                 body: "You haven't read today yet. Read anything — even one page — " +
-                      "to keep your \(streak.currentStreak)-day streak alive.",
+                    "to keep your \(streak.currentStreak)-day streak alive.",
                 actionSuggestion: "Open a book and read at least one page today.",
                 confidence: 0.95,
                 priority: .critical
@@ -255,7 +238,7 @@ enum InsightEngine {
                 kind: .consistencyReward,
                 title: "\(streak.currentStreak)-Day Reading Streak 🔥",
                 body: "You've read every day for \(streak.currentStreak) consecutive days. " +
-                      "Consistency is the single most reliable predictor of reading progress.",
+                    "Consistency is the single most reliable predictor of reading progress.",
                 actionSuggestion: nil,
                 confidence: 0.9,
                 priority: .low
@@ -281,8 +264,8 @@ enum InsightEngine {
                 kind: .speedImprovement,
                 title: "You're Reading \(pct)% Faster",
                 body: "Comparing your recent sessions to your earlier ones, " +
-                      "your reading speed has improved by \(pct)%. " +
-                      "This is a natural result of consistent practice.",
+                    "your reading speed has improved by \(pct)%. " +
+                    "This is a natural result of consistent practice.",
                 actionSuggestion: nil,
                 confidence: confidence * 0.8,
                 priority: .low
@@ -295,8 +278,8 @@ enum InsightEngine {
                 kind: .sessionLength,
                 title: "Your Sessions are Getting Longer",
                 body: "Your average session duration has grown by \(pct)%, " +
-                      "meaning you're sustaining focus for longer. " +
-                      "This typically means you're deepening your reading habit.",
+                    "meaning you're sustaining focus for longer. " +
+                    "This typically means you're deepening your reading habit.",
                 actionSuggestion: nil,
                 confidence: confidence * 0.75,
                 priority: .low
@@ -313,13 +296,13 @@ enum InsightEngine {
         let minutes = Int(profile.averageSessionDuration / 60)
 
         // Very short sessions might indicate interrupted reading.
-        if minutes < 10 && profile.totalPagesRead > 50 {
+        if minutes < 10, profile.totalPagesRead > 50 {
             return [ReadingInsight(
                 kind: .sessionLength,
                 title: "Short Sessions Detected",
                 body: "Your average reading session is only \(minutes) minutes. " +
-                      "Research suggests 20–30 minute sessions lead to better retention " +
-                      "by allowing deeper engagement with the text.",
+                    "Research suggests 20–30 minute sessions lead to better retention " +
+                    "by allowing deeper engagement with the text.",
                 actionSuggestion: "Try setting aside 20 uninterrupted minutes per session.",
                 confidence: 0.6,
                 priority: .medium
@@ -341,8 +324,8 @@ enum InsightEngine {
                 kind: .predictionQuality,
                 title: "Predictions Will Improve",
                 body: "Time-to-finish predictions for \"\(book.title)\" are estimates " +
-                      "because you've only read a few pages so far. " +
-                      "Predictions become accurate after about 30 pages of tracking.",
+                    "because you've only read a few pages so far. " +
+                    "Predictions become accurate after about 30 pages of tracking.",
                 actionSuggestion: nil,
                 confidence: 0.5,
                 priority: .low
@@ -356,7 +339,7 @@ enum InsightEngine {
     private static func goalInsights(
         books: [Book],
         goalSet: ReadingGoalSet,
-        profile: ReaderProfileAnalytics
+        profile _: ReaderProfileAnalytics
     ) -> [ReadingInsight] {
         var insights: [ReadingInsight] = []
         let statuses = ReadingGoalManager.allStatuses(for: goalSet, books: books)
@@ -378,8 +361,8 @@ enum InsightEngine {
                     kind: .goalBehind,
                     title: "\(status.goal.rawValue) Goal Behind",
                     body: "You need \(status.formattedTarget) \(status.period.lowercased()) " +
-                          "and you're at \(status.formattedCurrent). " +
-                          "A focused session now would make a big difference.",
+                        "and you're at \(status.formattedCurrent). " +
+                        "A focused session now would make a big difference.",
                     actionSuggestion: "Read for the next 20 minutes.",
                     confidence: 0.75,
                     priority: .high
@@ -423,13 +406,13 @@ enum InsightEngine {
         guard daysSince >= 3 else { return [] }
 
         let recentActive = activity.suffix(14).filter { $0.totalDuration > 0 }.count
-        let confidence   = min(0.95, Double(recentActive) / 7.0 * 0.5 + 0.4)
+        let confidence = min(0.95, Double(recentActive) / 7.0 * 0.5 + 0.4)
 
         return [ReadingInsight(
             kind: .drySpell,
             title: "It's Been \(daysSince) Days Since Your Last Session",
             body: "Reading habits are fragile — the longer the break, the harder " +
-                  "it is to restart. Even 5 minutes today will re-anchor the habit.",
+                "it is to restart. Even 5 minutes today will re-anchor the habit.",
             actionSuggestion: "Open your current book and read one page.",
             confidence: confidence,
             priority: daysSince >= 7 ? .critical : .high

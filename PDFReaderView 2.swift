@@ -1,19 +1,3 @@
-//
-//  PDFReaderView 2.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 7/7/26.
-//
-
-
-//
-//  PDFReaderView.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/16/26.
-//
-
-
 // PDFReaderView.swift
 // Wraps PDFKit's PDFView in a SwiftUI-compatible component.
 // PATCHED:
@@ -43,14 +27,13 @@
 //   Nothing in security-scoped access, polling cadence, the onPageChange /
 //   onLoadError contracts, document loading, or teardown logic was touched.
 
-import SwiftUI
-import PDFKit
 import AppKit
+import PDFKit
+import SwiftUI
 
 // MARK: - PDFReaderView
 
 struct PDFReaderView: NSViewRepresentable {
-
     let book: Book
     /// B2: Plain value — the coordinator is the only writer.
     let currentPage: Int
@@ -62,11 +45,12 @@ struct PDFReaderView: NSViewRepresentable {
     init(book: Book,
          currentPage: Int,
          onPageChange: @escaping (Int) -> Void,
-         onLoadError: ((String) -> Void)? = nil) {
-        self.book         = book
-        self.currentPage  = currentPage
+         onLoadError: ((String) -> Void)? = nil)
+    {
+        self.book = book
+        self.currentPage = currentPage
         self.onPageChange = onPageChange
-        self.onLoadError  = onLoadError
+        self.onLoadError = onLoadError
     }
 
     func makeNSView(context: Context) -> PDFView {
@@ -173,14 +157,15 @@ struct PDFReaderView: NSViewRepresentable {
         return view
     }
 
-    func updateNSView(_ nsView: PDFView, context: Context) {
+    func updateNSView(_ nsView: PDFView, context _: Context) {
         // TASK 20 (confirmed): guard nil document — no security access started here.
         guard let doc = nsView.document else { return }
         // Only jump if the external currentPage differs from what's displayed.
         // This is purely a playback path (e.g. restoring a saved position).
         if let displayed = nsView.currentPage,
            doc.index(for: displayed) != currentPage,
-           let target = doc.page(at: currentPage) {
+           let target = doc.page(at: currentPage)
+        {
             nsView.go(to: target)
         }
     }
@@ -192,9 +177,9 @@ struct PDFReaderView: NSViewRepresentable {
     ///   2. Release the security-scoped resource (balances startAccessingSecurityScopedResource
     ///      from makeNSView, allowing PDFKit to finish any in-flight page renders first).
     static func dismantleNSView(_ nsView: PDFView, coordinator: Coordinator) {
-        coordinator.stopPolling()           // TASK 6 / TASK 23
-        coordinator.stopSecurityAccess()    // TASK 4 / TASK 23
-        nsView.document = nil               // Release PDFDocument before scope ends
+        coordinator.stopPolling() // TASK 6 / TASK 23
+        coordinator.stopSecurityAccess() // TASK 4 / TASK 23
+        nsView.document = nil // Release PDFDocument before scope ends
         print("🔍 [PDFReaderView] dismantleNSView: timer stopped, security scope released")
     }
 
@@ -205,15 +190,14 @@ struct PDFReaderView: NSViewRepresentable {
     // MARK: - Coordinator
 
     final class Coordinator: NSObject, PDFViewDelegate {
-
         let onPageChange: (Int) -> Void
 
         // B1: polling state
         private var pollingTimer: Timer?
         private var lastReportedPage: Int = -1
 
-        // TASK 4: Security-scoped URL held for the lifetime of the PDFView.
-        // Nil when no scope is active (before makeNSView or after dismantleNSView).
+        /// TASK 4: Security-scoped URL held for the lifetime of the PDFView.
+        /// Nil when no scope is active (before makeNSView or after dismantleNSView).
         private var securityScopedURL: URL?
 
         // READER POLISH: zoom-preservation state — see trackManualZoom(on:).
@@ -231,7 +215,7 @@ struct PDFReaderView: NSViewRepresentable {
             securityScopedURL?.stopAccessingSecurityScopedResource()
         }
 
-        // TASK 4: Called from makeNSView after successfully starting access.
+        /// TASK 4: Called from makeNSView after successfully starting access.
         func startSecurityAccess(url: URL) {
             // If a previous URL is still held, release it first (shouldn't happen
             // in normal usage, but guards against view reuse edge cases).
@@ -239,13 +223,13 @@ struct PDFReaderView: NSViewRepresentable {
             securityScopedURL = url
         }
 
-        // TASK 4 / TASK 23: Called from dismantleNSView to release the scope.
+        /// TASK 4 / TASK 23: Called from dismantleNSView to release the scope.
         func stopSecurityAccess() {
             securityScopedURL?.stopAccessingSecurityScopedResource()
             securityScopedURL = nil
         }
 
-        // B1 FIX: 1 Hz timer; fires onPageChange only when page actually changes.
+        /// B1 FIX: 1 Hz timer; fires onPageChange only when page actually changes.
         func startPolling(view: PDFView) {
             pollingTimer?.invalidate()
 
@@ -262,7 +246,7 @@ struct PDFReaderView: NSViewRepresentable {
                 self.trackManualZoom(on: view)
 
                 guard let page = view.currentPage,
-                      let doc  = view.document else { return }
+                      let doc = view.document else { return }
                 let idx = doc.index(for: page)
                 guard idx != self.lastReportedPage else { return }
                 self.lastReportedPage = idx
@@ -270,26 +254,26 @@ struct PDFReaderView: NSViewRepresentable {
             }
         }
 
-        // TASK 6 / TASK 23: Called from dismantleNSView.
+        /// TASK 6 / TASK 23: Called from dismantleNSView.
         func stopPolling() {
             pollingTimer?.invalidate()
             pollingTimer = nil
         }
 
-        // READER POLISH: detects a user-driven zoom (trackpad pinch, ⌘+/⌘-, or
-        // any other path that changes scaleFactor) so it survives window
-        // resizing instead of snapping back to fit-to-page on the next layout
-        // pass.
-        //
-        // autoScales recomputes scaleFactor to match the view's bounds on
-        // every bounds change, so a genuine window resize always moves
-        // scaleFactor and bounds.size together within the same tick. If
-        // scaleFactor moves while bounds.size does not, the only remaining
-        // explanation is a manual zoom — at that point autoScales is turned
-        // off so the chosen zoom level is preserved through future resizes.
-        // A newly opened book gets a fresh Coordinator (see makeCoordinator
-        // and the NavigationLink call sites in NewContentView/LibraryView),
-        // so this state never leaks from one book to the next.
+        /// READER POLISH: detects a user-driven zoom (trackpad pinch, ⌘+/⌘-, or
+        /// any other path that changes scaleFactor) so it survives window
+        /// resizing instead of snapping back to fit-to-page on the next layout
+        /// pass.
+        ///
+        /// autoScales recomputes scaleFactor to match the view's bounds on
+        /// every bounds change, so a genuine window resize always moves
+        /// scaleFactor and bounds.size together within the same tick. If
+        /// scaleFactor moves while bounds.size does not, the only remaining
+        /// explanation is a manual zoom — at that point autoScales is turned
+        /// off so the chosen zoom level is preserved through future resizes.
+        /// A newly opened book gets a fresh Coordinator (see makeCoordinator
+        /// and the NavigationLink call sites in NewContentView/LibraryView),
+        /// so this state never leaks from one book to the next.
         private func trackManualZoom(on view: PDFView) {
             let boundsSize = view.bounds.size
             let scale = view.scaleFactor
@@ -327,7 +311,7 @@ struct PDFReaderScreen: View {
     @State private var errorMessage: String?
 
     init(book: Book, coordinator: SessionCoordinator) {
-        self.book        = book
+        self.book = book
         self.coordinator = coordinator
     }
 
@@ -352,7 +336,7 @@ struct PDFReaderScreen: View {
             } else {
                 PDFReaderView(
                     book: book,
-                    currentPage: coordinator.currentPage,   // read-only; coordinator is the writer
+                    currentPage: coordinator.currentPage, // read-only; coordinator is the writer
                     onPageChange: { newPage in
                         // onPageChange callback → coordinator is the only entity that
                         // writes currentPage, which in turn updates DataStore.

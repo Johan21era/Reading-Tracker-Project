@@ -1,13 +1,6 @@
 //
 //  DataIntegrityValidator.swift
 //  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/16/26.
-//
-//
-//  DataIntegrityValidator.swift
-//  Reading Tracker
-//
 //  PURPOSE
 //  Validates the structural integrity of the books array after every DataStore load
 //  and after every save, and performs non-destructive repairs where possible.
@@ -43,9 +36,9 @@ import Foundation
 /// Represents the data model schema version stored alongside the books array.
 /// DataStore writes this to library.json so future migrations can detect stale schemas.
 enum SchemaVersion: Int, Codable {
-    case v1 = 1  // Original schema (no version field)
-    case v2 = 2  // Added bookmarkData, difficultyProfile
-    case v3 = 3  // Added ReadingGoal, Achievement (this upgrade)
+    case v1 = 1 // Original schema (no version field)
+    case v2 = 2 // Added bookmarkData, difficultyProfile
+    case v3 = 3 // Added ReadingGoal, Achievement (this upgrade)
 
     static let current: SchemaVersion = .v3
 }
@@ -66,15 +59,23 @@ struct ValidationIssue: CustomStringConvertible {
     var description: String {
         let prefix: String
         switch severity {
-        case .warning:  prefix = "⚠️"
-        case .error:    prefix = "❌"
+        case .warning: prefix = "⚠️"
+        case .error: prefix = "❌"
         case .repaired: prefix = "🔧"
         }
         var s = "\(prefix) [\(rule)]"
-        if let b = bookID   { s += " book=\(b.uuidString.prefix(8))" }
-        if let sess = sessionID { s += " session=\(sess.uuidString.prefix(8))" }
-        if !detail.isEmpty  { s += " — \(detail)" }
-        if wasRepaired      { s += " (REPAIRED)" }
+        if let b = bookID {
+            s += " book=\(b.uuidString.prefix(8))"
+        }
+        if let sess = sessionID {
+            s += " session=\(sess.uuidString.prefix(8))"
+        }
+        if !detail.isEmpty {
+            s += " — \(detail)"
+        }
+        if wasRepaired {
+            s += " (REPAIRED)"
+        }
         return s
     }
 }
@@ -84,20 +85,22 @@ struct ValidationIssue: CustomStringConvertible {
 /// Summary of all issues found and repairs made during a validation pass.
 struct ValidationReport {
     let issues: [ValidationIssue]
-    let isClean: Bool         // true if no errors or warnings (repairs OK)
-    let hasUnrepairableErrors: Bool  // true if any error was NOT repaired
+    let isClean: Bool // true if no errors or warnings (repairs OK)
+    let hasUnrepairableErrors: Bool // true if any error was NOT repaired
 
     var summary: String {
         guard !issues.isEmpty else { return "✅ Validation passed — no issues found." }
         let repaired = issues.filter { $0.wasRepaired }.count
         let warnings = issues.filter { $0.severity == .warning }.count
-        let errors   = issues.filter { $0.severity == .error }.count
+        let errors = issues.filter { $0.severity == .error }.count
         return "Validation: \(errors) errors, \(warnings) warnings, \(repaired) repaired."
     }
 
     func printReport() {
         print("[DataIntegrityValidator] \(summary)")
-        for issue in issues { print("  \(issue)") }
+        for issue in issues {
+            print("  \(issue)")
+        }
     }
 }
 
@@ -105,8 +108,7 @@ struct ValidationReport {
 
 /// Pure validator/repairer. Takes [Book], returns repaired [Book] + report.
 /// All operations are safe to call on the main actor (no async, no I/O).
-struct DataIntegrityValidator {
-
+enum DataIntegrityValidator {
     // MARK: - Public Entry Point
 
     /// Validates and non-destructively repairs a books array.
@@ -126,7 +128,7 @@ struct DataIntegrityValidator {
         issues += checkDuplicateIDs(in: mutableBooks)
 
         let hasErrors = issues.contains { $0.severity == .error && !$0.wasRepaired }
-        let isClean   = issues.isEmpty
+        let isClean = issues.isEmpty
 
         let report = ValidationReport(
             issues: issues,
@@ -134,7 +136,9 @@ struct DataIntegrityValidator {
             hasUnrepairableErrors: hasErrors
         )
 
-        if !isClean { report.printReport() }
+        if !isClean {
+            report.printReport()
+        }
 
         return (mutableBooks, report)
     }
@@ -153,7 +157,7 @@ struct DataIntegrityValidator {
         }
 
         // Rule B-2: currentPage must be within [0, totalPages-1].
-        if book.totalPages > 0 && book.currentPage >= book.totalPages {
+        if book.totalPages > 0, book.currentPage >= book.totalPages {
             let clamped = book.totalPages - 1
             issues.append(ValidationIssue(
                 severity: .repaired, rule: "B-2:currentPage≤totalPages-1",
@@ -183,9 +187,9 @@ struct DataIntegrityValidator {
         if activeSessions.count > 1 {
             // Close all but the most recent (highest startTime), since the others
             // are orphans from pre-B5 behavior or crash scenarios.
-            let sorted  = activeSessions.sorted { $0.startTime > $1.startTime }
-            let keepID  = sorted.first?.id
-            let now     = Date()
+            let sorted = activeSessions.sorted { $0.startTime > $1.startTime }
+            let keepID = sorted.first?.id
+            let now = Date()
             for j in book.sessions.indices where book.sessions[j].isActive && book.sessions[j].id != keepID {
                 book.sessions[j].endTime = now
                 closeOrphanTimings(in: &book.sessions[j], at: now)
@@ -207,12 +211,12 @@ struct DataIntegrityValidator {
         // If the book is marked completed but currentPage < totalPages-1, unflag it
         // unless all sessions show the book was genuinely finished.
         // (Conservative: only warn, don't force-unflag, as the user may have manually set it.)
-        if book.isCompleted && book.totalPages > 0 && book.currentPage < book.totalPages - 1 {
+        if book.isCompleted, book.totalPages > 0, book.currentPage < book.totalPages - 1 {
             issues.append(ValidationIssue(
                 severity: .warning, rule: "B-6:isCompleted-consistency",
                 bookID: book.id, sessionID: nil,
                 detail: "isCompleted=true but currentPage=\(book.currentPage) of \(book.totalPages); " +
-                        "user may have manually set this — not auto-cleared.",
+                    "user may have manually set this — not auto-cleared.",
                 wasRepaired: false
             ))
         }
@@ -229,7 +233,7 @@ struct DataIntegrityValidator {
         issues: inout [ValidationIssue]
     ) {
         // Rule S-1: Closed sessions must have endTime.
-        if !session.isActive && session.endTime == nil {
+        if !session.isActive, session.endTime == nil {
             // This contradicts isActive (endTime == nil means isActive == true).
             // Should be impossible, but guard anyway.
             issues.append(ValidationIssue(
@@ -244,7 +248,7 @@ struct DataIntegrityValidator {
         if let end = session.endTime, end < session.startTime {
             // Swap them to produce a non-negative duration.
             let repaired = session.startTime
-            session.endTime   = session.startTime
+            session.endTime = session.startTime
             // We can't set startTime to end without a mutating var; swap values.
             // In practice this means: just set endTime = startTime (zero duration, but not negative).
             issues.append(ValidationIssue(
@@ -313,7 +317,7 @@ struct DataIntegrityValidator {
                 issues.append(ValidationIssue(
                     severity: .warning, rule: "C-1:chapter-startPage-in-range",
                     bookID: book.id, sessionID: nil,
-                    detail: "Chapter '\(chapter.title)' startPage=\(chapter.startPage) out of range [0,\(book.totalPages-1)]",
+                    detail: "Chapter '\(chapter.title)' startPage=\(chapter.startPage) out of range [0,\(book.totalPages - 1)]",
                     wasRepaired: false
                 ))
             }
@@ -361,7 +365,15 @@ struct DataIntegrityValidator {
 // MARK: - Aggregate Statistics from Report
 
 extension ValidationReport {
-    var repairedCount: Int { issues.filter { $0.wasRepaired }.count }
-    var errorCount:    Int { issues.filter { $0.severity == .error }.count }
-    var warningCount:  Int { issues.filter { $0.severity == .warning }.count }
+    var repairedCount: Int {
+        issues.filter { $0.wasRepaired }.count
+    }
+
+    var errorCount: Int {
+        issues.filter { $0.severity == .error }.count
+    }
+
+    var warningCount: Int {
+        issues.filter { $0.severity == .warning }.count
+    }
 }

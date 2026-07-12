@@ -1,21 +1,5 @@
-//
+
 //  SessionEventRouter 2.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 7/9/26.
-//
-
-
-//
-//  SessionEventRouter.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/29/26.
-//
-
-
-//
-//  SessionEventRouter.swift
 //  Reading Tracker
 //
 //  Observes DataStore for session-close events and fans out to engines that
@@ -28,16 +12,15 @@
 //    4. BehaviorContextEngine.analyze()— updates behavioral context summary
 //
 
-import Foundation
 import Combine
+import Foundation
 
 @MainActor
 final class SessionEventRouter: ObservableObject {
-
     // MARK: - Private
 
-    private weak var dataStore:    DataStore?
-    private weak var behaviorKit:  BehaviorContextAccessKit?
+    private weak var dataStore: DataStore?
+    private weak var behaviorKit: BehaviorContextAccessKit?
     private weak var contextEngine: BehaviorContextEngine?
 
     /// Books that had an open activeSessionID on the last observed update.
@@ -53,8 +36,8 @@ final class SessionEventRouter: ObservableObject {
         behaviorKit: BehaviorContextAccessKit,
         contextEngine: BehaviorContextEngine
     ) {
-        self.dataStore     = dataStore
-        self.behaviorKit   = behaviorKit
+        self.dataStore = dataStore
+        self.behaviorKit = behaviorKit
         self.contextEngine = contextEngine
 
         // Seed the initial set so the first diff is accurate.
@@ -88,7 +71,6 @@ final class SessionEventRouter: ObservableObject {
     }
 
     private func runPostSessionCascade(allBooks: [Book]) async {
-
         // ── 1. Weather snapshot ──────────────────────────────────────────
         // Find sessions that ended in the last 2 minutes and capture weather.
         // Failures are swallowed — weather data enriches analytics but is never

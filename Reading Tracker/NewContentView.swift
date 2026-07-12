@@ -1,10 +1,9 @@
 //
-//  HoverIntent.swift
+//  NewContentView.swift
 //  Reading Tracker
 //
 //  Created by Johan Rembeci on 6/29/26.
 //
-
 
 //
 //  NewContentView.swift
@@ -53,31 +52,31 @@ private enum HoverIntent {
 // MARK: - ContentView
 
 struct ContentView: View {
-    @EnvironmentObject private var dataStore:    DataStore
+    @EnvironmentObject private var dataStore: DataStore
     @EnvironmentObject private var sessionCoordinator: SessionCoordinator
-    @EnvironmentObject private var goalVM:       GoalProgressViewModel
+    @EnvironmentObject private var goalVM: GoalProgressViewModel
     @EnvironmentObject private var contextEngine: BehaviorContextEngine
 
     // Estimation state (unchanged)
-    @State private var inspectedBook:    Book?
+    @State private var inspectedBook: Book?
     @State private var currentEstimation: BookEstimationResult?
-    @State private var hoverWorkItem:    DispatchWorkItem?
-    @State private var importError:      String?
+    @State private var hoverWorkItem: DispatchWorkItem?
+    @State private var importError: String?
 
     // ── Feature sheet presentation ─────────────────────────────────────────
-    @State private var showInsights:        Bool = false
+    @State private var showInsights: Bool = false
     @State private var showRecommendations: Bool = false
-    @State private var showGoals:           Bool = false
-    @State private var showAchievements:    Bool = false
-    @State private var showSessionHistory:  Bool = false
-    @State private var showDiscovery:       Bool = false
-    @State private var showAnnualReports:   Bool = false
+    @State private var showGoals: Bool = false
+    @State private var showAchievements: Bool = false
+    @State private var showSessionHistory: Bool = false
+    @State private var showDiscovery: Bool = false
+    @State private var showAnnualReports: Bool = false
     @State private var showContextInsights: Bool = false
     @State private var showWeatherInsights: Bool = false
 
     // ── Achievement toast ──────────────────────────────────────────────────
     @State private var toastAchievement: EarnedAchievement?
-    @State private var toastVisible:     Bool = false
+    @State private var toastVisible: Bool = false
 
     var body: some View {
         NavigationSplitView {
@@ -196,7 +195,11 @@ struct ContentView: View {
         // ── Import error alert (unchanged) ─────────────────────────────────
         .alert("Import Failed", isPresented: Binding(
             get: { importError != nil },
-            set: { if !$0 { importError = nil } }
+            set: {
+                if !$0 {
+                    importError = nil
+                }
+            }
         )) {
             Button("OK") { importError = nil }
         } message: {
@@ -276,7 +279,7 @@ struct ContentView: View {
             hoverWorkItem?.cancel()
             let workItem = DispatchWorkItem { [book] in
                 let result = EstimationEngine.estimate(for: book, allBooks: dataStore.books)
-                inspectedBook     = book
+                inspectedBook = book
                 currentEstimation = EstimationEngine.validate(result: result)
             }
             hoverWorkItem = workItem
@@ -292,9 +295,9 @@ struct ContentView: View {
     private func addItem() {
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = false
-        panel.canChooseDirectories   = false
-        panel.canChooseFiles         = true
-        panel.allowedContentTypes    = [.pdf, .epub]
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.allowedContentTypes = [.pdf, .epub]
 
         panel.begin { response in
             guard response == .OK, let url = panel.url else { return }
@@ -500,12 +503,15 @@ struct BookEstimationView: View {
 
     private var completionLabel: String {
         let days = estimation.estimatedDaysRemaining
-        if days == 0 { return "Could finish today" }
-        if days == 1 { return "Estimated completion tomorrow" }
+        if days == 0 {
+            return "Could finish today"
+        }
+        if days == 1 {
+            return "Estimated completion tomorrow"
+        }
         return "Estimated completion in \(days) days"
     }
 
-    @ViewBuilder
     private func statCell(value: String, label: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(value).font(.title3).fontWeight(.semibold)
@@ -515,17 +521,17 @@ struct BookEstimationView: View {
 
     private func confidenceLabel(_ level: ConfidenceLevel) -> String {
         switch level {
-        case .low:    return "Low"
+        case .low: return "Low"
         case .medium: return "Medium"
-        case .high:   return "High"
+        case .high: return "High"
         }
     }
 
     private func confidenceColor(_ level: ConfidenceLevel) -> Color {
         switch level {
-        case .low:    return .orange
+        case .low: return .orange
         case .medium: return .yellow
-        case .high:   return .green
+        case .high: return .green
         }
     }
 }

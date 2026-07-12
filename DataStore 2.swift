@@ -2,15 +2,8 @@
 //  DataStore 2.swift
 //  Reading Tracker
 //
-//  Created by Johan Rembeci on 6/23/26.
+//  
 //
-
-
-//
-//  DataStore.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/16/26.
 //
 //  UPGRADE LOG (v3)
 //    • Added: LibraryState persistence — goals, deadlines, achievements alongside books
@@ -28,17 +21,16 @@
 //             Task 17 — updateBook() logs when book ID is not found
 //             Task 29 — removeBook() skips disk write when ID not found
 
-import Foundation
 import Combine
+import Foundation
 
 /// Thread-safe observable store. All mutations happen on the main actor.
 @MainActor
 final class DataStore: ObservableObject {
-
     // MARK: - Published State
 
     @Published private(set) var books: [Book] = []
-    @Published private(set) var libraryState: LibraryState = LibraryState()
+    @Published private(set) var libraryState: LibraryState = .init()
 
     /// Newly awarded achievements since the last UI observation.
     /// UI should consume this array (display animation) and clear it via clearNewAchievements().
@@ -47,7 +39,7 @@ final class DataStore: ObservableObject {
     // MARK: - Private
 
     private let fileURL: URL
-    private let stateURL: URL      // separate file for LibraryState (goals/achievements)
+    private let stateURL: URL // separate file for LibraryState (goals/achievements)
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
@@ -70,21 +62,21 @@ final class DataStore: ObservableObject {
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
 
         if let url = fileURL {
-            self.fileURL            = url
-            self.stateURL           = url.deletingLastPathComponent()
+            self.fileURL = url
+            stateURL = url.deletingLastPathComponent()
                 .appendingPathComponent("library-state.json")
-            self.audioProfileStore  = AudioProfileStore(
+            audioProfileStore = AudioProfileStore(
                 directory: url.deletingLastPathComponent()
             )
         } else {
-            self.fileURL            = dir.appendingPathComponent("library.json")
-            self.stateURL           = dir.appendingPathComponent("library-state.json")
-            self.audioProfileStore  = AudioProfileStore(directory: dir)
+            self.fileURL = dir.appendingPathComponent("library.json")
+            stateURL = dir.appendingPathComponent("library-state.json")
+            audioProfileStore = AudioProfileStore(directory: dir)
         }
 
-        encoder.dateEncodingStrategy  = .iso8601
-        encoder.outputFormatting      = [.prettyPrinted, .sortedKeys]
-        decoder.dateDecodingStrategy  = .iso8601
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        decoder.dateDecodingStrategy = .iso8601
 
         load()
     }
@@ -92,7 +84,9 @@ final class DataStore: ObservableObject {
     // MARK: - Public API — Books
 
     func addBook(_ book: Book) {
-        if books.contains(where: { $0.fileURL == book.fileURL }) { return }
+        if books.contains(where: { $0.fileURL == book.fileURL }) {
+            return
+        }
         books.append(book)
         scheduleSave()
         detectAchievements()
@@ -101,7 +95,7 @@ final class DataStore: ObservableObject {
     func updateBook(_ book: Book) {
         guard let idx = books.firstIndex(where: { $0.id == book.id }) else {
             print("[DataStore] updateBook: book \(book.id) ('\(book.title)') not found — " +
-                  "update dropped. This may indicate a stale reference.")
+                "update dropped. This may indicate a stale reference.")
             return
         }
         books[idx] = book
@@ -154,14 +148,15 @@ final class DataStore: ObservableObject {
         // 2. Write the profileID back onto the session so analytics can join them.
         for i in books.indices {
             for j in books[i].sessions.indices
-            where books[i].sessions[j].id == sessionID {
+                where books[i].sessions[j].id == sessionID
+            {
                 books[i].sessions[j].audioContextProfileID = profile.id
-                scheduleSave()   // debounced — coalesces with the endSession save
+                scheduleSave() // debounced — coalesces with the endSession save
                 return
             }
         }
         print("[DataStore] attachAudioContext: session \(sessionID.uuidString.prefix(8)) " +
-              "not found — profile saved to store but session reference not updated.")
+            "not found — profile saved to store but session reference not updated.")
     }
 
     /// Returns the AudioContextProfile for a specific session, if one was captured.
@@ -182,17 +177,17 @@ final class DataStore: ObservableObject {
 
         if let existingID = book.activeSessionID {
             print("[DataStore] Warning: startSession called while session \(existingID) " +
-                  "is active for book \(bookID) — closing previous session.")
+                "is active for book \(bookID) — closing previous session.")
         }
 
         closeActiveSession(for: &book)
 
-        var session      = ReadingSession(bookID: bookID, startPage: page, endPage: page)
-        let timing       = PageTiming(pageNumber: page)
-        session.pageTimes    = [timing]
+        var session = ReadingSession(bookID: bookID, startPage: page, endPage: page)
+        let timing = PageTiming(pageNumber: page)
+        session.pageTimes = [timing]
         book.sessions.append(session)
         book.activeSessionID = session.id
-        book.currentPage     = page
+        book.currentPage = page
         updateBook(book)
     }
 
@@ -205,7 +200,8 @@ final class DataStore: ObservableObject {
 
         // Close previous page timing (last active entry).
         if let pIdx = book.sessions[sIdx].pageTimes.indices.last,
-           book.sessions[sIdx].pageTimes[pIdx].isActive {
+           book.sessions[sIdx].pageTimes[pIdx].isActive
+        {
             book.sessions[sIdx].pageTimes[pIdx].endTime = now
         }
 
@@ -213,7 +209,7 @@ final class DataStore: ObservableObject {
         let timing = PageTiming(pageNumber: newPage, startTime: now)
         book.sessions[sIdx].pageTimes.append(timing)
         book.sessions[sIdx].endPage = newPage
-        book.currentPage            = newPage
+        book.currentPage = newPage
 
         updateBook(book)
     }
@@ -222,7 +218,7 @@ final class DataStore: ObservableObject {
         guard var book = book(id: bookID) else { return }
         closeActiveSession(for: &book)
         updateBook(book)
-        detectAchievements()  // Check for session-count and page-count milestones.
+        detectAchievements() // Check for session-count and page-count milestones.
     }
 
     /// UPGRADE v3: Batch close — single scheduleSave() call instead of one per book.
@@ -266,12 +262,13 @@ final class DataStore: ObservableObject {
         let now = Date()
 
         for pIdx in book.sessions[sIdx].pageTimes.indices
-            where book.sessions[sIdx].pageTimes[pIdx].isActive {
-            book.sessions[sIdx].pageTimes[pIdx].endTime = now  // page timings first (I-5)
+            where book.sessions[sIdx].pageTimes[pIdx].isActive
+        {
+            book.sessions[sIdx].pageTimes[pIdx].endTime = now // page timings first (I-5)
         }
 
-        book.sessions[sIdx].endTime = now  // then session endTime (I-5)
-        book.activeSessionID        = nil
+        book.sessions[sIdx].endTime = now // then session endTime (I-5)
+        book.activeSessionID = nil
     }
 
     // MARK: - Persistence
@@ -284,15 +281,17 @@ final class DataStore: ObservableObject {
     private func loadBooks() {
         guard FileManager.default.fileExists(atPath: fileURL.path) else { return }
         do {
-            let data     = try Data(contentsOf: fileURL)
-            var decoded  = try decoder.decode([Book].self, from: data)
+            let data = try Data(contentsOf: fileURL)
+            var decoded = try decoder.decode([Book].self, from: data)
 
             // UPGRADE v3: Validate and repair on every load.
             let (repaired, report) = DataIntegrityValidator.validate(decoded)
             books = repaired
 
             // If repairs were made, save the corrected version immediately.
-            if !report.isClean { save() }
+            if !report.isClean {
+                save()
+            }
 
         } catch {
             print("[DataStore] Load error at \(fileURL.path): \(error)")

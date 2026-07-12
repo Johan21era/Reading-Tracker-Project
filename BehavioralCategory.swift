@@ -1,20 +1,7 @@
-//
 //  BehavioralCategory.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 7/5/26.
-//
-
-
-//
-//  BehavioralCategory.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/20/26.
-//
-import Foundation
 import AppKit
 import Combine
+import Foundation
 import IOKit
 import IOKit.pwr_mgt
 
@@ -90,7 +77,6 @@ public enum DeviceStateType: String, Codable, Hashable, Sendable {
 /// This structure preserves the original application metadata
 /// observed from the operating system.
 public struct ApplicationDescriptor: Codable, Identifiable, Hashable, Sendable {
-
     public let id: UUID
     public let applicationName: String
     public let bundleIdentifier: String?
@@ -122,7 +108,6 @@ public struct ApplicationDescriptor: Codable, Identifiable, Hashable, Sendable {
 /// Events preserve raw evidence and should remain historically accurate.
 /// Future systems may reconstruct behavior from these records.
 public struct BehavioralEvent: Codable, Identifiable, Hashable, Sendable {
-
     public let id: UUID
     public let timestamp: Date
     public let eventType: BehavioralEventType
@@ -155,7 +140,6 @@ public struct BehavioralEvent: Codable, Identifiable, Hashable, Sendable {
 /// No interpretation is performed regarding productivity, importance,
 /// or behavioral significance.
 public struct ApplicationUsageSession: Codable, Identifiable, Hashable, Sendable {
-
     public let id: UUID
     public let application: ApplicationDescriptor
     public let startTime: Date
@@ -185,7 +169,6 @@ public struct ApplicationUsageSession: Codable, Identifiable, Hashable, Sendable
 /// These events preserve operating-system context without attaching
 /// behavioral meaning.
 public struct DeviceStateEvent: Codable, Identifiable, Hashable, Sendable {
-
     public let id: UUID
     public let timestamp: Date
     public let state: DeviceStateType
@@ -211,7 +194,6 @@ public struct DeviceStateEvent: Codable, Identifiable, Hashable, Sendable {
 /// Inactivity is preserved as first-class evidence and intentionally
 /// avoids assumptions regarding user intent or absence reasons.
 public struct InactivityRecord: Codable, Identifiable, Hashable, Sendable {
-
     public let id: UUID
     public let startTime: Date
     public var endTime: Date?
@@ -239,7 +221,6 @@ public struct InactivityRecord: Codable, Identifiable, Hashable, Sendable {
 /// Timeline segments provide future systems with a consistent
 /// reconstruction primitive without imposing interpretation.
 public struct BehavioralTimelineSegment: Codable, Identifiable, Hashable, Sendable {
-
     public let id: UUID
     public let startTime: Date
     public let endTime: Date
@@ -265,7 +246,6 @@ public struct BehavioralTimelineSegment: Codable, Identifiable, Hashable, Sendab
 
 /// Represents a bounded historical observation interval.
 public struct BehavioralObservationWindow: Codable, Hashable, Sendable {
-
     public let startDate: Date
     public let endDate: Date
 
@@ -281,7 +261,6 @@ public struct BehavioralObservationWindow: Codable, Hashable, Sendable {
 ///
 /// This model is intentionally descriptive rather than analytical.
 public struct ApplicationBehaviorProfile: Codable, Identifiable, Hashable, Sendable {
-
     public let id: UUID
     public let application: ApplicationDescriptor
     public let observedEvents: Int
@@ -307,7 +286,6 @@ public struct ApplicationBehaviorProfile: Codable, Identifiable, Hashable, Senda
 
 /// Represents a point-in-time evidence snapshot.
 public struct BehavioralSnapshot: Codable, Hashable, Sendable {
-
     public let timestamp: Date
     public let activeApplication: ApplicationDescriptor?
     public let deviceState: DeviceStateType
@@ -330,7 +308,6 @@ public struct BehavioralSnapshot: Codable, Hashable, Sendable {
 /// This structure intentionally avoids scoring, ranking,
 /// or interpretation.
 public struct BehavioralStatistics: Codable, Hashable, Sendable {
-
     public let totalEvents: Int
     public let totalSessions: Int
     public let totalInactivityRecords: Int
@@ -356,7 +333,6 @@ public struct BehavioralStatistics: Codable, Hashable, Sendable {
 /// Query structures provide future systems with a stable interface
 /// without exposing storage implementation details.
 public struct BehavioralQuery: Codable, Hashable, Sendable {
-
     public var dateRange: ClosedRange<Date>?
     public var bundleIdentifier: String?
     public var category: BehavioralCategory?
@@ -384,8 +360,7 @@ public struct BehavioralQuery: Codable, Hashable, Sendable {
 ///
 /// Categorization exists solely to organize evidence.
 /// Unknown applications remain fully supported.
-public struct BehavioralCategorizer {
-
+public enum BehavioralCategorizer {
     private static let categoryMappings: [String: BehavioralCategory] = [
         "com.apple.Safari": .browsing,
         "com.google.Chrome": .browsing,
@@ -415,14 +390,13 @@ public struct BehavioralCategorizer {
         "com.adobe.Photoshop": .creativeWork,
         "com.figma.Desktop": .creativeWork,
 
-        "com.apple.SystemSettings": .system
+        "com.apple.SystemSettings": .system,
     ]
 
     public static func category(
         for bundleIdentifier: String?,
-        applicationName: String
+        applicationName _: String
     ) -> BehavioralCategory {
-
         guard let bundleIdentifier else {
             return .unknown
         }
@@ -458,7 +432,6 @@ public struct BehavioralCategorizer {
 /// It does not determine what those events mean.
 @MainActor
 public final class BehaviorContextAccessKit: ObservableObject {
-
     // MARK: Published Evidence
 
     @Published public private(set) var events: [BehavioralEvent] = []
@@ -479,10 +452,10 @@ public final class BehaviorContextAccessKit: ObservableObject {
 
     private var systemPowerObserver: NSObjectProtocol?
 
-    // MEMORY-FIX (Phase 4, BEHAVIOR_MEMORY_FIX_PLAN.txt Section 4 Step 2):
-    // Caps applied to events/applicationSessions/inactivityRecords/deviceStateEvents
-    // below. Uses BehavioralRetentionPolicy's existing defaults (250k/100k/50k/50k) —
-    // unchanged from what was already coded, just actually enforced now.
+    /// MEMORY-FIX (Phase 4, BEHAVIOR_MEMORY_FIX_PLAN.txt Section 4 Step 2):
+    /// Caps applied to events/applicationSessions/inactivityRecords/deviceStateEvents
+    /// below. Uses BehavioralRetentionPolicy's existing defaults (250k/100k/50k/50k) —
+    /// unchanged from what was already coded, just actually enforced now.
     private let retentionPolicy = BehavioralRetentionPolicy()
 
     // MARK: Initialization
@@ -529,7 +502,6 @@ public final class BehaviorContextAccessKit: ObservableObject {
     ///
     /// These are preserved as immutable historical evidence.
     private func observeApplicationLifecycle() {
-
         let workspaceCenter = NSWorkspace.shared.notificationCenter
 
         workspaceCenter.publisher(for: NSWorkspace.didLaunchApplicationNotification)
@@ -555,7 +527,6 @@ public final class BehaviorContextAccessKit: ObservableObject {
     ///
     /// These transitions are used to reconstruct application usage sessions.
     private func observeWorkspaceActivity() {
-
         let workspaceCenter = NSWorkspace.shared.notificationCenter
 
         workspaceCenter.publisher(for: NSWorkspace.didActivateApplicationNotification)
@@ -580,7 +551,6 @@ public final class BehaviorContextAccessKit: ObservableObject {
     ///
     /// These notifications are best-effort and may vary across macOS versions.
     private func observeScreenLockEvents() {
-
         let center = DistributedNotificationCenter.default()
 
         center.addObserver(
@@ -610,7 +580,6 @@ public final class BehaviorContextAccessKit: ObservableObject {
 
     /// Observes system sleep and wake transitions.
     private func observeSystemPowerEvents() {
-
         let workspaceCenter = NSWorkspace.shared.notificationCenter
 
         workspaceCenter.publisher(for: NSWorkspace.willSleepNotification)
@@ -640,7 +609,6 @@ public final class BehaviorContextAccessKit: ObservableObject {
     ///
     /// Inactivity evidence is preserved independently of application activity.
     private func startInactivityMonitoring() {
-
         inactivityTimer?.invalidate()
 
         inactivityTimer = Timer.scheduledTimer(
@@ -653,13 +621,10 @@ public final class BehaviorContextAccessKit: ObservableObject {
 
     /// Evaluates current user idle duration using supported macOS APIs.
     private func evaluateInactivity() {
-
         let idleTime = systemIdleTime()
 
         if idleTime >= inactivityThreshold {
-
             if currentInactivityRecord == nil {
-
                 let record = InactivityRecord(
                     startTime: Date().addingTimeInterval(-idleTime)
                 )
@@ -677,7 +642,7 @@ public final class BehaviorContextAccessKit: ObservableObject {
                     type: .inactivityStarted,
                     source: "IOKit",
                     metadata: [
-                        "idleDuration": "\(idleTime)"
+                        "idleDuration": "\(idleTime)",
                     ]
                 )
 
@@ -685,9 +650,7 @@ public final class BehaviorContextAccessKit: ObservableObject {
             }
 
         } else {
-
             if var record = currentInactivityRecord {
-
                 record.endTime = Date()
 
                 if let index = inactivityRecords.firstIndex(where: { $0.id == record.id }) {
@@ -711,11 +674,10 @@ public final class BehaviorContextAccessKit: ObservableObject {
     /// Returns:
     /// Estimated idle duration in seconds.
     private func systemIdleTime() -> TimeInterval {
-
         guard
             let dict = IOServiceMatching("IOHIDSystem"),
             let service = IOServiceGetMatchingService(kIOMainPortDefault, dict)
-                .takeIf({ $0 != 0 })
+            .takeIf({ $0 != 0 })
         else {
             return 0
         }
@@ -745,10 +707,9 @@ public final class BehaviorContextAccessKit: ObservableObject {
         _ notification: Notification,
         eventType: BehavioralEventType
     ) {
-
         guard
             let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey]
-                as? NSRunningApplication
+            as? NSRunningApplication
         else {
             return
         }
@@ -763,10 +724,9 @@ public final class BehaviorContextAccessKit: ObservableObject {
     }
 
     private func handleApplicationActivation(_ notification: Notification) {
-
         guard
             let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey]
-                as? NSRunningApplication
+            as? NSRunningApplication
         else {
             return
         }
@@ -805,7 +765,6 @@ public final class BehaviorContextAccessKit: ObservableObject {
     }
 
     private func endCurrentSessionIfNeeded() {
-
         guard var session = currentSession else {
             return
         }
@@ -821,7 +780,7 @@ public final class BehaviorContextAccessKit: ObservableObject {
             application: session.application,
             source: "BehaviorContextAccessKit",
             metadata: [
-                "duration": "\(session.duration ?? 0)"
+                "duration": "\(session.duration ?? 0)",
             ]
         )
 
@@ -839,7 +798,6 @@ public final class BehaviorContextAccessKit: ObservableObject {
         source: String,
         metadata: [String: String] = [:]
     ) {
-
         let event = BehavioralEvent(
             eventType: type,
             application: application,
@@ -860,7 +818,6 @@ public final class BehaviorContextAccessKit: ObservableObject {
         _ state: DeviceStateType,
         metadata: [String: String] = [:]
     ) {
-
         let event = DeviceStateEvent(
             state: state,
             metadata: metadata
@@ -875,7 +832,7 @@ public final class BehaviorContextAccessKit: ObservableObject {
             type: .deviceStateTransition,
             source: "BehaviorContextAccessKit",
             metadata: [
-                "state": state.rawValue
+                "state": state.rawValue,
             ]
         )
     }
@@ -886,7 +843,6 @@ public final class BehaviorContextAccessKit: ObservableObject {
     private func applicationDescriptor(
         from application: NSRunningApplication
     ) -> ApplicationDescriptor {
-
         let name = application.localizedName ?? "Unknown"
 
         let category = BehavioralCategorizer.category(
@@ -909,26 +865,28 @@ public final class BehaviorContextAccessKit: ObservableObject {
     public func queryEvents(
         using query: BehavioralQuery
     ) -> [BehavioralEvent] {
-
         events.filter { event in
-
             if let range = query.dateRange,
-               !range.contains(event.timestamp) {
+               !range.contains(event.timestamp)
+            {
                 return false
             }
 
             if let bundleIdentifier = query.bundleIdentifier,
-               event.application?.bundleIdentifier != bundleIdentifier {
+               event.application?.bundleIdentifier != bundleIdentifier
+            {
                 return false
             }
 
             if let category = query.category,
-               event.application?.category != category {
+               event.application?.category != category
+            {
                 return false
             }
 
             if let eventType = query.eventType,
-               event.eventType != eventType {
+               event.eventType != eventType
+            {
                 return false
             }
 
@@ -940,9 +898,7 @@ public final class BehaviorContextAccessKit: ObservableObject {
     public func sessions(
         in range: ClosedRange<Date>? = nil
     ) -> [ApplicationUsageSession] {
-
         applicationSessions.filter { session in
-
             guard let range else {
                 return true
             }
@@ -955,9 +911,7 @@ public final class BehaviorContextAccessKit: ObservableObject {
     public func inactivity(
         in range: ClosedRange<Date>? = nil
     ) -> [InactivityRecord] {
-
         inactivityRecords.filter { record in
-
             guard let range else {
                 return true
             }
@@ -970,9 +924,7 @@ public final class BehaviorContextAccessKit: ObservableObject {
     public func deviceEvents(
         state: DeviceStateType? = nil
     ) -> [DeviceStateEvent] {
-
         deviceStateEvents.filter { event in
-
             guard let state else {
                 return true
             }
@@ -987,7 +939,6 @@ public final class BehaviorContextAccessKit: ObservableObject {
     ///
     /// No interpretation or ranking is performed.
     public func statistics() -> BehavioralStatistics {
-
         let totalDuration = applicationSessions.reduce(0) { partialResult, session in
             partialResult + (session.duration ?? 0)
         }
@@ -1004,7 +955,6 @@ public final class BehaviorContextAccessKit: ObservableObject {
 
     /// Produces a point-in-time behavioral snapshot.
     public func currentSnapshot() -> BehavioralSnapshot {
-
         let latestState =
             deviceStateEvents.last?.state ?? .active
 
@@ -1018,11 +968,11 @@ public final class BehaviorContextAccessKit: ObservableObject {
 // MARK: - Utility Extension
 
 private extension Any {
-
     func takeIf(_ predicate: (Self) -> Bool) -> Self? {
         predicate(self) ? self : nil
     }
 }
+
 // MARK: - Persistence Architecture
 
 /// Defines persistence behavior for behavioral evidence.
@@ -1034,7 +984,6 @@ private extension Any {
 /// to this protocol without coupling storage concerns into
 /// monitoring logic.
 public protocol BehavioralEvidencePersistence: Sendable {
-
     func persist(events: [BehavioralEvent]) async throws
 
     func persist(
@@ -1069,7 +1018,6 @@ public struct BehavioralRetentionPolicy:
     Hashable,
     Sendable
 {
-
     public let maximumEventCount: Int
     public let maximumSessionCount: Int
     public let maximumInactivityRecords: Int
@@ -1079,8 +1027,8 @@ public struct BehavioralRetentionPolicy:
     public init(
         maximumEventCount: Int = 250_000,
         maximumSessionCount: Int = 100_000,
-        maximumInactivityRecords: Int = 50_000,
-        maximumDeviceStateEvents: Int = 50_000,
+        maximumInactivityRecords: Int = 50000,
+        maximumDeviceStateEvents: Int = 50000,
         maximumAge: TimeInterval? = nil
     ) {
         self.maximumEventCount = maximumEventCount
@@ -1102,7 +1050,6 @@ public struct BehavioralIntegrityReport:
     Hashable,
     Sendable
 {
-
     public let duplicateEventCount: Int
     public let unorderedEventCount: Int
     public let invalidSessionCount: Int
@@ -1111,9 +1058,9 @@ public struct BehavioralIntegrityReport:
 
     public var isValid: Bool {
         duplicateEventCount == 0 &&
-        unorderedEventCount == 0 &&
-        invalidSessionCount == 0 &&
-        overlappingSessionCount == 0
+            unorderedEventCount == 0 &&
+            invalidSessionCount == 0 &&
+            overlappingSessionCount == 0
     }
 
     public init(
@@ -1140,7 +1087,6 @@ public struct BehavioralEvidenceSource:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let sourceName: String
     public let sourceVersion: String
@@ -1171,7 +1117,6 @@ public struct BehavioralEventBatch:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let createdAt: Date
     public let events: [BehavioralEvent]
@@ -1199,7 +1144,6 @@ public struct BehavioralReplayFrame:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let timestamp: Date
     public let event: BehavioralEvent
@@ -1234,7 +1178,6 @@ public struct BehavioralAdvancedQuery:
     Hashable,
     Sendable
 {
-
     public var dateRange: ClosedRange<Date>?
     public var categories: Set<BehavioralCategory>
     public var eventTypes: Set<BehavioralEventType>
@@ -1269,12 +1212,10 @@ public struct BehavioralAdvancedQuery:
 ///
 /// This engine remains intentionally non-analytical.
 /// It performs chronological normalization only.
-public struct ApplicationSessionReconstructor {
-
+public enum ApplicationSessionReconstructor {
     public static func reconstruct(
         from events: [BehavioralEvent]
     ) -> [ApplicationUsageSession] {
-
         let sortedEvents = events.sorted {
             $0.timestamp < $1.timestamp
         }
@@ -1288,13 +1229,9 @@ public struct ApplicationSessionReconstructor {
             )?
 
         for event in sortedEvents {
-
             switch event.eventType {
-
             case .applicationActivated:
-
                 if let activeSession {
-
                     let session = ApplicationUsageSession(
                         application: activeSession.application,
                         startTime: activeSession.start,
@@ -1305,7 +1242,6 @@ public struct ApplicationSessionReconstructor {
                 }
 
                 if let application = event.application {
-
                     activeSession = (
                         application: application,
                         start: event.timestamp
@@ -1314,12 +1250,11 @@ public struct ApplicationSessionReconstructor {
 
             case .applicationDeactivated,
                  .applicationTerminated:
-
                 if let activeSession,
                    let application = event.application,
                    activeSession.application.bundleIdentifier ==
-                   application.bundleIdentifier {
-
+                   application.bundleIdentifier
+                {
                     let session = ApplicationUsageSession(
                         application: activeSession.application,
                         startTime: activeSession.start,
@@ -1328,7 +1263,7 @@ public struct ApplicationSessionReconstructor {
 
                     sessions.append(session)
 
-                    self.clear(&activeSession)
+                    clear(&activeSession)
                 }
 
             default:
@@ -1350,14 +1285,11 @@ public struct ApplicationSessionReconstructor {
 ///
 /// Timeline normalization helps future systems consume
 /// chronologically coherent evidence streams.
-public struct BehavioralTimelineBuilder {
-
+public enum BehavioralTimelineBuilder {
     public static func buildSegments(
         from sessions: [ApplicationUsageSession]
     ) -> [BehavioralTimelineSegment] {
-
         sessions.compactMap { session in
-
             guard let endTime = session.endTime else {
                 return nil
             }
@@ -1380,7 +1312,6 @@ public struct BehavioralTimelineBuilder {
 public final class BehavioralHistoryIndex:
     @unchecked Sendable
 {
-
     private var bundleIndex:
         [String: [UUID]] = [:]
 
@@ -1393,17 +1324,16 @@ public final class BehavioralHistoryIndex:
     public init() {}
 
     public func index(event: BehavioralEvent) {
-
         if let bundleIdentifier =
-            event.application?.bundleIdentifier {
-
+            event.application?.bundleIdentifier
+        {
             bundleIndex[bundleIdentifier, default: []]
                 .append(event.id)
         }
 
         if let category =
-            event.application?.category {
-
+            event.application?.category
+        {
             categoryIndex[category, default: []]
                 .append(event.id)
         }
@@ -1415,26 +1345,22 @@ public final class BehavioralHistoryIndex:
     public func identifiers(
         for bundleIdentifier: String
     ) -> [UUID] {
-
         bundleIndex[bundleIdentifier] ?? []
     }
 
     public func identifiers(
         for category: BehavioralCategory
     ) -> [UUID] {
-
         categoryIndex[category] ?? []
     }
 
     public func identifiers(
         for eventType: BehavioralEventType
     ) -> [UUID] {
-
         eventTypeIndex[eventType] ?? []
     }
 
     public func clear() {
-
         bundleIndex.removeAll()
         categoryIndex.removeAll()
         eventTypeIndex.removeAll()
@@ -1447,7 +1373,6 @@ public final class BehavioralHistoryIndex:
 ///
 /// Debouncing exists purely for chronological stability.
 public final class InactivityDebouncer {
-
     private var lastTransitionDate: Date?
     private let minimumTransitionInterval: TimeInterval
 
@@ -1459,7 +1384,6 @@ public final class InactivityDebouncer {
     }
 
     public func shouldAcceptTransition() -> Bool {
-
         let now = Date()
 
         defer {
@@ -1482,7 +1406,6 @@ public final class InactivityDebouncer {
 /// This actor protects chronological consistency while allowing
 /// concurrent ingestion.
 public actor BehavioralEventStore {
-
     private(set) var events: [BehavioralEvent] = []
 
     private(set) var sessions:
@@ -1541,7 +1464,6 @@ public actor BehavioralEventStore {
     }
 
     public func clear() {
-
         events.removeAll()
         sessions.removeAll()
         inactivityRecords.removeAll()
@@ -1554,13 +1476,11 @@ public actor BehavioralEventStore {
 /// Validates historical consistency across evidence streams.
 ///
 /// Validation protects chronology correctness only.
-public struct BehavioralTimelineValidator {
-
+public enum BehavioralTimelineValidator {
     public static func validate(
         events: [BehavioralEvent],
         sessions: [ApplicationUsageSession]
     ) -> BehavioralIntegrityReport {
-
         let sortedEvents =
             events.sorted {
                 $0.timestamp < $1.timestamp
@@ -1568,8 +1488,7 @@ public struct BehavioralTimelineValidator {
 
         var unorderedEvents = 0
 
-        for index in 1..<sortedEvents.count {
-
+        for index in 1 ..< sortedEvents.count {
             let previous =
                 sortedEvents[index - 1]
 
@@ -1577,20 +1496,19 @@ public struct BehavioralTimelineValidator {
                 sortedEvents[index]
 
             if current.timestamp <
-                previous.timestamp {
-
+                previous.timestamp
+            {
                 unorderedEvents += 1
             }
         }
 
         let duplicateCount =
             Set(events.map(\.id)).count != events.count
-            ? events.count - Set(events.map(\.id)).count
-            : 0
+                ? events.count - Set(events.map(\.id)).count
+                : 0
 
         let invalidSessions =
             sessions.filter {
-
                 guard let endTime = $0.endTime else {
                     return false
                 }
@@ -1612,7 +1530,6 @@ public struct BehavioralTimelineValidator {
     private static func overlappingSessionCount(
         _ sessions: [ApplicationUsageSession]
     ) -> Int {
-
         let sorted =
             sessions.sorted {
                 $0.startTime < $1.startTime
@@ -1620,8 +1537,7 @@ public struct BehavioralTimelineValidator {
 
         var count = 0
 
-        for index in 1..<sorted.count {
-
+        for index in 1 ..< sorted.count {
             let previous = sorted[index - 1]
             let current = sorted[index]
 
@@ -1650,7 +1566,6 @@ public struct BehavioralArchive:
     Hashable,
     Sendable
 {
-
     public let exportedAt: Date
     public let events: [BehavioralEvent]
     public let sessions: [ApplicationUsageSession]
@@ -1684,7 +1599,6 @@ public struct BehavioralStoragePartition:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let createdAt: Date
     public let observationWindow:
@@ -1700,6 +1614,7 @@ public struct BehavioralStoragePartition:
         self.observationWindow = observationWindow
     }
 }
+
 // MARK: - Advanced Behavioral Categorization
 
 /// Provides runtime-extensible application categorization.
@@ -1710,7 +1625,6 @@ public final class BehavioralCategoryRegistry:
     ObservableObject,
     @unchecked Sendable
 {
-
     @Published
     public private(set) var mappings:
         [String: BehavioralCategory]
@@ -1739,7 +1653,6 @@ public final class BehavioralCategoryRegistry:
     public func category(
         for bundleIdentifier: String?
     ) -> BehavioralCategory {
-
         guard let bundleIdentifier else {
             return .unknown
         }
@@ -1762,7 +1675,6 @@ public final class BehavioralCategoryRegistry:
 /// Buffering reduces persistence pressure while preserving
 /// exact acquisition order.
 public actor BehavioralEvidenceBuffer {
-
     private var eventBuffer:
         [BehavioralEvent] = []
 
@@ -1849,13 +1761,11 @@ public actor BehavioralEvidenceBuffer {
 /// Sequence numbers help preserve deterministic chronology
 /// during replay and persistence operations.
 public actor BehavioralSequenceGenerator {
-
     private var currentValue: UInt64 = 0
 
     public init() {}
 
     public func next() -> UInt64 {
-
         currentValue += 1
         return currentValue
     }
@@ -1870,7 +1780,6 @@ public struct SequencedBehavioralEvent:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let sequenceNumber: UInt64
     public let event: BehavioralEvent
@@ -1910,7 +1819,6 @@ public struct DisplayStateEvent:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let timestamp: Date
     public let state: DisplayStateType
@@ -1950,7 +1858,6 @@ public struct PowerSourceEvent:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let timestamp: Date
     public let source: DevicePowerSource
@@ -1977,7 +1884,6 @@ public struct ThermalStateEvent:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let timestamp: Date
     public let thermalState: ProcessInfo.ThermalState
@@ -2017,7 +1923,6 @@ public struct ConnectivityEvent:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let timestamp: Date
     public let state: ConnectivityState
@@ -2039,7 +1944,6 @@ public struct ConnectivityEvent:
 ///
 /// Journals preserve immutable acquisition history.
 public actor BehavioralEventJournal {
-
     private var journal:
         [SequencedBehavioralEvent] = []
 
@@ -2060,7 +1964,6 @@ public actor BehavioralEventJournal {
     public func events(
         in range: ClosedRange<Date>
     ) -> [SequencedBehavioralEvent] {
-
         journal.filter {
             range.contains(
                 $0.event.timestamp
@@ -2085,12 +1988,10 @@ public actor BehavioralEventJournal {
 ///
 /// Conflict resolution exists only to preserve
 /// chronological consistency.
-public struct SessionConflictResolver {
-
+public enum SessionConflictResolver {
     public static func resolve(
         sessions: [ApplicationUsageSession]
     ) -> [ApplicationUsageSession] {
-
         let sorted =
             sessions.sorted {
                 $0.startTime < $1.startTime
@@ -2104,7 +2005,6 @@ public struct SessionConflictResolver {
             [ApplicationUsageSession] = []
 
         for session in sorted {
-
             guard let previous =
                 resolved.last
             else {
@@ -2120,7 +2020,6 @@ public struct SessionConflictResolver {
             }
 
             if session.startTime < previousEnd {
-
                 var adjusted =
                     session
 
@@ -2133,7 +2032,6 @@ public struct SessionConflictResolver {
                 resolved.append(adjusted)
 
             } else {
-
                 resolved.append(session)
             }
         }
@@ -2149,7 +2047,6 @@ public struct SessionConflictResolver {
 /// Streams expose evidence updates without exposing
 /// internal storage implementation.
 public actor BehavioralSnapshotStream {
-
     private var continuations:
         [UUID: AsyncStream<BehavioralSnapshot>.Continuation]
         = [:]
@@ -2159,19 +2056,16 @@ public actor BehavioralSnapshotStream {
     public func stream()
         -> AsyncStream<BehavioralSnapshot>
     {
-
         let id = UUID()
 
         return AsyncStream {
 
             continuation in
-
             continuations[id] =
                 continuation
 
             continuation.onTermination = {
                 [weak self] _ in
-
                 Task {
                     await self?.removeContinuation(
                         id: id
@@ -2184,9 +2078,8 @@ public actor BehavioralSnapshotStream {
     public func publish(
         _ snapshot: BehavioralSnapshot
     ) {
-
-        continuations.values.forEach {
-            $0.yield(snapshot)
+        for value in continuations.values {
+            value.yield(snapshot)
         }
     }
 
@@ -2206,13 +2099,11 @@ public actor BehavioralSnapshotStream {
 /// Replay functionality remains deterministic and
 /// non-analytical.
 public actor BehavioralReplayController {
-
     public init() {}
 
     public func replay(
         events: [BehavioralEvent]
     ) -> AsyncStream<BehavioralReplayFrame> {
-
         let sorted =
             events.sorted {
                 $0.timestamp < $1.timestamp
@@ -2221,11 +2112,9 @@ public actor BehavioralReplayController {
         return AsyncStream {
 
             continuation in
-
             Task {
 
                 for event in sorted {
-
                     let frame =
                         BehavioralReplayFrame(
                             timestamp: event.timestamp,
@@ -2250,7 +2139,6 @@ public actor BehavioralReplayController {
 public final class BehavioralWindowCache:
     @unchecked Sendable
 {
-
     private let maximumWindows: Int
 
     private var windows:
@@ -2268,17 +2156,15 @@ public final class BehavioralWindowCache:
         events: [BehavioralEvent],
         for window: BehavioralObservationWindow
     ) {
-
         if windows.count >= maximumWindows {
-
             if let oldest =
                 windows.keys.sorted(
                     by: {
                         $0.startDate <
-                        $1.startDate
+                            $1.startDate
                     }
-                ).first {
-
+                ).first
+            {
                 windows.removeValue(
                     forKey: oldest
                 )
@@ -2291,7 +2177,6 @@ public final class BehavioralWindowCache:
     public func events(
         for window: BehavioralObservationWindow
     ) -> [BehavioralEvent]? {
-
         windows[window]
     }
 
@@ -2310,7 +2195,6 @@ public struct ActivityResumptionEvent:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let resumedAt: Date
     public let precedingIdleDuration:
@@ -2340,7 +2224,6 @@ public struct WorkspaceContextEvent:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let timestamp: Date
     public let workspaceIdentifier: String
@@ -2362,12 +2245,10 @@ public struct WorkspaceContextEvent:
 /// Encodes archival evidence payloads.
 ///
 /// Export encoding preserves exact evidence fidelity.
-public struct BehavioralExportEncoder {
-
+public enum BehavioralExportEncoder {
     public static func encode(
         archive: BehavioralArchive
     ) throws -> Data {
-
         let encoder = JSONEncoder()
 
         encoder.dateEncodingStrategy =
@@ -2375,7 +2256,7 @@ public struct BehavioralExportEncoder {
 
         encoder.outputFormatting = [
             .prettyPrinted,
-            .sortedKeys
+            .sortedKeys,
         ]
 
         return try encoder.encode(
@@ -2386,7 +2267,6 @@ public struct BehavioralExportEncoder {
     public static func decode(
         data: Data
     ) throws -> BehavioralArchive {
-
         let decoder = JSONDecoder()
 
         decoder.dateDecodingStrategy =
@@ -2405,16 +2285,14 @@ public struct BehavioralExportEncoder {
 ///
 /// Retention operations exist only to control
 /// local storage growth.
-public struct BehavioralRetentionController {
-
+public enum BehavioralRetentionController {
     public static func apply(
         policy: BehavioralRetentionPolicy,
         to events: inout [BehavioralEvent]
     ) {
-
         if events.count >
-            policy.maximumEventCount {
-
+            policy.maximumEventCount
+        {
             events = Array(
                 events.suffix(
                     policy.maximumEventCount
@@ -2441,12 +2319,11 @@ public struct BehavioralRetentionController {
     public static func apply(
         policy: BehavioralRetentionPolicy,
         to sessions:
-            inout [ApplicationUsageSession]
+        inout [ApplicationUsageSession]
     ) {
-
         if sessions.count >
-            policy.maximumSessionCount {
-
+            policy.maximumSessionCount
+        {
             sessions = Array(
                 sessions.suffix(
                     policy.maximumSessionCount
@@ -2467,10 +2344,9 @@ public struct BehavioralRetentionController {
         policy: BehavioralRetentionPolicy,
         to records: inout [InactivityRecord]
     ) {
-
         if records.count >
-            policy.maximumInactivityRecords {
-
+            policy.maximumInactivityRecords
+        {
             records = Array(
                 records.suffix(
                     policy.maximumInactivityRecords
@@ -2483,10 +2359,9 @@ public struct BehavioralRetentionController {
         policy: BehavioralRetentionPolicy,
         to deviceEvents: inout [DeviceStateEvent]
     ) {
-
         if deviceEvents.count >
-            policy.maximumDeviceStateEvents {
-
+            policy.maximumDeviceStateEvents
+        {
             deviceEvents = Array(
                 deviceEvents.suffix(
                     policy.maximumDeviceStateEvents
@@ -2495,6 +2370,7 @@ public struct BehavioralRetentionController {
         }
     }
 }
+
 // MARK: - Observer Health Monitoring
 
 /// Represents the operational health state of an observer.
@@ -2522,7 +2398,6 @@ public struct BehavioralObserverStatus:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let observerName: String
     public let health: BehavioralObserverHealth
@@ -2554,7 +2429,6 @@ public final class BehavioralObserverDiagnostics:
     ObservableObject,
     @unchecked Sendable
 {
-
     @Published
     public private(set) var statuses:
         [BehavioralObserverStatus] = []
@@ -2566,7 +2440,6 @@ public final class BehavioralObserverDiagnostics:
         health: BehavioralObserverHealth,
         metadata: [String: String] = [:]
     ) {
-
         let status =
             BehavioralObserverStatus(
                 observerName: observerName,
@@ -2580,7 +2453,6 @@ public final class BehavioralObserverDiagnostics:
     public func latestStatus(
         for observerName: String
     ) -> BehavioralObserverStatus? {
-
         statuses
             .reversed()
             .first {
@@ -2607,7 +2479,6 @@ public protocol BehavioralClock:
 public struct SystemBehavioralClock:
     BehavioralClock
 {
-
     public init() {}
 
     public func now() -> Date {
@@ -2621,13 +2492,12 @@ public struct SystemBehavioralClock:
 public actor MockBehavioralClock:
     BehavioralClock
 {
-
     private var currentDate: Date
 
     public init(
         initialDate: Date
     ) {
-        self.currentDate =
+        currentDate =
             initialDate
     }
 
@@ -2657,17 +2527,14 @@ public actor MockBehavioralClock:
 ///
 /// Deduplication preserves historical integrity while
 /// avoiding duplicate ingestion artifacts.
-public struct BehavioralEventDeduplicator {
-
+public enum BehavioralEventDeduplicator {
     public static func deduplicate(
         events: [BehavioralEvent]
     ) -> [BehavioralEvent] {
-
         var seen:
             Set<BehavioralEvent> = []
 
         return events.filter {
-
             if seen.contains($0) {
                 return false
             }
@@ -2684,17 +2551,14 @@ public struct BehavioralEventDeduplicator {
 ///
 /// Ordering normalization exists solely for
 /// deterministic historical reconstruction.
-public struct BehavioralOrderingNormalizer {
-
+public enum BehavioralOrderingNormalizer {
     public static func normalize(
         events: [BehavioralEvent]
     ) -> [BehavioralEvent] {
-
         events.sorted {
-
             if $0.timestamp ==
-                $1.timestamp {
-
+                $1.timestamp
+            {
                 return $0.id.uuidString <
                     $1.id.uuidString
             }
@@ -2711,12 +2575,10 @@ public struct BehavioralOrderingNormalizer {
 ///
 /// Partitioning improves long-term memory safety
 /// and retrieval efficiency.
-public struct BehavioralPartitionBuilder {
-
+public enum BehavioralPartitionBuilder {
     public static func buildDailyPartitions(
         events: [BehavioralEvent]
     ) -> [BehavioralStoragePartition] {
-
         let calendar =
             Calendar.current
 
@@ -2724,7 +2586,6 @@ public struct BehavioralPartitionBuilder {
             Dictionary(
                 grouping: events
             ) {
-
                 calendar.startOfDay(
                     for: $0.timestamp
                 )
@@ -2733,25 +2594,24 @@ public struct BehavioralPartitionBuilder {
         return grouped.compactMap {
 
             day,
-            values in
-
+            _ in
             guard
                 let end =
-                    calendar.date(
-                        byAdding: .day,
-                        value: 1,
-                        to: day
-                    )
+                calendar.date(
+                    byAdding: .day,
+                    value: 1,
+                    to: day
+                )
             else {
                 return nil
             }
 
             return BehavioralStoragePartition(
                 observationWindow:
-                    BehavioralObservationWindow(
-                        startDate: day,
-                        endDate: end
-                    )
+                BehavioralObservationWindow(
+                    startDate: day,
+                    endDate: end
+                )
             )
         }
     }
@@ -2768,7 +2628,6 @@ public struct BehavioralEvidenceCursor:
     Hashable,
     Sendable
 {
-
     public let position: Int
     public let batchSize: Int
 
@@ -2783,7 +2642,6 @@ public struct BehavioralEvidenceCursor:
     public func advanced()
         -> BehavioralEvidenceCursor
     {
-
         BehavioralEvidenceCursor(
             position: position + batchSize,
             batchSize: batchSize
@@ -2794,13 +2652,11 @@ public struct BehavioralEvidenceCursor:
 // MARK: - Paginated Evidence Response
 
 /// Represents a bounded historical retrieval result.
-public struct BehavioralEvidencePage<T>:
+public struct BehavioralEvidencePage<T: Codable & Hashable & Sendable>:
     Codable,
     Hashable,
     Sendable
-where T: Codable & Hashable & Sendable
 {
-
     public let items: [T]
     public let cursor:
         BehavioralEvidenceCursor
@@ -2822,15 +2678,11 @@ where T: Codable & Hashable & Sendable
 /// Provides paginated retrieval over large evidence sets.
 ///
 /// Pagination exists strictly for operational efficiency.
-public struct BehavioralPaginationEngine {
-
-    public static func page<T>(
+public enum BehavioralPaginationEngine {
+    public static func page<T: Codable & Hashable & Sendable>(
         items: [T],
         cursor: BehavioralEvidenceCursor
-    ) -> BehavioralEvidencePage<T>
-    where T: Codable & Hashable & Sendable
-    {
-
+    ) -> BehavioralEvidencePage<T> {
         let start =
             cursor.position
 
@@ -2841,7 +2693,6 @@ public struct BehavioralPaginationEngine {
             )
 
         guard start < end else {
-
             return BehavioralEvidencePage(
                 items: [],
                 cursor: cursor,
@@ -2851,7 +2702,7 @@ public struct BehavioralPaginationEngine {
 
         let slice =
             Array(
-                items[start..<end]
+                items[start ..< end]
             )
 
         return BehavioralEvidencePage(
@@ -2882,14 +2733,12 @@ public enum BehavioralReplaySpeed:
 ///
 /// Replay pacing exists for chronological simulation only.
 public actor TimedBehavioralReplayController {
-
     public init() {}
 
     public func replay(
         events: [BehavioralEvent],
         speed: BehavioralReplaySpeed
     ) -> AsyncStream<BehavioralReplayFrame> {
-
         let ordered =
             BehavioralOrderingNormalizer
                 .normalize(
@@ -2899,12 +2748,11 @@ public actor TimedBehavioralReplayController {
         return AsyncStream {
 
             continuation in
-
             Task {
 
                 for index in
-                    ordered.indices {
-
+                    ordered.indices
+                {
                     let event =
                         ordered[index]
 
@@ -2925,40 +2773,36 @@ public actor TimedBehavioralReplayController {
                     }
 
                     if index < ordered.count - 1 {
-
                         let next =
                             ordered[index + 1]
 
                         let interval =
                             next.timestamp
-                            .timeIntervalSince(
-                                event.timestamp
-                            )
+                                .timeIntervalSince(
+                                    event.timestamp
+                                )
 
                         switch speed {
-
                         case .realtime:
-
                             try? await Task.sleep(
                                 nanoseconds:
-                                    UInt64(
-                                        max(
-                                            interval,
-                                            0
-                                        ) * 1_000_000_000
-                                    )
+                                UInt64(
+                                    max(
+                                        interval,
+                                        0
+                                    ) * 1_000_000_000
+                                )
                             )
 
                         case .accelerated:
-
                             try? await Task.sleep(
                                 nanoseconds:
-                                    UInt64(
-                                        max(
-                                            interval / 10,
-                                            0
-                                        ) * 1_000_000_000
-                                    )
+                                UInt64(
+                                    max(
+                                        interval / 10,
+                                        0
+                                    ) * 1_000_000_000
+                                )
                             )
 
                         case .immediate:
@@ -2984,7 +2828,6 @@ public struct BehavioralCompressionDescriptor:
     Hashable,
     Sendable
 {
-
     public let originalCount: Int
     public let compressedCount: Int
     public let generatedAt: Date
@@ -3015,7 +2858,6 @@ public struct BehavioralSessionGap:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let start: Date
     public let end: Date
@@ -3042,17 +2884,15 @@ public struct BehavioralSessionGap:
 /// Detects discontinuities in chronological activity.
 ///
 /// Gap analysis remains purely descriptive.
-public struct BehavioralSessionGapAnalyzer {
-
+public enum BehavioralSessionGapAnalyzer {
     public static func gaps(
         in sessions:
-            [ApplicationUsageSession]
+        [ApplicationUsageSession]
     ) -> [BehavioralSessionGap] {
-
         let sorted =
             sessions.sorted {
                 $0.startTime <
-                $1.startTime
+                    $1.startTime
             }
 
         guard sorted.count > 1 else {
@@ -3063,8 +2903,8 @@ public struct BehavioralSessionGapAnalyzer {
             [BehavioralSessionGap] = []
 
         for index in
-            1..<sorted.count {
-
+            1 ..< sorted.count
+        {
             let previous =
                 sorted[index - 1]
 
@@ -3073,14 +2913,14 @@ public struct BehavioralSessionGapAnalyzer {
 
             guard
                 let previousEnd =
-                    previous.endTime
+                previous.endTime
             else {
                 continue
             }
 
             if current.startTime >
-                previousEnd {
-
+                previousEnd
+            {
                 let gap =
                     BehavioralSessionGap(
                         start: previousEnd,
@@ -3107,7 +2947,6 @@ public struct BehavioralCorrelationGroup:
     Hashable,
     Sendable
 {
-
     public let id: UUID
     public let startTime: Date
     public let endTime: Date
@@ -3132,13 +2971,11 @@ public struct BehavioralCorrelationGroup:
 /// Groups chronologically adjacent evidence.
 ///
 /// Grouping is organizational only.
-public struct BehavioralTemporalGroupingEngine {
-
+public enum BehavioralTemporalGroupingEngine {
     public static func group(
         events: [BehavioralEvent],
         maximumGap: TimeInterval
     ) -> [BehavioralCorrelationGroup] {
-
         let ordered =
             BehavioralOrderingNormalizer
                 .normalize(
@@ -3158,8 +2995,8 @@ public struct BehavioralTemporalGroupingEngine {
             = [ordered[0]]
 
         for index in
-            1..<ordered.count {
-
+            1 ..< ordered.count
+        {
             let previous =
                 ordered[index - 1]
 
@@ -3168,27 +3005,25 @@ public struct BehavioralTemporalGroupingEngine {
 
             let delta =
                 next.timestamp
-                .timeIntervalSince(
-                    previous.timestamp
-                )
+                    .timeIntervalSince(
+                        previous.timestamp
+                    )
 
             if delta <= maximumGap {
-
                 current.append(next)
 
             } else {
-
                 if let first =
                     current.first,
-                   let last =
-                    current.last {
-
+                    let last =
+                    current.last
+                {
                     groups.append(
                         BehavioralCorrelationGroup(
                             startTime:
-                                first.timestamp,
+                            first.timestamp,
                             endTime:
-                                last.timestamp,
+                            last.timestamp,
                             events: current
                         )
                     )
@@ -3200,15 +3035,15 @@ public struct BehavioralTemporalGroupingEngine {
 
         if let first =
             current.first,
-           let last =
-            current.last {
-
+            let last =
+            current.last
+        {
             groups.append(
                 BehavioralCorrelationGroup(
                     startTime:
-                        first.timestamp,
+                    first.timestamp,
                     endTime:
-                        last.timestamp,
+                    last.timestamp,
                     events: current
                 )
             )
@@ -3228,7 +3063,6 @@ public struct BehavioralMetricsDescriptor:
     Hashable,
     Sendable
 {
-
     public let eventCount: Int
     public let sessionCount: Int
     public let inactivityCount: Int
@@ -3256,16 +3090,14 @@ public struct BehavioralMetricsDescriptor:
 ///
 /// Metrics intentionally avoid ranking,
 /// scoring, or behavioral interpretation.
-public struct BehavioralMetricsGenerator {
-
+public enum BehavioralMetricsGenerator {
     public static func generate(
         events: [BehavioralEvent],
         sessions:
-            [ApplicationUsageSession],
+        [ApplicationUsageSession],
         inactivity:
-            [InactivityRecord]
+        [InactivityRecord]
     ) -> BehavioralMetricsDescriptor {
-
         let applications =
             Set(
                 sessions.map {
@@ -3278,9 +3110,9 @@ public struct BehavioralMetricsGenerator {
             eventCount: events.count,
             sessionCount: sessions.count,
             inactivityCount:
-                inactivity.count,
+            inactivity.count,
             uniqueApplications:
-                applications.count
+            applications.count
         )
     }
 }

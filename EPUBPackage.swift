@@ -1,12 +1,3 @@
-//
-//  EPUBSpineItem.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 7/6/26.
-//
-
-
-//
 //  EPUBPackage.swift
 //  Reading Tracker
 //
@@ -29,7 +20,7 @@ import Foundation
 import os
 
 #if canImport(ZIPFoundation)
-import ZIPFoundation
+    import ZIPFoundation
 #endif
 
 // MARK: - EPUBSpineItem
@@ -81,8 +72,7 @@ enum EPUBPackageError: LocalizedError {
 /// defeating the entire point of doing this work asynchronously. Safe to
 /// mark `@unchecked Sendable`: every stored property is immutable after
 /// init except `cleanup`, which protects its own mutable state with a lock.
-nonisolated final class EPUBPackage: @unchecked Sendable {
-
+final nonisolated class EPUBPackage: @unchecked Sendable {
     let title: String
     let author: String
     private let spineItems: [EPUBSpineItem]
@@ -93,11 +83,15 @@ nonisolated final class EPUBPackage: @unchecked Sendable {
         category: "EPUBPackage"
     )
 
-    var chapterCount: Int { spineItems.count }
+    var chapterCount: Int {
+        spineItems.count
+    }
 
     /// The directory a WKWebView must be granted read access to, so a
     /// chapter's relative references (images, stylesheets) resolve.
-    var allowedReadRoot: URL { rootDirectory }
+    var allowedReadRoot: URL {
+        rootDirectory
+    }
 
     func fileURL(forChapterAt index: Int) -> URL? {
         guard spineItems.indices.contains(index) else { return nil }
@@ -162,7 +156,9 @@ nonisolated final class EPUBPackage: @unchecked Sendable {
             // withTaskCancellationHandler's operation closure unwinds
             // without onCancel having fired first. runOnce() is idempotent,
             // so this can never double-release anything onCancel already did.
-            if !succeeded { cleanup.runOnce() }
+            if !succeeded {
+                cleanup.runOnce()
+            }
         }
 
         return try await withTaskCancellationHandler(
@@ -208,7 +204,7 @@ nonisolated final class EPUBPackage: @unchecked Sendable {
     /// be callable synchronously from `deinit` and from whatever arbitrary
     /// executor `withTaskCancellationHandler`'s onCancel fires on, neither
     /// of which can `await` a main-actor hop.
-    private nonisolated final class OpenCleanup: @unchecked Sendable {
+    private final nonisolated class OpenCleanup: @unchecked Sendable {
         private let lock = NSLock()
         private var didRun = false
         private let sourceURL: URL
@@ -233,9 +229,9 @@ nonisolated final class EPUBPackage: @unchecked Sendable {
 
     private static func unzip(at source: URL, to destination: URL) throws {
         #if canImport(ZIPFoundation)
-        try FileManager.default.unzipItem(at: source, to: destination)
+            try FileManager.default.unzipItem(at: source, to: destination)
         #else
-        throw EPUBPackageError.zipFoundationUnavailable
+            throw EPUBPackageError.zipFoundationUnavailable
         #endif
     }
 
@@ -256,21 +252,21 @@ nonisolated final class EPUBPackage: @unchecked Sendable {
         var spineItems: [EPUBSpineItem]
     }
 
-    private static func parseOPF(opfURL: URL, baseDir: URL) throws -> ParsedOPF {
+    private static func parseOPF(opfURL: URL, baseDir _: URL) throws -> ParsedOPF {
         guard let data = try? Data(contentsOf: opfURL) else {
             throw EPUBPackageError.cannotReadOPF
         }
 
         let xml = try XMLDocument(data: data, options: [])
-        let opfDir  = opfURL.deletingLastPathComponent()
-        let title   = (try? xml.nodes(forXPath: "//*[local-name()='title']").first?.stringValue)   ?? "Unknown Title"
+        let opfDir = opfURL.deletingLastPathComponent()
+        let title = (try? xml.nodes(forXPath: "//*[local-name()='title']").first?.stringValue) ?? "Unknown Title"
         let creator = (try? xml.nodes(forXPath: "//*[local-name()='creator']").first?.stringValue) ?? "Unknown Author"
 
         var manifest: [String: URL] = [:]
         if let items = try? xml.nodes(forXPath: "//*[local-name()='item']") {
             for item in items {
-                guard let el   = item as? XMLElement,
-                      let id   = el.attribute(forName: "id")?.stringValue,
+                guard let el = item as? XMLElement,
+                      let id = el.attribute(forName: "id")?.stringValue,
                       let href = el.attribute(forName: "href")?.stringValue else { continue }
                 let decoded = href.removingPercentEncoding ?? href
                 manifest[id] = opfDir.appendingPathComponent(decoded)

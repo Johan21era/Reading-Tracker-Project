@@ -1,10 +1,3 @@
-//
-//  ContextInsightPanel.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/29/26.
-//
-
 
 //
 //  ContextInsightPanel.swift
@@ -26,7 +19,6 @@
 import SwiftUI
 
 struct ContextInsightPanel: View {
-
     @EnvironmentObject private var contextEngine: BehaviorContextEngine
     @Environment(\.dismiss) private var dismiss
 
@@ -64,7 +56,6 @@ struct ContextInsightPanel: View {
     private func summaryContent(summary: BehavioralContextSummary) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-
                 // ── Narratives ─────────────────────────────────────────────
                 if !summary.narratives.isEmpty {
                     narrativesSection(summary.narratives)
@@ -224,8 +215,8 @@ struct ContextInsightPanel: View {
     private func confidenceBadge(_ confidence: ContextConfidence) -> some View {
         let pct = Int(confidence.score * 100)
         let color: Color = confidence.score >= 0.6 ? .green
-                         : confidence.score >= 0.35 ? .orange
-                         : .secondary
+            : confidence.score >= 0.35 ? .orange
+            : .secondary
         return Label("\(pct)% confidence", systemImage: "waveform")
             .font(.caption)
             .foregroundColor(color)
@@ -235,20 +226,20 @@ struct ContextInsightPanel: View {
 
     private func environmentSymbol(_ env: BehavioralEnvironmentType) -> String {
         switch env {
-        case .work:           return "briefcase"
-        case .development:    return "laptopcomputer"
-        case .research:       return "magnifyingglass"
-        case .gaming:         return "gamecontroller"
-        case .entertainment:  return "play.rectangle"
-        case .learning:       return "graduationcap"
-        case .social:         return "bubble.left.and.bubble.right"
-        case .browsing:       return "safari"
-        case .creative:       return "paintbrush"
+        case .work: return "briefcase"
+        case .development: return "laptopcomputer"
+        case .research: return "magnifyingglass"
+        case .gaming: return "gamecontroller"
+        case .entertainment: return "play.rectangle"
+        case .learning: return "graduationcap"
+        case .social: return "bubble.left.and.bubble.right"
+        case .browsing: return "safari"
+        case .creative: return "paintbrush"
         case .administrative: return "doc.text"
-        case .idle:           return "moon.zzz"
-        case .recovery:       return "heart"
-        case .mixed:          return "squares.leading.rectangle"
-        case .unknown:        return "questionmark.circle"
+        case .idle: return "moon.zzz"
+        case .recovery: return "heart"
+        case .mixed: return "squares.leading.rectangle"
+        case .unknown: return "questionmark.circle"
         }
     }
 }
@@ -260,9 +251,15 @@ private struct RoutineRow: View {
 
     private var hourLabel: String {
         let hour = routine.averageHour
-        if hour == 0  { return "Midnight" }
-        if hour < 12  { return "\(hour) AM" }
-        if hour == 12 { return "Noon" }
+        if hour == 0 {
+            return "Midnight"
+        }
+        if hour < 12 {
+            return "\(hour) AM"
+        }
+        if hour == 12 {
+            return "Noon"
+        }
         return "\(hour - 12) PM"
     }
 
@@ -299,11 +296,11 @@ private struct RoutineRow: View {
             // Confidence pip
             let score = routine.confidence.score
             HStack(spacing: 3) {
-                ForEach(0..<3, id: \.self) { i in
+                ForEach(0 ..< 3, id: \.self) { i in
                     Circle()
                         .fill(Double(i + 1) <= score * 3
-                              ? Color.accentColor
-                              : Color.secondary.opacity(0.2))
+                            ? Color.accentColor
+                            : Color.secondary.opacity(0.2))
                         .frame(width: 6, height: 6)
                 }
             }
