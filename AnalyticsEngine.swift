@@ -1,8 +1,5 @@
-//
 //  AnalyticsEngine.swift
 //  Reading Tracker
-//
-//
 //  UPGRADE LOG (v3)
 //    • Fixed: bookForecast — now uses (totalPages - 1 - currentPage) consistent with
 //             predictions() B6 fix. The original bookForecast used totalPages - currentPage

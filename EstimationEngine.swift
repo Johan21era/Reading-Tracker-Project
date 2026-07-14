@@ -1,7 +1,6 @@
 //
 //  EstimationEngine.swift
 //  Reading Tracker
-//
 //  Stateless deterministic prediction layer built on AnalyticsEngine
 //
 

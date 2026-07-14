@@ -1,10 +1,5 @@
-//
 //  DataStore 2.swift
 //  Reading Tracker
-//
-//  
-//
-//
 //  UPGRADE LOG (v3)
 //    • Added: LibraryState persistence — goals, deadlines, achievements alongside books
 //    • Added: Schema version written to disk; migration path for v1→v2→v3

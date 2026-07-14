@@ -1,15 +1,5 @@
 //
-//  EnvironmentBackgroundView.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 7/12/26.
-//
-
-
-//
-//  EnvironmentBackgroundView.swift
-//  Reading Tracker
-//
+//  EnvironmentBackgroundView 2.swift
 //  Environment Engine — Phase B-D composition (Part 12 of the build spec)
 //
 //  Composes the environment layers Part 12 describes, in order: gradient →
@@ -79,6 +69,14 @@ struct EnvironmentBackgroundView: View {
 
                 ShootingStarView(shootingStar: shootingStarManager.active)
             }
+            // Part 11: ambient/atmospheric motion belongs "on the scale of
+            // many seconds to minutes" — without this, each 45s recompute
+            // tick would snap to its new values instead of drifting into
+            // them, which is exactly the abrupt transition Appendix A says
+            // should never be observable. Ambient drift is also explicitly
+            // named in Part 11 as something to minimize under reduced
+            // motion, so it collapses to a near-instant fade there instead.
+            .animation(ambientAnimation, value: engine.state)
             .onAppear {
                 regenerateStarFieldIfNeeded(for: proxy.size)
                 engine.start()
@@ -103,6 +101,10 @@ struct EnvironmentBackgroundView: View {
             .opacity(engine.state.atmosphericOpacity * 0.25)
             .blendMode(.softLight)
             .allowsHitTesting(false)
+    }
+
+    private var ambientAnimation: Animation {
+        engine.state.reducedMotion ? .easeInOut(duration: 0.4) : .easeInOut(duration: 12)
     }
 
     private func regenerateStarFieldIfNeeded(for size: CGSize) {

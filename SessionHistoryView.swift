@@ -1,6 +1,5 @@
 //  SessionHistoryView.swift
 //  Reading Tracker
-//
 //  Displays all completed reading sessions grouped by book, with the
 //  AudioContextProfile captured during each session shown inline.
 //

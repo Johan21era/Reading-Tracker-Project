@@ -1,7 +1,5 @@
-
 //  SessionEventRouter 2.swift
 //  Reading Tracker
-//
 //  Observes DataStore for session-close events and fans out to engines that
 //  act at session end. Contains NO engine logic — only calls existing APIs.
 //

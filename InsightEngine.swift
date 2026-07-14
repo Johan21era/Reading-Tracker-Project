@@ -1,4 +1,3 @@
-
 //  InsightEngine.swift
 //  Reading Tracker
 //

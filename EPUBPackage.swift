@@ -1,9 +1,7 @@
 //  EPUBPackage.swift
 //  Reading Tracker
-//
 //  Added as part of the EPUBReaderScreen architectural redesign.
 //  See EPUB_READER_REDESIGN_PLAN.txt for the plan this implements.
-//
 //  Responsibility: open an EPUB archive exactly once per reading session,
 //  keep it open (security scope + unzipped temp directory) for as long as
 //  the caller needs it, hand out per-chapter file URLs on demand, and

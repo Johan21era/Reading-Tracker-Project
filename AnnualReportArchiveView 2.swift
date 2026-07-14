@@ -1,6 +1,4 @@
 
-
-//
 //  AnnualReportArchiveView 2.swift
 //  Reading Tracker
 //

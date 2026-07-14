@@ -1,7 +1,6 @@
 //  DataMaturityEngineAdapters.swift
 //  -----------------------------------------------------------------------------
 //  MARK: - What this file is
-
 //  -----------------------------------------------------------------------------
 //
 //  DataMaturityEngine.swift is deliberately domain-agnostic — it has never

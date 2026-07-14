@@ -1,6 +1,5 @@
-//  EnvironmentEngine.swift
-//  Reading Tracker
 //
+//  EnvironmentEngine 2.swift
 //  Environment Engine — Phase B (Parts 5.1, 5.3 of the build spec)
 //
 //  Computes and periodically republishes EnvironmentState.
@@ -82,7 +81,13 @@ final class EnvironmentEngine: ObservableObject {
         let (paletteSnapshot, blend) = Self.interpolatedSnapshot(atMinute: minute)
 
         let weather = WeatherEnvironmentModifier.currentBestEffort(referenceDate: now())
-        let modified = weather.apply(to: paletteSnapshot)
+        let weatherModified = weather.apply(to: paletteSnapshot)
+
+        // Part 11: "When reducedTransparency is true, reduce blurIntensity
+        // and atmosphericOpacity accordingly." Re-read every tick (same 45s
+        // cadence as everything else in this function), never cached.
+        let reducedTransparency = NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency
+        let modified = Self.applyingReducedTransparency(reducedTransparency, to: weatherModified)
 
         state = EnvironmentState(
             currentAnchorBlend: blend,
@@ -95,8 +100,25 @@ final class EnvironmentEngine: ObservableObject {
             nightIntensity: modified.nightIntensity,
             weatherModifier: weather,
             reducedMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
-            reducedTransparency: NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency
+            reducedTransparency: reducedTransparency
         )
+
+    }
+
+    /// Part 11's reduced-transparency reduction. Scales blurIntensity and
+    /// atmosphericOpacity down to a quarter of their computed value rather
+    /// than zeroing them — a small amount of atmosphere still reads as
+    /// "this environment is alive," which is the point; reduced
+    /// transparency asks for less translucency, not a flat, opaque scene.
+    private static func applyingReducedTransparency(
+        _ reducedTransparency: Bool,
+        to snapshot: EnvironmentPaletteSnapshot
+    ) -> EnvironmentPaletteSnapshot {
+        guard reducedTransparency else { return snapshot }
+        var result = snapshot
+        result.blurIntensity = snapshot.blurIntensity * 0.25
+        result.atmosphericOpacity = snapshot.atmosphericOpacity * 0.25
+        return result
     }
 
     /// Walks EnvironmentPalette.keyframeTrack to find the two keyframes
