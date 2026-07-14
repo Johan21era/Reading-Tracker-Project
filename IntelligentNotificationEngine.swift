@@ -1,9 +1,6 @@
-
 //  IntelligentNotificationEngine.swift
 //  Reading Tracker
-//
 //  PART 1/3
-//
 //  Data Models
 //  Behavioral Profiles
 //  Confidence Modeling

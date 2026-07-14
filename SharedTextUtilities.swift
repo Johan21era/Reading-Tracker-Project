@@ -1,4 +1,3 @@
-
 //  SharedTextUtilities.swift
 //  Reading Tracker
 //

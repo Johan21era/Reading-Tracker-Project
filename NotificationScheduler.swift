@@ -1,7 +1,5 @@
-
 //  NotificationScheduler.swift
 //  Reading Tracker
-//
 //  Thin delivery wrapper around UNUserNotificationCenter.
 //  The IntelligentNotificationEngine decides WHAT to send and WHEN.
 //  This file handles only HOW to send it.

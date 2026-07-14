@@ -1,6 +1,5 @@
 //  EPUBReaderScreen.swift
 //  Reading Tracker
-//
 //  Architectural redesign — see EPUB_READER_REDESIGN_PLAN.txt (this file's
 //  single source of truth). Previous version extracted a fixed ~3,000-
 //  character plain-text snippet with no navigation; this version renders

@@ -1,7 +1,5 @@
-
-//  Book 2.swift
+//  Book2.swift
 //  Reading Tracker
-//
 //  UPGRADE LOG (v3)
 //    • Added: Book.genre — activates the genre analytics pipeline (was always .unknown)
 //    • Added: Book.notes — per-book annotation support (BookNote model)
@@ -17,6 +15,17 @@
 //    • Added: Book.wordCountEstimate — cached at import, used by difficulty normalizer
 //    • Added: GoalSet and EarnedAchievements stored at library level (not per-book)
 //             via LibraryState — DataStore persists LibraryState alongside [Book]
+//
+//  UPGRADE LOG (v4) — Progressive Filtering support (Environment Engine build spec, Part 10)
+//    • Added: Book.series, Book.isFavorite, Book.collectionIDs — the three
+//             filter dimensions Part 10 needed that didn't exist yet. All
+//             three are optional/defaulted; no existing call site or
+//             persisted JSON breaks.
+//    • Added: BookCollection — a lightweight, library-level named grouping.
+//             Membership is Book.collectionIDs (many-to-many); collections
+//             themselves live in LibraryState.collections, same pattern as
+//             goalSet/deadlines/earnedAchievements.
+//    • Added: LibraryState.collections: [BookCollection]
 
 import Foundation
 
@@ -57,6 +66,19 @@ struct Book: Identifiable, Codable, Hashable {
     /// UPGRADE v3: Estimated word count from import-time analysis.
     /// Used by InsightEngine and DifficultyAnalyzer for cross-validation.
     var wordCountEstimate: Int?
+
+    /// UPGRADE v4: Progressive Filtering support (Part 10 of the Environment
+    /// Engine build spec). nil = not part of a series.
+    var series: String?
+
+    /// UPGRADE v4: Progressive Filtering support. Defaults false so every
+    /// existing Book — persisted or freshly constructed — is unaffected.
+    var isFavorite: Bool
+
+    /// UPGRADE v4: Membership in user-created BookCollections (see
+    /// LibraryState.collections below). Many-to-many: a book can belong to
+    /// any number of collections, a collection can hold any number of books.
+    var collectionIDs: [UUID]
 
     // MARK: - Computed
 
@@ -143,7 +165,10 @@ struct Book: Identifiable, Codable, Hashable {
         genre: ReadingGenre = .unknown,
         notes: [BookNote] = [],
         deadlineID: UUID? = nil,
-        wordCountEstimate: Int? = nil
+        wordCountEstimate: Int? = nil,
+        series: String? = nil,
+        isFavorite: Bool = false,
+        collectionIDs: [UUID] = []
     ) {
         self.id = id
         self.title = title
@@ -164,6 +189,9 @@ struct Book: Identifiable, Codable, Hashable {
         self.notes = notes
         self.deadlineID = deadlineID
         self.wordCountEstimate = wordCountEstimate
+        self.series = series
+        self.isFavorite = isFavorite
+        self.collectionIDs = collectionIDs
     }
 }
 
@@ -204,6 +232,24 @@ enum ReadingGenre: String, Codable, CaseIterable, Hashable, Sendable {
 
     var displayName: String {
         rawValue
+    }
+}
+
+// MARK: - BookCollection
+
+/// UPGRADE v4: A user-created, named grouping of books — a "custom
+/// collection" in Progressive Filtering (Part 10). Lives at library level
+/// (see LibraryState.collections below), not per-book; a Book only stores
+/// which collection IDs it belongs to (Book.collectionIDs above).
+struct BookCollection: Identifiable, Codable, Hashable {
+    var id: UUID
+    var name: String
+    var dateCreated: Date
+
+    init(id: UUID = UUID(), name: String, dateCreated: Date = Date()) {
+        self.id = id
+        self.name = name
+        self.dateCreated = dateCreated
     }
 }
 
@@ -487,15 +533,22 @@ struct LibraryState: Codable {
     var deadlines: [BookDeadline]
     var earnedAchievements: [EarnedAchievement]
 
+    /// UPGRADE v4: The full set of user-created collections. Same pattern as
+    /// goalSet/deadlines/earnedAchievements above — library-level data that
+    /// doesn't belong in individual Book structs.
+    var collections: [BookCollection]
+
     init(
         schemaVersion: SchemaVersion = .current,
         goalSet: ReadingGoalSet = .empty,
         deadlines: [BookDeadline] = [],
-        earnedAchievements: [EarnedAchievement] = []
+        earnedAchievements: [EarnedAchievement] = [],
+        collections: [BookCollection] = []
     ) {
         self.schemaVersion = schemaVersion
         self.goalSet = goalSet
         self.deadlines = deadlines
         self.earnedAchievements = earnedAchievements
+        self.collections = collections
     }
 }

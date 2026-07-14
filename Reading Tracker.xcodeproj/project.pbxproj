@@ -15,14 +15,28 @@
 		CA085C1F2FE25EA3000F30E0 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA085C1E2FE25EA3000F30E0 /* LibraryView.swift */; };
 		CA085C212FE290E5000F30E0 /* EstimationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA085C202FE290E5000F30E0 /* EstimationEngine.swift */; };
 		CA085C232FE2A57D000F30E0 /* PredictiveRecommendationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA085C222FE2A57D000F30E0 /* PredictiveRecommendationEngine.swift */; };
+		CA146D5530049E1300D23D3D /* Book 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA146D5430049E1300D23D3D /* Book 2.swift */; };
+		CA146D5730049E8600D23D3D /* LibraryFilterState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA146D5630049E8600D23D3D /* LibraryFilterState.swift */; };
+		CA146D5930049EC900D23D3D /* LibraryFilterSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA146D5830049EC900D23D3D /* LibraryFilterSidebarView.swift */; };
 		CA23B0FB2FE3FE05005B0A5F /* WeatherKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA23B0FA2FE3FE05005B0A5F /* WeatherKitService.swift */; };
 		CA272B662FE05F8D0031387F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = CA272B652FE05F8D0031387F /* ZIPFoundation */; };
 		CA272B772FE068150031387F /* Reading-Tracker-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CA272B762FE068150031387F /* Reading-Tracker-Info.plist */; };
+		CA2D07C43005E5630056F50E /* EnvironmentEngine 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2D07C33005E5630056F50E /* EnvironmentEngine 2.swift */; };
+		CA2D07C63005E58B0056F50E /* EnvironmentBackgroundView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2D07C53005E58B0056F50E /* EnvironmentBackgroundView 2.swift */; };
+		CA2D07C83005E5C70056F50E /* SpatialLibraryView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2D07C73005E5C70056F50E /* SpatialLibraryView 2.swift */; };
+		CA2D07CA3005E6A50056F50E /* FloatingClusterView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2D07C93005E6A50056F50E /* FloatingClusterView 2.swift */; };
+		CA2D07CC3005E7070056F50E /* ShallowPerspectiveView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2D07CB3005E7070056F50E /* ShallowPerspectiveView 2.swift */; };
+		CA2D07CE3005E7280056F50E /* SpatialNavigatorCard 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2D07CD3005E7280056F50E /* SpatialNavigatorCard 2.swift */; };
+		CA2D07D03005E7410056F50E /* SpatialNavigatorView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2D07CF3005E7410056F50E /* SpatialNavigatorView 2.swift */; };
+		CA2D07D23005E7590056F50E /* LibraryExplorerView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2D07D13005E7590056F50E /* LibraryExplorerView 2.swift */; };
 		CA31FFA42FFC72B800CE6822 /* EPUBReaderScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA31FFA32FFC72B800CE6822 /* EPUBReaderScreen.swift */; };
 		CA31FFA62FFC72D200CE6822 /* EPUBPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA31FFA52FFC72D200CE6822 /* EPUBPackage.swift */; };
 		CA3DE8F72FFDA1E500F26559 /* PDFReaderView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3DE8F62FFDA1E500F26559 /* PDFReaderView 2.swift */; };
 		CA4D58332FFAAF37003FEF6D /* BehavioralCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA4D58322FFAAF37003FEF6D /* BehavioralCategory.swift */; };
 		CA50059A2FE3D70E004D6526 /* WeatherAnalysisEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5005992FE3D70E004D6526 /* WeatherAnalysisEngine.swift */; };
+		CA6350DF30044858006266D6 /* BookVisualState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6350DE30044858006266D6 /* BookVisualState.swift */; };
+		CA6350E13004486B006266D6 /* AdaptiveLayoutTier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6350E03004486B006266D6 /* AdaptiveLayoutTier.swift */; };
+		CA6350E330044884006266D6 /* BookCoverCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6350E230044884006266D6 /* BookCoverCardView.swift */; };
 		CA6F509B2FE6963600973E2F /* OnlineBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F509A2FE6963600973E2F /* OnlineBook.swift */; };
 		CA6F509D2FE696AB00973E2F /* OnlineBookProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F509C2FE696AB00973E2F /* OnlineBookProvider.swift */; };
 		CA6F509F2FE696FE00973E2F /* OpenLibraryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6F509E2FE696FE00973E2F /* OpenLibraryProvider.swift */; };
@@ -39,14 +53,12 @@
 		CA8D795D30038A64008DBDCF /* EnvironmentAnchorPeriod.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8D795C30038A64008DBDCF /* EnvironmentAnchorPeriod.swift */; };
 		CA8D795F30038A8A008DBDCF /* EnvironmentPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8D795E30038A8A008DBDCF /* EnvironmentPalette.swift */; };
 		CA8D796130038ACC008DBDCF /* EnvironmentState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8D796030038ACC008DBDCF /* EnvironmentState.swift */; };
-		CA8D796330038AF1008DBDCF /* EnvironmentEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8D796230038AF1008DBDCF /* EnvironmentEngine.swift */; };
 		CA8D796530038B24008DBDCF /* Star.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8D796430038B24008DBDCF /* Star.swift */; };
 		CA8D796730038C8D008DBDCF /* StarField.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8D796630038C8D008DBDCF /* StarField.swift */; };
 		CA8D796930038CBE008DBDCF /* ShootingStar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8D796830038CBE008DBDCF /* ShootingStar.swift */; };
 		CA8D796B30038CDF008DBDCF /* ShootingStarManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8D796A30038CDF008DBDCF /* ShootingStarManager.swift */; };
 		CA8D796D30038CFC008DBDCF /* ShootingStarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8D796C30038CFC008DBDCF /* ShootingStarView.swift */; };
 		CA8D796F30038D32008DBDCF /* WeatherEnvironmentModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8D796E30038D32008DBDCF /* WeatherEnvironmentModifier.swift */; };
-		CA8D797130038D51008DBDCF /* EnvironmentBackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8D797030038D51008DBDCF /* EnvironmentBackgroundView.swift */; };
 		CA8D797330038D79008DBDCF /* StarFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA8D797230038D79008DBDCF /* StarFieldView.swift */; };
 		CAA892DC2FF2643D0097D855 /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA892DB2FF2643D0097D855 /* NotificationScheduler.swift */; };
 		CAA892DE2FF2646F0097D855 /* BehaviorEvidenceBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA892DD2FF2646F0097D855 /* BehaviorEvidenceBuilder.swift */; };
@@ -57,7 +69,6 @@
 		CAA892EA2FF265CB0097D855 /* SessionHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA892E92FF265CB0097D855 /* SessionHistoryView.swift */; };
 		CAA892EE2FF266210097D855 /* ContextInsightPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA892ED2FF266210097D855 /* ContextInsightPanel.swift */; };
 		CAC092C42FEA5AA9009416CE /* AudioSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC092C32FEA5AA9009416CE /* AudioSnapshot.swift */; };
-		CAC092C62FEA5AD6009416CE /* Book 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC092C52FEA5AD6009416CE /* Book 2.swift */; };
 		CAC092C82FEA5B09009416CE /* MusicalAnalysisEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC092C72FEA5B09009416CE /* MusicalAnalysisEngine.swift */; };
 		CAC092CA2FEA5B3C009416CE /* AudioTrackerMetadata 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC092C92FEA5B3C009416CE /* AudioTrackerMetadata 2.swift */; };
 		CAC092CC2FEA5B68009416CE /* AnnualReportArchiveView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC092CB2FEA5B68009416CE /* AnnualReportArchiveView 2.swift */; };
@@ -101,16 +112,30 @@
 		CA085C1E2FE25EA3000F30E0 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		CA085C202FE290E5000F30E0 /* EstimationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EstimationEngine.swift; sourceTree = "<group>"; };
 		CA085C222FE2A57D000F30E0 /* PredictiveRecommendationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredictiveRecommendationEngine.swift; sourceTree = "<group>"; };
+		CA146D5430049E1300D23D3D /* Book 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Book 2.swift"; sourceTree = "<group>"; };
+		CA146D5630049E8600D23D3D /* LibraryFilterState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryFilterState.swift; sourceTree = "<group>"; };
+		CA146D5830049EC900D23D3D /* LibraryFilterSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryFilterSidebarView.swift; sourceTree = "<group>"; };
 		CA23B0FA2FE3FE05005B0A5F /* WeatherKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherKitService.swift; sourceTree = "<group>"; };
 		CA272B272FE04E910031387F /* Reading Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Reading Tracker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA272B362FE04E920031387F /* Reading TrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Reading TrackerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA272B402FE04E920031387F /* Reading TrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Reading TrackerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA272B762FE068150031387F /* Reading-Tracker-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Reading-Tracker-Info.plist"; sourceTree = "<group>"; };
+		CA2D07C33005E5630056F50E /* EnvironmentEngine 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EnvironmentEngine 2.swift"; sourceTree = "<group>"; };
+		CA2D07C53005E58B0056F50E /* EnvironmentBackgroundView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EnvironmentBackgroundView 2.swift"; sourceTree = "<group>"; };
+		CA2D07C73005E5C70056F50E /* SpatialLibraryView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpatialLibraryView 2.swift"; sourceTree = "<group>"; };
+		CA2D07C93005E6A50056F50E /* FloatingClusterView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FloatingClusterView 2.swift"; sourceTree = "<group>"; };
+		CA2D07CB3005E7070056F50E /* ShallowPerspectiveView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShallowPerspectiveView 2.swift"; sourceTree = "<group>"; };
+		CA2D07CD3005E7280056F50E /* SpatialNavigatorCard 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpatialNavigatorCard 2.swift"; sourceTree = "<group>"; };
+		CA2D07CF3005E7410056F50E /* SpatialNavigatorView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpatialNavigatorView 2.swift"; sourceTree = "<group>"; };
+		CA2D07D13005E7590056F50E /* LibraryExplorerView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LibraryExplorerView 2.swift"; sourceTree = "<group>"; };
 		CA31FFA32FFC72B800CE6822 /* EPUBReaderScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPUBReaderScreen.swift; sourceTree = "<group>"; };
 		CA31FFA52FFC72D200CE6822 /* EPUBPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPUBPackage.swift; sourceTree = "<group>"; };
 		CA3DE8F62FFDA1E500F26559 /* PDFReaderView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PDFReaderView 2.swift"; sourceTree = "<group>"; };
 		CA4D58322FFAAF37003FEF6D /* BehavioralCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehavioralCategory.swift; sourceTree = "<group>"; };
 		CA5005992FE3D70E004D6526 /* WeatherAnalysisEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherAnalysisEngine.swift; sourceTree = "<group>"; };
+		CA6350DE30044858006266D6 /* BookVisualState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookVisualState.swift; sourceTree = "<group>"; };
+		CA6350E03004486B006266D6 /* AdaptiveLayoutTier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveLayoutTier.swift; sourceTree = "<group>"; };
+		CA6350E230044884006266D6 /* BookCoverCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookCoverCardView.swift; sourceTree = "<group>"; };
 		CA6F509A2FE6963600973E2F /* OnlineBook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineBook.swift; sourceTree = "<group>"; };
 		CA6F509C2FE696AB00973E2F /* OnlineBookProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineBookProvider.swift; sourceTree = "<group>"; };
 		CA6F509E2FE696FE00973E2F /* OpenLibraryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenLibraryProvider.swift; sourceTree = "<group>"; };
@@ -127,14 +152,12 @@
 		CA8D795C30038A64008DBDCF /* EnvironmentAnchorPeriod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentAnchorPeriod.swift; sourceTree = "<group>"; };
 		CA8D795E30038A8A008DBDCF /* EnvironmentPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentPalette.swift; sourceTree = "<group>"; };
 		CA8D796030038ACC008DBDCF /* EnvironmentState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentState.swift; sourceTree = "<group>"; };
-		CA8D796230038AF1008DBDCF /* EnvironmentEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentEngine.swift; sourceTree = "<group>"; };
 		CA8D796430038B24008DBDCF /* Star.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Star.swift; sourceTree = "<group>"; };
 		CA8D796630038C8D008DBDCF /* StarField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarField.swift; sourceTree = "<group>"; };
 		CA8D796830038CBE008DBDCF /* ShootingStar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShootingStar.swift; sourceTree = "<group>"; };
 		CA8D796A30038CDF008DBDCF /* ShootingStarManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShootingStarManager.swift; sourceTree = "<group>"; };
 		CA8D796C30038CFC008DBDCF /* ShootingStarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShootingStarView.swift; sourceTree = "<group>"; };
 		CA8D796E30038D32008DBDCF /* WeatherEnvironmentModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherEnvironmentModifier.swift; sourceTree = "<group>"; };
-		CA8D797030038D51008DBDCF /* EnvironmentBackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentBackgroundView.swift; sourceTree = "<group>"; };
 		CA8D797230038D79008DBDCF /* StarFieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarFieldView.swift; sourceTree = "<group>"; };
 		CAA892DB2FF2643D0097D855 /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
 		CAA892DD2FF2646F0097D855 /* BehaviorEvidenceBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehaviorEvidenceBuilder.swift; sourceTree = "<group>"; };
@@ -145,7 +168,6 @@
 		CAA892E92FF265CB0097D855 /* SessionHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionHistoryView.swift; sourceTree = "<group>"; };
 		CAA892ED2FF266210097D855 /* ContextInsightPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextInsightPanel.swift; sourceTree = "<group>"; };
 		CAC092C32FEA5AA9009416CE /* AudioSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSnapshot.swift; sourceTree = "<group>"; };
-		CAC092C52FEA5AD6009416CE /* Book 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Book 2.swift"; sourceTree = "<group>"; };
 		CAC092C72FEA5B09009416CE /* MusicalAnalysisEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicalAnalysisEngine.swift; sourceTree = "<group>"; };
 		CAC092C92FEA5B3C009416CE /* AudioTrackerMetadata 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioTrackerMetadata 2.swift"; sourceTree = "<group>"; };
 		CAC092CB2FEA5B68009416CE /* AnnualReportArchiveView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnnualReportArchiveView 2.swift"; sourceTree = "<group>"; };
@@ -210,7 +232,7 @@
 		CA272B1E2FE04E910031387F = {
 			isa = PBXGroup;
 			children = (
-				CAC092C52FEA5AD6009416CE /* Book 2.swift */,
+				CA146D5430049E1300D23D3D /* Book 2.swift */,
 				CAC092D12FEA5C12009416CE /* DataStore 2.swift */,
 				CAC092CF2FEA5BED009416CE /* SessionCoordinator 2.swift */,
 				CAA892E92FF265CB0097D855 /* SessionHistoryView.swift */,
@@ -233,6 +255,7 @@
 				CA085C222FE2A57D000F30E0 /* PredictiveRecommendationEngine.swift */,
 				CAA892E72FF265AA0097D855 /* RecommendationPanel 2.swift */,
 				CA4D58322FFAAF37003FEF6D /* BehavioralCategory.swift */,
+				CACE4D083000A53700DEBD96 /* BehaviorContextEngine 2.swift */,
 				CAA892ED2FF266210097D855 /* ContextInsightPanel.swift */,
 				CAA892DD2FF2646F0097D855 /* BehaviorEvidenceBuilder.swift */,
 				CA085C0C2FE248DE000F30E0 /* AchievementEngine.swift */,
@@ -264,7 +287,8 @@
 				CA8D795C30038A64008DBDCF /* EnvironmentAnchorPeriod.swift */,
 				CA8D795E30038A8A008DBDCF /* EnvironmentPalette.swift */,
 				CA8D796030038ACC008DBDCF /* EnvironmentState.swift */,
-				CA8D796230038AF1008DBDCF /* EnvironmentEngine.swift */,
+				CA2D07C33005E5630056F50E /* EnvironmentEngine 2.swift */,
+				CA2D07C53005E58B0056F50E /* EnvironmentBackgroundView 2.swift */,
 				CA8D796430038B24008DBDCF /* Star.swift */,
 				CA8D796630038C8D008DBDCF /* StarField.swift */,
 				CA8D797230038D79008DBDCF /* StarFieldView.swift */,
@@ -272,8 +296,17 @@
 				CA8D796A30038CDF008DBDCF /* ShootingStarManager.swift */,
 				CA8D796C30038CFC008DBDCF /* ShootingStarView.swift */,
 				CA8D796E30038D32008DBDCF /* WeatherEnvironmentModifier.swift */,
-				CA8D797030038D51008DBDCF /* EnvironmentBackgroundView.swift */,
-				CACE4D083000A53700DEBD96 /* BehaviorContextEngine 2.swift */,
+				CA6350DE30044858006266D6 /* BookVisualState.swift */,
+				CA6350E03004486B006266D6 /* AdaptiveLayoutTier.swift */,
+				CA6350E230044884006266D6 /* BookCoverCardView.swift */,
+				CA2D07C93005E6A50056F50E /* FloatingClusterView 2.swift */,
+				CA2D07CB3005E7070056F50E /* ShallowPerspectiveView 2.swift */,
+				CA2D07CD3005E7280056F50E /* SpatialNavigatorCard 2.swift */,
+				CA2D07CF3005E7410056F50E /* SpatialNavigatorView 2.swift */,
+				CA2D07C73005E5C70056F50E /* SpatialLibraryView 2.swift */,
+				CA146D5630049E8600D23D3D /* LibraryFilterState.swift */,
+				CA146D5830049EC900D23D3D /* LibraryFilterSidebarView.swift */,
+				CA2D07D13005E7590056F50E /* LibraryExplorerView 2.swift */,
 				CA272B762FE068150031387F /* Reading-Tracker-Info.plist */,
 				CA272B292FE04E910031387F /* Reading Tracker */,
 				CA272B392FE04E920031387F /* Reading TrackerTests */,
@@ -449,8 +482,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA2D07C63005E58B0056F50E /* EnvironmentBackgroundView 2.swift in Sources */,
+				CA146D5730049E8600D23D3D /* LibraryFilterState.swift in Sources */,
+				CA146D5930049EC900D23D3D /* LibraryFilterSidebarView.swift in Sources */,
+				CA2D07CA3005E6A50056F50E /* FloatingClusterView 2.swift in Sources */,
 				CA085C1D2FE24AB5000F30E0 /* DataIntegrityValidator.swift in Sources */,
 				CAEB7DFD2FE11CA20068BD25 /* BookImporter.swift in Sources */,
+				CA2D07CC3005E7070056F50E /* ShallowPerspectiveView 2.swift in Sources */,
+				CA2D07CE3005E7280056F50E /* SpatialNavigatorCard 2.swift in Sources */,
 				CA085C232FE2A57D000F30E0 /* PredictiveRecommendationEngine.swift in Sources */,
 				CA8D796130038ACC008DBDCF /* EnvironmentState.swift in Sources */,
 				CAA892E62FF2657A0097D855 /* GoalsDashboard.swift in Sources */,
@@ -460,10 +499,8 @@
 				CAC092C82FEA5B09009416CE /* MusicalAnalysisEngine.swift in Sources */,
 				CA31FFA62FFC72D200CE6822 /* EPUBPackage.swift in Sources */,
 				CA6F509D2FE696AB00973E2F /* OnlineBookProvider.swift in Sources */,
-				CAC092C62FEA5AD6009416CE /* Book 2.swift in Sources */,
 				CAA892E22FF265050097D855 /* ReadingInsightsDashboard.swift in Sources */,
 				CADDFA542FE521DB006C81C0 /* AnnualReportView.swift in Sources */,
-				CA8D797130038D51008DBDCF /* EnvironmentBackgroundView.swift in Sources */,
 				CA8D796730038C8D008DBDCF /* StarField.swift in Sources */,
 				CA841D012FE2C65A00D98641 /* IntelligentNotificationEngine.swift in Sources */,
 				CA6F50AB2FE698B400973E2F /* OnlineBookSearchDrawer.swift in Sources */,
@@ -472,8 +509,10 @@
 				CAA892E42FF265530097D855 /* AchievementPanel.swift in Sources */,
 				CAC092CE2FEA5BAC009416CE /* AnnualReportData 2.swift in Sources */,
 				CACE4D0B3000A59400DEBD96 /* WeatherInsightPanel 2.swift in Sources */,
+				CA6350E13004486B006266D6 /* AdaptiveLayoutTier.swift in Sources */,
 				CA8D795F30038A8A008DBDCF /* EnvironmentPalette.swift in Sources */,
 				CA6F50A72FE697F800973E2F /* OnlineBookRow.swift in Sources */,
+				CA2D07D03005E7410056F50E /* SpatialNavigatorView 2.swift in Sources */,
 				CA8D795930038A01008DBDCF /* EnvironmentMath.swift in Sources */,
 				CA6F509B2FE6963600973E2F /* OnlineBook.swift in Sources */,
 				CA8D796D30038CFC008DBDCF /* ShootingStarView.swift in Sources */,
@@ -481,12 +520,15 @@
 				CA8D796F30038D32008DBDCF /* WeatherEnvironmentModifier.swift in Sources */,
 				CA8D796930038CBE008DBDCF /* ShootingStar.swift in Sources */,
 				CA3DE8F72FFDA1E500F26559 /* PDFReaderView 2.swift in Sources */,
+				CA6350DF30044858006266D6 /* BookVisualState.swift in Sources */,
 				CA085C0B2FE248BC000F30E0 /* ReadingGoalManager.swift in Sources */,
 				CAA892EA2FF265CB0097D855 /* SessionHistoryView.swift in Sources */,
 				CAC092CA2FEA5B3C009416CE /* AudioTrackerMetadata 2.swift in Sources */,
 				CACE4CF73000A3AF00DEBD96 /* SessionEventRouter 2.swift in Sources */,
 				CAA892E82FF265AA0097D855 /* RecommendationPanel 2.swift in Sources */,
 				CACE4CFB3000A43700DEBD96 /* DataMaturityEngineAdapters.swift in Sources */,
+				CA2D07D23005E7590056F50E /* LibraryExplorerView 2.swift in Sources */,
+				CA2D07C83005E5C70056F50E /* SpatialLibraryView 2.swift in Sources */,
 				CAA892DC2FF2643D0097D855 /* NotificationScheduler.swift in Sources */,
 				CA6F50A92FE6988700973E2F /* OnlineBookDetailView.swift in Sources */,
 				CA6F50A52FE697AF00973E2F /* OnlineBookDiscoveryViewModel.swift in Sources */,
@@ -503,11 +545,13 @@
 				CA6F509F2FE696FE00973E2F /* OpenLibraryProvider.swift in Sources */,
 				CA085C1F2FE25EA3000F30E0 /* LibraryView.swift in Sources */,
 				CA31FFA42FFC72B800CE6822 /* EPUBReaderScreen.swift in Sources */,
+				CA6350E330044884006266D6 /* BookCoverCardView.swift in Sources */,
 				CA8D796B30038CDF008DBDCF /* ShootingStarManager.swift in Sources */,
 				CA8D795B30038A2D008DBDCF /* EnvironmentColor.swift in Sources */,
+				CA2D07C43005E5630056F50E /* EnvironmentEngine 2.swift in Sources */,
 				CAA892EE2FF266210097D855 /* ContextInsightPanel.swift in Sources */,
 				CA50059A2FE3D70E004D6526 /* WeatherAnalysisEngine.swift in Sources */,
-				CA8D796330038AF1008DBDCF /* EnvironmentEngine.swift in Sources */,
+				CA146D5530049E1300D23D3D /* Book 2.swift in Sources */,
 				CA085C212FE290E5000F30E0 /* EstimationEngine.swift in Sources */,
 				CAC092D22FEA5C12009416CE /* DataStore 2.swift in Sources */,
 				CA6F50AD2FE698EB00973E2F /* BookDiscoveryView.swift in Sources */,

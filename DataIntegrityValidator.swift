@@ -1,4 +1,3 @@
-//
 //  DataIntegrityValidator.swift
 //  Reading Tracker
 //  PURPOSE

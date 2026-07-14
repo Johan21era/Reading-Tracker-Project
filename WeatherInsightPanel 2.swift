@@ -1,7 +1,5 @@
-//
 //  WeatherInsightPanel 2.swift
 //  Reading Tracker
-//
 //  Fetches stored WeatherSnapshots, assembles EnvironmentalSessionRecord arrays
 //  by joining them with DataStore reading sessions, then calls WeatherAnalysisEngine
 //  to produce an EnvironmentalReadingProfile.

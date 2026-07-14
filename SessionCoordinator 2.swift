@@ -1,4 +1,3 @@
-
 // SessionCoordinator 2.swift
 // Manages the lifecycle of the currently-active reading session.
 // PATCHED:

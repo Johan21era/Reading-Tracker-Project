@@ -1,5 +1,3 @@
-
-//
 //  AnnualReportData 2.swift
 //  Reading Tracker
 //

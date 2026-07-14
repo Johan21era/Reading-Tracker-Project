@@ -1,9 +1,5 @@
-//
 //  LibraryView.swift
 //  Reading Tracker
-//
-//  
-//
 
 import SwiftUI
 

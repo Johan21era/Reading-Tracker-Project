@@ -1,4 +1,3 @@
-//
 //  WeatherAnalysisEngine.swift
 //  Environmental intelligence layer for long-term reading behavior analysis.
 //  Designed to augment AnalyticsEngine, EstimationEngine,

@@ -1,6 +1,5 @@
 //
 //  ShootingStarView.swift
-
 //  Environment Engine — Phase D (Part 7 of the build spec)
 //
 //  Renders the currently-active shooting star, if any, as a comet-style
