@@ -1,0 +1,447 @@
+{
+  "AchievementEngine2.swift": {
+    "mtime": 1784143530.6649187,
+    "ast_hash": "99c8b115505ccb81c820e5d993da79a0",
+    "semantic_hash": "99c8b115505ccb81c820e5d993da79a0"
+  },
+  "AchievementPanel.swift": {
+    "mtime": 1783846978.178199,
+    "ast_hash": "b6632af6cd846ebfe776318e034f6fe6",
+    "semantic_hash": "b6632af6cd846ebfe776318e034f6fe6"
+  },
+  "AdaptiveLayoutTier.swift": {
+    "mtime": 1783902171.030127,
+    "ast_hash": "8586487f2ed76f5bd2a4173ef72dbae3",
+    "semantic_hash": "8586487f2ed76f5bd2a4173ef72dbae3"
+  },
+  "AnalyticsEngine.swift": {
+    "mtime": 1784000835.7968287,
+    "ast_hash": "1f24dd9d0b6fa0ca9d298a87a6e196b6",
+    "semantic_hash": "1f24dd9d0b6fa0ca9d298a87a6e196b6"
+  },
+  "AnnualReportArchiveView 2.swift": {
+    "mtime": 1783902170.799378,
+    "ast_hash": "8a100de9ba5ab5b7b06c12b7d9ad23ef",
+    "semantic_hash": "8a100de9ba5ab5b7b06c12b7d9ad23ef"
+  },
+  "AnnualReportData 2.swift": {
+    "mtime": 1783902170.9483328,
+    "ast_hash": "949b77144b4266fc914fd349f00e93e0",
+    "semantic_hash": "949b77144b4266fc914fd349f00e93e0"
+  },
+  "AnnualReportView.swift": {
+    "mtime": 1783846978.1794412,
+    "ast_hash": "253db58e90a4ec62f18acad5fb056bcb",
+    "semantic_hash": "253db58e90a4ec62f18acad5fb056bcb"
+  },
+  "AudioSnapshot.swift": {
+    "mtime": 1783846978.179735,
+    "ast_hash": "d548277deaf36f2cd5296d128a0c70af",
+    "semantic_hash": "d548277deaf36f2cd5296d128a0c70af"
+  },
+  "AudioTrackerMetadata 2.swift": {
+    "mtime": 1783846978.179905,
+    "ast_hash": "f50fc3c099a7810595b0b0810e895ba4",
+    "semantic_hash": "f50fc3c099a7810595b0b0810e895ba4"
+  },
+  "BehaviorContextEngine2.swift": {
+    "mtime": 1784143443.3710244,
+    "ast_hash": "8d03b9e48bfc3f926f64c22d23bcd0d3",
+    "semantic_hash": "8d03b9e48bfc3f926f64c22d23bcd0d3"
+  },
+  "BehaviorEvidenceBuilder.swift": {
+    "mtime": 1783846978.1809807,
+    "ast_hash": "6fe4ac3693bd419fbe0af954535c1981",
+    "semantic_hash": "6fe4ac3693bd419fbe0af954535c1981"
+  },
+  "BehavioralCategory.swift": {
+    "mtime": 1783846978.1814394,
+    "ast_hash": "91901962420854bcee113457736c1850",
+    "semantic_hash": "91901962420854bcee113457736c1850"
+  },
+  "Book 2.swift": {
+    "mtime": 1784056386.3356936,
+    "ast_hash": "48e39f19b981dee87cb82ba8f9e3a528",
+    "semantic_hash": "48e39f19b981dee87cb82ba8f9e3a528"
+  },
+  "BookCoverCardView.swift": {
+    "mtime": 1783902171.0205123,
+    "ast_hash": "56fe8021a42521132bf94ecde9c93a3a",
+    "semantic_hash": "56fe8021a42521132bf94ecde9c93a3a"
+  },
+  "BookDiscoveryView.swift": {
+    "mtime": 1783846978.1819677,
+    "ast_hash": "c838485b9e8060adfa0b94b316d5ed06",
+    "semantic_hash": "c838485b9e8060adfa0b94b316d5ed06"
+  },
+  "BookImporter.swift": {
+    "mtime": 1783846978.1822152,
+    "ast_hash": "1e4d6898ccb5ae1fa3899beacf7242c4",
+    "semantic_hash": "1e4d6898ccb5ae1fa3899beacf7242c4"
+  },
+  "BookVisualState.swift": {
+    "mtime": 1783902171.0471194,
+    "ast_hash": "f04aae9b7f5e5a7d3f057fb0ae9eecd0",
+    "semantic_hash": "f04aae9b7f5e5a7d3f057fb0ae9eecd0"
+  },
+  "ContextInsightPanel.swift": {
+    "mtime": 1783846978.1827033,
+    "ast_hash": "7a7e348e0a8fb644d5abd4a711a3b9a5",
+    "semantic_hash": "7a7e348e0a8fb644d5abd4a711a3b9a5"
+  },
+  "DataIntegrityValidator.swift": {
+    "mtime": 1783902170.835905,
+    "ast_hash": "8f32b8b788fca4928e1f116c015a7738",
+    "semantic_hash": "8f32b8b788fca4928e1f116c015a7738"
+  },
+  "DataMaturityEngine.swift": {
+    "mtime": 1784000835.866905,
+    "ast_hash": "0a48b818765845c4e75b0a4917e579b0",
+    "semantic_hash": "0a48b818765845c4e75b0a4917e579b0"
+  },
+  "DataMaturityEngineAdapters.swift": {
+    "mtime": 1784000835.9007823,
+    "ast_hash": "c5c610a247f2257edc839cc0011e65c7",
+    "semantic_hash": "c5c610a247f2257edc839cc0011e65c7"
+  },
+  "DataStore3.swift": {
+    "mtime": 1784143443.2998905,
+    "ast_hash": "a519d49c5ee17af21ca067fa25aacf16",
+    "semantic_hash": "a519d49c5ee17af21ca067fa25aacf16"
+  },
+  "DeveloperConsoleDashboardView.swift": {
+    "mtime": 1784143443.3085907,
+    "ast_hash": "344c518888b922a7b4a65dc71a60b433",
+    "semantic_hash": "344c518888b922a7b4a65dc71a60b433"
+  },
+  "DeveloperConsoleObservable.swift": {
+    "mtime": 1784143443.348904,
+    "ast_hash": "662bc4d269cbea946bf29af56e3abc4d",
+    "semantic_hash": "662bc4d269cbea946bf29af56e3abc4d"
+  },
+  "DeveloperConsoleRegistry.swift": {
+    "mtime": 1784143443.36207,
+    "ast_hash": "adfc2d0fe006517e8ca83b2ac834dfa7",
+    "semantic_hash": "adfc2d0fe006517e8ca83b2ac834dfa7"
+  },
+  "DeveloperConsoleRootView.swift": {
+    "mtime": 1784143443.3400056,
+    "ast_hash": "55608cfce08fbef528c4d9335a65ab3f",
+    "semantic_hash": "55608cfce08fbef528c4d9335a65ab3f"
+  },
+  "DeveloperConsoleSystemMetrics.swift": {
+    "mtime": 1784143443.3662677,
+    "ast_hash": "06bdf2269a2ea09700c3aaa6b0483e84",
+    "semantic_hash": "06bdf2269a2ea09700c3aaa6b0483e84"
+  },
+  "DeveloperConsoleTypes.swift": {
+    "mtime": 1784143443.3258193,
+    "ast_hash": "4d1b9c9b66e3ba3f31bcd4d067689ec7",
+    "semantic_hash": "4d1b9c9b66e3ba3f31bcd4d067689ec7"
+  },
+  "EPUBPackage.swift": {
+    "mtime": 1784000835.806257,
+    "ast_hash": "fedf384b6036a65d0cada1142b1c530c",
+    "semantic_hash": "fedf384b6036a65d0cada1142b1c530c"
+  },
+  "EPUBReaderScreen.swift": {
+    "mtime": 1784000835.8525522,
+    "ast_hash": "a67169d7607842fbfd2677390cec8a54",
+    "semantic_hash": "a67169d7607842fbfd2677390cec8a54"
+  },
+  "EnvironmentAnchorPeriod.swift": {
+    "mtime": 1783846978.1853874,
+    "ast_hash": "757f81dff5bbcc25757584f6476ae922",
+    "semantic_hash": "757f81dff5bbcc25757584f6476ae922"
+  },
+  "EnvironmentBackgroundView 2.swift": {
+    "mtime": 1784000835.8476174,
+    "ast_hash": "4ed4085ffa1e84c9215bbd2d6a1bf198",
+    "semantic_hash": "4ed4085ffa1e84c9215bbd2d6a1bf198"
+  },
+  "EnvironmentColor.swift": {
+    "mtime": 1783846978.1863985,
+    "ast_hash": "c8d2c872559f8fb09e83bdfada6fca28",
+    "semantic_hash": "c8d2c872559f8fb09e83bdfada6fca28"
+  },
+  "EnvironmentEngine2.swift": {
+    "mtime": 1784143443.3353689,
+    "ast_hash": "654179bb2d855c2f14c9a9977cd44d49",
+    "semantic_hash": "654179bb2d855c2f14c9a9977cd44d49"
+  },
+  "EnvironmentMath.swift": {
+    "mtime": 1783846978.1867764,
+    "ast_hash": "257f9c027a53058bf9691c8821b1cc5f",
+    "semantic_hash": "257f9c027a53058bf9691c8821b1cc5f"
+  },
+  "EnvironmentPalette.swift": {
+    "mtime": 1783846978.1870513,
+    "ast_hash": "8210f7522968a976ec172d4301815d38",
+    "semantic_hash": "8210f7522968a976ec172d4301815d38"
+  },
+  "EnvironmentState.swift": {
+    "mtime": 1783846978.1873937,
+    "ast_hash": "888f60f5234f0b8e4aa5f9464646903c",
+    "semantic_hash": "888f60f5234f0b8e4aa5f9464646903c"
+  },
+  "EstimationEngine.swift": {
+    "mtime": 1784000835.8294232,
+    "ast_hash": "6f017d20b75ab0524ae31669dc0a422e",
+    "semantic_hash": "6f017d20b75ab0524ae31669dc0a422e"
+  },
+  "FloatingClusterView 2.swift": {
+    "mtime": 1784000835.7804675,
+    "ast_hash": "b113e18f7e78aae383f538b21c3d7db1",
+    "semantic_hash": "b113e18f7e78aae383f538b21c3d7db1"
+  },
+  "GoalsDashboard.swift": {
+    "mtime": 1783846978.1878443,
+    "ast_hash": "77d8e5c653b4c361f08ef37cf5b242ca",
+    "semantic_hash": "77d8e5c653b4c361f08ef37cf5b242ca"
+  },
+  "GutenbergProvider.swift": {
+    "mtime": 1783846978.1882946,
+    "ast_hash": "a818d38d754ee0ad1424d8b3421b91ef",
+    "semantic_hash": "a818d38d754ee0ad1424d8b3421b91ef"
+  },
+  "InsightEngine.swift": {
+    "mtime": 1783902170.9335477,
+    "ast_hash": "9d85c4d26c8e9a0ba2f6872516343591",
+    "semantic_hash": "9d85c4d26c8e9a0ba2f6872516343591"
+  },
+  "IntelligentNotificationEngine.swift": {
+    "mtime": 1784000835.8338735,
+    "ast_hash": "cf0e6370d2c70d6ff41b4dda9284493d",
+    "semantic_hash": "cf0e6370d2c70d6ff41b4dda9284493d"
+  },
+  "LibraryExplorerView 2.swift": {
+    "mtime": 1784000835.8719592,
+    "ast_hash": "08f1038272f2231c6699d53de59b3417",
+    "semantic_hash": "08f1038272f2231c6699d53de59b3417"
+  },
+  "LibraryFilterSidebarView.swift": {
+    "mtime": 1783916463.3806276,
+    "ast_hash": "2a5423874c2489d17d2dc78ba00950a5",
+    "semantic_hash": "2a5423874c2489d17d2dc78ba00950a5"
+  },
+  "LibraryFilterState.swift": {
+    "mtime": 1783916463.3907964,
+    "ast_hash": "2ae32ec84f9a37c30b32da1dc799acfa",
+    "semantic_hash": "2ae32ec84f9a37c30b32da1dc799acfa"
+  },
+  "LibraryView.swift": {
+    "mtime": 1784000835.8430147,
+    "ast_hash": "fc4bd008b56d83cb9f44cc87c51e4b90",
+    "semantic_hash": "fc4bd008b56d83cb9f44cc87c51e4b90"
+  },
+  "MusicalAnalysisEngine.swift": {
+    "mtime": 1783846978.1893067,
+    "ast_hash": "31f3da27c18fcd30cc8aa59b88d88047",
+    "semantic_hash": "31f3da27c18fcd30cc8aa59b88d88047"
+  },
+  "NewYearTransitionMonitor.swift": {
+    "mtime": 1783846978.1895168,
+    "ast_hash": "9c7d39e3d12658aeeeaf15a0fa55e67b",
+    "semantic_hash": "9c7d39e3d12658aeeeaf15a0fa55e67b"
+  },
+  "NotificationScheduler 2.swift": {
+    "mtime": 1784143443.330631,
+    "ast_hash": "b35ee27c1c2246d6306374eb3e48ec2b",
+    "semantic_hash": "b35ee27c1c2246d6306374eb3e48ec2b"
+  },
+  "OnlineBook.swift": {
+    "mtime": 1783846978.1900063,
+    "ast_hash": "a0c2abda512dc3d60e4da63bd69fbba5",
+    "semantic_hash": "a0c2abda512dc3d60e4da63bd69fbba5"
+  },
+  "OnlineBookDetailView.swift": {
+    "mtime": 1783846978.1902432,
+    "ast_hash": "f0e634b000989ba8e9ec971a18808109",
+    "semantic_hash": "f0e634b000989ba8e9ec971a18808109"
+  },
+  "OnlineBookDiscoveryService.swift": {
+    "mtime": 1783846978.190519,
+    "ast_hash": "acf9a7ef02585e3f223dce150c7127c5",
+    "semantic_hash": "acf9a7ef02585e3f223dce150c7127c5"
+  },
+  "OnlineBookDiscoveryViewModel.swift": {
+    "mtime": 1783846978.1914623,
+    "ast_hash": "88a2a4070dc2532d38b4c70507ef6e67",
+    "semantic_hash": "88a2a4070dc2532d38b4c70507ef6e67"
+  },
+  "OnlineBookProvider.swift": {
+    "mtime": 1783846978.1917136,
+    "ast_hash": "176b3af917d390adc0dacb73ccca95fa",
+    "semantic_hash": "176b3af917d390adc0dacb73ccca95fa"
+  },
+  "OnlineBookRow.swift": {
+    "mtime": 1783846978.1918802,
+    "ast_hash": "a92b42c5b62086a650e20add0a7b16bc",
+    "semantic_hash": "a92b42c5b62086a650e20add0a7b16bc"
+  },
+  "OnlineBookSearchDrawer.swift": {
+    "mtime": 1783846978.1920455,
+    "ast_hash": "ec00fc81a63d368dd56bac609b7be057",
+    "semantic_hash": "ec00fc81a63d368dd56bac609b7be057"
+  },
+  "OpenLibraryProvider.swift": {
+    "mtime": 1783846978.1922936,
+    "ast_hash": "c2d30f513feac26eb4d255614e61030d",
+    "semantic_hash": "c2d30f513feac26eb4d255614e61030d"
+  },
+  "PDFReaderView 2.swift": {
+    "mtime": 1783846978.1925426,
+    "ast_hash": "861c98a61650072d8a8c253e88f4e12f",
+    "semantic_hash": "861c98a61650072d8a8c253e88f4e12f"
+  },
+  "PredictiveRecommendationEngine.swift": {
+    "mtime": 1784000835.820375,
+    "ast_hash": "5a26ec5d0fb14dafc4788fa3dd1bd5f5",
+    "semantic_hash": "5a26ec5d0fb14dafc4788fa3dd1bd5f5"
+  },
+  "Reading Tracker/Assets.xcassets/AccentColor.colorset/Contents.json": {
+    "mtime": 1781536529.4105368,
+    "ast_hash": "55019f7265dde0a78318b0807f98e847",
+    "semantic_hash": "55019f7265dde0a78318b0807f98e847"
+  },
+  "Reading Tracker/Assets.xcassets/AppIcon.appiconset/Contents.json": {
+    "mtime": 1781536530.673941,
+    "ast_hash": "312293803cc066cebe794885fe1ddcfe",
+    "semantic_hash": "312293803cc066cebe794885fe1ddcfe"
+  },
+  "Reading Tracker/Assets.xcassets/Contents.json": {
+    "mtime": 1781536529.4117656,
+    "ast_hash": "9deb2ada1cc834bbebf8bbad9c8978a1",
+    "semantic_hash": "9deb2ada1cc834bbebf8bbad9c8978a1"
+  },
+  "Reading Tracker/NewContentView.swift": {
+    "mtime": 1783846978.1948936,
+    "ast_hash": "c3c798087b5503a84b53e8c968b381b1",
+    "semantic_hash": "c3c798087b5503a84b53e8c968b381b1"
+  },
+  "Reading Tracker/ReadingTrackerApp 2.swift": {
+    "mtime": 1784143443.3139307,
+    "ast_hash": "fbbe1e18cd3d1f6ab3bbc6e5667db35e",
+    "semantic_hash": "fbbe1e18cd3d1f6ab3bbc6e5667db35e"
+  },
+  "Reading TrackerTests/Reading_TrackerTests.swift": {
+    "mtime": 1783846978.1958132,
+    "ast_hash": "ecc55fcbaae509693cb2940a9b16f761",
+    "semantic_hash": "ecc55fcbaae509693cb2940a9b16f761"
+  },
+  "Reading TrackerUITests/Reading_TrackerUITests.swift": {
+    "mtime": 1783846978.1961792,
+    "ast_hash": "10eba52c4727cb010935010423904701",
+    "semantic_hash": "10eba52c4727cb010935010423904701"
+  },
+  "Reading TrackerUITests/Reading_TrackerUITestsLaunchTests.swift": {
+    "mtime": 1783846978.196848,
+    "ast_hash": "56f1d25171f5c6c3baba51ac7f01c3ab",
+    "semantic_hash": "56f1d25171f5c6c3baba51ac7f01c3ab"
+  },
+  "ReadingGoalManager 2.swift": {
+    "mtime": 1784143443.353248,
+    "ast_hash": "431053a97102270ee06fdc55fd37fd48",
+    "semantic_hash": "431053a97102270ee06fdc55fd37fd48"
+  },
+  "ReadingInsightsDashboard.swift": {
+    "mtime": 1783846978.1976237,
+    "ast_hash": "3f4173e39fe7d632ad39c2309e580be4",
+    "semantic_hash": "3f4173e39fe7d632ad39c2309e580be4"
+  },
+  "RecommendationPanel 2.swift": {
+    "mtime": 1784000835.8573952,
+    "ast_hash": "60244a3bdbb8a143c72335036da36230",
+    "semantic_hash": "60244a3bdbb8a143c72335036da36230"
+  },
+  "SessionCoordinator2.swift": {
+    "mtime": 1784143443.3201096,
+    "ast_hash": "4dfd1ea6e6e1a43f72940cac1f962a51",
+    "semantic_hash": "4dfd1ea6e6e1a43f72940cac1f962a51"
+  },
+  "SessionEventRouter2.swift": {
+    "mtime": 1784143443.3578193,
+    "ast_hash": "de3aec4458d280fe411ec7cf85df5aa8",
+    "semantic_hash": "de3aec4458d280fe411ec7cf85df5aa8"
+  },
+  "SessionHistoryView.swift": {
+    "mtime": 1784000835.8852608,
+    "ast_hash": "14391410f025ed87e892643ec7ea6ca3",
+    "semantic_hash": "14391410f025ed87e892643ec7ea6ca3"
+  },
+  "ShallowPerspectiveView 2.swift": {
+    "mtime": 1784000835.7860413,
+    "ast_hash": "17a5ceeeb13d11b1ac069789aec6525d",
+    "semantic_hash": "17a5ceeeb13d11b1ac069789aec6525d"
+  },
+  "SharedTextUtilities.swift": {
+    "mtime": 1783902170.9402373,
+    "ast_hash": "c765f15f52388ae1ada95f996aec174f",
+    "semantic_hash": "c765f15f52388ae1ada95f996aec174f"
+  },
+  "ShootingStar.swift": {
+    "mtime": 1783846978.1987307,
+    "ast_hash": "58c9cf615d1787de414fe6b580903983",
+    "semantic_hash": "58c9cf615d1787de414fe6b580903983"
+  },
+  "ShootingStarManager.swift": {
+    "mtime": 1783846978.1988697,
+    "ast_hash": "1e761b69db86c16a9975ce43290f2e18",
+    "semantic_hash": "1e761b69db86c16a9975ce43290f2e18"
+  },
+  "ShootingStarView.swift": {
+    "mtime": 1784000835.8111732,
+    "ast_hash": "79406c4fa69ffd6ece57ce69dea3f91a",
+    "semantic_hash": "79406c4fa69ffd6ece57ce69dea3f91a"
+  },
+  "SpatialLibraryView 2.swift": {
+    "mtime": 1784000835.8019319,
+    "ast_hash": "e0c05f395dd9340f1b257e6d057a8fa0",
+    "semantic_hash": "e0c05f395dd9340f1b257e6d057a8fa0"
+  },
+  "SpatialNavigatorCard 2.swift": {
+    "mtime": 1784000835.879762,
+    "ast_hash": "191205a0364da242a4589b894796f58f",
+    "semantic_hash": "191205a0364da242a4589b894796f58f"
+  },
+  "SpatialNavigatorView 2.swift": {
+    "mtime": 1784000835.861997,
+    "ast_hash": "37209c3623014f886982511aac07c12c",
+    "semantic_hash": "37209c3623014f886982511aac07c12c"
+  },
+  "Star.swift": {
+    "mtime": 1783846978.1992939,
+    "ast_hash": "e6422fbe38e3042499f94dab36af16c5",
+    "semantic_hash": "e6422fbe38e3042499f94dab36af16c5"
+  },
+  "StarField.swift": {
+    "mtime": 1783846978.199752,
+    "ast_hash": "53312e05fd5208dc2e98009493d91cdb",
+    "semantic_hash": "53312e05fd5208dc2e98009493d91cdb"
+  },
+  "StarFieldView.swift": {
+    "mtime": 1783846978.1999621,
+    "ast_hash": "3322eb845ca74fe80f1047ae23101a8d",
+    "semantic_hash": "3322eb845ca74fe80f1047ae23101a8d"
+  },
+  "WeatherAnalysisEngine.swift": {
+    "mtime": 1784000835.9059489,
+    "ast_hash": "d42564a79bde4fa5748e7061b2dc2fd5",
+    "semantic_hash": "d42564a79bde4fa5748e7061b2dc2fd5"
+  },
+  "WeatherEnvironmentModifier.swift": {
+    "mtime": 1783846978.2004404,
+    "ast_hash": "ec45ce2f1d97908adf0a67a133b5cc31",
+    "semantic_hash": "ec45ce2f1d97908adf0a67a133b5cc31"
+  },
+  "WeatherInsightPanel 2.swift": {
+    "mtime": 1784000835.8384764,
+    "ast_hash": "d91032b5c4330d9774cf95ad8f3e909e",
+    "semantic_hash": "d91032b5c4330d9774cf95ad8f3e909e"
+  },
+  "WeatherKitService 2.swift": {
+    "mtime": 1784143443.3446643,
+    "ast_hash": "0b3e63bcc774694da6790dca9f71e806",
+    "semantic_hash": "0b3e63bcc774694da6790dca9f71e806"
+  }
+}
