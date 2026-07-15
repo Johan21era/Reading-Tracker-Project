@@ -1,4 +1,3 @@
-
 //  AnnualReportView.swift
 //  Reading Tracker
 //

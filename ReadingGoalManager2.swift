@@ -1,4 +1,4 @@
-//  ReadingGoalManager 2.swift
+//  ReadingGoalManager2.swift
 //  Reading Tracker
 //
 //  PURPOSE

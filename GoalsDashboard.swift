@@ -1,5 +1,3 @@
-
-//
 //  GoalsDashboard.swift
 //  Reading Tracker
 //

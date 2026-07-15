@@ -1,4 +1,4 @@
-//  ShallowPerspectiveView 2.swift
+//  ShallowPerspectiveView2.swift
 //  Spatial Library — Phase F/G (Part 9.2 of the build spec)
 //
 //  Tier 2: 6-15 books. A compact arrangement with modest spatial depth —

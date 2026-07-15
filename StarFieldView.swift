@@ -1,4 +1,3 @@
-//
 //  StarFieldView.swift
 //  Reading Tracker
 //

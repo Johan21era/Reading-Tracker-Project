@@ -1,4 +1,4 @@
-//  WeatherKitService 2.swift
+//  WeatherKitService2.swift
 //  Reading Tracker
 //  Sole responsibility: produce a valid WeatherSnapshot for any (location, timestamp) pair,
 //  persist it durably, and make historical snapshots queryable by the range and granularity

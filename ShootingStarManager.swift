@@ -1,4 +1,3 @@
-//
 //  ShootingStarManager.swift
 //  Environment Engine — Phase D (Part 7 of the build spec)
 //

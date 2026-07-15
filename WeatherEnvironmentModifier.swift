@@ -1,4 +1,3 @@
-//
 //  WeatherEnvironmentModifier.swift
 //  Environment Engine — Phase E (Part 8 of the build spec)
 //

@@ -1,4 +1,4 @@
-//  NotificationScheduler 2.swift
+//  NotificationScheduler2.swift
 //  Reading Tracker
 //  Thin delivery wrapper around UNUserNotificationCenter.
 //  The IntelligentNotificationEngine decides WHAT to send and WHEN.

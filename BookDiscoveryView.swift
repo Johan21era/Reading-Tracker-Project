@@ -1,4 +1,3 @@
-//
 //  BookDiscoveryView.swift
 //  Reading Tracker
 //

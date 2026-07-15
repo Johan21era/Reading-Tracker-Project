@@ -1,4 +1,4 @@
-//  EnvironmentEngine 2.swift
+//  EnvironmentEngine2.swift
 //  Environment Engine — Phase B (Parts 5.1, 5.3 of the build spec)
 //
 //  Computes and periodically republishes EnvironmentState.

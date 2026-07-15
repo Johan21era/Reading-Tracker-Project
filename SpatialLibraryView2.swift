@@ -1,4 +1,4 @@
-//  SpatialLibraryView 2.swift
+//  SpatialLibraryView2.swift
 //  Reading Tracker
 //  Spatial Library — Phase F/G/H entry point (Part 9.1, 9.2 of the build spec)
 //
