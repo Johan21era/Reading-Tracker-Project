@@ -1,4 +1,3 @@
-//
 //  BehaviorContextEngine 2.swift
 // 
 //
@@ -77,6 +76,10 @@ public final class BehaviorContextEngine: ObservableObject {
 
     public init(configuration: Configuration = .init()) {
         self.configuration = configuration
+
+        #if DEBUG
+        DeveloperConsoleRegistry.shared.register(self)
+        #endif
     }
 
     // MARK: Public API
@@ -5200,3 +5203,36 @@ public extension BehaviorContextEngine {
 //
 // Zero existing lines modified. All code appended after line 3,327.
 // ============================================================================
+
+// MARK: - Developer Console
+
+#if DEBUG
+extension BehaviorContextEngine: DeveloperConsoleObservable {
+    public static var consoleIdentity: ConsoleSubsystemIdentity {
+        ConsoleSubsystemIdentity(
+            id: "behavior-context-engine",
+            displayName: "Behavior Context Engine",
+            category: .engine,
+            purpose: "Reconstructs environments, routines, and narratives from reading sessions + evidence. Populated by SessionEventRouter at the end of each reading session — analyze() is its one live entry point; this file also contains a large amount of additional analyzer/pipeline scaffolding whose live call-graph connectivity was not confirmed this session (see the component registry)."
+        )
+    }
+
+    public var consoleSnapshot: ConsoleSubsystemSnapshot {
+        ConsoleSubsystemSnapshot(
+            identity: Self.consoleIdentity,
+            status: summary == nil ? .idle : .healthy,
+            currentActivity: summary == nil
+                ? "No analysis run yet this session"
+                : "Last analysis: \(summary?.routines.count ?? 0) routine(s), \(summary?.narratives.count ?? 0) narrative(s)",
+            lastUpdated: summary?.generatedAt,
+            metrics: [
+                "Context records (last run)": "\(summary?.contextRecords.count ?? 0)",
+                "Routines (last run)": "\(summary?.routines.count ?? 0)",
+                "Transitions (last run)": "\(summary?.transitions.count ?? 0)",
+            ]
+        )
+    }
+}
+#endif
+//
+//

@@ -1,4 +1,4 @@
-//  DataStore 2.swift
+//  DataStore3.swift
 //  Reading Tracker
 //  UPGRADE LOG (v3)
 //    • Added: LibraryState persistence — goals, deadlines, achievements alongside books
@@ -46,6 +46,14 @@ final class DataStore: ObservableObject {
     private var saveTimer: Timer?
     private let saveDebounceInterval: TimeInterval = 0.5
 
+    #if DEBUG
+    /// Developer Console instrumentation only. Set inside the existing
+    /// save()/loadBooks() catch blocks below — purely additive, changes
+    /// nothing about what those methods actually do.
+    private(set) var consoleLastSaveError: String?
+    private(set) var consoleLastLoadRepairNote: String?
+    #endif
+
     // MARK: - Init
 
     init(fileURL: URL? = nil) {
@@ -74,6 +82,10 @@ final class DataStore: ObservableObject {
         decoder.dateDecodingStrategy = .iso8601
 
         load()
+
+        #if DEBUG
+        DeveloperConsoleRegistry.shared.register(self)
+        #endif
     }
 
     // MARK: - Public API — Books
@@ -285,6 +297,9 @@ final class DataStore: ObservableObject {
 
             // If repairs were made, save the corrected version immediately.
             if !report.isClean {
+                #if DEBUG
+                consoleLastLoadRepairNote = report.summary
+                #endif
                 save()
             }
 
@@ -332,6 +347,9 @@ final class DataStore: ObservableObject {
         } catch {
             // TASK 16 FIX: Include the file path so permission/disk-full errors are actionable.
             print("[DataStore] Save error at \(fileURL.path): \(error)")
+            #if DEBUG
+            consoleLastSaveError = error.localizedDescription
+            #endif
         }
     }
 
@@ -351,3 +369,44 @@ final class DataStore: ObservableObject {
         print("[DataStore] Corrupt file backed up to \(bakURL.path)")
     }
 }
+
+// MARK: - Developer Console
+
+#if DEBUG
+extension DataStore: DeveloperConsoleObservable {
+    static var consoleIdentity: ConsoleSubsystemIdentity {
+        ConsoleSubsystemIdentity(
+            id: "data-store",
+            displayName: "Data Store",
+            category: .manager,
+            purpose: "Owns the book library and reading-goal state, and is the only thing that reads or writes library.json / library-state.json on disk."
+        )
+    }
+
+    var consoleSnapshot: ConsoleSubsystemSnapshot {
+        var warnings: [String] = []
+        var errors: [String] = []
+        if let repairNote = consoleLastLoadRepairNote {
+            warnings.append("Last load required a repair: \(repairNote)")
+        }
+        if let saveError = consoleLastSaveError {
+            errors.append("Last save failed: \(saveError)")
+        }
+
+        return ConsoleSubsystemSnapshot(
+            identity: Self.consoleIdentity,
+            status: consoleLastSaveError != nil ? .error : (consoleLastLoadRepairNote != nil ? .warning : .healthy),
+            currentActivity: "Holding \(books.count) book(s), \(newlyEarnedAchievements.count) unseen achievement toast(s)",
+            lastUpdated: Date(),
+            warnings: warnings,
+            errors: errors,
+            metrics: [
+                "Books in library": "\(books.count)",
+                "Reading goals set": libraryState.goalSet == .empty ? "No" : "Yes",
+                "Deadlines tracked": "\(libraryState.deadlines.count)",
+                "Earned achievements": "\(libraryState.earnedAchievements.count)",
+            ]
+        )
+    }
+}
+#endif

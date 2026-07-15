@@ -1,4 +1,4 @@
-//  WeatherKitService.swift
+//  WeatherKitService 2.swift
 //  Reading Tracker
 //  Sole responsibility: produce a valid WeatherSnapshot for any (location, timestamp) pair,
 //  persist it durably, and make historical snapshots queryable by the range and granularity
@@ -40,9 +40,19 @@ public final class WeatherKitService: ObservableObject {
     private let normaliser = WeatherSnapshotNormaliser()
     private let locationProvider: LocationProvider
 
+    #if DEBUG
+    private(set) var consoleLastAttemptAt: Date?
+    private(set) var consoleLastSuccessAt: Date?
+    private(set) var consoleSuccessCount: Int = 0
+    #endif
+
     private init() {
         store = WeatherSnapshotStore()
         locationProvider = LocationProvider()
+
+        #if DEBUG
+        DeveloperConsoleRegistry.shared.register(self)
+        #endif
     }
 
     // MARK: - Primary Session Attachment
@@ -54,6 +64,10 @@ public final class WeatherKitService: ObservableObject {
     public func snapshotForCurrentConditions(
         sessionID: UUID
     ) async throws -> WeatherSnapshot {
+        #if DEBUG
+        consoleLastAttemptAt = Date()
+        #endif
+
         let location = try await locationProvider.currentLocation()
 
         let weather = try await weatherService.weather(
@@ -70,6 +84,11 @@ public final class WeatherKitService: ObservableObject {
         )
 
         try store.save(snapshot, sessionID: sessionID)
+
+        #if DEBUG
+        consoleLastSuccessAt = Date()
+        consoleSuccessCount += 1
+        #endif
 
         return snapshot
     }
@@ -1353,4 +1372,34 @@ extension WeatherAnalysisEngine {
         }
     }
 
+#endif
+
+// MARK: - Developer Console
+
+#if DEBUG
+extension WeatherKitService: DeveloperConsoleObservable {
+    static var consoleIdentity: ConsoleSubsystemIdentity {
+        ConsoleSubsystemIdentity(
+            id: "weather-kit-service",
+            displayName: "WeatherKit Service",
+            category: .service,
+            purpose: "Fetches and persists weather snapshots (via Apple WeatherKit + a local SQLite store) so reading sessions can be correlated with weather conditions."
+        )
+    }
+
+    var consoleSnapshot: ConsoleSubsystemSnapshot {
+        ConsoleSubsystemSnapshot(
+            identity: Self.consoleIdentity,
+            status: consoleLastAttemptAt == nil ? .idle : .healthy,
+            currentActivity: consoleLastAttemptAt == nil
+                ? "Not called yet this session"
+                : "\(consoleSuccessCount) successful fetch(es) this session",
+            lastUpdated: consoleLastSuccessAt ?? consoleLastAttemptAt,
+            metrics: [
+                "Attempts this session": consoleLastAttemptAt == nil ? "0" : "≥1",
+                "Successes this session": "\(consoleSuccessCount)",
+            ]
+        )
+    }
+}
 #endif

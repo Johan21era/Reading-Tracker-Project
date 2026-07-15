@@ -1,4 +1,5 @@
-// SessionCoordinator 2.swift
+//
+//  SessionCoordinator2.swift
 // Manages the lifecycle of the currently-active reading session.
 // PATCHED:
 //   B2 — currentPage is the single authoritative source; PDFReaderScreen must
@@ -41,6 +42,10 @@ final class SessionCoordinator: ObservableObject {
 
     init(dataStore: DataStore) {
         self.dataStore = dataStore
+
+        #if DEBUG
+        DeveloperConsoleRegistry.shared.register(self)
+        #endif
     }
 
     // MARK: - Public API
@@ -198,3 +203,33 @@ final class SessionCoordinator: ObservableObject {
         sessionStartDate = nil
     }
 }
+
+// MARK: - Developer Console
+
+#if DEBUG
+extension SessionCoordinator: DeveloperConsoleObservable {
+    static var consoleIdentity: ConsoleSubsystemIdentity {
+        ConsoleSubsystemIdentity(
+            id: "session-coordinator",
+            displayName: "Session Coordinator",
+            category: .manager,
+            purpose: "Owns the lifecycle of whichever reading session is currently active — the single authoritative source for current page and elapsed time."
+        )
+    }
+
+    var consoleSnapshot: ConsoleSubsystemSnapshot {
+        ConsoleSubsystemSnapshot(
+            identity: Self.consoleIdentity,
+            status: isReading ? .running : .idle,
+            currentActivity: isReading
+                ? "Reading session active — page \(currentPage), \(Int(elapsedTime))s elapsed this stint"
+                : "No active reading session",
+            lastUpdated: Date(),
+            metrics: [
+                "Active book": activeBookID?.uuidString.prefix(8).description ?? "None",
+                "Active session": activeSessionID?.uuidString.prefix(8).description ?? "None",
+            ]
+        )
+    }
+}
+#endif

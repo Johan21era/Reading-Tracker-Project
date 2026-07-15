@@ -1,5 +1,4 @@
-
-//  ReadingGoalManager.swift
+//  ReadingGoalManager 2.swift
 //  Reading Tracker
 //
 //  PURPOSE
@@ -316,9 +315,22 @@ final class GoalProgressViewModel: ObservableObject {
     private var deadlines: [BookDeadline] = []
     private var cancellables = Set<AnyCancellable>()
 
+    #if DEBUG
+    private(set) var consoleIsBound: Bool = false
+    #endif
+
+    init() {
+        #if DEBUG
+        DeveloperConsoleRegistry.shared.register(self)
+        #endif
+    }
+
     func bind(to dataStore: DataStore, goalSet: ReadingGoalSet, deadlines: [BookDeadline]) {
         self.goalSet = goalSet
         self.deadlines = deadlines
+        #if DEBUG
+        consoleIsBound = true
+        #endif
 
         // Refresh whenever books change.
         dataStore.$books
@@ -341,6 +353,36 @@ final class GoalProgressViewModel: ObservableObject {
         projectedAnnualCompletions = ReadingGoalManager.projectedAnnualCompletions(books: books)
     }
 }
+
+// MARK: - Developer Console
+
+#if DEBUG
+extension GoalProgressViewModel: DeveloperConsoleObservable {
+    static var consoleIdentity: ConsoleSubsystemIdentity {
+        ConsoleSubsystemIdentity(
+            id: "goal-progress-view-model",
+            displayName: "Goal Progress ViewModel",
+            category: .viewModel,
+            purpose: "Wraps ReadingGoalManager's pure calculations for SwiftUI, refreshing automatically whenever the book library changes."
+        )
+    }
+
+    var consoleSnapshot: ConsoleSubsystemSnapshot {
+        ConsoleSubsystemSnapshot(
+            identity: Self.consoleIdentity,
+            status: consoleIsBound ? .healthy : .initializing,
+            currentActivity: consoleIsBound
+                ? "Tracking \(statuses.count) goal(s), \(deadlineStatuses.count) deadline(s)"
+                : "Not bound yet — bind(to:goalSet:deadlines:) has not been called",
+            lastUpdated: Date(),
+            metrics: [
+                "Recommended daily pages": "\(recommendedDailyTarget)",
+                "Projected annual completions": "\(projectedAnnualCompletions)",
+            ]
+        )
+    }
+}
+#endif
 
 // MARK: - Formatting Helpers
 

@@ -26,6 +26,27 @@ final class SessionEventRouter: ObservableObject {
     private var previouslyActiveBookIDs: Set<UUID> = []
     private var cancellables = Set<AnyCancellable>()
 
+    #if DEBUG
+    /// Developer Console instrumentation only. Every value here already
+    /// existed as a real fact this method observes — this just remembers
+    /// the last one so consoleSnapshot has something to report.
+    private(set) var consoleLastCascadeAt: Date?
+    private(set) var consoleCascadeCount: Int = 0
+    #endif
+
+    // MARK: - Init
+
+    /// Previously relied on Swift's compiler-synthesized zero-arg init
+    /// (every stored property above already has a default value). Made
+    /// explicit only so there is a place to register with the console —
+    /// the zero-arg construction `SessionEventRouter()` in
+    /// ReadingTrackerApp.swift is unchanged.
+    init() {
+        #if DEBUG
+        DeveloperConsoleRegistry.shared.register(self)
+        #endif
+    }
+
     // MARK: - Bind
 
     /// Attaches the router to the three objects it needs. Call once at app launch.
@@ -69,6 +90,11 @@ final class SessionEventRouter: ObservableObject {
     }
 
     private func runPostSessionCascade(allBooks: [Book]) async {
+        #if DEBUG
+        consoleLastCascadeAt = Date()
+        consoleCascadeCount += 1
+        #endif
+
         // ── 1. Weather snapshot ──────────────────────────────────────────
         // Find sessions that ended in the last 2 minutes and capture weather.
         // Failures are swallowed — weather data enriches analytics but is never
@@ -133,3 +159,32 @@ final class SessionEventRouter: ObservableObject {
         _ = engine.analyze(sessions: readingRecords, evidence: evidence)
     }
 }
+
+// MARK: - Developer Console
+
+#if DEBUG
+extension SessionEventRouter: DeveloperConsoleObservable {
+    static var consoleIdentity: ConsoleSubsystemIdentity {
+        ConsoleSubsystemIdentity(
+            id: "session-event-router",
+            displayName: "Session Event Router",
+            category: .manager,
+            purpose: "Watches for a reading session closing, then fans that event out to WeatherKit, the notification engine, and the behavior context engine. Contains no engine logic of its own — only calls existing APIs in sequence."
+        )
+    }
+
+    var consoleSnapshot: ConsoleSubsystemSnapshot {
+        ConsoleSubsystemSnapshot(
+            identity: Self.consoleIdentity,
+            status: dataStore == nil ? .unavailable : .healthy,
+            currentActivity: dataStore == nil
+                ? "Not bound yet — bind(to:behaviorKit:contextEngine:) has not been called"
+                : "Watching for session-close events (ran \(consoleCascadeCount) cascade(s) this session)",
+            lastUpdated: consoleLastCascadeAt,
+            metrics: [
+                "Cascades run this session": "\(consoleCascadeCount)",
+            ]
+        )
+    }
+}
+#endif

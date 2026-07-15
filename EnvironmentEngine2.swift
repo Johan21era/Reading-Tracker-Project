@@ -1,4 +1,3 @@
-//
 //  EnvironmentEngine 2.swift
 //  Environment Engine — Phase B (Parts 5.1, 5.3 of the build spec)
 //
@@ -45,6 +44,10 @@ final class EnvironmentEngine: ObservableObject {
         self.calendar = calendar
         self.now = now
         recompute() // synchronous first value so the very first frame is already correct, not .fallback
+
+        #if DEBUG
+        DeveloperConsoleRegistry.shared.register(self)
+        #endif
     }
 
     /// Begins the periodic recomputation loop. Idempotent — safe to call
@@ -183,3 +186,33 @@ final class EnvironmentEngine: ObservableObject {
         }
     }
 }
+
+// MARK: - Developer Console
+
+#if DEBUG
+extension EnvironmentEngine: DeveloperConsoleObservable {
+    static var consoleIdentity: ConsoleSubsystemIdentity {
+        ConsoleSubsystemIdentity(
+            id: "environment-engine",
+            displayName: "Environment Engine",
+            category: .engine,
+            purpose: "Computes the time-of-day + weather-blended visual theme (background gradient, star visibility, etc.) for the Spatial Library feature, on a 45s recompute cadence."
+        )
+    }
+
+    var consoleSnapshot: ConsoleSubsystemSnapshot {
+        ConsoleSubsystemSnapshot(
+            identity: Self.consoleIdentity,
+            status: recomputeTask != nil ? .running : .idle,
+            currentActivity: recomputeTask != nil
+                ? "Recomputing on a \(Int(recomputeInterval.components.seconds))s cadence"
+                : "Instantiated, but start() has not been called — recompute loop is not running",
+            lastUpdated: Date(),
+            metrics: [
+                "Reduced motion": state.reducedMotion ? "Yes" : "No",
+                "Reduced transparency": state.reducedTransparency ? "Yes" : "No",
+            ]
+        )
+    }
+}
+#endif

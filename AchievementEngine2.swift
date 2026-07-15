@@ -1,5 +1,4 @@
-//
-//  AchievementEngine.swift
+//  AchievementEngine2.swift
 //  Reading Tracker
 //
 //  PURPOSE
@@ -218,6 +217,10 @@ enum AchievementEngine {
         goalSet: ReadingGoalSet,
         existing: [EarnedAchievement]
     ) -> (allEarned: [EarnedAchievement], newlyEarned: [EarnedAchievement]) {
+        #if DEBUG
+        recordConsoleInvocation()
+        #endif
+
         let existingKinds = Set(existing.map(\.kind))
         var earned = existing
         var newly: [EarnedAchievement] = []
@@ -437,3 +440,58 @@ enum AchievementEngine {
             .map(\.0)
     }
 }
+
+// MARK: - Developer Console
+//
+// AchievementEngine is a stateless enum namespace (static func only, no
+// instance) — the example this codebase uses to prove the console's
+// registration pattern covers BOTH subsystem shapes found here, not just
+// @MainActor classes. See the honest-limitation note in
+// DeveloperConsoleObservable.swift for why this needs one line in
+// DeveloperConsoleRegistry.swift's static engine manifest, unlike the
+// fully self-registering class-based subsystems elsewhere in this app.
+
+#if DEBUG
+extension AchievementEngine: DeveloperConsoleStaticObservable {
+    // nonisolated(unsafe): this is a simple call counter for a DEBUG-only
+    // diagnostic display, not correctness-critical state. Using
+    // nonisolated(unsafe) here — rather than making detectAll() @MainActor
+    // — avoids forcing an isolation requirement onto every existing call
+    // site of detectAll() (DataStore, AchievementPanel), which this session
+    // could not verify are all MainActor-isolated without reading
+    // substantially more of the codebase than the instrumentation itself
+    // warrants.
+    nonisolated(unsafe) private static var consoleInvocationCount: Int = 0
+    nonisolated(unsafe) private static var consoleLastInvokedAt: Date?
+
+    /// Called once at the top of detectAll(). Never reads or affects
+    /// detectAll's return value — purely a call counter for the console.
+    fileprivate static func recordConsoleInvocation() {
+        consoleInvocationCount += 1
+        consoleLastInvokedAt = Date()
+    }
+
+    static var consoleIdentity: ConsoleSubsystemIdentity {
+        ConsoleSubsystemIdentity(
+            id: "achievement-engine",
+            displayName: "Achievement Engine",
+            category: .engine,
+            purpose: "Pure, side-effect-free achievement detection. Called by DataStore after each save and by AchievementPanel for display."
+        )
+    }
+
+    static var consoleSnapshot: ConsoleSubsystemSnapshot {
+        ConsoleSubsystemSnapshot(
+            identity: consoleIdentity,
+            status: consoleInvocationCount > 0 ? .healthy : .idle,
+            currentActivity: consoleInvocationCount > 0
+                ? "Called detectAll() \(consoleInvocationCount) time(s) this session"
+                : "Not called yet this session",
+            lastUpdated: consoleLastInvokedAt,
+            metrics: [
+                "Calls to detectAll() this session": "\(consoleInvocationCount)",
+            ]
+        )
+    }
+}
+#endif

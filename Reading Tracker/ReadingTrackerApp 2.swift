@@ -1,12 +1,5 @@
-//
-//  ReadingTrackerApp.swift
-//  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/29/26.
-//
 
-//
-//  ReadingTrackerApp.swift
+//  ReadingTrackerApp 2.swift
 //  Reading Tracker
 //
 //  The @main entry point. Owns every long-lived ObservableObject and injects
@@ -21,6 +14,9 @@
 //    NotificationScheduler              — permission requested once at launch
 //    scenePhase .background             — clean session teardown + immediate save
 //    .newYearTransitionAware()          — celebration overlay (self-contained modifier)
+//    Developer Console (#if DEBUG only) — separate Window scene + ⌘⇧D menu command;
+//                                          zero footprint in Release builds, zero
+//                                          impact on ContentView's own hierarchy
 //
 
 import SwiftUI
@@ -37,6 +33,14 @@ struct ReadingTrackerApp: App {
     @StateObject private var contextEngine = BehaviorContextEngine()
 
     @Environment(\.scenePhase) private var scenePhase
+
+    #if DEBUG
+    /// Only used to open the Developer Console window (see .commands below).
+    /// Gating the property itself, not just its use, avoids an "unused
+    /// property" warning in Release builds where it would otherwise still
+    /// exist but never be read.
+    @Environment(\.openWindow) private var openWindow
+    #endif
 
     // MARK: - Init
 
@@ -101,5 +105,33 @@ struct ReadingTrackerApp: App {
                 behaviorKit.startMonitoring()
             }
         }
+        #if DEBUG
+        // Menu command only — does not touch ContentView's hierarchy or
+        // state in any way. "Disabled by default unless intentionally
+        // opened": nothing here runs until this menu item is chosen.
+        .commands {
+            CommandMenu("Developer") {
+                Button("Open Developer Console") {
+                    openWindow(id: DeveloperConsoleWindowID.id)
+                }
+                .keyboardShortcut("d", modifiers: [.command, .shift])
+            }
+        }
+        #endif
+
+        #if DEBUG
+        // A fully separate Window scene — its own window, its own view
+        // tree, no relationship to ContentView/NavigationSplitView at all.
+        // This is what makes "no impact on existing view hierarchies or
+        // navigation state" true structurally rather than by convention.
+        // Compiles out completely outside Debug (see project build
+        // settings: SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG
+        // $(inherited)" on the Debug configuration only — verified in
+        // project.pbxproj, not assumed).
+        Window("Developer Console", id: DeveloperConsoleWindowID.id) {
+            DeveloperConsoleRootView()
+        }
+        .defaultSize(width: 1200, height: 780)
+        #endif
     }
 }
