@@ -1,5 +1,4 @@
-//
-//  SpatialNavigatorCard 2.swift
+//  SpatialNavigatorCard2.swift
 //  Spatial Library — Phase H (Part 9.2's Full Spatial Navigator)
 //
 //  Reads its own position relative to the navigator's center via a

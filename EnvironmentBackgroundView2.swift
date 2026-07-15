@@ -1,5 +1,4 @@
-//
-//  EnvironmentBackgroundView 2.swift
+//  EnvironmentBackgroundView2.swift
 //  Environment Engine — Phase B-D composition (Part 12 of the build spec)
 //
 //  Composes the environment layers Part 12 describes, in order: gradient →

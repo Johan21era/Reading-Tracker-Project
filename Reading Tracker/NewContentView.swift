@@ -1,14 +1,5 @@
-//
 //  NewContentView.swift
 //  Reading Tracker
-//
-//  Created by Johan Rembeci on 6/29/26.
-//
-
-//
-//  NewContentView.swift
-//  Reading Tracker
-//
 //  CHANGES FROM PREVIOUS VERSION:
 //
 //  8. Five engine-backed feature panels are now reachable from the toolbar:

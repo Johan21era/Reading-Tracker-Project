@@ -1,5 +1,3 @@
-
-//
 //  ContextInsightPanel.swift
 //  Reading Tracker
 //

@@ -1,4 +1,4 @@
-//  FloatingClusterView 2.swift
+//  FloatingClusterView2.swift
 //  Spatial Library — Phase F (Part 9.2 of the build spec)
 //
 //  Tier 1: 1-5 books. Static, gently fanned/overlapping, centered, minimal

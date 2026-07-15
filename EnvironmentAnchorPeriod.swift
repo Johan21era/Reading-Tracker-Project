@@ -1,4 +1,3 @@
-
 //  EnvironmentAnchorPeriod.swift
 //  Reading Tracker
 //

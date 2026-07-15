@@ -1,4 +1,4 @@
-// PDFReaderView.swift
+// PDFReaderView2.swift
 // Wraps PDFKit's PDFView in a SwiftUI-compatible component.
 // PATCHED:
 //   B1 — Replace unreliable PDFViewPageChanged notification with 1 Hz polling.

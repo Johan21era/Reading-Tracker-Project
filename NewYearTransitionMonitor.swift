@@ -1,4 +1,3 @@
-
 //  NewYearTransitionMonitor.swift
 //  Reading Tracker
 //

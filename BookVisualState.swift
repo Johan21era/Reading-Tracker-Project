@@ -1,4 +1,3 @@
-//
 //  BookVisualState.swift
 //  Reading Tracker
 //  Spatial Library — Phase F (Part 9.3 of the build spec)

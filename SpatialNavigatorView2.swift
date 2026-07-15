@@ -1,5 +1,4 @@
-
-//  SpatialNavigatorView 2.swift
+//  SpatialNavigatorView2.swift
 //  Spatial Library — Phase H (Part 9.2's Full Spatial Navigator)
 //
 //  Tier 3: 16+ books. Built with native SwiftUI 3D transforms

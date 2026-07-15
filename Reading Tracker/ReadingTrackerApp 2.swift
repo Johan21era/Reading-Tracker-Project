@@ -1,5 +1,4 @@
-
-//  ReadingTrackerApp 2.swift
+//  ReadingTrackerApp2.swift
 //  Reading Tracker
 //
 //  The @main entry point. Owns every long-lived ObservableObject and injects

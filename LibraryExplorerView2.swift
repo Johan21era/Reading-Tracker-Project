@@ -1,5 +1,4 @@
-//
-//  LibraryExplorerView 2.swift
+//  LibraryExplorerView2.swift
 //  Reading Tracker
 //
 //  Created by Johan Rembeci on 7/13/26.

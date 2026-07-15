@@ -1,4 +1,3 @@
-
 //  BookCoverCardView.swift
 //  Reading Tracker
 //

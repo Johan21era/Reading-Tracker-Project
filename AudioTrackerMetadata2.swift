@@ -1,5 +1,4 @@
-//
-//  AudioTrackerMetadata 2.swift
+//  AudioTrackerMetadata2.swift
 //  PURPOSE
 //  The macOS audio-environment monitoring service.
 //  Analogous to WeatherKitService in the environmental intelligence subsystem.

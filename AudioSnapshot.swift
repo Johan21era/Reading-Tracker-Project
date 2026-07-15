@@ -1,4 +1,3 @@
-//
 //  AudioSnapshot.swift
 //  Reading Tracker
 //  PURPOSE

@@ -1,4 +1,3 @@
-//
 //  OnlineBookDetailView.swift
 //  Online Book Discovery System
 //

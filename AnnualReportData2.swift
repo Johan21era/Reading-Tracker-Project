@@ -1,4 +1,4 @@
-//  AnnualReportData 2.swift
+//  AnnualReportData2.swift
 //  Reading Tracker
 //
 //  Annual Reading Report — data model and generator.

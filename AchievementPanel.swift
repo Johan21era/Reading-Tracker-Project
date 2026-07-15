@@ -1,5 +1,3 @@
-
-//
 //  AchievementPanel.swift
 //  Reading Tracker
 //

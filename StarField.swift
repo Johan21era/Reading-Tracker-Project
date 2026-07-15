@@ -1,4 +1,3 @@
-//
 //  StarField.swift
 //  Reading Tracker
 //  Environment Engine — Phase C (Parts 6.1, 6.2 of the build spec)
