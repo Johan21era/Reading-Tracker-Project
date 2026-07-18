@@ -1,10 +1,5 @@
 //
 //  Reading_TrackerUITests.swift
-//  Reading TrackerUITests
-//
-//  Created by Johan Rembeci on 6/15/26.
-//
-
 import XCTest
 
 final class Reading_TrackerUITests: XCTestCase {

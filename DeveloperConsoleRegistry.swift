@@ -13,6 +13,7 @@
 #if DEBUG
 
 import Foundation
+import Combine
 
 // MARK: - DeveloperConsoleRegistry
 
@@ -112,3 +113,4 @@ enum DeveloperConsoleStaticEngineManifest {
 }
 
 #endif
+
