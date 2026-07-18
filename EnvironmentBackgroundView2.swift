@@ -6,12 +6,26 @@
 //  library, UI components, overlays, and the interaction layer come after
 //  this in Part 12's pipeline, and belong to Phase F onward.
 //
-//  Deliberately NOT wired into NewContentView.swift / ContentView yet.
-//  Part 15's session split point falls after Phase B/C/D/E and before
-//  Phase F, and Part 12's "wire into the real root view" step is Phase K
-//  work — which happens together with the Spatial Library (Part 9) once
-//  that exists too, so the two get integrated in one pass instead of twice.
-//  This view is self-contained and ready for that wiring.
+//  Part 12 (Phase K): now wired into NewContentView.swift / ContentView.
+//  `engine` is injected rather than owned here, because Phase K's own
+//  requirement is a SINGLE centralized EnvironmentState ("nothing renders
+//  its own opinion," Part 4) — LibraryExplorerView/SpatialLibraryView also
+//  need to read `reducedMotion` off the same instance this view renders
+//  from. Two independently-owned engines would each run their own 45s
+//  recompute loop against the same real clock/accessibility settings —
+//  not incorrect, but a silent duplicate-timer waste and a violation of
+//  "computed once by a centralized system." ContentView owns the single
+//  instance via @StateObject (the wrapper that survives re-renders); this
+//  view and LibraryExplorerView both just read it.
+//
+//  Deliberately NOT given a default value (e.g. `= EnvironmentEngine()`):
+//  a default argument is re-evaluated on every call site that omits it,
+//  and SwiftUI reconstructs view values on most parent body re-evaluations
+//  — an inline default here would silently build a fresh engine (new
+//  45s timer, reset interpolation) on some unpredictable subset of
+//  re-renders. @ObservedObject (unlike @StateObject) has no protection
+//  against that, so the caller must own and pass the same instance every
+//  time. See NewContentView.swift's `environmentEngine`.
 //
 //  Note on `blurIntensity`: Part 5.1 defines it as part of EnvironmentState
 //  but the brief doesn't specify blurring the background/star art itself —
@@ -25,7 +39,7 @@
 import SwiftUI
 
 struct EnvironmentBackgroundView: View {
-    @StateObject private var engine = EnvironmentEngine()
+    @ObservedObject var engine: EnvironmentEngine
     @StateObject private var shootingStarManager = ShootingStarManager()
     @State private var starField = StarField(stars: [])
     @State private var lastStarFieldSize: CGSize = .zero

@@ -17,8 +17,6 @@
 		CA146D5730049E8600D23D3D /* LibraryFilterState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA146D5630049E8600D23D3D /* LibraryFilterState.swift */; };
 		CA146D5930049EC900D23D3D /* LibraryFilterSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA146D5830049EC900D23D3D /* LibraryFilterSidebarView.swift */; };
 		CA272B662FE05F8D0031387F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = CA272B652FE05F8D0031387F /* ZIPFoundation */; };
-		CA272B772FE068150031387F /* Reading-Tracker-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CA272B762FE068150031387F /* Reading-Tracker-Info.plist */; };
-		CA2D07C63005E58B0056F50E /* EnvironmentBackgroundView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2D07C53005E58B0056F50E /* EnvironmentBackgroundView2.swift */; };
 		CA2D07C83005E5C70056F50E /* SpatialLibraryView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2D07C73005E5C70056F50E /* SpatialLibraryView2.swift */; };
 		CA2D07CA3005E6A50056F50E /* FloatingClusterView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2D07C93005E6A50056F50E /* FloatingClusterView2.swift */; };
 		CA2D07CC3005E7070056F50E /* ShallowPerspectiveView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2D07CB3005E7070056F50E /* ShallowPerspectiveView2.swift */; };
@@ -30,6 +28,7 @@
 		CA3DE8F72FFDA1E500F26559 /* PDFReaderView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA3DE8F62FFDA1E500F26559 /* PDFReaderView2.swift */; };
 		CA4D58332FFAAF37003FEF6D /* BehavioralCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA4D58322FFAAF37003FEF6D /* BehavioralCategory.swift */; };
 		CA50059A2FE3D70E004D6526 /* WeatherAnalysisEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA5005992FE3D70E004D6526 /* WeatherAnalysisEngine.swift */; };
+		CA568A7A300AC55000BF89B8 /* EnvironmentBackgroundView2.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA568A79300AC55000BF89B8 /* EnvironmentBackgroundView2.swift */; };
 		CA6350DF30044858006266D6 /* BookVisualState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6350DE30044858006266D6 /* BookVisualState.swift */; };
 		CA6350E13004486B006266D6 /* AdaptiveLayoutTier.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6350E03004486B006266D6 /* AdaptiveLayoutTier.swift */; };
 		CA6350E330044884006266D6 /* BookCoverCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6350E230044884006266D6 /* BookCoverCardView.swift */; };
@@ -123,7 +122,6 @@
 		CA272B362FE04E920031387F /* Reading TrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Reading TrackerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA272B402FE04E920031387F /* Reading TrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Reading TrackerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA272B762FE068150031387F /* Reading-Tracker-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Reading-Tracker-Info.plist"; sourceTree = "<group>"; };
-		CA2D07C53005E58B0056F50E /* EnvironmentBackgroundView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentBackgroundView2.swift; sourceTree = "<group>"; };
 		CA2D07C73005E5C70056F50E /* SpatialLibraryView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialLibraryView2.swift; sourceTree = "<group>"; };
 		CA2D07C93005E6A50056F50E /* FloatingClusterView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingClusterView2.swift; sourceTree = "<group>"; };
 		CA2D07CB3005E7070056F50E /* ShallowPerspectiveView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShallowPerspectiveView2.swift; sourceTree = "<group>"; };
@@ -135,6 +133,7 @@
 		CA3DE8F62FFDA1E500F26559 /* PDFReaderView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFReaderView2.swift; sourceTree = "<group>"; };
 		CA4D58322FFAAF37003FEF6D /* BehavioralCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BehavioralCategory.swift; sourceTree = "<group>"; };
 		CA5005992FE3D70E004D6526 /* WeatherAnalysisEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherAnalysisEngine.swift; sourceTree = "<group>"; };
+		CA568A79300AC55000BF89B8 /* EnvironmentBackgroundView2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentBackgroundView2.swift; sourceTree = "<group>"; };
 		CA6350DE30044858006266D6 /* BookVisualState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookVisualState.swift; sourceTree = "<group>"; };
 		CA6350E03004486B006266D6 /* AdaptiveLayoutTier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveLayoutTier.swift; sourceTree = "<group>"; };
 		CA6350E230044884006266D6 /* BookCoverCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookCoverCardView.swift; sourceTree = "<group>"; };
@@ -300,7 +299,7 @@
 				CA8D795E30038A8A008DBDCF /* EnvironmentPalette.swift */,
 				CA8D796030038ACC008DBDCF /* EnvironmentState.swift */,
 				CAFDA37B3008147900675B78 /* EnvironmentEngine2.swift */,
-				CA2D07C53005E58B0056F50E /* EnvironmentBackgroundView2.swift */,
+				CA568A79300AC55000BF89B8 /* EnvironmentBackgroundView2.swift */,
 				CA8D796430038B24008DBDCF /* Star.swift */,
 				CA8D796630038C8D008DBDCF /* StarField.swift */,
 				CA8D797230038D79008DBDCF /* StarFieldView.swift */,
@@ -431,7 +430,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2650;
-				LastUpgradeCheck = 2650;
+				LastUpgradeCheck = 2660;
 				TargetAttributes = {
 					CA272B262FE04E910031387F = {
 						CreatedOnToolsVersion = 26.5;
@@ -475,7 +474,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CA272B772FE068150031387F /* Reading-Tracker-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -500,7 +498,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CA2D07C63005E58B0056F50E /* EnvironmentBackgroundView2.swift in Sources */,
 				CAFDA3723008135200675B78 /* DeveloperConsoleDashboardView.swift in Sources */,
 				CA146D5730049E8600D23D3D /* LibraryFilterState.swift in Sources */,
 				CAFDA36A300812DC00675B78 /* DeveloperConsoleObservable.swift in Sources */,
@@ -564,6 +561,7 @@
 				CAFDA37C3008147900675B78 /* EnvironmentEngine2.swift in Sources */,
 				CAA892DE2FF2646F0097D855 /* BehaviorEvidenceBuilder.swift in Sources */,
 				CAC092CC2FEA5B68009416CE /* AnnualReportArchiveView2.swift in Sources */,
+				CA568A7A300AC55000BF89B8 /* EnvironmentBackgroundView2.swift in Sources */,
 				CAFDA36C300812F700675B78 /* DeveloperConsoleRegistry.swift in Sources */,
 				CACE4CF93000A3E200DEBD96 /* DataMaturityEngine.swift in Sources */,
 				CACE4D0D3000A5C400DEBD96 /* InsightEngine.swift in Sources */,
@@ -648,6 +646,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -672,6 +671,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -711,6 +711,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -728,6 +729,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -741,6 +743,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
@@ -775,6 +778,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
@@ -806,6 +810,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
 				MARKETING_VERSION = 1.0;
@@ -826,6 +831,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 26.5;
 				MARKETING_VERSION = 1.0;
@@ -845,6 +851,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "johan.Reading-TrackerUITests";
@@ -863,6 +870,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "johan.Reading-TrackerUITests";
