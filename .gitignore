@@ -1,0 +1,13 @@
+# macOS noise
+.DS_Store
+
+# Xcode user-state (machine-local)
+xcuserdata/
+*.xcuserstate
+
+# Build/coverage artifacts
+*.profraw
+DerivedData/
+
+# Generated code-analysis output
+graphify-out/

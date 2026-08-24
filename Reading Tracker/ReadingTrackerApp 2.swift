@@ -104,6 +104,14 @@ struct ReadingTrackerApp: App {
                 behaviorKit.startMonitoring()
             }
         }
+        // LIVE-TEST LT-4: Insights as a real, movable window instead of a
+        // dead-center sheet that dragged the main window around.
+        Window("Reading Insights", id: "reading-insights") {
+            ReadingInsightsDashboard()
+                .environmentObject(dataStore)
+                .frame(minWidth: 760, minHeight: 540)
+        }
+
         #if DEBUG
         // Menu command only — does not touch ContentView's hierarchy or
         // state in any way. "Disabled by default unless intentionally

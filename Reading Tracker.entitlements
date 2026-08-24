@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- LIVE-TEST LT-3a: the app is sandboxed via ENABLE_APP_SANDBOX but shipped
+	     with NO entitlements — so security-scoped bookmark creation failed at
+	     import, every book became a ghost after relaunch, and Discovery/Weather
+	     networking could not function. This grants exactly what the feature set
+	     requires, nothing more. -->
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	<key>com.apple.security.files.user-selected.read-write</key>
+	<true/>
+	<!-- The importer's own warning named this missing key. -->
+	<key>com.apple.security.files.bookmarks.app-scope</key>
+	<true/>
+	<key>com.apple.security.network.client</key>
+	<true/>
+</dict>
+</plist>

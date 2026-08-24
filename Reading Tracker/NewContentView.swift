@@ -40,6 +40,37 @@ private enum HoverIntent {
     }
 }
 
+// MARK: - Sheet dismissal affordance (LIVE-TEST LT-1/LT-2/LT-4 systemic fix)
+
+/// LIVE TESTING LT-1/LT-2/LT-4: several analytics sheets shipped with NO way to
+/// close them (Discover Books, Annual Reports, Insights…), trapping the user until
+/// force-quit. This floating close affordance + Escape shortcut is applied at every
+/// top-level sheet root so a sheet can never again be a dead end.
+private struct SheetDismissAffordance: ViewModifier {
+    @Environment(\.dismiss) private var dismiss
+
+    func body(content: Content) -> some View {
+        content.overlay(alignment: .topTrailing) {
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 22, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .background(Circle().fill(.regularMaterial))
+            }
+            .buttonStyle(.plain)
+            .keyboardShortcut(.escape, modifiers: [])
+            .help("Close (Esc)")
+            .padding(14)
+        }
+    }
+}
+
+extension View {
+    func sheetDismissAffordance() -> some View { modifier(SheetDismissAffordance()) }
+}
+
 // MARK: - ContentView
 
 struct ContentView: View {
@@ -48,6 +79,15 @@ struct ContentView: View {
     @EnvironmentObject private var goalVM: GoalProgressViewModel
     @EnvironmentObject private var contextEngine: BehaviorContextEngine
 
+    /// AUDIT §1.1 / D5 WIRING (Phase 2): the single shared EnvironmentEngine,
+    /// owned here via @StateObject exactly as EnvironmentBackgroundView2's header
+    /// prescribes ("ContentView owns the single instance"; a default argument or
+    /// ObservedObject-owned engine would multiply 45s recompute loops).
+    @StateObject private var environmentEngine = EnvironmentEngine()
+
+    /// LIVE-TEST LT-4: Insights opens as a real movable window, not a sheet.
+    @Environment(\.openWindow) private var openWindow
+
     // Estimation state (unchanged)
     @State private var inspectedBook: Book?
     @State private var currentEstimation: BookEstimationResult?
@@ -55,7 +95,6 @@ struct ContentView: View {
     @State private var importError: String?
 
     // ── Feature sheet presentation ─────────────────────────────────────────
-    @State private var showInsights: Bool = false
     @State private var showRecommendations: Bool = false
     @State private var showGoals: Bool = false
     @State private var showAchievements: Bool = false
@@ -64,13 +103,20 @@ struct ContentView: View {
     @State private var showAnnualReports: Bool = false
     @State private var showContextInsights: Bool = false
     @State private var showWeatherInsights: Bool = false
+    @State private var showExplorer: Bool = false
+    @State private var importWarnings: [String]?
 
     // ── Achievement toast ──────────────────────────────────────────────────
     @State private var toastAchievement: EarnedAchievement?
     @State private var toastVisible: Bool = false
+    @State private var pendingToasts: [EarnedAchievement] = []
 
     var body: some View {
-        NavigationSplitView {
+        ZStack {
+            EnvironmentBackgroundView(engine: environmentEngine)
+                .ignoresSafeArea()
+
+            NavigationSplitView {
             List {
                 ForEach(dataStore.books) { book in
                     NavigationLink {
@@ -89,6 +135,7 @@ struct ContentView: View {
                 .onDelete(perform: deleteItems)
             }
             .navigationSplitViewColumnWidth(min: 180, ideal: 200)
+            .scrollContentBackground(.hidden) // Phase 2 wiring: let the ambient gradient show through
             .toolbar {
                 // ── Existing: Add Book ─────────────────────────────────────
                 ToolbarItem(placement: .primaryAction) {
@@ -101,7 +148,7 @@ struct ContentView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
                         Button {
-                            showInsights = true
+                            openWindow(id: "reading-insights")
                         } label: {
                             Label("Insights", systemImage: "lightbulb")
                         }
@@ -168,6 +215,15 @@ struct ContentView: View {
                         Label("Annual Reports", systemImage: "chart.bar.doc.horizontal")
                     }
                 }
+
+                // ── Phase 2: Library Explorer (progressive filtering + spatial) ──
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showExplorer = true
+                    } label: {
+                        Label("Explore", systemImage: "square.grid.2x2")
+                    }
+                }
             }
         } detail: {
             if let book = inspectedBook, let estimation = currentEstimation {
@@ -182,6 +238,8 @@ struct ContentView: View {
                 }
             }
         }
+        } // ZStack — ambient environment sits behind the split view
+        .environmentObject(environmentEngine) // Phase 2: downstream consumers read the same instance
 
         // ── Import error alert (unchanged) ─────────────────────────────────
         .alert("Import Failed", isPresented: Binding(
@@ -197,28 +255,38 @@ struct ContentView: View {
             Text(importError ?? "")
         }
 
-        // ── Feature sheets ─────────────────────────────────────────────────
-        .sheet(isPresented: $showInsights) {
-            ReadingInsightsDashboard()
-                .environmentObject(dataStore)
+        // ── AUDIT §1.1 verdict executed (Phase 2): Import Intelligence surfaces ──
+        .alert("Import Notes", isPresented: Binding(
+            get: { importWarnings != nil },
+            set: { if !$0 { importWarnings = nil } }
+        )) {
+            Button("OK") { importWarnings = nil }
+        } message: {
+            Text(importWarnings?.joined(separator: "\n") ?? "")
         }
+
+        // ── Feature sheets ─────────────────────────────────────────────────
         .sheet(isPresented: $showRecommendations) {
             RecommendationPanel()
                 .environmentObject(dataStore)
+                .sheetDismissAffordance()
         }
         .sheet(isPresented: $showGoals) {
             GoalsDashboard()
                 .environmentObject(goalVM)
                 .environmentObject(dataStore)
+                .sheetDismissAffordance()
         }
         .sheet(isPresented: $showAchievements) {
             AchievementPanel()
                 .environmentObject(dataStore)
                 .onAppear { dataStore.clearNewAchievements() }
+                .sheetDismissAffordance()
         }
         .sheet(isPresented: $showSessionHistory) {
             SessionHistoryView()
                 .environmentObject(dataStore)
+                .sheetDismissAffordance()
         }
         .sheet(isPresented: $showDiscovery) {
             BookDiscoveryView()
@@ -226,39 +294,65 @@ struct ContentView: View {
         .sheet(isPresented: $showAnnualReports) {
             AnnualReportArchiveView()
                 .environmentObject(dataStore)
+                .sheetDismissAffordance()
+        }
+        .sheet(isPresented: $showExplorer) {
+            LibraryExplorerView(
+                allBooks: dataStore.books,
+                collections: dataStore.libraryState.collections,
+                reducedMotion: environmentEngine.state.reducedMotion,
+                onSelect: { book in
+                    showExplorer = false
+                    hoverWorkItem?.cancel()
+                    let result = EstimationEngine.estimate(for: book, allBooks: dataStore.books)
+                    inspectedBook = book
+                    currentEstimation = EstimationEngine.validate(result: result)
+                }
+            )
+            .frame(minWidth: 920, minHeight: 620)
+            .sheetDismissAffordance()
         }
         .sheet(isPresented: $showContextInsights) {
             ContextInsightPanel()
                 .environmentObject(contextEngine)
+                .sheetDismissAffordance()
         }
         .sheet(isPresented: $showWeatherInsights) {
             WeatherInsightPanel()
                 .environmentObject(dataStore)
+                .sheetDismissAffordance()
         }
 
         // ── Achievement toast ──────────────────────────────────────────────
         .onReceive(dataStore.$newlyEarnedAchievements) { newly in
-            guard let first = newly.first, !toastVisible else { return }
-            toastAchievement = first
-            withAnimation(.spring(duration: 0.4)) { toastVisible = true }
-            // Auto-dismiss after 3.5 s
-            Task {
-                try? await Task.sleep(for: .seconds(3.5))
-                withAnimation(.easeOut(duration: 0.3)) { toastVisible = false }
-                try? await Task.sleep(for: .seconds(0.3))
-                toastAchievement = nil
-            }
+            // AUDIT §2.2: queue everything new instead of dropping updates while
+            // a toast is visible or reading only `.first` of a batch.
+            let knownIDs = Set(pendingToasts.map(\.id))
+            let fresh = newly.filter { $0.id != toastAchievement?.id && !knownIDs.contains($0.id) }
+            guard !fresh.isEmpty else { return }
+            pendingToasts.append(contentsOf: fresh)
+            showNextToastIfNeeded()
         }
         .overlay(alignment: .top) {
             if toastVisible, let achievement = toastAchievement {
                 AchievementToastView(achievement: achievement) {
                     // Tap opens the full achievements panel
                     withAnimation(.easeOut) { toastVisible = false }
+                    if let tapped = toastAchievement {
+                        dataStore.markAchievementToastShown(id: tapped.id)
+                    }
+                    toastAchievement = nil
+                    pendingToasts.removeAll()
                     showAchievements = true
-                    dataStore.clearNewAchievements()
                 }
                 .padding(.top, 12)
                 .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
+        // AUDIT §1.2 / TECH_DEBT D1: persistent (dismiss-on-fix) persistence banner.
+        .overlay(alignment: .bottom) {
+            if case .degraded(let message) = dataStore.persistenceHealth {
+                PersistenceWarningBanner(message: message)
             }
         }
     }
@@ -269,12 +363,17 @@ struct ContentView: View {
         if hovering {
             hoverWorkItem?.cancel()
             let workItem = DispatchWorkItem { [book] in
+                // AUDIT §2.3: the book may have been deleted during the 1.5 s
+                // hover delay — never surface a ghost estimate.
+                guard dataStore.book(id: book.id) != nil else { return }
                 let result = EstimationEngine.estimate(for: book, allBooks: dataStore.books)
                 inspectedBook = book
                 currentEstimation = EstimationEngine.validate(result: result)
             }
             hoverWorkItem = workItem
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5, execute: workItem)
+            // LIVE-TEST LT-7: 1.5s felt sluggish; 0.55s keeps intent-filtering
+            // (vs accidental sweeps) while feeling responsive.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.55, execute: workItem)
         } else {
             hoverWorkItem?.cancel()
             hoverWorkItem = nil
@@ -295,7 +394,25 @@ struct ContentView: View {
             Task {
                 do {
                     let book = try await BookImporter.importBook(from: url)
-                    await MainActor.run { dataStore.addBook(book) }
+
+                    // Phase 2 — Import Intelligence verdict EXECUTED: the previously
+                    // unreachable ~250-line facade now analyzes every real import;
+                    // findings surface to the user instead of vanishing (AUDIT §1.1).
+                    let fileSizeBytes = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? nil
+                    let report = ImportIntelligenceFacade.analyze(
+                        book: book,
+                        fileName: url.lastPathComponent,
+                        fileSizeBytes: fileSizeBytes,
+                        fileType: book.fileType.displayName
+                    )
+                    let messages = report.warnings.map { warning -> String in
+                        (warning.level == .critical ? "⚠️ " : "• ") + warning.message
+                    }
+
+                    await MainActor.run {
+                        dataStore.addBook(book)
+                        if !messages.isEmpty { importWarnings = messages }
+                    }
                 } catch {
                     await MainActor.run { importError = error.localizedDescription }
                 }
@@ -303,13 +420,34 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Delete (unchanged)
+    // MARK: - Delete
 
     private func deleteItems(offsets: IndexSet) {
+        // AUDIT §2.1: capture identities BEFORE mutating — iterating offsets while
+        // removing shifts every subsequent index, deleting the wrong books or
+        // crashing on out-of-range access.
+        let bookIDs = Set(offsets.map { dataStore.books[$0].id })
         withAnimation {
-            for index in offsets {
-                dataStore.removeBook(id: dataStore.books[index].id)
+            bookIDs.forEach { dataStore.removeBook(id: $0) }
+        }
+    }
+
+    /// AUDIT §2.2: presents queued achievements one at a time, consuming each
+    /// from DataStore as its toast finishes — nothing dropped, nothing re-shown.
+    private func showNextToastIfNeeded() {
+        guard !toastVisible, !pendingToasts.isEmpty else { return }
+        toastAchievement = pendingToasts.removeFirst()
+        withAnimation(.spring(duration: 0.4)) { toastVisible = true }
+
+        Task {
+            try? await Task.sleep(for: .seconds(3.5))
+            withAnimation(.easeOut(duration: 0.3)) { toastVisible = false }
+            try? await Task.sleep(for: .seconds(0.3))
+            if let shown = toastAchievement {
+                dataStore.markAchievementToastShown(id: shown.id)
             }
+            toastAchievement = nil
+            showNextToastIfNeeded()
         }
     }
 }
@@ -341,6 +479,39 @@ private struct ContentBookRowView: View {
             }
         }
         .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Persistence Warning Banner
+
+/// AUDIT §1.2 / TECH_DEBT D1: Release-visible, dismiss-on-fix banner.
+/// Rendered whenever `DataStore.persistenceHealth` is degraded; disappears
+/// only when a save succeeds again. Never auto-dismisses.
+private struct PersistenceWarningBanner: View {
+    let message: String
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(.yellow)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Saving problems detected")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                Text(message)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+        }
+        .padding(12)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+        .overlay(
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.yellow.opacity(0.5), lineWidth: 1)
+        )
+        .padding(.horizontal, 20)
+        .padding(.bottom, 12)
     }
 }
 
@@ -392,7 +563,31 @@ struct BookEstimationView: View {
     let book: Book
     let estimation: BookEstimationResult
 
+    /// LIVE-TEST LT-7: information arrives in three soft waves instead of one
+    /// wall — wave 1 identity+headline, wave 2 per-session stats, wave 3
+    /// chapters+confidence. Reduced-motion users get instant reveal.
+    @State private var revealedWave = 0
+
     var body: some View {
+        revealGroup
+            .onAppear {
+                Task { @MainActor in
+                    for wave in 1...3 {
+                        try? await Task.sleep(for: .seconds(0.14))
+                        guard !Task.isCancelled else { return }
+                        withAnimation(.easeOut(duration: 0.32)) { revealedWave = wave }
+                    }
+                }
+            }
+    }
+
+    @ViewBuilder
+    private var revealGroup: some View {
+        let reducedMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+        let wave1 = revealedWave >= 1 || reducedMotion
+        let wave2 = revealedWave >= 2 || reducedMotion
+        let wave3 = revealedWave >= 3 || reducedMotion
+
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 VStack(alignment: .leading, spacing: 4) {
@@ -403,8 +598,11 @@ struct BookEstimationView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
+                .opacity(wave1 ? 1 : 0)
+                .offset(y: wave1 ? 0 : 14)
 
                 Divider()
+                    .opacity(wave1 ? 1 : 0)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Label("Time to Finish", systemImage: "clock")
@@ -416,12 +614,16 @@ struct BookEstimationView: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
+                .opacity(wave2 ? 1 : 0)
+                .offset(y: wave2 ? 0 : 16)
 
                 Divider()
+                    .opacity(wave2 ? 1 : 0)
 
                 VStack(alignment: .leading, spacing: 8) {
                     Label("Per Reading Session", systemImage: "book.pages")
                         .font(.headline)
+                        .opacity(wave2 ? 1 : 0)
                     HStack(spacing: 32) {
                         statCell(
                             value: formatDuration(estimation.expectedSessionDuration),
@@ -470,6 +672,7 @@ struct BookEstimationView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Label("Prediction confidence", systemImage: "chart.bar.fill")
+                            .opacity(wave3 ? 1 : 0)
                             .font(.caption)
                             .foregroundColor(.secondary)
                         Spacer()
