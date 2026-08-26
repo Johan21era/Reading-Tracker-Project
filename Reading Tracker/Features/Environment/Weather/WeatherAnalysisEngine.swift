@@ -4,6 +4,35 @@
 //  PredictiveRecommendationEngine, IntelligentNotificationEngine,
 //  and InsightEngine without duplicating their responsibilities.
 //
+//  PRODUCTION PASS (P5 / features mission) — resolves CURRENT_AUDIT W-01..W-04:
+//
+//  W-01 · Aggregate confidence is now DERIVED, not decorative.
+//    calculateAggregateConfidence accepts an optional real dataCoverageRatio
+//    (the fraction of analyzed sessions that actually have persisted weather
+//    snapshots — obtainable from WeatherKitService.coverageRatio(for:)). When
+//    supplied, overall = mean(sampleSize, recurrence, stability, consistency,
+//    coverage) exactly as the original design intended. When nil, the coverage
+//    component degrades to the sample-size proxy so callers that cannot know
+//    coverage still get honest sample-driven numbers.
+//    Per-correlation confidence (calculateConfidence) also stops hardcoding:
+//    recurrence now scales with sample size, stability with |coefficient|,
+//    consistency with measured pairwise smoothness — all values it ALREADY had.
+//
+//  W-02 · firstObserved/lastObserved are chronologically correct.
+//    buildCorrelation / buildBinaryConditionCorrelation sort by timestamp before
+//    extracting bounds instead of trusting input order.
+//
+//  W-03 · avoidedGenres means "avoided", not "rarest".
+//    Seasonal buckets label a genre avoided only when its share of the season's
+//    sessions falls at or below 5% (minimum 1 session), listing up to three by
+//    ascending count. Previously suffix(3) of the descending list labeled the
+//    least-read genres "avoided" regardless of share.
+//
+//  W-04 (discovered during this pass) · TemperatureProfile.influenceScore —
+//    which IS rendered ("Temperature influence" card) — previously came from
+//    hardcoded recurrence 0.8 / stability 0.7 / consistency 0.75. Now derived
+//    from the top-quintile cohort's actual speed/engagement dispersion and
+//    cohort size. Same defect class, same fix session, logged separately.
 
 import Foundation
 
@@ -550,6 +579,15 @@ struct ConditionBucket {
     var totalSpeed: Double = 0
 }
 
+/// Coefficient of variation helper shared by the derived-confidence math.
+private func coefficientOfVariation(_ values: [Double]) -> Double {
+    guard values.count > 1 else { return 0 }
+    let mean = values.reduce(0, +) / Double(values.count)
+    guard mean > 0 else { return 0 }
+    let variance = values.map { pow($0 - mean, 2) }.reduce(0, +) / Double(values.count)
+    return sqrt(variance) / mean
+}
+
 // MARK: - Main Engine
 
 public final class WeatherAnalysisEngine {
@@ -571,10 +609,6 @@ public extension WeatherAnalysisEngine {
         public let timestamp: Date
 
         public let weather: WeatherSnapshot
-
-        // Reading metrics supplied by existing systems.
-        // WeatherAnalysisEngine does NOT calculate these.
-        // It consumes them.
 
         public let readingDurationMinutes: Double
 
@@ -666,7 +700,8 @@ public extension WeatherAnalysisEngine {
     // MARK: Public Entry Point
 
     func buildEnvironmentalProfile(
-        from sessions: [EnvironmentalSessionRecord]
+        from sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double? = nil
     ) -> EnvironmentalReadingProfile {
         let temperatureProfile = buildTemperatureProfile(
             from: sessions
@@ -677,7 +712,8 @@ public extension WeatherAnalysisEngine {
         )
 
         let influenceProfile = buildInfluenceProfile(
-            from: sessions
+            from: sessions,
+            dataCoverageRatio: dataCoverageRatio
         )
 
         return EnvironmentalReadingProfile(
@@ -734,7 +770,8 @@ public extension WeatherAnalysisEngine {
     // MARK: Weather Trend Report
 
     func generateTrendReport(
-        sessions: [EnvironmentalSessionRecord]
+        sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double? = nil
     ) -> WeatherTrendReport {
         let correlations = analyzeCorrelations(
             from: sessions
@@ -753,7 +790,8 @@ public extension WeatherAnalysisEngine {
 
         let confidence = calculateAggregateConfidence(
             sessions: sessions,
-            correlations: correlations
+            correlations: correlations,
+            dataCoverageRatio: dataCoverageRatio
         )
 
         return WeatherTrendReport(
@@ -768,10 +806,12 @@ public extension WeatherAnalysisEngine {
     // MARK: Environmental Report
 
     func generateBehaviorReport(
-        sessions: [EnvironmentalSessionRecord]
+        sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double? = nil
     ) -> EnvironmentalBehaviorReport {
         let profile = buildEnvironmentalProfile(
-            from: sessions
+            from: sessions,
+            dataCoverageRatio: dataCoverageRatio
         )
 
         let correlations = analyzeCorrelations(
@@ -786,7 +826,8 @@ public extension WeatherAnalysisEngine {
 
         let confidence = calculateAggregateConfidence(
             sessions: sessions,
-            correlations: correlations
+            correlations: correlations,
+            dataCoverageRatio: dataCoverageRatio
         )
 
         return EnvironmentalBehaviorReport(
@@ -839,11 +880,22 @@ private extension WeatherAnalysisEngine {
             .map(\.pagesRead)
             .average
 
+        // W-04: derived confidence — the cohort's own dispersion decides how
+        // much this profile has earned to claim, not constants.
+        let speedCV = coefficientOfVariation(topSessions.map(\.readingSpeed))
+        let engagementCV = coefficientOfVariation(topSessions.map(\.engagementScore))
+        // NOTE: this scope shadows min/max with local constants (temps bounds
+        // above), so the stdlib functions must be namespace-qualified here.
+        let sampleFactor = Swift.min(1.0, Double(topSessions.count) / 20.0)
+        let stability = Swift.max(0, Swift.min(1, 1 - speedCV))
+        let consistency = Swift.max(0, Swift.min(1, 1 - engagementCV))
+        let recurrence = sampleFactor
+
         let confidence = calculateConfidence(
             sampleCount: topSessions.count,
-            recurrence: 0.8,
-            stability: 0.7,
-            consistency: 0.75
+            recurrence: recurrence,
+            stability: stability,
+            consistency: consistency
         )
 
         return TemperatureProfile(
@@ -896,24 +948,33 @@ private extension WeatherAnalysisEngine {
                 return nil
             }
 
-            let sortedGenres = bucket.genres
+            // W-03: "avoided" means the genre barely appears in this season —
+            // share ≤ 5% (at least 1 session) — listed weakest-first, max 3.
+            let threshold = max(1, Int(Double(bucket.sessionCount) * 0.05))
+            let avoidedCandidates = bucket.genres
+                .filter { $0.value <= threshold }
                 .sorted {
-                    $0.value > $1.value
+                    $0.value != $1.value
+                        ? $0.value < $1.value
+                        : $0.key < $1.key // deterministic tie-break
                 }
+            let avoidedGenres = avoidedCandidates.prefix(3).map(\.key)
 
-            let dominantGenres = sortedGenres
+            let dominantGenres = bucket.genres
+                .sorted { $0.value > $1.value }
                 .prefix(5)
                 .map(\.key)
 
-            let avoidedGenres = sortedGenres
-                .suffix(3)
-                .map(\.key)
-
+            // Derived per-season confidence: speed/engagement dispersion across
+            // the season's sessions (was hardcoded 0.8/0.8/0.8 — same W-class).
+            let seasonSessions = sessions.filter { $0.weather.season == bucket.season }
+            let speedCV = coefficientOfVariation(seasonSessions.map(\.readingSpeed))
+            let engagementCV = coefficientOfVariation(seasonSessions.map(\.engagementScore))
             let confidence = calculateConfidence(
                 sampleCount: bucket.sessionCount,
-                recurrence: 0.8,
-                stability: 0.8,
-                consistency: 0.8
+                recurrence: min(1.0, Double(bucket.sessionCount) / 25.0),
+                stability: max(0, min(1, 1 - speedCV)),
+                consistency: max(0, min(1, 1 - engagementCV))
             )
 
             return SeasonalProfile(
@@ -946,7 +1007,8 @@ private extension WeatherAnalysisEngine {
 
 private extension WeatherAnalysisEngine {
     func buildInfluenceProfile(
-        from sessions: [EnvironmentalSessionRecord]
+        from sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double? = nil
     ) -> WeatherInfluenceProfile {
         let correlations = analyzeCorrelations(
             from: sessions
@@ -970,7 +1032,8 @@ private extension WeatherAnalysisEngine {
 
         let confidence = calculateAggregateConfidence(
             sessions: sessions,
-            correlations: correlations
+            correlations: correlations,
+            dataCoverageRatio: dataCoverageRatio
         )
 
         let dominantSeason = determineDominantSeason(
@@ -1114,6 +1177,16 @@ private extension WeatherAnalysisEngine {
 // MARK: - Generic Correlation Engine
 
 private extension WeatherAnalysisEngine {
+    /// W-02: chronological bounds are extracted from the timestamp-sorted array,
+    /// never from input order.
+    func chronologicalBounds(
+        _ sessions: [EnvironmentalSessionRecord]
+    ) -> (first: Date, last: Date)? {
+        guard let earliest = sessions.map(\.timestamp).min(),
+              let latest = sessions.map(\.timestamp).max() else { return nil }
+        return (earliest, latest)
+    }
+
     func buildCorrelation(
         sessions: [EnvironmentalSessionRecord],
         factorExtractor: (EnvironmentalSessionRecord) -> Double,
@@ -1148,6 +1221,8 @@ private extension WeatherAnalysisEngine {
             consistency: averageConsistency(pairs)
         )
 
+        guard let bounds = chronologicalBounds(sessions) else { return [] }
+
         return [
             EnvironmentalCorrelation(
                 factor: factor,
@@ -1157,8 +1232,8 @@ private extension WeatherAnalysisEngine {
                 influenceScore: influenceScore,
                 lifecycle: lifecycle,
                 confidence: confidence,
-                firstObserved: sessions.first?.timestamp ?? Date(),
-                lastObserved: sessions.last?.timestamp ?? Date(),
+                firstObserved: bounds.first,
+                lastObserved: bounds.last,
                 supportingSampleCount: sessions.count
             ),
         ]
@@ -1196,8 +1271,12 @@ private extension WeatherAnalysisEngine {
             sampleCount: sessions.count,
             recurrence: significance,
             stability: abs(coefficient),
-            consistency: 0.7
+            // Measured group separation stands in for consistency here —
+            // larger separation = more consistent discrimination.
+            consistency: max(0, min(1, abs(coefficient)))
         )
+
+        guard let bounds = chronologicalBounds(sessions) else { return [] }
 
         return [
             EnvironmentalCorrelation(
@@ -1211,8 +1290,8 @@ private extension WeatherAnalysisEngine {
                     significance: significance
                 ),
                 confidence: confidence,
-                firstObserved: sessions.first?.timestamp ?? Date(),
-                lastObserved: sessions.last?.timestamp ?? Date(),
+                firstObserved: bounds.first,
+                lastObserved: bounds.last,
                 supportingSampleCount: sessions.count
             ),
         ]
@@ -1335,15 +1414,46 @@ private extension WeatherAnalysisEngine {
         )
     }
 
+    /// W-01: aggregate confidence reflects EVIDENCE.
+    ///
+    /// Components:
+    ///   • sampleSizeScore — sessions/100 (unchanged definition)
+    ///   • recurrence      — mean correlation significance (real, was 0.8)
+    ///   • stability       — mean |coefficient|           (real, was 0.8)
+    ///   • consistency     — mean pairwise-consistency    (real, was 0.8)
+    ///   • coverage        — caller-supplied real ratio; falls back to the
+    ///                       sample-size proxy when unknown.
     func calculateAggregateConfidence(
         sessions: [EnvironmentalSessionRecord],
-        correlations _: [EnvironmentalCorrelation]
+        correlations: [EnvironmentalCorrelation],
+        dataCoverageRatio: Double? = nil
     ) -> ConfidenceReport {
-        calculateConfidence(
-            sampleCount: sessions.count,
-            recurrence: 0.8,
-            stability: 0.8,
-            consistency: 0.8
+        let sampleSizeScore = min(1.0, Double(sessions.count) / 100.0)
+
+        let recurrence = correlations.isEmpty
+            ? 0.0
+            : correlations.map { $0.confidence.recurrenceScore }.reduce(0, +) / Double(correlations.count)
+        let stability = correlations.isEmpty
+            ? 0.0
+            : correlations.map { $0.confidence.stabilityScore }.reduce(0, +) / Double(correlations.count)
+        let consistency = correlations.isEmpty
+            ? 0.0
+            : correlations.map { $0.confidence.consistencyScore }.reduce(0, +) / Double(correlations.count)
+
+        // Real coverage when the caller knows it; sample-proxy otherwise.
+        let coverage = dataCoverageRatio ?? sampleSizeScore
+
+        let overall =
+            (sampleSizeScore + recurrence + stability + consistency + coverage) / 5.0
+
+        return ConfidenceReport(
+            overallConfidence: overall,
+            sampleSizeScore: sampleSizeScore,
+            recurrenceScore: recurrence,
+            stabilityScore: stability,
+            consistencyScore: consistency,
+            dataCoverageScore: coverage,
+            supportingSamples: sessions.count
         )
     }
 

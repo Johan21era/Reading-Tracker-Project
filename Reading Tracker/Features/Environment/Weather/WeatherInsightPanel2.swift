@@ -6,6 +6,7 @@
 //
 //  Engines called:
 //    - WeatherKitService.shared.snapshots(from:to:)          (fetch stored snapshots)
+//    - WeatherKitService.shared.coverageRatio(for:)          (real data-coverage input)
 //    - WeatherAnalysisEngine.buildEnvironmentalProfile(from:) (produces profile)
 //    - WeatherAnalysisEngine.analyzeCorrelations(from:)       (condition correlations)
 //    - WeatherAnalysisEngine.generateTrendReport(from:)       (temporal trends)
@@ -14,6 +15,11 @@
 //  Data guard: requires at least 5 sessions with attached weather snapshots
 //  before showing results. Below that threshold shows ContentUnavailableView.
 //
+//  PRODUCTION PASS (P5 / W-01 wiring): load() now measures REAL data coverage
+//  via coverageRatio(for:) over the session IDs actually analyzed and feeds it to
+//  both report entry points, so ConfidenceReport.dataCoverageScore reflects how
+//  much of the analyzed history genuinely has persisted weather — no more
+//  hardcoded 1.0.
 
 import SwiftUI
 
@@ -264,20 +270,27 @@ struct WeatherInsightPanel: View {
                 return
             }
 
+            // W-01 WIRING: real coverage over exactly the session IDs being
+            // analyzed. Failure here degrades to nil (engine falls back to its
+            // sample-size proxy) rather than blocking the panel.
+            let coverage = try? WeatherKitService.shared
+                .coverageRatio(for: records.map(\.sessionID))
+
             let engine = WeatherAnalysisEngine()
-            profile = engine.buildEnvironmentalProfile(from: records)
+            profile = engine.buildEnvironmentalProfile(
+                from: records,
+                dataCoverageRatio: coverage
+            )
             // analyzeCorrelations() itself is completely untouched — this
             // only decides which of its results have earned the right to
-            // be shown. WeatherAnalysisEngine's own gate here was a single
-            // flat `sessions.count >= 5`; DataMaturityWeatherAdapter asks
-            // per-correlation, using each EnvironmentalCorrelation's own
-            // firstObserved/lastObserved/supportingSampleCount — the exact
-            // "cold weather improves reading speed" high-evidence case the
-            // product spec calls out by name. See DataMaturityEngineAdapters.swift.
+            // be shown (DataMaturityWeatherAdapter asks per-correlation).
             correlations = DataMaturityWeatherAdapter
                 .gate(engine.analyzeCorrelations(from: records))
                 .map(\.correlation)
-            trend = engine.generateTrendReport(sessions: records)
+            trend = engine.generateTrendReport(
+                sessions: records,
+                dataCoverageRatio: coverage
+            )
         } catch {
             errorMessage = "Could not load weather data: \(error.localizedDescription)"
         }
