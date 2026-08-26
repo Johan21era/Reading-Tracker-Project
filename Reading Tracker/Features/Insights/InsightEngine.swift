@@ -103,10 +103,12 @@ enum InsightEngine {
         // Only generate meaningful insights if there's sufficient data.
         guard !books.isEmpty else { return [] }
 
-        let profile = AnalyticsEngine.readerProfile(books: books)
-        let streak = AnalyticsEngine.streak(books: books)
-        let trend = AnalyticsEngine.trendAnalysis(books: books)
-        let todOfDay = AnalyticsEngine.timeOfDayAnalysis(books: books)
+        // FINAL TRACES #5: epoch-keyed caching (0 = uncached fallback).
+        let epoch: UInt64 = 0
+        let profile = AnalyticsEngine.readerProfile(books: books, epoch: epoch)
+        let streak = AnalyticsEngine.streak(books: books, epoch: epoch)
+        let trend = AnalyticsEngine.trendAnalysis(books: books, epoch: epoch)
+        let todOfDay = AnalyticsEngine.timeOfDayAnalysis(books: books, epoch: epoch)
         let improvement = AnalyticsEngine.improvementAnalysis(books: books)
 
         insights += bestReadingTimeInsight(todOfDay: todOfDay, profile: profile)

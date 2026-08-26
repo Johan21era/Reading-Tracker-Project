@@ -106,7 +106,8 @@ enum ReadingGoalManager {
     /// Returns the current status of all active library-level goals.
     static func allStatuses(
         for goalSet: ReadingGoalSet,
-        books: [Book]
+        books: [Book],
+        epoch: UInt64 = 0
     ) -> [GoalStatus] {
         var statuses: [GoalStatus] = []
 
@@ -267,8 +268,8 @@ enum ReadingGoalManager {
 
     /// Returns a recommended daily page target based on the user's average reading history.
     /// This is shown in the goal setup UI as a smart default.
-    static func recommendedDailyTarget(books: [Book]) -> Int {
-        let profile = AnalyticsEngine.readerProfile(books: books)
+    static func recommendedDailyTarget(books: [Book], epoch: UInt64 = 0) -> Int {
+        let profile = AnalyticsEngine.readerProfile(books: books, epoch: epoch)
         // Convert average daily reading time to pages using the most common reading speed.
         let speeds: [Double] = books.flatMap(\.sessions).map(\.averageSecondsPerPage).filter { $0 > 0 }
         guard !speeds.isEmpty else {
@@ -346,6 +347,7 @@ final class GoalProgressViewModel: ObservableObject {
 
         self.goalSet = goalSet
         self.deadlines = deadlines
+        self.dataStoreRef = dataStore
         #if DEBUG
         consoleIsBound = true
         #endif
@@ -379,11 +381,19 @@ final class GoalProgressViewModel: ObservableObject {
     }
 
     private func refresh(books: [Book]) {
-        statuses = ReadingGoalManager.allStatuses(for: goalSet, books: books)
+        // FINAL TRACES #5: pass the store's epoch so heavy analytics hit the
+        // cache instead of walking every timing on each $books emission.
+        let epoch = dataStore?.analyticsEpoch ?? 0
+        statuses = ReadingGoalManager.allStatuses(for: goalSet, books: books, epoch: epoch)
         deadlineStatuses = ReadingGoalManager.deadlineStatuses(deadlines: deadlines, books: books)
-        recommendedDailyTarget = ReadingGoalManager.recommendedDailyTarget(books: books)
+        recommendedDailyTarget = ReadingGoalManager.recommendedDailyTarget(books: books, epoch: epoch)
         projectedAnnualCompletions = ReadingGoalManager.projectedAnnualCompletions(books: books)
     }
+
+    /// Set by bind(to:) so refresh can read the live epoch. Weak not needed:
+    /// DataStore outlives the VM in every ownership path here.
+    private weak var dataStoreRef: DataStore?
+    var dataStore: DataStore? { dataStoreRef }
 }
 
 // MARK: - Developer Console

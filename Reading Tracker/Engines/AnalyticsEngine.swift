@@ -213,7 +213,17 @@ enum AnalyticsEngine {
 
     // MARK: - Streaks
 
-    static func streak(books: [Book]) -> ReadingStreak {
+    /// FINAL TRACES #5: memoized.
+    static func streak(books: [Book], epoch: UInt64 = 0) -> ReadingStreak {
+        if epoch > 0 {
+            return AnalyticsCache.shared.streak(books: books, epoch: epoch) {
+                Self._streakUncached(books)
+            }
+        }
+        return _streakUncached(books)
+    }
+
+    private static func _streakUncached(_ books: [Book]) -> ReadingStreak {
         let calendar = Calendar.current
         let allDays: Set<Date> = Set(
             books.flatMap(\.sessions)
@@ -396,7 +406,17 @@ struct ReaderProfileAnalytics {
 }
 
 extension AnalyticsEngine {
-    static func readerProfile(books: [Book]) -> ReaderProfileAnalytics {
+    /// FINAL TRACES #5: memoized via AnalyticsCache (signature-keyed).
+    static func readerProfile(books: [Book], epoch: UInt64 = 0) -> ReaderProfileAnalytics {
+        if epoch > 0 {
+            return AnalyticsCache.shared.readerProfile(books: books, epoch: epoch) {
+                Self._readerProfileUncached(books)
+            }
+        }
+        return _readerProfileUncached(books)
+    }
+
+    private static func _readerProfileUncached(_ books: [Book]) -> ReaderProfileAnalytics {
         let sessions = books.flatMap { $0.sessions }.filter { $0.endTime != nil }
 
         let totalPages = sessions.reduce(0) { $0 + $1.pagesRead }
@@ -516,7 +536,17 @@ extension AnalyticsEngine {
     ///
     /// Fix: compute weeklyAverage and monthlyAverage directly from the activity window,
     /// giving actual seconds-per-day averages for each period.
-    static func trendAnalysis(books: [Book]) -> TrendAnalytics {
+    /// FINAL TRACES #5: memoized.
+    static func trendAnalysis(books: [Book], epoch: UInt64 = 0) -> TrendAnalytics {
+        if epoch > 0 {
+            return AnalyticsCache.shared.trend(books: books, epoch: epoch) {
+                Self._trendUncached(books)
+            }
+        }
+        return _trendUncached(books)
+    }
+
+    private static func _trendUncached(_ books: [Book]) -> TrendAnalytics {
         let activities = dailyActivity(books: books, days: 60)
         let values = activities.map { $0.totalDuration }
 
@@ -564,7 +594,17 @@ struct TimeOfDayAnalytics {
 }
 
 extension AnalyticsEngine {
-    static func timeOfDayAnalysis(books: [Book]) -> TimeOfDayAnalytics {
+    /// FINAL TRACES #5: memoized.
+    static func timeOfDayAnalysis(books: [Book], epoch: UInt64 = 0) -> TimeOfDayAnalytics {
+        if epoch > 0 {
+            return AnalyticsCache.shared.timeOfDay(books: books, epoch: epoch) {
+                Self._timeOfDayUncached(books)
+            }
+        }
+        return _timeOfDayUncached(books)
+    }
+
+    private static func _timeOfDayUncached(_ books: [Book]) -> TimeOfDayAnalytics {
         var buckets: [ReadingWindow: Double] = [
             .morning: 0, .afternoon: 0, .evening: 0, .night: 0,
         ]
@@ -757,7 +797,17 @@ struct GenreAnalyticsSummary {
 
 extension AnalyticsEngine {
     /// UPGRADE v3: Now reads Book.genre directly (no longer always returns .unknown).
-    static func genreProfiles(from books: [Book]) -> [ReadingGenre: GenreProfile] {
+    /// FINAL TRACES #5: memoized.
+    static func genreProfiles(from books: [Book], epoch: UInt64 = 0) -> [ReadingGenre: GenreProfile] {
+        if epoch > 0 {
+            return AnalyticsCache.shared.genreProfiles(books: books, epoch: epoch) {
+                Self._genreProfilesUncached(books)
+            }
+        }
+        return _genreProfilesUncached(books)
+    }
+
+    private static func _genreProfilesUncached(_ books: [Book]) -> [ReadingGenre: GenreProfile] {
         var buckets: [ReadingGenre: (time: Double, pages: Int, sessions: Int)] = [:]
 
         for book in books {

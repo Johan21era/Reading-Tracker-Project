@@ -63,6 +63,15 @@ final class DataStore: ObservableObject {
     private var saveTimer: Timer?
     private let saveDebounceInterval: TimeInterval = 0.5
 
+    /// FINAL TRACES #5: monotonically increasing library version. Bumped on
+    /// every mutation so AnalyticsCache can key/validate cheaply.
+    private(set) var analyticsEpoch: UInt64 = 0
+
+    private func bumpEpoch() {
+        analyticsEpoch &+= 1
+        AnalyticsCache.shared.setEpoch(analyticsEpoch)
+    }
+
     /// ROADMAP 2.1 (D6): tail of the serialized background-write chain.
     /// Each enqueued write awaits its predecessor, guaranteeing on-disk ordering.
     private var pendingWrite: Task<String?, Never>?
@@ -525,6 +534,7 @@ final class DataStore: ObservableObject {
 
     /// Debounced save. Multiple rapid calls within 0.5s coalesce into one.
     func scheduleSave() {
+        bumpEpoch() // FINAL TRACES #5: any mutation invalidates derived data
         saveTimer?.invalidate()
         let timer = Timer(timeInterval: saveDebounceInterval, repeats: false) { [weak self] _ in
             Task { @MainActor [weak self] in
