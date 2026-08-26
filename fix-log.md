@@ -886,3 +886,16 @@ Instruments Time Profiler during install — but the hop-count math says this wa
 
 PINS: unchanged suites all green (exit=0). The isolation fix is compiler-enforced: any future
 regression reintroduces a MainActor hop on these paths and the build breaks loudly.
+
+---
+
+# P7 — UI REVIEW EXECUTION (current session)
+
+Johan's UI REVIEW.rtf executed end-to-end. All three HIGH priorities plus both MEDIUMs and the LOW refinement landed; suite exit=0; pushed.
+
+SEE IT YOURSELF:
+1. Launch the app — the gray title bar is GONE; starfield reaches the window's top edge and traffic lights float over it (High #1).
+2. Look at the night-time sky — the blue glow no longer draws a visible circle behind the UI; it fades past the corners (High #2/#3, option B).
+3. Open a book — the reading HUD has no accent ring anymore and matches the toast/banner corner radius exactly (Medium #4/#5).
+4. All floating surfaces (HUD, achievement toast, persistence banner, Sentinel card) now share ONE radius + inset vocabulary from DesignGrid.swift — change one constant, everything follows (Medium #4).
+En-route SDK lessons logged: .windowStyle is scene-level; containerBackground-for-window unavailable on this SDK; toolbarBackground navigation placement is iOS-only.
