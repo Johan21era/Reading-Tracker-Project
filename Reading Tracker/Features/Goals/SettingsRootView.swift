@@ -41,6 +41,11 @@ struct SettingsRootView: View {
                 .tabItem {
                     Label("Speed Reading", systemImage: "hare")
                 }
+
+            SentinelSettingsPane()
+                .tabItem {
+                    Label("Sentinel", systemImage: "shield.lefthalf.filled")
+                }
         }
         .padding(20)
         .frame(minWidth: 560, minHeight: 430)
@@ -314,6 +319,50 @@ struct RSVPSettingsPane: View {
                         .font(.title3.weight(.semibold))
                         .monospacedDigit()
                 }
+            }
+        }
+        .formStyle(.grouped)
+    }
+}
+
+
+// MARK: - Sentinel Settings (P6)
+
+struct SentinelSettingsPane: View {
+    @AppStorage(SentinelEngine.enabledKey) private var isEnabled = true
+    @AppStorage(SentinelEngine.allowRepairKey) private var allowRepair = false
+    @AppStorage(SentinelEngine.intervalKey) private var intervalMinutes = 15
+
+    var body: some View {
+        Form {
+            Section(
+                header: Text("Watchdog"),
+                footer: Text("Sentinel quietly checks your library's health — corrupted timings, stuck sessions, failing saves, low disk — and journals what it finds.")
+            ) {
+                Toggle("Enable Sentinel monitoring", isOn: $isEnabled)
+                if isEnabled {
+                    Picker("Check every", selection: $intervalMinutes) {
+                        Text("5 minutes").tag(5)
+                        Text("15 minutes").tag(15)
+                        Text("30 minutes").tag(30)
+                        Text("60 minutes").tag(60)
+                    }
+                }
+            }
+
+            #if !DEBUG
+            Section(
+                header: Text("Automatic Repairs"),
+                footer: Text("When on, provably-safe repairs run automatically (a backup is always taken first). When off, Sentinel only reports and waits for you. Developers: Debug builds always repair.")
+            ) {
+                Toggle("Allow automatic fixes", isOn: $allowRepair)
+            }
+            #endif
+
+            Section("Privacy") {
+                Label("No reading data ever leaves this Mac", systemImage: "lock.shield")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)

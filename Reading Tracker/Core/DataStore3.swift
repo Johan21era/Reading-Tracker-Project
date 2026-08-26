@@ -159,6 +159,9 @@ final class DataStore: ObservableObject {
         #if DEBUG
         DeveloperConsoleRegistry.shared.register(self)
         #endif
+
+        // P6: Sentinel read-bridge (probes read published state only).
+        SentinelDataBridge.shared.attach(self)
     }
 
     /// P5 Feature 1: production import path. Replaces books and the FULL

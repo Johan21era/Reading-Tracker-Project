@@ -127,6 +127,10 @@ struct ContentView: View {
     @State private var searchText = ""
     @State private var sortMode: LibrarySortMode = .dateAddedDesc
 
+    // P6: Sentinel
+    @StateObject private var sentinel = SentinelEngine.shared
+    @State private var sentinelReport: (fixed: Int, stalled: Int, headline: String)?
+
     /// Filtered+sorted sidebar source.
     /// HOTFIX (stall report): this was a computed property — the Reading HUD's
     /// once-per-second elapsed-time tick re-evaluated ContentView, which
@@ -381,6 +385,10 @@ struct ContentView: View {
             showOnboarding = OnboardingView.shouldShow(
                 books: dataStore.books, dismissed: onboardingDismissed
             )
+            // P6: Sentinel watchdog — launch cycle + periodic probes.
+            sentinel.start()
+            sentinel.runCycle()
+            sentinelReport = sentinel.overnightReport()
         }
         .sheet(isPresented: $showOnboarding, onDismiss: { onboardingDismissed = true }) {
             OnboardingView()
@@ -527,6 +535,21 @@ struct ContentView: View {
         // persistence banner owns bottom).
         .overlay(alignment: .topLeading) {
             ReadingHUD()
+        }
+
+        // P6: "While you were away" Sentinel card (top-center, above toasts).
+        .overlay(alignment: .top) {
+            if let report = sentinelReport {
+                SentinelReportCardView(
+                    fixed: report.fixed,
+                    stalled: report.stalled,
+                    headline: report.headline
+                ) {
+                    withAnimation { sentinelReport = nil }
+                }
+                .padding(.top, 8)
+                .padding(.horizontal, 40)
+            }
         }
     }
 
