@@ -80,7 +80,9 @@ final class DurabilityPinsTests {
         let restoredBook = try #require(fresh.books.first)
         #expect(restoredBook.title == "Export Me")
         #expect(restoredBook.sessions.count == 1)
-        #expect(restoredBook.coverImageData != nil)          // cover survived
+        // Upgrade #2: covers live in CoverStore files now, not the payload.
+        #expect(CoverStore.shared.hasCover(forBookID: restoredBook.id),
+                "archived cover did not survive import into the external store")
         #expect(fresh.libraryState.goalSet.dailyPageTarget == 30)  // goals survived
         #expect(fresh.libraryState.collections.count == 1)   // collections survived
         #expect(fresh.libraryState.collections.first?.name == "Favorites")

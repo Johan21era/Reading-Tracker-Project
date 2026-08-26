@@ -40,6 +40,11 @@ struct LibraryArchive: Codable {
 
     var books: [Book]
     var libraryState: LibraryState?
+
+    /// FINAL TRACES Upgrade #2: since covers moved OUT of the book payload
+    /// into CoverStore files, archives carry them explicitly, keyed by book
+    /// UUID string. Optional + decodeIfPresent so v1 archives still import.
+    var covers: [String: Data]?
 }
 
 enum LibraryArchiveError: LocalizedError {
@@ -73,12 +78,24 @@ final class LibraryArchiveManager: ObservableObject {
     func exportLibrary(from store: DataStore) throws -> Data {
         guard !store.books.isEmpty else { throw LibraryArchiveError.emptyLibrary }
 
+        // Collect covers: prefer external files, fall back to any still-
+        // embedded payloads (pre-migration libraries).
+        var covers: [String: Data] = [:]
+        for book in store.books {
+            if let fileData = try? Data(contentsOf: CoverStore.shared.url(forBookID: book.id)) {
+                covers[book.id.uuidString] = fileData
+            } else if let embedded = book.coverImageData {
+                covers[book.id.uuidString] = embedded
+            }
+        }
+
         let archive = LibraryArchive(
             formatVersion: Self.formatVersion,
             exportedAt: Date(),
             appName: "Reading Tracker",
             books: store.books,
-            libraryState: store.libraryState
+            libraryState: store.libraryState,
+            covers: covers.isEmpty ? nil : covers
         )
 
         let encoder = JSONEncoder()
@@ -108,6 +125,14 @@ final class LibraryArchiveManager: ObservableObject {
             from: archive.books,
             state: archive.libraryState ?? LibraryState()
         )
+        // Restore archived covers into the external store.
+        if let covers = archive.covers {
+            for (idString, data) in covers {
+                if let id = UUID(uuidString: idString) {
+                    CoverStore.shared.store(data, forBookID: id)
+                }
+            }
+        }
         store.saveImmediately()
     }
 

@@ -19,10 +19,20 @@ import Foundation
 import SwiftUI
 
 extension Book {
-    /// Decoded cover image, nil when none was captured at import time.
+    /// Decoded cover image. FINAL TRACES Upgrade #2: external file store
+    /// first (post-migration covers live on disk, not in the payload);
+    /// embedded data remains as legacy fallback.
     var coverImage: NSImage? {
+        if let image = CoverStore.shared.image(forBookID: id) {
+            return image
+        }
         guard let data = coverImageData else { return nil }
         return NSImage(data: data)
+    }
+
+    /// True when a cover exists anywhere (file store or embedded).
+    var hasCoverArt: Bool {
+        CoverStore.shared.hasCover(forBookID: id) || coverImageData != nil
     }
 }
 

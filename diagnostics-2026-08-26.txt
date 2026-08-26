@@ -1,0 +1,371 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test -project "Reading Tracker.xcodeproj" -scheme "Reading Tracker" -destination platform=macOS
+
+Resolve Package Graph
+
+
+Resolved source packages:
+  ZIPFoundation: https://github.com/weichsel/ZIPFoundation @ 0.9.20
+
+2026-08-26 06:42:40.155 xcodebuild[47362:5949572] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:macOS, arch:arm64, id:00008122-001A599922E9001C, name:My Mac }
+{ platform:macOS, arch:x86_64, id:00008122-001A599922E9001C, name:My Mac }
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (6 targets)
+    Target 'Reading TrackerUITests' in project 'Reading Tracker'
+        ➜ Explicit dependency on target 'Reading Tracker' in project 'Reading Tracker'
+    Target 'Reading TrackerTests' in project 'Reading Tracker'
+        ➜ Explicit dependency on target 'Reading Tracker' in project 'Reading Tracker'
+    Target 'Reading Tracker' in project 'Reading Tracker'
+        ➜ Explicit dependency on target 'ZIPFoundation' in project 'ZIPFoundation'
+    Target 'ZIPFoundation' in project 'ZIPFoundation'
+        ➜ Explicit dependency on target 'ZIPFoundation' in project 'ZIPFoundation'
+        ➜ Explicit dependency on target 'ZIPFoundation_ZIPFoundation' in project 'ZIPFoundation'
+    Target 'ZIPFoundation' in project 'ZIPFoundation'
+        ➜ Explicit dependency on target 'ZIPFoundation_ZIPFoundation' in project 'ZIPFoundation'
+    Target 'ZIPFoundation_ZIPFoundation' in project 'ZIPFoundation' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: b710ec514e18d9f490073d946e93cc8f
+Build description path: /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Intermediates.noindex/XCBuildData/b710ec514e18d9f490073d946e93cc8f.xcbuilddata
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk /Users/johanrembeci/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.5-25F70-e082c4a02f00227109f4ed75e425c832.sdkstatcache
+    cd /Users/johanrembeci/Desktop/Reading\ Tracker\ Main\ /Reading\ Tracker.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk -o /Users/johanrembeci/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/macosx26.5-25F70-e082c4a02f00227109f4ed75e425c832.sdkstatcache
+
+ProcessInfoPlistFile /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/ZIPFoundation_ZIPFoundation.bundle/Contents/Info.plist /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Intermediates.noindex/ZIPFoundation.build/Debug/ZIPFoundation_ZIPFoundation.build/empty-ZIPFoundation_ZIPFoundation.plist (in target 'ZIPFoundation_ZIPFoundation' from project 'ZIPFoundation')
+    cd /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/SourcePackages/checkouts/ZIPFoundation
+    builtin-infoPlistUtility /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Intermediates.noindex/ZIPFoundation.build/Debug/ZIPFoundation_ZIPFoundation.build/empty-ZIPFoundation_ZIPFoundation.plist -producttype com.apple.product-type.bundle -expandbuildsettings -platform macosx -o /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/ZIPFoundation_ZIPFoundation.bundle/Contents/Info.plist
+
+CopySwiftLibs /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app (in target 'Reading Tracker' from project 'Reading Tracker')
+    cd /Users/johanrembeci/Desktop/Reading\ Tracker\ Main\ 
+    builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app/Contents/MacOS/Reading\ Tracker.debug.dylib --scan-folder /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app/Contents/Frameworks --scan-folder /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app/Contents/PlugIns --scan-folder /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app/Contents/Library/SystemExtensions --scan-folder /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app/Contents/Extensions --platform macosx --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app/Contents/Frameworks --strip-bitcode --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Intermediates.noindex/Reading\ Tracker.build/Debug/Reading\ Tracker.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+
+ProcessInfoPlistFile /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app/Contents/Info.plist /Users/johanrembeci/Desktop/Reading\ Tracker\ Main\ /Reading-Tracker-Info.plist (in target 'Reading Tracker' from project 'Reading Tracker')
+    cd /Users/johanrembeci/Desktop/Reading\ Tracker\ Main\ 
+    builtin-infoPlistUtility /Users/johanrembeci/Desktop/Reading\ Tracker\ Main\ /Reading-Tracker-Info.plist -producttype com.apple.product-type.application -genpkginfo /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app/Contents/PkgInfo -expandbuildsettings -platform macosx -additionalcontentfile /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Intermediates.noindex/Reading\ Tracker.build/Debug/Reading\ Tracker.build/assetcatalog_generated_info.plist -scanforprivacyfile /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app/Contents/Resources/ZIPFoundation_ZIPFoundation.bundle -o /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app/Contents/Info.plist
+
+ProcessInfoPlistFile /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app/Contents/PlugIns/Reading\ TrackerTests.xctest/Contents/Info.plist /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Intermediates.noindex/Reading\ Tracker.build/Debug/Reading\ TrackerTests.build/empty-Reading\ TrackerTests.plist (in target 'Reading TrackerTests' from project 'Reading Tracker')
+    cd /Users/johanrembeci/Desktop/Reading\ Tracker\ Main\ 
+    builtin-infoPlistUtility /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Intermediates.noindex/Reading\ Tracker.build/Debug/Reading\ TrackerTests.build/empty-Reading\ TrackerTests.plist -producttype com.apple.product-type.bundle.unit-test -expandbuildsettings -platform macosx -scanforprivacyfile /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app/Contents/PlugIns/Reading\ TrackerTests.xctest/Contents/Resources/ZIPFoundation_ZIPFoundation.bundle -o /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ Tracker.app/Contents/PlugIns/Reading\ TrackerTests.xctest/Contents/Info.plist
+
+ProcessInfoPlistFile /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ TrackerUITests-Runner.app/Contents/PlugIns/Reading\ TrackerUITests.xctest/Contents/Info.plist /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Intermediates.noindex/Reading\ Tracker.build/Debug/Reading\ TrackerUITests.build/empty-Reading\ TrackerUITests.plist (in target 'Reading TrackerUITests' from project 'Reading Tracker')
+    cd /Users/johanrembeci/Desktop/Reading\ Tracker\ Main\ 
+    builtin-infoPlistUtility /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Intermediates.noindex/Reading\ Tracker.build/Debug/Reading\ TrackerUITests.build/empty-Reading\ TrackerUITests.plist -producttype com.apple.product-type.bundle.ui-testing -expandbuildsettings -platform macosx -additionalcontentfile /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Intermediates.noindex/Reading\ Tracker.build/Debug/Reading\ TrackerUITests.build/ProductTypeInfoPlistAdditions.plist -o /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ TrackerUITests-Runner.app/Contents/PlugIns/Reading\ TrackerUITests.xctest/Contents/Info.plist
+
+CopySwiftLibs /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ TrackerUITests-Runner.app/Contents/PlugIns/Reading\ TrackerUITests.xctest (in target 'Reading TrackerUITests' from project 'Reading Tracker')
+    cd /Users/johanrembeci/Desktop/Reading\ Tracker\ Main\ 
+    builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ TrackerUITests-Runner.app/Contents/PlugIns/Reading\ TrackerUITests.xctest/Contents/MacOS/Reading\ TrackerUITests --scan-folder /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ TrackerUITests-Runner.app/Contents/PlugIns/Reading\ TrackerUITests.xctest/Contents/Frameworks --scan-folder /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ TrackerUITests-Runner.app/Contents/PlugIns/Reading\ TrackerUITests.xctest/Contents/PlugIns --scan-folder /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ TrackerUITests-Runner.app/Contents/PlugIns/Reading\ TrackerUITests.xctest/Contents/Library/SystemExtensions --scan-folder /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ TrackerUITests-Runner.app/Contents/PlugIns/Reading\ TrackerUITests.xctest/Contents/Extensions --platform macosx --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Products/Debug/Reading\ TrackerUITests-Runner.app/Contents/PlugIns/Reading\ TrackerUITests.xctest/Contents/Frameworks --strip-bitcode --scan-executable /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Intermediates.noindex/Reading\ Tracker.build/Debug/Reading\ TrackerUITests.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+
+Testing started
+Test suite 'GoalStreakTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'RebindIdempotenceTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'LibraryCollectionTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'LibraryMutationTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'ValidatorTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'SchemaEvolutionTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'NonGregorianCalendarTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'ObserverLifecycleTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'DemoProfileServiceTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'CelebrationTimelineTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'CoverStorePinsTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'RSVPPlaybackEngineTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'Reading_TrackerTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'TextExtractionTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'DemoRapidSwitchTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'RSVPLogicTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'FatigueAnalyzerTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'SentinelPinsTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'WeatherSnapshotNormaliserTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'WeatherConfidencePinsTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'WeatherSnapshotStoreTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'DataStorePersistenceTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'GoalPersistenceTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'DurabilityPinsTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'EnvironmentEngineTests' started on 'My Mac - Reading Tracker (47377)'
+Test suite 'WeatherAnalysisEngineIntegrationTests' started on 'My Mac - Reading Tracker (47377)'
+Test case 'NonGregorianCalendarTests/anyCalendarProducesOrderedBounds(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.001 seconds)
+Test case 'NonGregorianCalendarTests/spansStayWithinSaneBounds(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.001 seconds)
+Test case 'NonGregorianCalendarTests/spansStayWithinSaneBounds(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.001 seconds)
+Test case 'NonGregorianCalendarTests/anyCalendarProducesOrderedBounds(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.001 seconds)
+Test case 'NonGregorianCalendarTests/anyCalendarProducesOrderedBounds(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.001 seconds)
+Test case 'NonGregorianCalendarTests/spansStayWithinSaneBounds(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.001 seconds)
+Test case 'NonGregorianCalendarTests/anyCalendarProducesOrderedBounds(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.001 seconds)
+Test case 'NonGregorianCalendarTests/spansStayWithinSaneBounds(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.000 seconds)
+Test case 'NonGregorianCalendarTests/anyCalendarProducesOrderedBounds(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.000 seconds)
+Test case 'NonGregorianCalendarTests/spansStayWithinSaneBounds(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.000 seconds)
+Test case 'NonGregorianCalendarTests/spansStayWithinSaneBounds(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.000 seconds)
+Test case 'NonGregorianCalendarTests/anyCalendarProducesOrderedBounds(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.001 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.078 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.081 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.018 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.183 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.200 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.239 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.204 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.254 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.355 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.156 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.034 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.241 seconds)
+Test case 'NonGregorianCalendarTests/sessionFilteringSurvivesStressCalendars(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.000 seconds)
+Test case 'NonGregorianCalendarTests/sessionFilteringSurvivesStressCalendars(calendarID:)' passed on 'My Mac - Reading Tracker (47377)' (0.000 seconds)
+Test case 'NonGregorianCalendarTests/gregorianYearBoundsAreExact()' passed on 'My Mac - Reading Tracker (47377)' (0.494 seconds)
+Test case 'CelebrationTimelineTests/standardDurationsMatchSpec()' passed on 'My Mac - Reading Tracker (47377)' (0.494 seconds)
+Test case 'GoalStreakTests/unsetTargetNeverEarns()' passed on 'My Mac - Reading Tracker (47377)' (0.494 seconds)
+Test case 'GoalStreakTests/sixDaysFallShort()' passed on 'My Mac - Reading Tracker (47377)' (0.494 seconds)
+Test case 'GoalStreakTests/sevenConsecutiveQualifyingDaysEarn()' passed on 'My Mac - Reading Tracker (47377)' (0.494 seconds)
+Test case 'DemoProfileServiceTests/catalogShape()' passed on 'My Mac - Reading Tracker (47377)' (0.494 seconds)
+Test case 'ValidatorTests/currentPageClampIsRepaired()' passed on 'My Mac - Reading Tracker (47377)' (0.525 seconds)
+Test case 'GoalStreakTests/interleavedMissesDoNotEarn()' passed on 'My Mac - Reading Tracker (47377)' (0.525 seconds)
+Test case 'ValidatorTests/phantomActiveSessionRepaired()' passed on 'My Mac - Reading Tracker (47377)' (0.525 seconds)
+Test case 'RSVPLogicTests/tokenizerSplitsWords()' passed on 'My Mac - Reading Tracker (47377)' (0.524 seconds)
+Test case 'ValidatorTests/cleanLibraryIsClean()' passed on 'My Mac - Reading Tracker (47377)' (0.525 seconds)
+Test case 'ValidatorTests/zeroTotalPagesIsUnrepairable()' passed on 'My Mac - Reading Tracker (47377)' (0.525 seconds)
+Test case 'RSVPLogicTests/orpAlwaysInBounds()' passed on 'My Mac - Reading Tracker (47377)' (0.525 seconds)
+Test case 'RSVPLogicTests/orpDeepensWithLength()' passed on 'My Mac - Reading Tracker (47377)' (0.525 seconds)
+Test case 'TextExtractionTests/malformedEntityStaysInert()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'ValidatorTests/duplicateIDsAreUnrepairable()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'TextExtractionTests/wordCountNotInflated()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'TextExtractionTests/hexEntityDecodes()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'TextExtractionTests/decimalEntityDecodes()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'TextExtractionTests/stripHTMLPreservesEntities()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'TextExtractionTests/namedEntitiesStillDecode()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'TextExtractionTests/bareDigitCorruptionIsImpossible()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'FatigueAnalyzerTests/overnightWithoutFollowingStaysSilent()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'FatigueAnalyzerTests/sameDayExtendedFiresOnce()' passed on 'My Mac - Reading Tracker (47377)' (0.527 seconds)
+Test case 'FatigueAnalyzerTests/spreadExtendedDoesNotFire()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'FatigueAnalyzerTests/emptyInputYieldsNothing()' passed on 'My Mac - Reading Tracker (47377)' (0.527 seconds)
+Test case 'FatigueAnalyzerTests/interleavedTimelineDoesNotFire()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'WeatherSnapshotNormaliserTests/season_southernHemisphere_june_isWinter()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'FatigueAnalyzerTests/genuineIncreasingRunFires()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'FatigueAnalyzerTests/overnightEmitsDatedAtGapEnd()' passed on 'My Mac - Reading Tracker (47377)' (0.527 seconds)
+Test case 'WeatherSnapshotNormaliserTests/season_allFourSeasons_northern()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'WeatherSnapshotNormaliserTests/season_northernHemisphere_june_isSummer()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'WeatherSnapshotNormaliserTests/stormIndex_clearCalm_isZero()' passed on 'My Mac - Reading Tracker (47377)' (0.526 seconds)
+Test case 'WeatherSnapshotNormaliserTests/dayPeriod_allBands()' passed on 'My Mac - Reading Tracker (47377)' (0.527 seconds)
+Test case 'DemoProfileServiceTests/deterministicOutput()' passed on 'My Mac - Reading Tracker (47377)' (0.528 seconds)
+Test case 'WeatherSnapshotStoreTests/saveAndFetch_roundTrip_preservesAllFields()' passed on 'My Mac - Reading Tracker (47377)' (0.517 seconds)
+Test case 'WeatherSnapshotStoreTests/coverageRatio_partialCoverage()' passed on 'My Mac - Reading Tracker (47377)' (0.523 seconds)
+Test case 'WeatherSnapshotNormaliserTests/stormIndex_clamped_to_1()' passed on 'My Mac - Reading Tracker (47377)' (0.527 seconds)
+Test case 'WeatherSnapshotNormaliserTests/conditionMapping_allCategories_areReachable()' passed on 'My Mac - Reading Tracker (47377)' (0.527 seconds)
+Test case 'WeatherSnapshotNormaliserTests/stormIndex_thunderstorm_highWind_heavyRain_isHigh()' passed on 'My Mac - Reading Tracker (47377)' (0.517 seconds)
+Test case 'WeatherConfidencePinsTests/boundsAreChronologicalRegardlessOfInputOrder()' passed on 'My Mac - Reading Tracker (47377)' (0.517 seconds)
+Test case 'WeatherSnapshotStoreTests/fetchRange_returnsCorrectWindow()' passed on 'My Mac - Reading Tracker (47377)' (0.529 seconds)
+Test case 'WeatherSnapshotStoreTests/save_idempotent_replacesExisting()' passed on 'My Mac - Reading Tracker (47377)' (0.520 seconds)
+Test case 'Reading_TrackerTests/example()' passed on 'My Mac - Reading Tracker (47377)' (0.519 seconds)
+Test case 'WeatherConfidencePinsTests/seasonalStabilityIsDerivedNotConstant()' passed on 'My Mac - Reading Tracker (47377)' (0.519 seconds)
+Test case 'WeatherConfidencePinsTests/coverageRatioFlowsThrough()' passed on 'My Mac - Reading Tracker (47377)' (0.518 seconds)
+Test case 'WeatherConfidencePinsTests/confidenceVariesWithEvidence()' passed on 'My Mac - Reading Tracker (47377)' (0.518 seconds)
+Test case 'WeatherAnalysisEngineIntegrationTests/stormCorrelation_requiresNonZeroStormIndex()' passed on 'My Mac - Reading Tracker (47377)' (0.501 seconds)
+Test case 'WeatherConfidencePinsTests/avoidedGenresAreGenuinelyLowShare()' passed on 'My Mac - Reading Tracker (47377)' (0.518 seconds)
+Test case 'WeatherAnalysisEngineIntegrationTests/seasonalProfiles_requireAllFourSeasons()' passed on 'My Mac - Reading Tracker (47377)' (0.518 seconds)
+Test case 'WeatherAnalysisEngineIntegrationTests/fullCorrelationPipeline_withMinimumSessions_returnsResults()' passed on 'My Mac - Reading Tracker (47377)' (0.561 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.193 seconds)
+Test case 'CelebrationTimelineTests/dismissDuringFullscreenBlocksAutoExit()' passed on 'My Mac - Reading Tracker (47377)' (0.591 seconds)
+Test case 'CelebrationTimelineTests/dismissMidExpandCannotReachAutoExit()' passed on 'My Mac - Reading Tracker (47377)' (0.591 seconds)
+Test case 'CelebrationTimelineTests/fullRunReachesEveryStep()' passed on 'My Mac - Reading Tracker (47377)' (0.591 seconds)
+Test case 'CelebrationTimelineTests/dismissDuringToastSilencesEverything()' passed on 'My Mac - Reading Tracker (47377)' (0.591 seconds)
+Test case 'DemoProfileServiceTests/afternoonDevoteeSignature()' passed on 'My Mac - Reading Tracker (47377)' (0.591 seconds)
+Test case 'RSVPPlaybackEngineTests/seekRepositions()' passed on 'My Mac - Reading Tracker (47377)' (0.591 seconds)
+Test case 'CoverStorePinsTests/importKeepsPayloadLean()' passed on 'My Mac - Reading Tracker (47377)' (0.604 seconds)
+Test case 'ObserverLifecycleTests/startStopCyclesDoNotStackObservers()' passed on 'My Mac - Reading Tracker (47377)' (0.605 seconds)
+Test case 'RebindIdempotenceTests/repeatedBindsAndLiveGoalPropagation()' passed on 'My Mac - Reading Tracker (47377)' (0.605 seconds)
+Test case 'ObserverLifecycleTests/redundantStartsDoNotDuplicateWorkspaceObservers()' passed on 'My Mac - Reading Tracker (47377)' (0.605 seconds)
+Test case 'SchemaEvolutionTests/corruptStateFileIsBackedUp()' passed on 'My Mac - Reading Tracker (47377)' (0.607 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.611 seconds)
+Test case 'SchemaEvolutionTests/legacyStateDecodes()' passed on 'My Mac - Reading Tracker (47377)' (0.646 seconds)
+Test case 'SchemaEvolutionTests/modernRoundTripLossless()' passed on 'My Mac - Reading Tracker (47377)' (0.646 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.221 seconds)
+Test case 'DemoProfileServiceTests/winterRomanticSignature()' passed on 'My Mac - Reading Tracker (47377)' (0.646 seconds)
+Test case 'LibraryMutationTests/duplicateImportRejected()' passed on 'My Mac - Reading Tracker (47377)' (0.655 seconds)
+Test case 'LibraryCollectionTests/membershipToggle()' passed on 'My Mac - Reading Tracker (47377)' (0.665 seconds)
+Test case 'LibraryCollectionTests/removalStripsDanglingReferences()' passed on 'My Mac - Reading Tracker (47377)' (0.665 seconds)
+Test case 'LibraryMutationTests/removingByIdentitiesRemovesExactlyThoseBooks()' passed on 'My Mac - Reading Tracker (47377)' (0.665 seconds)
+Test case 'LibraryCollectionTests/addPersistsAndNormalizes()' passed on 'My Mac - Reading Tracker (47377)' (0.665 seconds)
+Test case 'LibraryCollectionTests/removeUnknownIsNoop()' passed on 'My Mac - Reading Tracker (47377)' (0.665 seconds)
+Test case 'LibraryCollectionTests/renameGuards()' passed on 'My Mac - Reading Tracker (47377)' (0.665 seconds)
+Test case 'RSVPPlaybackEngineTests/loadPublishesFirstWord()' passed on 'My Mac - Reading Tracker (47377)' (0.664 seconds)
+Test case 'CoverStorePinsTests/removeBookCleansCoverFile()' passed on 'My Mac - Reading Tracker (47377)' (0.664 seconds)
+Test case 'SchemaEvolutionTests/legacyBookDecodes()' passed on 'My Mac - Reading Tracker (47377)' (0.665 seconds)
+Test case 'DemoRapidSwitchTests/sentinelPausedDuringMutation()' passed on 'My Mac - Reading Tracker (47377)' (0.664 seconds)
+Test case 'CoverStorePinsTests/migrationExtractsAndClears()' passed on 'My Mac - Reading Tracker (47377)' (0.664 seconds)
+Test case 'CoverStorePinsTests/roundTripThroughFiles()' passed on 'My Mac - Reading Tracker (47377)' (0.664 seconds)
+Test case 'DemoRapidSwitchTests/rapidSwitchesNeverBlend()' passed on 'My Mac - Reading Tracker (47377)' (0.664 seconds)
+Test case 'GoalPersistenceTests/clearingGoalsPersists()' passed on 'My Mac - Reading Tracker (47377)' (0.653 seconds)
+Test case 'GoalPersistenceTests/deadlinesRoundTripAndReplace()' passed on 'My Mac - Reading Tracker (47377)' (0.653 seconds)
+Test case 'DataStorePersistenceTests/corruptFileDe2026-08-26 06:42:43.565704-0400 Reading TrackerUITests-Runner[47390:5950001] [Default] Running tests...
+Test Suite 'All tests' started at 2026-08-26 06:42:43.612.
+Test Suite 'Reading TrackerUITests.xctest' started at 2026-08-26 06:42:43.612.
+Test Suite 'Reading_TrackerUITests' started at 2026-08-26 06:42:43.613.
+Test Case '-[Reading_TrackerUITests.Reading_TrackerUITests testExample]' started.
+    t =     0.00s Start Test at 2026-08-26 06:42:43.613
+    t =     0.10s Set Up
+    t =     0.10s Open johan.Reading-Tracker
+    t =     0.10s     Launch johan.Reading-Tracker
+2026-08-26 06:42:43.822 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-08-26 06:42:43.822 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     0.50s         Wait for accessibility to load
+    t =     1.11s         Setting up automation session
+    t =     1.13s         Wait for johan.Reading-Tracker to idle
+    t =     1.16s Tear Down
+Test Case '-[Reading_TrackerUITests.Reading_TrackerUITests testExample]' passed (1.404 seconds).
+Test Case '-[Reading_TrackerUITests.Reading_TrackerUITests testLaunchPerformance]' started.
+    t =     0.00s Start Test at 2026-08-26 06:42:45.018
+    t =     0.10s Set Up
+    t =     0.10s Open johan.Reading-Tracker
+    t =     0.10s     Launch johan.Reading-Tracker
+    t =     0.10s         Terminate johan.Reading-Tracker:47395
+2026-08-26 06:42:46.147 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-08-26 06:42:46.147 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.43s         Wait for accessibility to load
+    t =     2.03s         Setting up automation session
+    t =     2.04s         Wait for johan.Reading-Tracker to idle
+    t =     3.54s Open johan.Reading-Tracker
+    t =     3.54s     Launch johan.Reading-Tracker
+    t =     3.54s         Terminate johan.Reading-Tracker:47396
+2026-08-26 06:42:49.600 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-08-26 06:42:49.600 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     4.90s         Wait for accessibility to load
+    t =     5.48s         Setting up automation session
+    t =     5.48s         Wait for johan.Reading-Tracker to idle
+    t =     6.31s Open johan.Reading-Tracker
+    t =     6.31s     Launch johan.Reading-Tracker
+    t =     6.31s         Terminate johan.Reading-Tracker:47398
+2026-08-26 06:42:52.359 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-08-26 06:42:52.359 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     7.65s         Wait for accessibility to load
+    t =     8.12s         Setting up automation session
+    t =     8.12s         Wait for johan.Reading-Tracker to idle
+    t =     8.90s Open johan.Reading-Tracker
+    t =     8.90s     Launch johan.Reading-Tracker
+    t =     8.90s         Terminate johan.Reading-Tracker:47399
+2026-08-26 06:42:54.973 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-08-26 06:42:54.973 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =    10.27s         Wait for accessibility to load
+    t =    10.73s         Setting up automation session
+    t =    10.74s         Wait for johan.Reading-Tracker to idle
+    t =    11.55s Open johan.Reading-Tracker
+    t =    11.55s     Launch johan.Reading-Tracker
+    t =    11.55s         Terminate johan.Reading-Tracker:47400
+2026-08-26 06:42:57.607 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-08-26 06:42:57.607 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =    12.91s         Wait for accessibility to load
+    t =    13.40s         Setting up automation session
+    t =    13.41s         Wait for johan.Reading-Tracker to idle
+    t =    14.24s Open johan.Reading-Tracker
+    t =    14.24s     Launch johan.Reading-Tracker
+    t =    14.25s         Terminate johan.Reading-Tracker:47401
+2026-08-26 06:43:00.299 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-08-26 06:43:00.299 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =    15.58s         Wait for accessibility to load
+    t =    16.05s         Setting up automation session
+    t =    16.06s         Wait for johan.Reading-Tracker to idle
+/Users/johanrembeci/Desktop/Reading Tracker Main /Reading TrackerUITests/Reading_TrackerUITests.swift:33: Test Case '-[Reading_TrackerUITests.Reading_TrackerUITests testLaunchPerformance]' measured [Duration (ApplicationLaunch), s] average: 0.637, relative standard deviation: 8.615%, values: [0.746030, 0.599653, 0.618385, 0.608241, 0.612534], performanceMetricID:com.apple.dt.XCTMetric_ApplicationLaunch-ApplicationLaunch.duration, baselineName: "", baselineAverage: , polarity: prefers smaller, maxPercentRegression: 10.000%, maxPercentRelativeStandardDeviation: 10.000%, maxRegression: 0.000, maxStandardDeviation: 0.000
+    t =    16.88s Tear Down
+Test Case '-[Reading_TrackerUITests.Reading_TrackerUITests testLaunchPerformance]' passed (17.205 seconds).
+Test Suite 'Reading_TrackerUITests' passed at 2026-08-26 06:43:02.224.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 18.609 (18.611) seconds
+Test Suite 'Reading_TrackerUITestsLaunchTests' started at 2026-08-26 06:43:02.225.
+Test Case '-[Reading_TrackerUITests.Reading_TrackerUITestsLaunchTests testLaunch]' started.
+    t =     0.00s Setting appearance mode to Light
+    t =     0.78s     Wait for johan.Reading-Tracker to idle
+    t =     0.79s Start Test at 2026-08-26 06:43:03.014
+    t =     0.92s Set Up
+    t =     0.92s Open johan.Reading-Tracker
+    t =     0.92s     Launch johan.Reading-Tracker
+    t =     0.92s         Terminate johan.Reading-Tracker:47403
+2026-08-26 06:43:04.202 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-08-26 06:43:04.202 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     2.31s         Wait for accessibility to load
+    t =     2.77s         Setting up automation session
+    t =     2.78s         Wait for johan.Reading-Tracker to idle
+    t =     2.84s Find the Target Application 'johan.Reading-Tracker'
+    t =     3.20s Added attachment named 'Launch Screen'
+    t =     3.20s Tear Down
+Test Case '-[Reading_TrackerUITests.Reading_TrackerUITestsLaunchTests testLaunch]' passed (3.426 seconds).
+Test Case '-[Reading_TrackerUITests.Reading_TrackerUITestsLaunchTests testLaunch]' started.
+    t =     0.00s Setting appearance mode to Dark
+    t =     0.17s     Wait for johan.Reading-Tracker to idle
+    t =     0.18s Start Test at 2026-08-26 06:43:05.831
+    t =     0.33s Set Up
+    t =     0.33s Open johan.Reading-Tracker
+    t =     0.33s     Launch johan.Reading-Tracker
+    t =     0.33s         Terminate johan.Reading-Tracker:47422
+2026-08-26 06:43:07.041 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-08-26 06:43:07.042 xcodebuild[47362:5949572] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =     1.70s         Wait for accessibility to load
+    t =     2.18s         Setting up automation session
+    t =     2.19s         Wait for johan.Reading-Tracker to idle
+    t =     2.32s Find the Target Application 'johan.Reading-Tracker'
+    t =     2.57s Added attachment named 'Launch Screen'
+    t =     2.57s Tear Down
+Test Case '-[Reading_TrackerUITests.Reading_TrackerUITestsLaunchTests testLaunch]' passed (2.816 seconds).
+Test Suite 'Reading_TrackerUITestsLaunchTests' passed at 2026-08-26 06:43:08.469.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 6.242 (6.244) seconds
+Test Suite 'Reading TrackerUITests.xctest' passed at 2026-08-26 06:43:08.469.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 24.851 (24.857) seconds
+Test Suite 'All tests' passed at 2026-08-26 06:43:08.470.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 24.851 (24.858) seconds
+2026-08-26 06:43:16.849 xcodebuild[47362:5949572] [MT] IDETestOperationsObserverDebug: 35.905 elapsed -- Testing started completed.
+2026-08-26 06:43:16.849 xcodebuild[47362:5949572] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-08-26 06:43:16.849 xcodebuild[47362:5949572] [MT] IDETestOperationsObserverDebug: 35.905 sec, +35.905 sec -- end
+
+Test session results, code coverage, and logs:
+	/Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Logs/Test/Test-Reading Tracker-2026.08.26_06-42-40--0400.xcresult
+
+Failing tests:
+	DurabilityPinsTests.exportImportRoundTrip()
+
+** TEST FAILED **
+
+gradesInsteadOfSilence()' passed on 'My Mac - Reading Tracker (47377)' (0.653 seconds)
+Test case 'DataStorePersistenceTests/unrepairableCorruptionIsNotRepersisted()' passed on 'My Mac - Reading Tracker (47377)' (0.653 seconds)
+Test case 'DataStorePersistenceTests/repairableCorruptionAutosaves()' passed on 'My Mac - Reading Tracker (47377)' (0.653 seconds)
+Test case 'SentinelPinsTests/killSwitchDisablesEverything()' passed on 'My Mac - Reading Tracker (47377)' (0.654 seconds)
+Test case 'DataStorePersistenceTests/roundTripPersistsAndReloads()' passed on 'My Mac - Reading Tracker (47377)' (0.653 seconds)
+Test case 'EnvironmentEngineTests/initialStateReflectsInjectedClock()' passed on 'My Mac - Reading Tracker (47377)' (0.636 seconds)
+Test case 'EnvironmentEngineTests/oneConsumerStopDoesNotFreezeRemainingReader()' passed on 'My Mac - Reading Tracker (47377)' (0.635 seconds)
+Test case 'EnvironmentEngineTests/singleConsumerLifecycle()' passed on 'My Mac - Reading Tracker (47377)' (0.636 seconds)
+Test case 'SentinelPinsTests/stalledFindingsStayStalled()' passed on 'My Mac - Reading Tracker (47377)' (0.655 seconds)
+Test case 'GoalPersistenceTests/goalsRoundTripAcrossRelaunch()' passed on 'My Mac - Reading Tracker (47377)' (0.654 seconds)
+Test case 'SentinelPinsTests/journalAppends()' passed on 'My Mac - Reading Tracker (47377)' (0.655 seconds)
+Test case 'SentinelPinsTests/writeScopeIsConfined()' passed on 'My Mac - Reading Tracker (47377)' (0.655 seconds)
+Test case 'SentinelPinsTests/orphanSessionAutoFixed()' passed on 'My Mac - Reading Tracker (47377)' (0.657 seconds)
+Test case 'DurabilityPinsTests/corruptArchiveRejected()' passed on 'My Mac - Reading Tracker (47377)' (0.637 seconds)
+Test case 'EnvironmentEngineTests/overReleaseIsSafe()' passed on 'My Mac - Reading Tracker (47377)' (0.638 seconds)
+Test case 'DurabilityPinsTests/autoBackupRotates()' passed on 'My Mac - Reading Tracker (47377)' (0.638 seconds)
+Test case 'DurabilityPinsTests/exportImportRoundTrip()' failed on 'My Mac - Reading Tracker (47377)' (0.638 seconds)
+Test case 'SentinelPinsTests/phantomSessionAutoFixed()' passed on 'My Mac - Reading Tracker (47377)' (0.657 seconds)
+Test case 'RSVPPlaybackEngineTests/playPauseLifecycle()' passed on 'My Mac - Reading Tracker (47377)' (0.685 seconds)
+Test case 'DemoProfileServiceTests/everyPersonaIsValidatorClean(id:)' passed on 'My Mac - Reading Tracker (47377)' (0.421 seconds)
+Test suite 'All tests' started on 'My Mac - Reading TrackerUITests-Runner (47390)'
+Test suite 'Reading TrackerUITests.xctest' started on 'My Mac - Reading TrackerUITests-Runner (47390)'
+Test suite 'Reading_TrackerUITests' started on 'My Mac - Reading TrackerUITests-Runner (47390)'
+Test case 'Reading_TrackerUITests.testExample()' passed on 'My Mac - Reading TrackerUITests-Runner (47390)' (1.404 seconds)
+Test case 'Reading_TrackerUITests.testLaunchPerformance()' passed on 'My Mac - Reading TrackerUITests-Runner (47390)' (17.205 seconds)
+Test suite 'Reading_TrackerUITestsLaunchTests' started on 'My Mac - Reading TrackerUITests-Runner (47390)'
+Test case 'Reading_TrackerUITestsLaunchTests.testLaunch()' passed on 'My Mac - Reading TrackerUITests-Runner (47390)' (3.426 seconds)
+Test case 'Reading_TrackerUITestsLaunchTests.testLaunch()' passed on 'My Mac - Reading TrackerUITests-Runner (47390)' (2.816 seconds)

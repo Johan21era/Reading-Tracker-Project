@@ -115,16 +115,21 @@ enum BookImporter {
             BookCoverCapture.fromPDFDocument(doc)
         }.value
 
-        return Book(
+        // FINAL TRACES Upgrade #2: cover goes to the FILE STORE keyed by the
+        // book's id — NOT into the library payload.
+        let newBook = Book(
             title: title,
             author: author,
             fileURL: url,
             fileType: .pdf,
             totalPages: totalPages,
             chapters: chapters,
-            coverImageData: coverData, // captured off-main (P5 + hotfix)
             bookmarkData: bookmarkData
         )
+        if let coverData {
+            CoverStore.shared.store(coverData, forBookID: newBook.id)
+        }
+        return newBook
     }
 
     private static func extractChapters(from outline: PDFOutline, totalPages: Int) -> [Chapter] {
@@ -225,17 +230,21 @@ enum BookImporter {
             }.value
         }
 
-        return Book(
+        let newBook = Book(
             title: metadata.title,
             author: metadata.author,
             fileURL: url,
             fileType: .epub,
             totalPages: estimatedPages,
             chapters: chapters,
-            coverImageData: coverData,
             difficultyProfile: difficulty,
             bookmarkData: bookmarkData
         )
+        // FINAL TRACES Upgrade #2: file-store the cover, keep payload lean.
+        if let coverData {
+            CoverStore.shared.store(coverData, forBookID: newBook.id)
+        }
+        return newBook
     }
 
     // MARK: - EPUB Parsing Helpers

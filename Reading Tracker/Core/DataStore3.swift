@@ -210,6 +210,7 @@ final class DataStore: ObservableObject {
     func removeBook(id: UUID) {
         guard books.contains(where: { $0.id == id }) else { return }
         books.removeAll { $0.id == id }
+        CoverStore.shared.remove(forBookID: id) // FINAL TRACES #2: no orphans
         scheduleSave()
     }
 
@@ -445,6 +446,26 @@ final class DataStore: ObservableObject {
     private func load() {
         loadBooks()
         loadLibraryState()
+        migrateEmbeddedCoversToFiles()
+    }
+
+    /// FINAL TRACES Upgrade #2: one-time per-book extraction of embedded
+    /// cover payloads to the external CoverStore, clearing the payload field
+    /// so saves stop carrying image bytes. Idempotent.
+    private func migrateEmbeddedCoversToFiles() {
+        var migrated = 0
+        for i in books.indices where books[i].coverImageData != nil {
+            let id = books[i].id
+            let data = books[i].coverImageData!
+            if CoverStore.shared.migrateEmbedded(data, forBookID: id) {
+                migrated += 1
+            }
+            books[i].coverImageData = nil
+        }
+        if migrated > 0 {
+            print("[DataStore] Migrated \(migrated) embedded cover(s) to CoverStore.")
+            scheduleSave()
+        }
     }
 
     private func loadBooks() {
