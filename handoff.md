@@ -55,3 +55,12 @@ worst was self-inflicted: ReadingHUD's 1-second tick re-sorted the entire librar
 All five fixed (HUD memoization, cover capture off-main, RSVP extraction off-main, launch backup
 off-main, location watchdog). Suite exit=0, pushed. **Lesson for future sessions: any computed
 property over dataStore.books consumed by a per-second-re-rendering view MUST be memoized.**
+
+
+## SENTINEL ADDENDUM (P6, commit 48e2e7a)
+The admin system is LIVE: deterministic watchdog (8 probes), safe auto-repair dispatcher,
+append-only journal, 'While you were away' launch card, Settings ▸ Sentinel pane.
+Security-first: write-confinement + kill-switch are PINNED TESTS. Release defaults to
+report-only; Debug repairs always. Full doctrine in fix-log §P6. Next session could add:
+Dev Console Sentinel pane (journal browser UI), more probes (genre drift, cover integrity),
+and repair-allowlist expansion — each new repair needs its own Finality + pin.

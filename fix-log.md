@@ -790,3 +790,49 @@ dormant F-05 cousin promoted to live by usage patterns. All fixed, suite green (
 Root-cause honesty: #1–#4 are MY regressions from shipping features fast without profiling the
 per-second re-render path. The memoization pattern should be the template for any future computed
 property over dataStore.books consumed by a frequently-re-rendering view.
+
+---
+
+# P6 — THE SENTINEL (current session) · commit 48e2e7a
+
+Johan's long-wanted admin system, built on the console framework he'd half-finished: a
+deterministic bug watchdog that finds problems, auto-fixes the provably-safe ones,
+and stalls the rest for human review — with "wake up to a report" as the headline feature.
+
+## Architecture
+PROBES (8, pure reads) → CLASSIFIER (autoFixed vs stalled) → DISPATCHER (audited APIs only)
+→ JOURNAL (append-only JSONL). Runs on launch + every N minutes. New file:
+`Core/SentinelEngine.swift` (+ SentinelDataBridge read-seam + report card view).
+
+## Security doctrine (the "never deletes my codebase" guarantee)
+- S1 WRITE CONFINEMENT — engine's only writable artifacts are `sentinel-*` files.
+  PINNED: post-cycle directory diff proves nothing else appears.
+- S2 REVERSIBILITY — backup rotation runs BEFORE any mutation; if snapshotting is
+  impossible, repairs are skipped entirely (not "attempted anyway").
+- S3 APPEND-ONLY journal, atomic temp+rename rotation at 500 entries.
+- S4 STATIC Release strings only; no paths/errors/user text in user-facing copy.
+- S5 KILL SWITCH — `defaults write johan.Reading-Tracker sentinel.enabled -bool false`.
+  PINNED: runCycle fully inert when off (no findings, no writes, no mutations).
+- S6 CONSERVATIVE DEFAULTS — Debug repairs always; Release = monitor+report until
+  the user flips Settings ▸ Sentinel ▸ Allow automatic fixes.
+- S7 DETERMINISM — no network, no randomness in probes.
+
+## SEE IT YOURSELF
+1. **Morning report:** use the app, quit. Next launch, if Sentinel found/fixed anything
+   in the last 12h, a shield card appears at the top of the main window: "Sentinel fixed
+   N issues while you were away" or "...they're safe and waiting."
+2. **Watch it work:** Dev Console (⌘⇧D) → install any persona → kill the app mid-"read"
+   → relaunch after 24h-simulated staleness → card reports the orphan session was closed.
+3. **Kill switch proof:** Terminal command above → relaunch → no card ever appears.
+4. **Journal:** `~/Library/Application Support/ReadTracker/sentinel-journal.jsonl` — one
+   JSON line per finding/cycle.
+
+## En-route fixes (protocol honesty)
+- SentinelDataBridge needed last-attach-wins (tests attach per-fixture; weak ref drops dead stores).
+- IntegrityProbe maps validator codes (B-3/S-5/B-4/LIB-1) → canonical rule names so the
+  dispatcher can match them — first draft had naming mismatch, caught by pins.
+- SwiftUI Section(header:footer:) trailing-closure inference fails with conditionals inside;
+  explicit initializer required.
+
+Pins: SentinelPinsTests ×6 (orphan fix, phantom fix, stalled-stays-stalled,
+write-confinement SECURITY, kill-switch SECURITY, journal JSONL validity).
