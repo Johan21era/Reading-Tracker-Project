@@ -121,6 +121,23 @@ struct ContentView: View {
     @State private var toastVisible: Bool = false
     @State private var pendingToasts: [EarnedAchievement] = []
 
+    // P5 Feature 5: onboarding + library search/sort
+    @AppStorage("onboarding.completed") private var onboardingDismissed = false
+    @State private var showOnboarding = false
+    @State private var searchText = ""
+    @State private var sortMode: LibrarySortMode = .dateAddedDesc
+
+    /// Filtered+sorted sidebar source. Empty search preserves natural order.
+    private var visibleBooks: [Book] {
+        let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
+        let filtered = query.isEmpty ? dataStore.books : dataStore.books.filter {
+            $0.title.lowercased().contains(query) ||
+                $0.author.lowercased().contains(query) ||
+                ($0.series ?? "").lowercased().contains(query)
+        }
+        return filtered.sorted(by: sortMode.sort)
+    }
+
     var body: some View {
         ZStack {
             EnvironmentBackgroundView(engine: environmentEngine)
@@ -128,7 +145,7 @@ struct ContentView: View {
 
             NavigationSplitView {
             List {
-                ForEach(dataStore.books) { book in
+                ForEach(visibleBooks) { book in
                     NavigationLink {
                         if book.fileType == .pdf {
                             PDFReaderScreen(book: book, coordinator: sessionCoordinator)
@@ -145,6 +162,7 @@ struct ContentView: View {
                 .onDelete(perform: deleteItems)
             }
             .navigationSplitViewColumnWidth(min: 180, ideal: 200)
+            .searchable(text: $searchText, placement: .sidebar, prompt: "Search title, author, series")
             .scrollContentBackground(.hidden) // Phase 2 wiring: let the ambient gradient show through
             .toolbar {
                 // ── Existing: Add Book ─────────────────────────────────────
@@ -226,6 +244,20 @@ struct ContentView: View {
                     }
                 }
 
+                // P5 Feature 5: sidebar sort
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Picker("Sort By", selection: $sortMode) {
+                            ForEach(LibrarySortMode.allCases, id: \.self) { mode in
+                                Text(mode.label).tag(mode)
+                            }
+                        }
+                        .pickerStyle(.inline)
+                    } label: {
+                        Label("Sort", systemImage: "arrow.up.arrow.down")
+                    }
+                }
+
                 // ── Phase 2: Library Explorer (progressive filtering + spatial) ──
                 ToolbarItem(placement: .primaryAction) {
                     Button {
@@ -250,6 +282,19 @@ struct ContentView: View {
         }
         } // ZStack — ambient environment sits behind the split view
         .environmentObject(environmentEngine) // Phase 2: downstream consumers read the same instance
+        // P5 Feature 5: first-run wizard when library is empty and never dismissed.
+        .onChange(of: dataStore.books.isEmpty) { _, empty in
+            showOnboarding = empty && !onboardingDismissed
+        }
+        .onAppear {
+            showOnboarding = OnboardingView.shouldShow(
+                books: dataStore.books, dismissed: onboardingDismissed
+            )
+        }
+        .sheet(isPresented: $showOnboarding, onDismiss: { onboardingDismissed = true }) {
+            OnboardingView()
+                .environmentObject(dataStore)
+        }
 
         // ── Import error alert (unchanged) ─────────────────────────────────
         .alert("Import Failed", isPresented: Binding(
@@ -518,6 +563,45 @@ private struct ContentBookRowView: View {
 /// AUDIT §1.2 / TECH_DEBT D1: Release-visible, dismiss-on-fix banner.
 /// Rendered whenever `DataStore.persistenceHealth` is degraded; disappears
 /// only when a save succeeds again. Never auto-dismisses.
+// MARK: - Library Sorting (P5 Feature 5)
+
+enum LibrarySortMode: String, CaseIterable, Identifiable {
+    case dateAddedDesc
+    case dateAddedAsc
+    case titleAsc
+    case titleDesc
+    case author
+    case recentlyRead
+    case progress
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .dateAddedDesc: return "Recently Added"
+        case .dateAddedAsc: return "Oldest Added"
+        case .titleAsc: return "Title A-Z"
+        case .titleDesc: return "Title Z-A"
+        case .author: return "Author"
+        case .recentlyRead: return "Recently Read"
+        case .progress: return "Progress"
+        }
+    }
+
+    func sort(_ a: Book, _ b: Book) -> Bool {
+        switch self {
+        case .dateAddedDesc: return a.dateAdded > b.dateAdded
+        case .dateAddedAsc: return a.dateAdded < b.dateAdded
+        case .titleAsc: return a.title.localizedCaseInsensitiveCompare(b.title) == .orderedAscending
+        case .titleDesc: return a.title.localizedCaseInsensitiveCompare(b.title) == .orderedDescending
+        case .author: return a.author.localizedCaseInsensitiveCompare(b.author) == .orderedAscending
+        case .recentlyRead:
+            return (a.lastReadDate ?? .distantPast) > (b.lastReadDate ?? .distantPast)
+        case .progress: return a.progressFraction > b.progressFraction
+        }
+    }
+}
+
 private struct PersistenceWarningBanner: View {
     let message: String
 
