@@ -23,6 +23,14 @@ struct DemoProfileLabView: View {
     @State private var armInstall = false
     @State private var celebrationFiredNote = false
 
+    /// P6-HOTFIX: installation is heavy work (hundreds of sessions,
+    /// ~100k+ page-timings, full-library encode). It previously ran
+    /// SYNCHRONOUSLY on the main actor inside this view's button handler,
+    /// freezing the whole app for seconds-to-minutes and colliding with
+    /// Sentinel/HUD timers mid-mutation. Now: async, guarded, with progress.
+    @State private var isInstalling = false
+    @State private var installStage: String = "" 
+
     private var selectedPersona: DemoPersona? {
         selectedPersonaID.flatMap { DemoProfileCatalog.persona(withID: $0) }
     }
@@ -91,6 +99,8 @@ struct DemoProfileLabView: View {
                 persona: persona,
                 armed: armInstall,
                 summary: installSummary,
+                isInstalling: isInstalling,
+                installStage: installStage,
                 onArmToggle: { armInstall.toggle() },
                 onInstall: { install(persona) }
             )
@@ -108,13 +118,52 @@ struct DemoProfileLabView: View {
         }
     }
 
+    /// HOTFIX: async pipeline. Generation + encode run detached; only the tiny
+    /// store swap happens on main. Re-entrancy guard makes double-clicks and
+    /// rapid persona-hopping safe (Johan's requirement: profile #1 → #2 → #4,
+    /// repeatedly, must never skip a beat).
     private func install(_ persona: DemoPersona) {
-        do {
-            installSummary = try DemoProfileCatalog.install(profileID: persona.id, into: dataStore)
-            armInstall = false
-        } catch {
+        guard !isInstalling else { return }
+        isInstalling = true
+        armInstall = false
+        installSummary = nil
+
+        let personaID = persona.id
+        let personaName = persona.name
+
+        Task { @MainActor in
+            SentinelDataBridge.shared.beginMutation()
+            defer { SentinelDataBridge.shared.endMutation() }
+
+            installStage = "Generating reading history…"
+
+            // Heavy synthesis off-main. Deterministic per persona id (unchanged).
+            let books: [Book] = await Task.detached(priority: .userInitiated) {
+                let generated = DemoProfileCatalog.generateBooks(
+                    for: persona, referenceDate: Date()
+                )
+                return generated
+            }.value
+
+            installStage = "Writing to library…"
+
+            // Store swap is fast now (value assignment + debounced async save).
+            await MainActor.run {
+                dataStore.debug_replaceLibrary(with: books)
+            }
+
+            installStage = "Rebuilding collections…"
+            _ = try? DemoProfileCatalog.installCollections(for: books, personaName: personaName, into: dataStore)
+
+            let sessionTotal = books.reduce(0) { $0 + $1.sessions.count }
             installSummary = DemoInstallSummary(
-                personaName: "ERROR", bookCount: 0, sessionCount: 0, totalHours: 0)
+                personaName: personaName,
+                bookCount: books.count,
+                sessionCount: sessionTotal,
+                totalHours: books.reduce(0) { $0 + $1.totalReadingTime } / 3600
+            )
+            installStage = ""
+            isInstalling = false
         }
     }
 }
@@ -162,6 +211,8 @@ private struct PersonaDetail: View {
     let persona: DemoPersona
     let armed: Bool
     let summary: DemoInstallSummary?
+    var isInstalling: Bool = false
+    var installStage: String = ""
     let onArmToggle: () -> Void
     let onInstall: () -> Void
 
@@ -239,13 +290,21 @@ private struct PersonaDetail: View {
 
                 HStack {
                     if armed {
-                        Button(role: .destructive) {
-                            onInstall()
-                        } label: {
-                            Label("Confirm — Replace Library", systemImage: "bolt.trianglebadge.exclamationmark")
-                                .font(.system(.callout, design: .monospaced).weight(.semibold))
+                        if isInstalling {
+                            ProgressView()
+                                .controlSize(.small)
+                            Text(installStage)
+                                .font(.system(.caption, design: .monospaced))
+                                .foregroundStyle(ConsolePalette.textSecondary)
+                        } else {
+                            Button(role: .destructive) {
+                                onInstall()
+                            } label: {
+                                Label("Confirm — Replace Library", systemImage: "bolt.trianglebadge.exclamationmark")
+                                    .font(.system(.callout, design: .monospaced).weight(.semibold))
+                            }
+                            Button("Cancel") { onArmToggle() }
                         }
-                        Button("Cancel") { onArmToggle() }
                     } else {
                         Button {
                             onArmToggle()

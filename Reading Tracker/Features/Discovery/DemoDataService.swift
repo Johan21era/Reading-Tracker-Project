@@ -501,23 +501,17 @@ struct DemoInstallSummary {
 
 extension DemoProfileCatalog {
 
+    /// P6-HOTFIX split: generation is now a PURE STATIC (no store access,
+    /// safe on detached tasks); collection rebuild is a separate main-actor
+    /// step. The old monolithic install() did both plus heavy synthesis in one
+    /// synchronous main-thread call — the freeze.
     @discardableResult
-    static func install(
-        profileID: String,
+    static func installCollections(
+        for books: [Book],
+        personaName: String,
         into store: DataStore
-    ) throws -> DemoInstallSummary {
-        guard let persona = persona(withID: profileID) else {
-            throw DemoLabError.unknownProfile(profileID)
-        }
-
-        let books = generateBooks(for: persona)
-
-        // Full persona switch: debug_replaceLibrary ALSO resets LibraryState
-        // (goals/deadlines/achievements/collections) so profiles never blend.
-        store.debug_replaceLibrary(with: books)
-
-        // Rebuild persona-flavored collections AFTER the reset.
-        let shelf = store.addCollection(name: "\(persona.name) Shelf")
+    ) -> DemoInstallSummary {
+        let shelf = store.addCollection(name: "\(personaName) Shelf")
         for book in books.prefix(max(1, books.count / 2)) {
             store.setBook(book.id, membershipIn: shelf.id, isMember: true)
         }
@@ -529,7 +523,7 @@ extension DemoProfileCatalog {
 
         let sessionTotal = books.reduce(0) { $0 + $1.sessions.count }
         return DemoInstallSummary(
-            personaName: persona.name,
+            personaName: personaName,
             bookCount: books.count,
             sessionCount: sessionTotal,
             totalHours: books.reduce(0) { $0 + $1.totalReadingTime } / 3600

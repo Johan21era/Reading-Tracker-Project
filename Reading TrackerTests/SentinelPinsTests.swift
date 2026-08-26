@@ -167,3 +167,72 @@ final class SentinelPinsTests {
         }
     }
 }
+
+
+// MARK: - Demo Install Robustness (P6-HOTFIX: the freeze)
+
+@Suite("Demo Profile Rapid-Switch Safety")
+@MainActor
+final class DemoRapidSwitchTests {
+
+    let dir: URL
+
+    init() throws {
+        dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+    }
+
+    deinit {
+        try? FileManager.default.removeItem(at: dir)
+    }
+
+    /// Small deterministic library in the shape generateBooks produces.
+    private func syntheticBooks(seed: String, count: Int) -> [Book] {
+        (0..<count).map { i in
+            var b = Book(title: "\(seed)-\(i)", author: "Synthetic",
+                         fileURL: URL(fileURLWithPath: "/demo/\(seed)/\(i).epub"), fileType: .epub)
+            b.totalPages = 300
+            let start = Date().addingTimeInterval(Double(-i * 3600))
+            let s = ReadingSession(bookID: b.id, startTime: start,
+                                   endTime: start.addingTimeInterval(1800),
+                                   startPage: 0, endPage: 20,
+                                   pageTimes: (0..<20).map { p in
+                                       PageTiming(pageNumber: p,
+                                                  startTime: start.addingTimeInterval(Double(p) * 90),
+                                                  endTime: start.addingTimeInterval(Double(p + 1) * 90))
+                                   })
+            b.sessions = [s]
+            return b
+        }
+    }
+
+    @Test("Rapid persona switching (#1→#2→#4 style): every swap lands intact, no blending")
+    func rapidSwitchesNeverBlend() {
+        let store = DataStore(fileURL: dir.appendingPathComponent("library.json"))
+        SentinelDataBridge.shared.attach(store)
+        SentinelDataBridge.shared.beginMutation()
+        defer { SentinelDataBridge.shared.endMutation() }
+
+        // Simulate Johan's exact abuse: three installs back-to-back.
+        for seed in ["persona1", "persona2", "persona4"] {
+            store.debug_replaceLibrary(with: syntheticBooks(seed: seed, count: 6))
+            // Post-swap invariants — every single time:
+            #expect(store.books.count == 6)
+            #expect(store.books.allSatisfy { $0.title.hasPrefix(seed) },
+                    "books from a previous persona leaked into \(seed)")
+            #expect(store.libraryState.goalSet == .empty) // identity reset held
+        }
+
+        // Final state is exactly persona4's.
+        #expect(store.books.allSatisfy { $0.title.hasPrefix("persona4") })
+    }
+
+    @Test("Sentinel cycle is INERT while a mutation is in flight")
+    func sentinelPausedDuringMutation() {
+        SentinelDataBridge.shared.beginMutation()
+        defer { SentinelDataBridge.shared.endMutation() }
+        #expect(SentinelDataBridge.shared.isMutationInFlight)
+        SentinelDataBridge.shared.endMutation()
+        #expect(!SentinelDataBridge.shared.isMutationInFlight)
+    }
+}

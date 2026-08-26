@@ -25,5 +25,12 @@ final class SentinelDataBridge {
         self.store = store
     }
 
+    /// P6-HOTFIX: heavy mutations (demo installs) set this to keep Sentinel
+    /// cycles from probing a half-swapped library. Auto-clears on swap end.
+    private(set) var isMutationInFlight = false
+
+    func beginMutation() { isMutationInFlight = true }
+    func endMutation() { isMutationInFlight = false }
+
     private init() {}
 }

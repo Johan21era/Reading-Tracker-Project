@@ -183,6 +183,7 @@ final class SentinelEngine: ObservableObject {
     /// Runs all probes, classifies, dispatches safe repairs, journals results.
     func runCycle() {
         guard isEnabled else { return }
+        guard !SentinelDataBridge.shared.isMutationInFlight else { return } // S7: never probe a torn state
         guard let dataStore = SentinelDataBridge.shared.store else { return }
 
         let context = SentinelContext(

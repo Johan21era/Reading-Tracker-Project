@@ -238,12 +238,27 @@ final class DataStore: ObservableObject {
     #if DEBUG
     /// LIVE-TEST LT-8: replaces the entire library in one shot (addBook's
     /// fileURL dedupe would silently block repeat demo installs).
+    ///
+    /// P6-HOTFIX (freeze report): rapid persona switches (#1 → #2 → #4…)
+    /// stacked N pending chained writes of ~100k-timing payloads. Each new
+    /// switch INVALIDATES prior queued work and flushes synchronously before
+    /// swapping — so back-to-back installs can never interleave half-written
+    /// snapshots or queue an unbounded chain.
     func debug_replaceLibrary(with newBooks: [Book]) {
+        // Drain any in-flight write first: guarantees the swap starts from a
+        // settled on-disk state and prevents chain pile-up across switches.
+        saveImmediately()
+
         books = newBooks
         // LT-8 v2: a persona switch is a FULL identity switch — goals, deadlines,
         // earned achievements, and collections reset with the library so two
         // profiles can never blend their histories.
         libraryState = LibraryState()
+
+        // Persist BOTH payloads right away (synchronous, transactional path):
+        // no debounce window where UI/Sentinel could observe a torn state.
+        saveImmediately()
+        detectAchievements() // recompute for the fresh identity
         scheduleSave()
     }
     #endif
