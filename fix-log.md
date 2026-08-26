@@ -674,3 +674,88 @@ or the exact named line to look for in test output.**
 and at close ✔ · fix-log complete incl. plain-language verification pathways ✔ · CURRENT_AUDIT
 revised ✔ · handoff rewritten ✔ · graphify refreshed ✔ · temp artifacts erased ✔ · no project
 bloat ✔
+
+---
+
+# P5 — Five Production Features (current session)
+
+Johan authorized all five "next-level" production moves. Executed risk-graded (smallest-certainty
+first). Every phase below passed full `xcodebuild test` at its boundary and was pushed to GitHub
+as its own commit. **Every entry includes a SEE IT YOURSELF pathway for non-coders.**
+
+## SHIPPED
+
+### P5-A · Weather intelligence made evidentiary (W-01/W-02/W-03/W-04) · commit 28e9919
+- Aggregate confidence now derives from correlation scores + REAL data-coverage ratio
+  (wired from the Environment panel); correlation date bounds are chronological regardless of
+  input order; "avoided genres" now genuinely means sub-5%-share within a season; and the
+  user-visible "Temperature influence" card stopped being a hardcoded constant.
+- Pins: WeatherConfidencePinsTests ×5. En-route lesson logged: constant-factor fixtures cannot
+  prove correlation logic — fixtures must co-vary.
+- SEE IT YOURSELF: Open Analytics ▸ Environment after ≥5 weather-captured sessions. The numbers
+  on every card are now computed from YOUR data (a sparse library shows visibly lower influence/
+  confidence than a dense one — before this change they were always flattering constants).
+
+### P5-B1 · Cover art + live reading HUD · commit 575a2fe
+- Imports now capture covers automatically: PDF = first-page thumbnail; EPUB = OPF-declared
+  cover (EPUB3 + legacy meta fallback), stored ≤600pt JPEG into Book.coverImageData — the field
+  that existed since v1 but nothing ever wrote. Sidebar rows show real covers (styled placeholder
+  otherwise). NEW ReadingHUD floats while you read: cover, title, live elapsed clock, page
+  position, one-click End Session — driven entirely by existing published state.
+- SEE IT YOURSELF: Import any PDF or EPUB → its cover appears in the sidebar. Open it → top-left
+  corner shows a live panel with your elapsed time ticking each second and current page.
+
+### P5-B2 · RSVP speed reading (full feature per your plan doc) · commit f5ec995
+- Built exactly in rsvp-speed-reading-feature-plan.md's prescribed order: pure logic
+  (NLTokenizer + ORP pivot) → playback engine (WPM, length/punctuation adaptive pacing, seek,
+  restart-on-finish) → UI (pivot-pinned word renderer, scrub bar, Space/←/→/Esc keys) → wiring
+  (hare button streams the CURRENT EPUB chapter or an entire PDF's text; Settings ▸ Speed
+  Reading tab controls toggle + default WPM).
+- Pins: RSVPLogicTests ×6.
+- SEE IT YOURSELF: Open any book → tap the hare icon (EPUB toolbar / PDF bottom-right) → words
+  stream one-at-a-time with the red pivot letter pinned to one fixed spot. Hold nothing; Space
+  pauses, arrows step, Esc exits. Default speed adjustable in ⌘, ▸ Speed Reading.
+
+### P5-C · First-run onboarding + library search/sort · commit 8fb1bea
+- Brand-new users get a 3-step wizard (welcome → import first real book → set daily page goal)
+  that only appears when the library is empty AND never dismissed. Sidebar gains search across
+  title/author/series plus a Sort menu (7 modes incl. Recently Read and Progress).
+- SEE IT YOURSELF: Fresh install (or Dev Console ▸ empty state) launches straight into the
+  wizard. With books present, type in the new sidebar search field; use the arrow.up.arrow.down
+  toolbar button to re-sort.
+
+### P5-D · Data durability: portable archive + auto-backups · commit c4968cb
+- NEW .readingarchive format: Analytics menu ▸ Export Library saves EVERYTHING (books, covers,
+  sessions, goals, deadlines, achievements, collections) as one portable file; Import Library
+  shows a pre-flight summary ("N books, M sessions, goals included") then restores after
+  explicit confirmation. Plus automatic dated backups (newest 10 kept) whenever library content
+  changes — content-hash detected, collision-safe stamps.
+- Pins: DurabilityPinsTests ×3 (round-trip restores covers+goals+collections into a fresh store;
+  corrupt archives rejected cleanly; rotation delta-invariants).
+- CloudKit sync deliberately deferred (needs paid dev team + entitlements); this delivers the
+  durability value backend-agnostically TODAY.
+- SEE IT YOURSELF: Analytics ▸ Export Library… → save the file anywhere. Wipe/reinstall the app
+  → Analytics ▸ Import Library… → pick that file → your entire reading life returns intact.
+  Check ~/Library/Application Support/ReadTracker/Backups/ — dated snapshots appear as you read.
+
+## ATTEMPTED & HONESTLY REVERTED
+
+### P5-G · Storage Engine 2.0 (SQLite) · Finality NOT reached — rolled back
+Built LibrarySQLiteStore (WAL, serialized handles, transactional versioned payloads,
+automatic legacy-JSON migration renaming files *.migrated). Two fix rounds (FULLMUTEX open;
+single-authority load/write rewiring) did not clear the symptom: first test-host launch dies
+SIGTERM mid-suite while the automatic retry iteration passes green — a connection-lifecycle
+race under the test environment's SQLITE_ENABLE_THREAD_ASSERTIONS. Per Confidence Rules,
+Finality not reached ⇒ reverted to the proven engine (D6 async chained writes already made it
+fast). Zero user impact; no commit ever shipped it. Reopened for a dedicated session with three
+prescribed design changes: dedicated serial queue owned by the store, explicit teardown (not
+deinit), stress suite BEFORE rewiring.
+
+## Feature #4 note (intelligence surfacing)
+The recommendation panel audit concern was STALE — RecommendationPanel already runs the live V3
+engine end-to-end. Combined with P5-A, the "dormant intelligence" item is materially closed
+except BCE V3's UI activation (BehaviorContextEngine2 remains a whole-file no-touch zone under
+current tooling — documented previously).
+
+## Final verification: xcodebuild test exit=0 on the restored baseline. Working tree clean,
+pushed through 8fb1bea/c4968cb lineage to origin/main.

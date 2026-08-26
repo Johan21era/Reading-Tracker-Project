@@ -1,17 +1,17 @@
 # Reading Tracker — Project Tree
 
-**Regenerated:** RA-002 remediation session close-out (all four roadmap phases complete).
+**Regenerated:** P5 close-out (five production features; four shipped + one honestly reverted).
 
 | Target | Swift files | Non-blank/non-comment LOC |
 |---|---|---|
-| Reading Tracker (app) | 85 | ~26,411 |
-| Reading TrackerTests | 12 | ~1,230 |
-| Reading TrackerUITests | 2 | ~37 |
-| **Total** | **99** | **~27,678** |
+| Reading Tracker (app) | 92 | ~27,489 |
+| Reading TrackerTests | 15 | ~1,610 |
+| **Total** | **107** | **~29,099** |
 
-Notable changes this session: NEW `Features/Goals/SettingsRootView.swift` (goal/deadline editors),
-NEW `Reading Tracker/PrivacyInfo.xcprivacy`, NEW `RemediationPinsTests.swift`,
-`default.profraw` removed. Full detail: fix-log.md §RA-002.
+New this session: Features/RSVP/ (tokenizer+engine+reader), Features/Onboarding/,
+Features/Sessions/ReadingHUD.swift, Core/BookCoverSupport.swift,
+Core/LibraryArchiveManager.swift. Tests: WeatherConfidencePinsTests,
+RSVPLogicTests, DurabilityPinsTests. See fix-log §P5.
 
 ```
 Reading Tracker Main/
@@ -40,8 +40,10 @@ Reading Tracker Main/
 |   |   `-- Contents.json
 |   |-- Core/
 |   |   |-- Book2.swift
+|   |   |-- BookCoverSupport.swift
 |   |   |-- DataIntegrityValidator.swift
 |   |   |-- DataStore3.swift
+|   |   |-- LibraryArchiveManager.swift
 |   |   `-- SharedTextUtilities.swift
 |   |-- Engines/
 |   |   |-- AnalyticsEngine.swift
@@ -101,6 +103,8 @@ Reading Tracker Main/
 |   |   |-- Notifications/
 |   |   |   |-- IntelligentNotificationEngine.swift
 |   |   |   `-- NotificationScheduler2.swift
+|   |   |-- Onboarding/
+|   |   |   `-- OnboardingView.swift
 |   |   |-- Reader/
 |   |   |   |-- EPUBPackage.swift
 |   |   |   |-- EPUBReaderScreen.swift
@@ -113,7 +117,12 @@ Reading Tracker Main/
 |   |   |   |-- AnnualReportData2.swift
 |   |   |   |-- AnnualReportView.swift
 |   |   |   `-- NewYearTransitionMonitor.swift
+|   |   |-- RSVP/
+|   |   |   |-- RSVPPlaybackEngine.swift
+|   |   |   |-- RSVPReaderView.swift
+|   |   |   `-- RSVPTokenizer.swift
 |   |   `-- Sessions/
+|   |       |-- ReadingHUD.swift
 |   |       |-- SessionCoordinator2.swift
 |   |       |-- SessionEventRouter2.swift
 |   |       `-- SessionHistoryView.swift
@@ -135,6 +144,7 @@ Reading Tracker Main/
 |-- Reading TrackerTests/
 |   |-- CelebrationTimelineTests.swift
 |   |-- DemoProfileServiceTests.swift
+|   |-- DurabilityPinsTests.swift
 |   |-- EnvironmentEngineTests.swift
 |   |-- FatigueAnalyzerTests.swift
 |   |-- LibraryCollectionTests.swift
@@ -142,8 +152,10 @@ Reading Tracker Main/
 |   |-- Reading_TrackerTests.swift
 |   |-- ReliabilityTests.swift
 |   |-- RemediationPinsTests.swift
+|   |-- RSVPLogicTests.swift
 |   |-- SchemaEvolutionTests.swift
 |   |-- TextExtractionTests.swift
+|   |-- WeatherConfidencePinsTests.swift
 |   `-- WeatherTests.swift
 |-- Reading TrackerUITests/
 |   |-- Reading_TrackerUITests.swift
