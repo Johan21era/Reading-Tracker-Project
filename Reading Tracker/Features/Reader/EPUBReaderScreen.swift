@@ -33,6 +33,10 @@ struct EPUBReaderScreen: View {
     /// disappear, exactly like the previous implementation's loadTask.
     @State private var openTask: Task<Void, Never>?
 
+    /// P5 Feature 3: RSVP speed-reading over the CURRENT chapter.
+    @AppStorage("rsvp.enabled") private var rsvpEnabled = true
+    @State private var rsvpText: String?
+
     private let logger = Logger(
         subsystem: Bundle.main.bundleIdentifier ?? "ReadingTracker",
         category: "EPUBReaderScreen"
@@ -237,6 +241,15 @@ struct EPUBReaderScreen: View {
             }
 
             ToolbarItemGroup(placement: .primaryAction) {
+                if rsvpEnabled {
+                    Button {
+                        loadRSVPText()
+                    } label: {
+                        Image(systemName: "hare")
+                    }
+                    .help("Speed-read this chapter (RSVP)")
+                    .disabled(package == nil)
+                }
                 Button {
                     showingInfo = true
                 } label: {
@@ -249,6 +262,28 @@ struct EPUBReaderScreen: View {
                 }
             }
         }
+        // P5 Feature 3: RSVP overlay (sheet — fullScreenCover is not a
+        // native macOS SwiftUI presentation).
+        .sheet(isPresented: Binding(
+            get: { rsvpText != nil },
+            set: { if !$0 { rsvpText = nil } }
+        )) {
+            if let text = rsvpText {
+                RSVPReaderView(text: text) { rsvpText = nil }
+                    .frame(minWidth: 720, minHeight: 520)
+            }
+        }
+    }
+
+    /// Extracts plain text from the current chapter for RSVP streaming.
+    private func loadRSVPText() {
+        guard let package,
+              let url = package.fileURL(forChapterAt: currentChapterIndex),
+              let data = try? Data(contentsOf: url),
+              let html = String(data: data, encoding: .utf8) else { return }
+        let plain = stripHTML(html)
+        guard !plain.isEmpty else { return }
+        rsvpText = plain
     }
 
     private var chapterListPopover: some View {

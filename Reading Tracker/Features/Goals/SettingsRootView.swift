@@ -36,6 +36,11 @@ struct SettingsRootView: View {
                 .tabItem {
                     Label("Deadlines", systemImage: "calendar.badge.clock")
                 }
+
+            RSVPSettingsPane()
+                .tabItem {
+                    Label("Speed Reading", systemImage: "hare")
+                }
         }
         .padding(20)
         .frame(minWidth: 560, minHeight: 430)
@@ -278,5 +283,39 @@ struct DeadlineEditorPane: View {
         if days < 0 { return .red }
         if days <= 7 { return .orange }
         return .accentColor
+    }
+}
+
+
+// MARK: - RSVP Settings (P5 Feature 3 — plan §4: single toggle + WPM)
+
+struct RSVPSettingsPane: View {
+    @AppStorage("rsvp.enabled") private var isEnabled = true
+    @AppStorage("rsvp.wpm") private var wordsPerMinute: Double = 300
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle("Show Speed Read controls in readers", isOn: $isEnabled)
+            } footer: {
+                Text("RSVP streams one word at a time at a fixed point, removing eye travel. Great for articles and re-reading; comprehension research suggests treating it as a complement to normal reading, not a replacement.")
+            }
+
+            if isEnabled {
+                Section("Default Speed") {
+                    Slider(value: $wordsPerMinute, in: 150 ... 800, step: 25) {
+                        Text("Words per minute")
+                    } minimumValueLabel: {
+                        Text("150")
+                    } maximumValueLabel: {
+                        Text("800")
+                    }
+                    Text("\(Int(wordsPerMinute)) WPM")
+                        .font(.title3.weight(.semibold))
+                        .monospacedDigit()
+                }
+            }
+        }
+        .formStyle(.grouped)
     }
 }

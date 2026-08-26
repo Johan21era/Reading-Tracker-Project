@@ -316,6 +316,11 @@ struct PDFReaderScreen: View {
     /// TASK 19: Populated when PDFReaderView signals a load failure.
     @State private var errorMessage: String?
 
+    /// P5 Feature 3: RSVP speed-reading over the extracted document text.
+    @AppStorage("rsvp.enabled") private var rsvpEnabled = true
+    @State private var rsvpText: String?
+    @State private var showingRSVP = false
+
     init(book: Book, coordinator: SessionCoordinator) {
         self.book = book
         self.coordinator = coordinator
@@ -360,8 +365,43 @@ struct PDFReaderScreen: View {
                 )
             }
         }
+        .overlay(alignment: .bottomTrailing) {
+            // P5 Feature 3: RSVP launcher floats bottom-right (dismantle-safe:
+            // independent of PDFView teardown).
+            if rsvpEnabled, errorMessage == nil {
+                Button {
+                    loadRSVPText()
+                } label: {
+                    Label("Speed Read", systemImage: "hare")
+                        .labelStyle(.iconOnly)
+                }
+                .buttonStyle(.borderedProminent)
+                .padding(16)
+                .help("Speed-read this document (RSVP)")
+            }
+        }
+        .sheet(isPresented: $showingRSVP) {
+            if let text = rsvpText {
+                RSVPReaderView(text: text) { showingRSVP = false }
+                    .frame(minWidth: 720, minHeight: 520)
+            }
+        }
         .onDisappear {
             coordinator.endCurrentSession()
         }
+    }
+
+    /// Extracts the document's full text for RSVP streaming.
+    private func loadRSVPText() {
+        guard let resolvedURL = book.resolveURL() else { return }
+        let didStart = resolvedURL.startAccessingSecurityScopedResource()
+        defer { if didStart { resolvedURL.stopAccessingSecurityScopedResource() } }
+
+        guard let doc = PDFDocument(url: resolvedURL) else { return }
+        let extracted = (0 ..< doc.pageCount).compactMap { doc.page(at: $0)?.string }
+        let joined = extracted.joined(separator: "\n\n")
+        guard !joined.isEmpty else { return }
+        rsvpText = joined
+        showingRSVP = true
     }
 }
