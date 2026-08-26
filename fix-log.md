@@ -857,3 +857,32 @@ immediately switch to Speed Demon and confirm, then Goal Crusher, as fast as you
 The app stays responsive throughout (spinner + stage text per install), every swap lands
 completely (no blended books), and nothing hangs.
 PINS: DemoRapidSwitchTests ×2. TEST SUCCEEDED exit=0.
+
+---
+
+# P6-HOTFIX v2 — THE ACTUAL ROOT CAUSE · "still exactly the same" report
+
+Johan re-tested: freeze identical despite v1. Dug one layer deeper and found it:
+**SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor** (project.pbxproj). Every function without an
+explicit annotation is main-actor-isolated — including the closures inside Task.detached and
+every model initializer they call. My v1 "background" pipeline therefore performed ~1 MILLION
+serialized hops back to the main thread (rng.next() ×500k, PageTiming.init ×185k, session/date
+math…). The heavy work never left the main thread; the UI starved identically. Lesson logged:
+in MainActor-default projects, `Task.detached` alone is NOT enough — every function ON THE PATH
+must be explicitly `nonisolated`.
+
+FIXED (commit "HOTFIX v2"):
+- A: `nonisolated` on Book/ReadingSession/PageTiming/Chapter inits + generateBooks +
+  demoChapters + SeededRNG methods + spec(). Synthesis now truly leaves main.
+- B: Library ENCODE also moved off-main — enqueueWrite takes an encode thunk executed inside
+  the detached task (~185k-timing encode was itself a multi-second main stall per install).
+  Value snapshots captured sync; chained ordering intact.
+- C: debug_replaceLibrary simplified to scheduleSave(); rapid hops coalesce behind one job.
+
+SEE IT YOURSELF: same abuse as before — Confirm Winter Romantic, immediately hop to Speed
+Demon, then Goal Crusher. UI stays live throughout (stage labels animate), installs land
+cleanly, no blending. If THIS build still freezes on Winter Romantic, next diagnostic step is
+Instruments Time Profiler during install — but the hop-count math says this was the wall.
+
+PINS: unchanged suites all green (exit=0). The isolation fix is compiler-enforced: any future
+regression reintroduces a MainActor hop on these paths and the build breaks loudly.
