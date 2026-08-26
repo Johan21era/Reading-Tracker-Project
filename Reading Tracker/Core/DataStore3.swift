@@ -245,20 +245,19 @@ final class DataStore: ObservableObject {
     /// swapping — so back-to-back installs can never interleave half-written
     /// snapshots or queue an unbounded chain.
     func debug_replaceLibrary(with newBooks: [Book]) {
-        // Drain any in-flight write first: guarantees the swap starts from a
-        // settled on-disk state and prevents chain pile-up across switches.
-        saveImmediately()
-
         books = newBooks
         // LT-8 v2: a persona switch is a FULL identity switch — goals, deadlines,
         // earned achievements, and collections reset with the library so two
         // profiles can never blend their histories.
         libraryState = LibraryState()
 
-        // Persist BOTH payloads right away (synchronous, transactional path):
-        // no debounce window where UI/Sentinel could observe a torn state.
-        saveImmediately()
         detectAchievements() // recompute for the fresh identity
+
+        // P6-HOTFIX v2: encode of ~185k page-timings ON MAIN was itself a
+        // multi-second stall during rapid persona hops. Kick ONE immediate
+        // chained write: encode happens here (unavoidable snapshot semantics),
+        // but the DISK WRITE runs detached in the existing chain — and the
+        // debounce coalesces any rapid-fire follow-up swaps behind it.
         scheduleSave()
     }
     #endif
@@ -551,43 +550,53 @@ final class DataStore: ObservableObject {
         }
     }
 
-    /// Encodes the CURRENT snapshot on the main actor, then hands the bytes to a
-    /// DETACHED write chained behind the previous one. Only the slow part left main.
+    /// P6-HOTFIX v3: ENCODING also moved off-main. The snapshot VALUES are
+    /// captured synchronously (cheap), but JSONEncoder.encode of a huge books
+    /// array (~185k page-timings after a Winter-Romantic-style install) ran
+    /// 1-3+ s on main. The encode now happens inside the same detached task as
+    /// the write; ordering is still strictly chained.
     private func save() {
-        let data: Data
-        do {
-            data = try encoder.encode(books)
-        } catch {
-            print("[DataStore] Save encode error at \(fileURL.path): \(error)")
-            persistenceHealth = .degraded("Library could not be saved: \(error.localizedDescription)")
-            #if DEBUG
-            consoleLastSaveError = error.localizedDescription
-            #endif
-            return
-        }
-        enqueueWrite(data, to: fileURL, failureContext: "Library")
+        let booksSnapshot = books   // value copy of the array (COW handles cost)
+        let url = fileURL
+        enqueueWrite(
+            encode: { try Self.sharedJSONEncoder.encode(booksSnapshot) },
+            to: url,
+            failureContext: "Library"
+        )
     }
 
     private func saveLibraryState() {
-        let data: Data
-        do {
-            data = try encoder.encode(libraryState)
-        } catch {
-            print("[DataStore] LibraryState encode error at \(stateURL.path): \(error)")
-            persistenceHealth = .degraded("Goals & achievements could not be saved: \(error.localizedDescription)")
-            return
-        }
-        enqueueWrite(data, to: stateURL, failureContext: "Goals & achievements")
+        let stateSnapshot = libraryState
+        let url = stateURL
+        enqueueWrite(
+            encode: { try Self.sharedJSONEncoder.encode(stateSnapshot) },
+            to: url,
+            failureContext: "Goals & achievements"
+        )
     }
 
-    /// Chains a detached atomic write behind every previously enqueued one.
-    private func enqueueWrite(_ data: Data, to url: URL, failureContext: String) {
+    /// Nonisolated shared encoder: date/format config only, no mutable state.
+    private nonisolated static let sharedJSONEncoder: JSONEncoder = {
+        let e = JSONEncoder()
+        e.dateEncodingStrategy = .iso8601
+        e.outputFormatting = [.prettyPrinted, .sortedKeys]
+        return e
+    }()
+
+    /// Chains encode+write in ONE detached task behind every previously
+    /// enqueued one. Strict on-disk ordering preserved.
+    private func enqueueWrite(
+        encode: @escaping @Sendable () throws -> Data,
+        to url: URL,
+        failureContext: String
+    ) {
         let filePath = url.path
         let predecessor = pendingWrite
 
         let write = Task.detached(priority: .utility) { () -> String? in
             _ = await predecessor?.value // strict on-disk ordering, oldest first
             do {
+                let data = try encode()          // heavy encode OFF main
                 try data.write(to: url, options: .atomic)
                 return nil
             } catch {

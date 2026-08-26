@@ -27,23 +27,23 @@ import Foundation
 
 struct SeededRNG {
     private var state: UInt64
-    init(seed: String) {
+    nonisolated init(seed: String) {
         var h: UInt64 = 0xcbf29ce484222325
         for b in seed.utf8 { h = (h ^ UInt64(b)) &* 0x100000001b3 }
         state = h
     }
-    mutating func next() -> UInt64 {
+    nonisolated mutating func next() -> UInt64 {
         state &+= 0x9E3779B97F4A7C15
         var z = state
         z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
         z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
         return z ^ (z >> 31)
     }
-    mutating func double() -> Double { Double(next() % 1_000_000) / 1_000_000 }
-    mutating func int(in range: ClosedRange<Int>) -> Int {
+    nonisolated mutating func double() -> Double { Double(next() % 1_000_000) / 1_000_000 }
+    nonisolated mutating func int(in range: ClosedRange<Int>) -> Int {
         range.lowerBound + Int(next() % UInt64(range.count))
     }
-    mutating func pickWeighted(_ weights: [Double]) -> Int {
+    nonisolated mutating func pickWeighted(_ weights: [Double]) -> Int {
         let total = weights.reduce(0, +)
         guard total > 0 else { return 0 }
         var roll = double() * total
@@ -106,7 +106,7 @@ struct DemoBookSpec {
     let series: String?
 }
 
-private func spec(_ t: String, _ a: String, _ g: ReadingGenre, _ p: Int, _ h: Double, done: Bool = false, series: String? = nil) -> DemoBookSpec {
+private nonisolated func spec(_ t: String, _ a: String, _ g: ReadingGenre, _ p: Int, _ h: Double, done: Bool = false, series: String? = nil) -> DemoBookSpec {
     DemoBookSpec(title: t, author: a, genre: g, totalPages: p, totalHours: h, completed: done, series: series)
 }
 
@@ -341,7 +341,7 @@ extension DemoProfileCatalog {
     /// Deterministically synthesizes a full library for a persona.
     /// Validator-clean by construction: totalPages > 0, currentPage clamped to
     /// valid range, every session closed, no orphan page-timings.
-    static func generateBooks(
+    nonisolated static func generateBooks(
         for persona: DemoPersona,
         referenceDate: Date = Date()
     ) -> [Book] {
@@ -471,7 +471,7 @@ extension DemoProfileCatalog {
         }
     }
 
-    private static func demoChapters(totalPages: Int) -> [Chapter] {
+    private nonisolated static func demoChapters(totalPages: Int) -> [Chapter] {
         let chapterCount = max(6, totalPages / 40)
         let span = totalPages / chapterCount
         return (0..<chapterCount).map { i in

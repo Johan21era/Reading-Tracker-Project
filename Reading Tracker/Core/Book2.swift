@@ -146,7 +146,7 @@ struct Book: Identifiable, Codable, Hashable {
 
     // MARK: - Init
 
-    init(
+    nonisolated init(
         id: UUID = UUID(),
         title: String,
         author: String,
@@ -346,7 +346,7 @@ struct Chapter: Identifiable, Codable, Hashable {
         max(0, endPage - startPage + 1)
     }
 
-    init(id: UUID = UUID(), title: String, index: Int, startPage: Int, endPage: Int) {
+    nonisolated init(id: UUID = UUID(), title: String, index: Int, startPage: Int, endPage: Int) {
         self.id = id
         self.title = title
         self.index = index
@@ -390,7 +390,7 @@ struct ReadingSession: Identifiable, Codable, Hashable {
         return timed.reduce(0) { $0 + $1.duration } / Double(timed.count)
     }
 
-    init(
+    nonisolated init(
         id: UUID = UUID(),
         bookID: UUID,
         startTime: Date = Date(),
@@ -428,7 +428,7 @@ struct PageTiming: Identifiable, Codable, Hashable {
         endTime == nil
     }
 
-    init(id: UUID = UUID(), pageNumber: Int, startTime: Date = Date(), endTime: Date? = nil) {
+    nonisolated init(id: UUID = UUID(), pageNumber: Int, startTime: Date = Date(), endTime: Date? = nil) {
         self.id = id
         self.pageNumber = pageNumber
         self.startTime = startTime
