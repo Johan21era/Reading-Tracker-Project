@@ -145,11 +145,16 @@ final class DataStore: ObservableObject {
 
         load()
 
-        // P5 Feature 1: roll an automatic dated backup if content changed.
-        LibraryArchiveManager.shared.performAutoBackupIfNeeded(
-            booksURL: self.fileURL,   // qualify: init param `fileURL` is URL? and shadows here
-            stateURL: self.stateURL
-        )
+        // P5 Feature 1 + HOTFIX (stall report): auto-backup is file-copy I/O;
+        // it now runs on a background task instead of stalling launch on main.
+        let booksFile = self.fileURL   // qualify: init param shadows the property
+        let stateFile = self.stateURL
+        Task.detached(priority: .utility) {
+            LibraryArchiveManager.performAutoBackupIfNeeded(
+                booksURL: booksFile,
+                stateURL: stateFile
+            )
+        }
 
         #if DEBUG
         DeveloperConsoleRegistry.shared.register(self)

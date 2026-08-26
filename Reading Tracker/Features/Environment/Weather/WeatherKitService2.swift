@@ -700,9 +700,20 @@ final class LocationProvider: NSObject, CLLocationManagerDelegate {
     }
 
     private func fetchOneTimeLocation() async throws -> CLLocation {
-        return try await withCheckedThrowingContinuation { continuation in
+        // HOTFIX (stall report): if CLLocationManager never delivers a callback
+        // (radio off, driver hiccup), the queued continuation previously hung
+        // FOREVER, wedging every awaiting task behind it. A 30 s watchdog now
+        // fails the queue instead of hanging it. F-05's exactly-once drain is
+        // preserved: resumePending clears the queue before resuming.
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<CLLocation, Error>) in
             pendingContinuations.append(continuation)
             manager.requestLocation()
+
+            Task { [weak self] in
+                try? await Task.sleep(for: .seconds(30))
+                guard let self, !self.pendingContinuations.isEmpty else { return }
+                self.resumePending(throwing: LocationError.timeout)
+            }
         }
     }
 
@@ -754,6 +765,7 @@ final class LocationProvider: NSObject, CLLocationManagerDelegate {
 
     enum LocationError: Error {
         case permissionDenied
+        case timeout
     }
 }
 

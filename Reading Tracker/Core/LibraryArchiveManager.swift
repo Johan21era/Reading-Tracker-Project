@@ -66,8 +66,6 @@ final class LibraryArchiveManager: ObservableObject {
     private static let formatVersion = 1
     private static let maxBackups = 10
 
-    @Published private(set) var lastBackupDate: Date?
-
     private init() {}
 
     // MARK: Export
@@ -118,7 +116,12 @@ final class LibraryArchiveManager: ObservableObject {
     /// Called by DataStore after successful loads/saves. Rolls a dated copy of
     /// the CURRENT files into Application Support/Backups/, keeping the newest
     /// `maxBackups`. Cheap: two small copies, only when content actually changed.
-    func performAutoBackupIfNeeded(booksURL: URL, stateURL: URL) {
+    ///
+    /// P5 HOTFIX (stall report): converted to a nonisolated STATIC function
+    /// so callers can run it on a BACKGROUND task — it previously executed
+    /// file-copy I/O synchronously on the main actor during DataStore.init,
+    /// stalling launch on slow disks.
+    nonisolated static func performAutoBackupIfNeeded(booksURL: URL, stateURL: URL) {
         let fm = FileManager.default
         guard fm.fileExists(atPath: booksURL.path) else { return }
 
@@ -169,14 +172,13 @@ final class LibraryArchiveManager: ObservableObject {
                 )
             }
             try signature.write(to: marker, atomically: true, encoding: .utf8)
-            lastBackupDate = Date()
             pruneOldBackups(in: backupsDir)
         } catch {
             print("[ArchiveManager] auto-backup failed: \(error)")
         }
     }
 
-    private func pruneOldBackups(in dir: URL) {
+    private nonisolated static func pruneOldBackups(in dir: URL) {
         let fm = FileManager.default
         guard let contents = try? fm.contentsOfDirectory(
             at: dir,

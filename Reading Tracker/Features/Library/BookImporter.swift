@@ -63,14 +63,16 @@ enum BookImporter {
 
         switch url.pathExtension.lowercased() {
         case "epub": return try await importEPUB(url: url)
-        case "pdf": return try importPDF(url: url)
+        case "pdf": return try await importPDF(url: url)
         default: throw ImportError.unsupportedFileType(url.pathExtension)
         }
     }
 
     // MARK: - PDF Import
 
-    static func importPDF(url: URL) throws -> Book {
+    /// HOTFIX (stall report): now async so cover rasterization can run
+    /// off-main. Sole caller importBook already awaits.
+    static func importPDF(url: URL) async throws -> Book {
         guard let doc = PDFDocument(url: url) else { throw ImportError.pdfOpenFailure }
 
         let totalPages = doc.pageCount
@@ -107,6 +109,12 @@ enum BookImporter {
                 "Check that the app has the com.apple.security.files.bookmarks.app-scope entitlement.")
         }
 
+        // HOTFIX (stall report): PDF page rasterization is expensive; run it on
+        // a detached task instead of stalling main during import.
+        let coverData = await Task.detached(priority: .utility) {
+            BookCoverCapture.fromPDFDocument(doc)
+        }.value
+
         return Book(
             title: title,
             author: author,
@@ -114,7 +122,7 @@ enum BookImporter {
             fileType: .pdf,
             totalPages: totalPages,
             chapters: chapters,
-            coverImageData: BookCoverCapture.fromPDFDocument(doc), // P5
+            coverImageData: coverData, // captured off-main (P5 + hotfix)
             bookmarkData: bookmarkData
         )
     }
@@ -206,12 +214,15 @@ enum BookImporter {
                 "Check that the app has the com.apple.security.files.bookmarks.app-scope entitlement.")
         }
 
-        // P5 Feature 3: load the OPF-declared cover relative to the OPF itself.
+        // P5 Feature 3 + HOTFIX (stall report): image decode/rasterize runs
+        // off-main; importEPUB is already async so this is a free win.
         var coverData: Data?
         if let coverHref = metadata.coverHref {
             let coverURL = opfURL.deletingLastPathComponent()
                 .appendingPathComponent(coverHref.removingPercentEncoding ?? coverHref)
-            coverData = BookCoverCapture.fromFile(coverURL)
+            coverData = await Task.detached(priority: .utility) {
+                BookCoverCapture.fromFile(coverURL)
+            }.value
         }
 
         return Book(
@@ -399,6 +410,8 @@ enum BookImporter {
 
 // MARK: - Cover Art Capture (P5 Feature 3)
 
+// HOTFIX note: NSBitmapImageRep/NSImage draw are thread-safe here; these helpers
+// are intentionally nonisolated so they can run inside detached tasks.
 enum BookCoverCapture {
     /// JPEG budget: sharp at pane sizes, small on disk (a few hundred books ~ few MB).
     private static let maxDimension: CGFloat = 600

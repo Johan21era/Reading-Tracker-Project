@@ -127,15 +127,27 @@ struct ContentView: View {
     @State private var searchText = ""
     @State private var sortMode: LibrarySortMode = .dateAddedDesc
 
-    /// Filtered+sorted sidebar source. Empty search preserves natural order.
+    /// Filtered+sorted sidebar source.
+    /// HOTFIX (stall report): this was a computed property — the Reading HUD's
+    /// once-per-second elapsed-time tick re-evaluated ContentView, which
+    /// re-filtered AND re-sorted the ENTIRE library every second on main.
+    /// Now memoized: recompute ONLY when books/search/sort actually change.
+    @State private var cachedVisibleBooks: [Book] = []
+    @State private var cacheSignature: String = ""
+
     private var visibleBooks: [Book] {
-        let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
-        let filtered = query.isEmpty ? dataStore.books : dataStore.books.filter {
-            $0.title.lowercased().contains(query) ||
-                $0.author.lowercased().contains(query) ||
-                ($0.series ?? "").lowercased().contains(query)
+        let signature = "\(dataStore.books.count)|\(dataStore.books.reduce(0) { $0 &+ $1.id.hashValue })|\(searchText)|\(sortMode.rawValue)"
+        if signature != cacheSignature {
+            let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
+            let filtered = query.isEmpty ? dataStore.books : dataStore.books.filter {
+                $0.title.lowercased().contains(query) ||
+                    $0.author.lowercased().contains(query) ||
+                    ($0.series ?? "").lowercased().contains(query)
+            }
+            cachedVisibleBooks = filtered.sorted(by: sortMode.sort)
+            cacheSignature = signature
         }
-        return filtered.sorted(by: sortMode.sort)
+        return cachedVisibleBooks
     }
 
     // P5 Feature 1: durability

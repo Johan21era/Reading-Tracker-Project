@@ -392,16 +392,32 @@ struct PDFReaderScreen: View {
     }
 
     /// Extracts the document's full text for RSVP streaming.
+    /// HOTFIX (stall report): whole-document text extraction is O(pages) and
+    /// previously ran on main — a large PDF froze the app solid. Now detached;
+    /// the security scope travels with the task and is released inside it.
     private func loadRSVPText() {
         guard let resolvedURL = book.resolveURL() else { return }
-        let didStart = resolvedURL.startAccessingSecurityScopedResource()
-        defer { if didStart { resolvedURL.stopAccessingSecurityScopedResource() } }
 
-        guard let doc = PDFDocument(url: resolvedURL) else { return }
-        let extracted = (0 ..< doc.pageCount).compactMap { doc.page(at: $0)?.string }
-        let joined = extracted.joined(separator: "\n\n")
-        guard !joined.isEmpty else { return }
-        rsvpText = joined
-        showingRSVP = true
+        Task.detached(priority: .userInitiated) {
+            let didStart = resolvedURL.startAccessingSecurityScopedResource()
+            defer { if didStart { resolvedURL.stopAccessingSecurityScopedResource() } }
+
+            guard let doc = PDFDocument(url: resolvedURL) else { return }
+            var extracted: [String] = []
+            extracted.reserveCapacity(doc.pageCount)
+            for i in 0 ..< doc.pageCount {
+                if Task.isCancelled { return }
+                if let pageText = doc.page(at: i)?.string {
+                    extracted.append(pageText)
+                }
+            }
+            let joined = extracted.joined(separator: "\n\n")
+            guard !joined.isEmpty else { return }
+
+            await MainActor.run {
+                rsvpText = joined
+                showingRSVP = true
+            }
+        }
     }
 }

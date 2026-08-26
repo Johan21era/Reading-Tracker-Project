@@ -104,7 +104,7 @@ final class DurabilityPinsTests {
             .appendingPathComponent("Backups")
 
         // First call after save: content changed since no marker exists.
-        LibraryArchiveManager.shared.performAutoBackupIfNeeded(
+        LibraryArchiveManager.performAutoBackupIfNeeded(
             booksURL: libraryURL,
             stateURL: libraryURL.deletingLastPathComponent().appendingPathComponent("library-state.json")
         )
@@ -115,7 +115,7 @@ final class DurabilityPinsTests {
         //   changed content   -> AT LEAST ONE additional snapshot
         let baseline = currentBackupCount(backupsDir)
 
-        LibraryArchiveManager.shared.performAutoBackupIfNeeded(
+        LibraryArchiveManager.performAutoBackupIfNeeded(
             booksURL: libraryURL,
             stateURL: libraryURL.deletingLastPathComponent().appendingPathComponent("library-state.json")
         )
@@ -128,7 +128,7 @@ final class DurabilityPinsTests {
         b.totalPages = 50
         store.addBook(b)
         store.saveImmediately()
-        LibraryArchiveManager.shared.performAutoBackupIfNeeded(
+        LibraryArchiveManager.performAutoBackupIfNeeded(
             booksURL: libraryURL,
             stateURL: libraryURL.deletingLastPathComponent().appendingPathComponent("library-state.json")
         )
