@@ -7,6 +7,14 @@
 //             not silently dropped via try?. Book is still created (import succeeded).
 //   Task 2  — importEPUB: same treatment as Task 1.
 //   Task 21 — importBook: scope opened before switch (confirmed correct; validated).
+//
+// ROADMAP 3.4 (RA-002 / AUDIT F-09): the private divergent stripHTML /
+// wordCount implementations are GONE. This module now delegates to the canonical
+// SharedTextUtilities versions, so import-time word counts / page estimates /
+// difficulty sampling use IDENTICAL entity handling to reader-time extraction
+// and InsightEngine corpus analysis (numeric entities like &#8217; decode
+// correctly everywhere). SharedTextUtilities' header listing BookImporter as a
+// caller is now true.
 
 import Foundation
 import PDFKit
@@ -77,9 +85,6 @@ enum BookImporter {
 
         // TASK 1 FIX: Wrap bookmark creation in do/catch so failures are logged
         // rather than silently discarded by try?.
-        //
-        // Original (WRONG — silently drops bookmark errors):
-        //   let bookmarkData = try? url.bookmarkData(options: .withSecurityScope, ...)
         //
         // A nil bookmark means the book can only be opened in the same app launch
         // as the import (the sandbox URL remains valid within a session). On restart,
@@ -185,9 +190,6 @@ enum BookImporter {
         let difficulty = DifficultyAnalyzer.analyze(text: sampleText)
 
         // TASK 2 FIX: Same treatment as Task 1 — do/catch instead of try?.
-        //
-        // Original (WRONG — silently drops bookmark errors):
-        //   let bookmarkData = try? url.bookmarkData(options: .withSecurityScope, ...)
         var bookmarkData: Data?
         do {
             bookmarkData = try url.bookmarkData(
@@ -316,6 +318,10 @@ enum BookImporter {
     }
 
     // MARK: - Text Analysis Helpers
+    //
+    // ROADMAP 3.4 (F-09): these were previously LOCAL re-implementations that
+    // handled only five named entities and destroyed numeric ones differently
+    // than the canonical path. Both now delegate to SharedTextUtilities.
 
     private static func estimateTotalWords(spineItems: [(id: String, href: URL)]) async -> Int {
         await Task.detached(priority: .utility) {
@@ -323,7 +329,7 @@ enum BookImporter {
             for item in spineItems {
                 guard let data = try? Data(contentsOf: item.href),
                       let html = String(data: data, encoding: .utf8) else { continue }
-                total += Self.wordCount(fromHTML: html)
+                total += wordCount(html, fromHTML: true) // canonical (SharedTextUtilities)
             }
             return total
         }.value
@@ -336,29 +342,10 @@ enum BookImporter {
                 guard collected.count < maxChars else { break }
                 guard let data = try? Data(contentsOf: item.href),
                       let html = String(data: data, encoding: .utf8) else { continue }
-                collected += Self.stripHTML(html)
+                collected += stripHTML(html) // canonical (SharedTextUtilities)
             }
             return String(collected.prefix(maxChars))
         }.value
-    }
-
-    static func wordCount(fromHTML html: String) -> Int {
-        stripHTML(html).split { $0.isWhitespace }.count
-    }
-
-    static func stripHTML(_ html: String) -> String {
-        var result = html
-        result = result.replacingOccurrences(
-            of: "<(script|style)[^>]*>[\\s\\S]*?</(script|style)>",
-            with: " ", options: .regularExpression
-        )
-        result = result.replacingOccurrences(of: "<[^>]+>", with: " ", options: .regularExpression)
-        return result
-            .replacingOccurrences(of: "&nbsp;", with: " ")
-            .replacingOccurrences(of: "&amp;", with: "&")
-            .replacingOccurrences(of: "&lt;", with: "<")
-            .replacingOccurrences(of: "&gt;", with: ">")
-            .replacingOccurrences(of: "&quot;", with: "\"")
     }
 }
 

@@ -2,6 +2,12 @@
 //  Reading Tracker
 //  Stateless deterministic prediction layer built on AnalyticsEngine
 //
+//  ROADMAP 3.4 / F-13a (RA-002): three verified-dead members removed —
+//    • buildSpeedModel's `totalWeight` (computed, never used)
+//    • instance-level clamp(_:min:max:) (zero callers; engines are static namespaces)
+//    • mapConfidence(_:) (zero callers; ConfidenceModel is built inline in estimate())
+//  Verified by repo-wide reference search during RA-002. No behavior change:
+//  every remaining path is byte-equivalent.
 
 import Foundation
 
@@ -176,19 +182,13 @@ enum EstimationEngine {
             crossBook: cross
         )
 
-        let values = [
-            components.base,
-            components.genre,
-            components.trend,
-            components.crossBook,
-        ].compactMap { $0 }
+        // NOTE (F-13a cleanup): a former `totalWeight = Double(values.count)` here was
+        // computed and never used; deleted. The four weights below are fixed by design.
 
         let weightBase = 0.40
         let weightGenre = 0.25
         let weightTrend = 0.20
         let weightCross = 0.15
-
-        let totalWeight = Double(values.count)
 
         let adjustedBase = components.base ?? cross
         let adjustedGenre = components.genre ?? adjustedBase
@@ -455,38 +455,9 @@ extension EstimationEngine {
     }
 }
 
-// MARK: - PART 3: CONFIDENCE + FINAL UTILITIES + CLEANUP
+// MARK: - PART 3: VALIDATION + UTILITIES
 
 extension EstimationEngine {
-    // MARK: - Confidence Mapping (deterministic refinement)
-
-    private static func mapConfidence(_ confidence: ConfidenceAnalytics) -> ConfidenceModel {
-        let clamped = min(1.0, max(0.0, confidence.value))
-
-        let level: ConfidenceLevel =
-            clamped < 0.30 ? .low :
-            clamped < 0.70 ? .medium :
-            .high
-
-        return ConfidenceModel(
-            score: clamped,
-            level: level
-        )
-    }
-
-    // MARK: - Global Safety Clamp
-
-    func clamp(_ value: Double, min minValue: Double, max maxValue: Double) -> Double {
-        Swift.max(minValue, Swift.min(maxValue, value))
-    }
-
-    // MARK: - Final Speed Normalization Helper
-
-    private static func normalizeSpeed(_ speed: Double, fallback: Double) -> Double {
-        guard speed.isFinite && speed > 0 else { return fallback }
-        return speed
-    }
-
     // MARK: - Final Validation Layer
 
     /// Ensures all outputs are deterministic and bounded.

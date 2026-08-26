@@ -45,6 +45,14 @@
 //  whether or not the app was installed nine months ago. Maturity here is
 //  a property of the evidence, not the clock.
 //
+//  ROADMAP 3.4 (RA-002 / F-13b CORRECTION): an earlier revision of this
+//  header claimed the engine NEVER reads wall-clock time while the `expiry`
+//  decision rule called Date() directly — breaking deterministic testing of
+//  exactly the expiry decision. That rule now receives the SAME injected
+//  `referenceDate` every evaluator already gets; callers still default to
+//  `Date()` at their own boundary, but the engine's internals no longer read
+//  the wall clock anywhere.
+//
 //  -----------------------------------------------------------------------------
 //  MARK: - Why this file is domain-agnostic
 
@@ -892,11 +900,16 @@ public struct MaturityVerdict: Sendable {
 /// defers. This is the "modular rule system" the spec asks for in place
 /// of one large switch — inserting a new decision path is adding one
 /// rule to the array, not editing the others.
+///
+/// ROADMAP 3.4 (F-13b): rules receive the evaluation's `referenceDate`
+/// as a final argument, so time-relative decisions (expiry) are computed
+/// against the same injected clock the evaluators use — never the wall
+/// clock — keeping them deterministically testable.
 public struct ClaimRule: Sendable {
     public let name: String
-    public let evaluate: @Sendable (MaturityEvidenceDigest, ClaimRequirement, MaturityBreakdown, Set<MaturityDomain>) -> ClaimDecision?
+    public let evaluate: @Sendable (MaturityEvidenceDigest, ClaimRequirement, MaturityBreakdown, Set<MaturityDomain>, Date) -> ClaimDecision?
 
-    public init(name: String, evaluate: @escaping @Sendable (MaturityEvidenceDigest, ClaimRequirement, MaturityBreakdown, Set<MaturityDomain>) -> ClaimDecision?) {
+    public init(name: String, evaluate: @escaping @Sendable (MaturityEvidenceDigest, ClaimRequirement, MaturityBreakdown, Set<MaturityDomain>, Date) -> ClaimDecision?) {
         self.name = name
         self.evaluate = evaluate
     }
@@ -963,7 +976,8 @@ public struct DataMaturityEngine: Sendable {
             digest: claim.digest,
             requirement: requirement,
             breakdown: breakdown,
-            domains: claim.candidateDomains
+            domains: claim.candidateDomains,
+            referenceDate: referenceDate
         )
 
         let allowedConfidence = Self.allowedConfidence(
@@ -1003,10 +1017,11 @@ public struct DataMaturityEngine: Sendable {
         digest: MaturityEvidenceDigest,
         requirement: ClaimRequirement,
         breakdown: MaturityBreakdown,
-        domains: Set<MaturityDomain>
+        domains: Set<MaturityDomain>,
+        referenceDate: Date
     ) -> ClaimDecision {
         for rule in rules {
-            if let decision = rule.evaluate(digest, requirement, breakdown, domains) {
+            if let decision = rule.evaluate(digest, requirement, breakdown, domains, referenceDate) {
                 return decision
             }
         }
@@ -1016,7 +1031,7 @@ public struct DataMaturityEngine: Sendable {
     }
 
     public static let defaultRules: [ClaimRule] = [
-        ClaimRule(name: "minimumSampleCount") { digest, requirement, _, _ in
+        ClaimRule(name: "minimumSampleCount") { digest, requirement, _, _, _ in
             guard digest.sampleCount < requirement.minimumSampleCount else { return nil }
             let ratio = requirement.minimumSampleCount > 0
                 ? Double(digest.sampleCount) / Double(requirement.minimumSampleCount)
@@ -1024,7 +1039,7 @@ public struct DataMaturityEngine: Sendable {
             return ratio >= requirement.postponeProximityRatio ? .postponed : .needsMoreEvidence
         },
 
-        ClaimRule(name: "minimumDistinctDays") { digest, requirement, _, _ in
+        ClaimRule(name: "minimumDistinctDays") { digest, requirement, _, _, _ in
             guard digest.distinctDayCount < requirement.minimumDistinctDays else { return nil }
             let ratio = requirement.minimumDistinctDays > 0
                 ? Double(digest.distinctDayCount) / Double(requirement.minimumDistinctDays)
@@ -1032,41 +1047,43 @@ public struct DataMaturityEngine: Sendable {
             return ratio >= requirement.postponeProximityRatio ? .postponed : .needsMoreEvidence
         },
 
-        ClaimRule(name: "minimumHistoricalSpan") { digest, requirement, _, _ in
+        ClaimRule(name: "minimumHistoricalSpan") { digest, requirement, _, _, _ in
             guard requirement.minimumHistoricalSpanDays > 0,
                   digest.observedSpanDays < requirement.minimumHistoricalSpanDays else { return nil }
             let ratio = Double(digest.observedSpanDays) / Double(requirement.minimumHistoricalSpanDays)
             return ratio >= requirement.postponeProximityRatio ? .postponed : .needsMoreEvidence
         },
 
-        ClaimRule(name: "minimumReplicationCount") { digest, requirement, _, _ in
+        ClaimRule(name: "minimumReplicationCount") { digest, requirement, _, _, _ in
             guard requirement.minimumReplication > 0,
                   digest.distinctContextCount < requirement.minimumReplication else { return nil }
             return .needsMoreEvidence
         },
 
-        ClaimRule(name: "requiredDomainCorroboration") { _, requirement, _, domains in
+        ClaimRule(name: "requiredDomainCorroboration") { _, requirement, _, domains, _ in
             guard !requirement.requiredDomains.isEmpty,
                   !requirement.requiredDomains.isSubset(of: domains) else { return nil }
             return .needsMoreEvidence
         },
 
-        ClaimRule(name: "contradictionCeiling") { digest, requirement, _, _ in
+        ClaimRule(name: "contradictionCeiling") { digest, requirement, _, _, _ in
             guard let contradicting = digest.contradictingCount, digest.sampleCount > 0 else { return nil }
             let ratio = Double(contradicting) / Double(digest.sampleCount)
             return ratio > requirement.maximumContradictionRatio ? .contradicted : nil
         },
 
-        ClaimRule(name: "expiry") { digest, requirement, _, _ in
+        ClaimRule(name: "expiry") { digest, requirement, _, _, referenceDate in
+            // ROADMAP 3.4 (F-13b): was Date(). Now uses the injected
+            // referenceDate so expiry is deterministic under test clocks.
             guard let last = digest.lastObservedAt, digest.sampleCount > 0 else { return nil }
-            let daysSince = Date().timeIntervalSince(last) / 86400
+            let daysSince = referenceDate.timeIntervalSince(last) / 86400
             let expiryThreshold = requirement.decayHalfLifeDays * requirement.expiryHalfLifeMultiplier
             let recentTotal = digest.recentSupportingCount + (digest.recentContradictingCount ?? 0)
             guard daysSince > expiryThreshold, recentTotal == 0 else { return nil }
             return .expired
         },
 
-        ClaimRule(name: "trendSeverity") { _, _, breakdown, _ in
+        ClaimRule(name: "trendSeverity") { _, _, breakdown, _, _ in
             guard let trendSignal = breakdown.signals.first(where: { $0.name == "trendStability" }) else { return nil }
             if trendSignal.score < 0.3 {
                 return .unstablePattern
@@ -1077,13 +1094,13 @@ public struct DataMaturityEngine: Sendable {
             return nil
         },
 
-        ClaimRule(name: "contextConcentration") { digest, requirement, _, _ in
+        ClaimRule(name: "contextConcentration") { digest, requirement, _, _, _ in
             guard requirement.minimumReplication > 0 else { return nil }
             guard digest.dominantContextShare > requirement.contextConcentrationThreshold else { return nil }
             return .contextSpecific
         },
 
-        ClaimRule(name: "seasonalCoverage") { digest, requirement, _, _ in
+        ClaimRule(name: "seasonalCoverage") { digest, requirement, _, _, _ in
             guard requirement.requiresMultiSeasonCoverage,
                   let periods = digest.distinctCalendarPeriodsObserved else { return nil }
             return periods < 2 ? .seasonalOnly : nil

@@ -9,6 +9,10 @@
 //    3. NotificationScheduler          — delivers the prompt if score qualifies
 //    4. BehaviorContextEngine.analyze()— updates behavioral context summary
 //
+//  ROADMAP 2.3 (RA-002 / AUDIT F-12): bind(to:) now clears prior subscriptions
+//  before attaching new ones. Previously, closing/reopening the app window re-ran
+//  the root .task and appended another sink set per cycle — subscriptions grew for
+  //  process lifetime (redundant refresh work; self-suppressing but wasteful).
 
 import Combine
 import Foundation
@@ -55,6 +59,10 @@ final class SessionEventRouter: ObservableObject {
         behaviorKit: BehaviorContextAccessKit,
         contextEngine: BehaviorContextEngine
     ) {
+        // AUDIT F-12 (roadmap 2.3): re-binding used to append another sink set on
+        // every call. Clearing first makes re-bind idempotent.
+        cancellables.removeAll()
+
         self.dataStore = dataStore
         self.behaviorKit = behaviorKit
         self.contextEngine = contextEngine

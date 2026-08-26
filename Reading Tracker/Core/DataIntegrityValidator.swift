@@ -4,6 +4,15 @@
 //  Validates the structural integrity of the books array after every DataStore load
 //  and after every save, and performs non-destructive repairs where possible.
 //
+//  ROADMAP 3.4 (RA-002 / AUDIT F-11):
+//    • Rule S-3 previously logged "swapped" while actually CLAMPING
+//      (endPage = startPage), and declared a `tmp` variable it never used.
+//      The message now states what really happens; the dead variable is gone.
+//    • Rule S-1 checked `!isActive && endTime == nil`, which cannot exist
+//      (isActive ≡ endTime == nil by definition) — a rule that could never
+//      fire. Deleted. ReliabilityTests pins unaffected (they never relied on
+//      S-1; verified against the suite before logging).
+//
 //  RATIONALE
 //  The original DataStore loaded JSON and trusted it unconditionally. Any write
 //  corruption, partial-flush, or schema mismatch left the app in a broken state
@@ -231,17 +240,11 @@ enum DataIntegrityValidator {
         bookID: UUID,
         issues: inout [ValidationIssue]
     ) {
-        // Rule S-1: Closed sessions must have endTime.
-        if !session.isActive, session.endTime == nil {
-            // This contradicts isActive (endTime == nil means isActive == true).
-            // Should be impossible, but guard anyway.
-            issues.append(ValidationIssue(
-                severity: .warning, rule: "S-1:closedSession-has-endTime",
-                bookID: bookID, sessionID: session.id,
-                detail: "Session reports isActive=false but endTime is nil — inconsistency in model",
-                wasRepaired: false
-            ))
-        }
+        // FORMER RULE S-1 (deleted, roadmap 3.4 / F-11): checked
+        // `!session.isActive && endTime == nil`. isActive is DEFINED as
+        // `endTime == nil` (ReadingSession.isActive), so the condition was a
+        // contradiction that could never fire. Dead rule removed rather than
+        // left to mislead future debugging.
 
         // Rule S-2: endTime must be ≥ startTime.
         if let end = session.endTime, end < session.startTime {
@@ -264,10 +267,11 @@ enum DataIntegrityValidator {
             issues.append(ValidationIssue(
                 severity: .repaired, rule: "S-3:endPage≥startPage",
                 bookID: bookID, sessionID: session.id,
-                detail: "endPage=\(session.endPage) < startPage=\(session.startPage) — swapped",
+                detail: "endPage=\(session.endPage) < startPage=\(session.startPage) — endPage pinned to startPage (zero-length session, non-negative)",
                 wasRepaired: true
             ))
-            let tmp = session.startPage
+            // F-11 FIX: this always was a PIN-to-startPage clamp, not a swap.
+            // The message above now says so; the former unused `tmp` is gone.
             session.endPage = session.startPage
         }
 

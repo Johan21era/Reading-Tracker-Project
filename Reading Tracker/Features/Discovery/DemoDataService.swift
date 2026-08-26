@@ -14,6 +14,11 @@
 //
 //  DETERMINISM: all randomness flows through a fixed-seed SplitMix64 keyed on
 //  the persona id — identical output on every run (pinned by tests).
+//
+//  ROADMAP 3.4 / NA-8 (RA-002): two persona catalog entries previously wrote
+//  `?? .fiction` / `?? .business` after NON-OPTIONAL ReadingGenre cases — a
+//  left-over generation artifact whose right side could never apply (compiler
+//  warned on every Debug build). The dead halves are removed; genres unchanged.
 
 #if DEBUG
 import Foundation
@@ -84,7 +89,8 @@ struct DemoPersona: Identifiable {
     ) {
         self.id = id; self.name = name; self.blurb = blurb
         self.hourBuckets = hourBuckets; self.monthWeights = monthWeights
-        self.weekdaysOnly = weekdaysOnly; self.readDayProbability = readDayProbability
+        self.weekdaysOnly = weekdaysOnly
+        self.readDayProbability = readDayProbability
         self.sessionMinutes = sessionMinutes; self.secondsPerPage = secondsPerPage
         self.catalog = catalog
     }
@@ -203,7 +209,8 @@ enum DemoProfileCatalog {
                 spec("Ulysses, Again", "J. Joyce-Adjacent", .fiction, 780, 12),
                 spec("Being & Boredom", "X. Sartre-Fan", .philosophy, 640, 9),
                 spec("Infinite Backlog", "D. Foster-Wallower", .fiction, 900, 14),
-                spec("War & More War", "L. Tolstoy-Fan", .historical ?? .fiction, 1100, 11),
+                // NA-8: was `.historical ?? .fiction` — non-optional LHS made the RHS dead.
+                spec("War & More War", "L. Tolstoy-Fan", .historical, 1100, 11),
                 spec("Gravity's Raincheck", "T. Pynchonite", .scienceFiction, 720, 8),
                 spec("The Count of Monte Crisp-o", "A. Dumas-Jr", .fiction, 850, 10),
             ]),
@@ -305,7 +312,8 @@ enum DemoProfileCatalog {
             catalog: [
                 spec("The Consistency Engine", "D. Sterling", .selfHelp, 320, 40),
                 spec("Atomic Attention", "J. Clearwick", .selfHelp, 300, 38),
-                spec("Deep Reading", "C. Newport-Nephew", .education ?? .business, 280, 35),
+                // NA-8: was `.education ?? .business` — non-optional LHS made the RHS dead.
+                spec("Deep Reading", "C. Newport-Nephew", .education, 280, 35),
                 spec("The Habit Compass", "N. Duhigg-Disciple", .selfHelp, 270, 32),
                 spec("Systems Over Goals", "T. Adams-Admirer", .business, 290, 30),
             ]),

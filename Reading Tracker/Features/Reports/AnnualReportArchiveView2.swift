@@ -2,33 +2,40 @@
 //  Reading Tracker
 //
 //  Feature B: Annual Report Archive — browse past years
-//  Feature C (partial): January 1st banner — see NewYearTransition.swift for the midnight celebration
 //
 //  ARCHITECTURE
 //  The archive stores only the list of years that have sessions.
 //  It does NOT store report payloads, snapshots, or cached data.
 //  When a year is selected, the report is generated dynamically from live data.
 //
-//  JANUARY 1 BANNER
-//  Persisted in UserDefaults (key: "annualReport.bannerDismissedYear").
-//  The banner is visible on Jan 1 until the app closes for that day.
-//  After the app is closed and relaunched, the banner is gone permanently for that year.
-//  The report remains accessible from the archive.
+//  ROADMAP 3.3 (RA-002 / NA-3): report generation previously spawned an
+//  UNTRACKED Task.detached per selection. Rapid year switching let an older
+//  task finish last and overwrite the newer selection's pane ("last-finished-
+//  wins"). Generation now carries a monotonically increasing token; a stale
+//  task's result is discarded on landing. LT-5 made Prev/Next clicks much
+//  faster, which is what made this race practically reachable.
 //
-//  The banner ONLY appears if the previous year has at least one reading session.
-
+//  ROADMAP 4.1 (RA-002): JanuaryFirstBannerView deleted. It was defined here
+//  (~200 LOC incl. a speculative AppDelegate advice block) but never instantiated
+//  anywhere in the app — verified by reference search during RA-002. Recoverable
+//  from project history if the January-banner feature is ever prioritized.
+//
 import SwiftUI
 
 // MARK: - Annual Report Archive View
 
 /// Presents the list of years with reading data, each opening its annual report.
-/// This is presented from a tab, sheet, or toolbar button in the main UI.
 struct AnnualReportArchiveView: View {
     @EnvironmentObject var dataStore: DataStore
 
     @State private var selectedYear: Int?
     @State private var reportData: AnnualReportData?
     @State private var isGenerating: Bool = false
+
+    /// ROADMAP 3.3 (NA-3): incremented on every generation request; detached
+    /// tasks capture the value they were created for and are discarded if a
+    /// newer request has superseded them by the time their work completes.
+    @State private var generationToken = 0
 
     var body: some View {
         NavigationSplitView {
@@ -113,8 +120,6 @@ struct AnnualReportArchiveView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    // MARK: - Detail
-
     private var archiveEmptyDetail: some View {
         VStack(spacing: 16) {
             Image(systemName: "chart.bar.doc.horizontal")
@@ -143,10 +148,16 @@ struct AnnualReportArchiveView: View {
     // MARK: - Report Generation
 
     private func generateReport(for year: Int) {
+        generationToken += 1
+        let token = generationToken
+
         isGenerating = true
         reportData = nil
 
         // Run on background thread; generation is synchronous but can be slow for large libraries.
+        // ROADMAP 3.3 (NA-3): the token travels with the task. If the user has
+        // clicked a different year since this task started, its result is stale
+        // and must NOT land — the newer task owns the pane now.
         Task.detached(priority: .userInitiated) {
             let books = await dataStore.books
             let goalSet = await dataStore.libraryState.goalSet
@@ -163,178 +174,10 @@ struct AnnualReportArchiveView: View {
             )
 
             await MainActor.run {
+                guard token == generationToken else { return } // superseded — discard
                 reportData = generated
                 isGenerating = false
             }
         }
     }
 }
-
-// MARK: - January 1st Banner
-
-/// The prominent January 1st discovery banner.
-///
-/// Visibility rules (from spec):
-///   • Shown on January 1st if the previous year has reading sessions.
-///   • Remains visible until the app is closed.
-///   • After the app closes, the banner does not reappear.
-///   • The report remains accessible from the archive.
-///
-/// Persistence: UserDefaults key "annualReport.bannerDismissedYear" stores the year
-/// the banner was last dismissed (by app close or by tapping the banner to open the report).
-/// On January 1, if dismissedYear == previousYear, the banner is hidden.
-struct JanuaryFirstBannerView: View {
-    @EnvironmentObject var dataStore: DataStore
-
-    @State private var showingReport: Bool = false
-    @State private var reportData: AnnualReportData?
-
-    private let previousYear: Int = Calendar.current.component(.year, from: Date()) - 1
-
-    var body: some View {
-        Group {
-            if shouldShowBanner {
-                bannerContent
-            }
-        }
-        .sheet(isPresented: $showingReport) {
-            if let report = reportData {
-                AnnualReportView(data: report) {
-                    showingReport = false
-                }
-                .frame(minWidth: 800, minHeight: 600)
-            } else {
-                ProgressView("Building your report…")
-                    .padding(40)
-            }
-        }
-    }
-
-    // MARK: - Banner Content
-
-    private var bannerContent: some View {
-        Button(action: openReport) {
-            HStack(spacing: 16) {
-                // Decorative glow ring
-                ZStack {
-                    Circle()
-                        .fill(Color.accentColor.opacity(0.15))
-                        .frame(width: 48, height: 48)
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 22))
-                        .foregroundColor(.accentColor)
-                }
-
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("Your \(previousYear) Reading Report is ready.")
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                    Text("See how you read last year — your pace, streaks, and standout books.")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.secondary)
-            }
-            .padding(16)
-            .background(
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color.accentColor.opacity(0.08),
-                        Color.accentColor.opacity(0.04),
-                    ]),
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .cornerRadius(14)
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(Color.accentColor.opacity(0.2), lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
-    }
-
-    // MARK: - Logic
-
-    private var shouldShowBanner: Bool {
-        // Must be January 1
-        let now = Date()
-        let calendar = Calendar.current
-        guard calendar.component(.month, from: now) == 1,
-              calendar.component(.day, from: now) == 1 else { return false }
-
-        // Previous year must have reading data
-        let prevYearBooks = booksRead(in: dataStore.books, year: previousYear)
-        guard !prevYearBooks.isEmpty else { return false }
-
-        // Must not have been dismissed this session
-        let dismissedYear = UserDefaults.standard.integer(forKey: "annualReport.bannerDismissedYear")
-        return dismissedYear != previousYear
-    }
-
-    private func openReport() {
-        // Mark dismissed so app-close removes it next launch
-        UserDefaults.standard.set(previousYear, forKey: "annualReport.bannerDismissedYear")
-
-        let books = dataStore.books
-        let goalSet = dataStore.libraryState.goalSet
-        let achievements = dataStore.libraryState.earnedAchievements
-        // Load audio profiles so Slide 10 is populated when opened from the banner.
-        let audioProfiles = dataStore.allAudioProfiles()
-
-        Task.detached(priority: .userInitiated) {
-            let generated = AnnualReportGenerator.generate(
-                year: previousYear,
-                books: books,
-                goalSet: goalSet,
-                earnedAchievements: achievements,
-                audioProfiles: audioProfiles
-            )
-            await MainActor.run {
-                reportData = generated
-                showingReport = true
-            }
-        }
-    }
-}
-
-// MARK: - App Lifecycle Integration (Banner Persistence)
-
-//
-// The spec says: "After the application closes, the banner disappears permanently for that year."
-// This means: on app launch (AppDelegate / SceneDelegate), check if today is January 1 and if
-// the banner has already been dismissed. If the previous dismiss was for this year, hide it.
-//
-// The implementation above achieves this via UserDefaults:
-//   • dismissedYear is written when the user taps the banner.
-//   • On the next app launch (January 2+), shouldShowBanner returns false because the date check fails.
-//   • On January 1 of the *next* year, previousYear has changed so the banner reappears if there's new data.
-//
-// No additional app delegate hook is needed. The banner reads UserDefaults on every render.
-// If the app closes without the user tapping the banner, shouldShowBanner returns false on next launch
-// because the date will no longer be January 1 (the spec says the banner disappears after close).
-// That behaviour is achieved by the date check: the banner only appears while the date IS January 1,
-// so the next launch (January 2) naturally hides it.
-//
-// If you want the banner to explicitly disappear even if the app is relaunched on Jan 1 the same day,
-// write dismissedYear on app termination:
-//
-//   func applicationWillTerminate(_ notification: Notification) {
-//       let calendar = Calendar.current
-//       let now = Date()
-//       if calendar.component(.month, from: now) == 1, calendar.component(.day, from: now) == 1 {
-//           let prevYear = calendar.component(.year, from: now) - 1
-//           UserDefaults.standard.set(prevYear, forKey: "annualReport.bannerDismissedYear")
-//       }
-//   }
-//
-// Add this to your AppDelegate to fully match the spec's "banner disappears after app closes" requirement.

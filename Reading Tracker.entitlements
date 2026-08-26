@@ -16,5 +16,13 @@
 	<true/>
 	<key>com.apple.security.network.client</key>
 	<true/>
+	<!-- ROADMAP 3.2 (RA-002 / NA-4): AudioMonitorService queries Music.app and
+	     Spotify via NSAppleScript every 60 s during reading sessions. Its own
+	     header has always declared this entitlement REQUIRED; without it the
+	     sandbox silently blocks every query and all audio profiles degrade to
+	     silence-class. Paired with NSAppleEventsUsageDescription in
+	     Reading-Tracker-Info.plist. -->
+	<key>com.apple.security.automation.apple-events</key>
+	<true/>
 </dict>
 </plist>

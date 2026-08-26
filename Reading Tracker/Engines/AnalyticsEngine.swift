@@ -10,9 +10,6 @@
 //    • Fixed: Genre analytics — genreProfiles() and related functions now read Book.genre
 //             (added in v3 Book.swift) instead of always returning .unknown via inferredGenre.
 //             The entire genre analytics system is now active.
-//    • Added: Caching layer — expensive full-library computations are memoized for the
-//             duration of a single RunLoop cycle via AnalyticsCache. This eliminates
-//             redundant recomputation when multiple UI views call the engine simultaneously.
 //    • Added: crossBookReadingSpeed() — normalizes reading speed across all books so new
 //             books without history get a meaningful speed estimate from the reader's profile.
 //    • Added: sessionQuality() — rates individual sessions on focus/consistency signals.
@@ -20,6 +17,14 @@
 //                not just per-book session count.
 //    PRESERVED: All B6, B7, Reader Profile, Chapter Prediction, Trend, Time-of-Day,
 //               Difficulty Normalization, Improvement, Confidence, and Genre systems.
+//
+//  ROADMAP 3.4 / NA-7 DOC TRUTH-FIX (RA-002): this header previously claimed a
+//  caching layer ("expensive full-library computations are memoized for the duration
+//  of a single RunLoop cycle via AnalyticsCache"). NO such type or mechanism exists
+//  anywhere in the codebase (verified by repo-wide search during RA-002) — every
+//  call recomputes from scratch. The false claim is removed rather than left to
+//  mislead performance work. If whole-library fan-out ever needs memoization, that
+//  is NEW work to design and pin, not an existing feature.
 
 import Foundation
 
@@ -508,7 +513,6 @@ extension AnalyticsEngine {
     ///
     /// Original bug: `weeklyTrend = dailyTrend * 7` and `monthlyTrend = dailyTrend * 30`
     /// This is wrong because dailyTrend is a ratio (e.g. 0.15 = 15% change), not seconds.
-    /// Multiplying a ratio by 7 produces a dimensionless number without meaning.
     ///
     /// Fix: compute weeklyAverage and monthlyAverage directly from the activity window,
     /// giving actual seconds-per-day averages for each period.
@@ -575,6 +579,9 @@ extension AnalyticsEngine {
             buckets[window, default: 0.0] += Double(session.pagesRead)
         }
 
+        // §3.4-disproven force-unwraps, deliberately preserved: buckets is seeded
+        // with ALL four keys above and keys are never removed, so max/min can
+        // never see an empty collection. (Verified safe by prior audit.)
         let best = buckets.max(by: { $0.value < $1.value })!.key
         let worst = buckets.min(by: { $0.value < $1.value })!.key
 
@@ -723,9 +730,8 @@ extension AnalyticsEngine {
     }
 }
 
-// MARK: - Genre Analytics System (v3 — now active via Book.genre)
+// MARK: - Genre Analytics System (v3 — active via Book.genre)
 
-// ReadingGenre is declared in Book.swift (imported here via same module).
 // Note: this is the ACTIVE genre analytics system. Previously, inferredGenre
 // always returned .unknown because Book had no genre field. Book.genre (added in v3)
 // is set from OPF dc:subject during EPUB import, or manually by the user.

@@ -338,6 +338,12 @@ final class GoalProgressViewModel: ObservableObject {
     }
 
     func bind(to dataStore: DataStore, goalSet: ReadingGoalSet, deadlines: [BookDeadline]) {
+        // AUDIT F-12 (roadmap 2.3): re-binding used to append another sink set on
+        // every call (the root .task re-runs when windows close/reopen), so
+        // subscriptions accumulated for process lifetime. Clearing first makes
+        // re-bind idempotent — one active subscription pair, always.
+        cancellables.removeAll()
+
         self.goalSet = goalSet
         self.deadlines = deadlines
         #if DEBUG
@@ -349,6 +355,20 @@ final class GoalProgressViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] books in
                 self?.refresh(books: books)
+            }
+            .store(in: &cancellables)
+
+        // ROADMAP 1.2b (NA-2 companion): goals and deadlines live in libraryState
+        // and are mutated by the Settings window via updateGoalSet/addDeadline.
+        // Without observing $libraryState this VM kept only the values seeded at
+        // launch, so saved goal changes never reached the dashboard until relaunch.
+        dataStore.$libraryState
+            .receive(on: RunLoop.main)
+            .sink { [weak self] state in
+                guard let self else { return }
+                self.goalSet = state.goalSet
+                self.deadlines = state.deadlines
+                self.refresh(books: dataStore.books)
             }
             .store(in: &cancellables)
     }

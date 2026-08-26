@@ -15,9 +15,19 @@
 // 10. GoalProgressViewModel injected via @EnvironmentObject so GoalsDashboard
 //     receives live goal status updates throughout the app session.
 //
+// 11. ROADMAP 2.2 (RA-002 / O-8): duplicate imports now surface an informational
+//     "Import Notes" alert instead of silently doing nothing. DataStore.addBook
+//     returns whether it accepted the book; a rejected duplicate is reported here.
+//
 //  All original functionality (hover estimation, book import, PDFReaderScreen,
 //  EPUBReaderScreen, NavigationSplitView layout) is unchanged.
 //
+//  SHEET DISMISS AFFORDANCE NOTE (NA-9 verification): every top-level sheet in
+//  this file presents .sheetDismissAffordance() EXCEPT BookDiscoveryView — which
+//  was verified during RA-002 to carry its OWN header-bar close control with
+//  Escape support (BookDiscoveryView.swift headerBar), so adding the floating
+//  overlay here would render two close controls on one sheet. The LT-2 invariant
+//  "a dead-end sheet is structurally impossible" holds for all sheets.
 
 import SwiftUI
 import UniformTypeIdentifiers
@@ -256,6 +266,7 @@ struct ContentView: View {
         }
 
         // ── AUDIT §1.1 verdict executed (Phase 2): Import Intelligence surfaces ──
+        // ROADMAP 2.2: also carries the duplicate-import notice.
         .alert("Import Notes", isPresented: Binding(
             get: { importWarnings != nil },
             set: { if !$0 { importWarnings = nil } }
@@ -289,6 +300,8 @@ struct ContentView: View {
                 .sheetDismissAffordance()
         }
         .sheet(isPresented: $showDiscovery) {
+            // NA-9 (verified): this view ships its own header close control +
+            // Escape shortcut; the floating overlay is intentionally NOT stacked.
             BookDiscoveryView()
         }
         .sheet(isPresented: $showAnnualReports) {
@@ -363,7 +376,7 @@ struct ContentView: View {
         if hovering {
             hoverWorkItem?.cancel()
             let workItem = DispatchWorkItem { [book] in
-                // AUDIT §2.3: the book may have been deleted during the 1.5 s
+                // AUDIT §2.3: the book may have been deleted during the 0.55 s
                 // hover delay — never surface a ghost estimate.
                 guard dataStore.book(id: book.id) != nil else { return }
                 let result = EstimationEngine.estimate(for: book, allBooks: dataStore.books)
@@ -380,7 +393,7 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Toolbar: Add Book (unchanged)
+    // MARK: - Toolbar: Add Book
 
     private func addItem() {
         let panel = NSOpenPanel()
@@ -405,12 +418,20 @@ struct ContentView: View {
                         fileSizeBytes: fileSizeBytes,
                         fileType: book.fileType.displayName
                     )
-                    let messages = report.warnings.map { warning -> String in
+                    var messages = report.warnings.map { warning -> String in
                         (warning.level == .critical ? "⚠️ " : "• ") + warning.message
                     }
 
+                    // ROADMAP 2.2 (O-8): addBook previously returned Void and silently
+                    // dropped duplicates — importing the same file twice gave zero
+                    // feedback. It now reports acceptance; rejection becomes a visible
+                    // note through the existing Import Notes alert channel.
+                    let accepted = dataStore.addBook(book)
+                    if !accepted {
+                        messages.append("• This book is already in your library (same file). Nothing was added.")
+                    }
+
                     await MainActor.run {
-                        dataStore.addBook(book)
                         if !messages.isEmpty { importWarnings = messages }
                     }
                 } catch {

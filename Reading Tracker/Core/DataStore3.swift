@@ -11,11 +11,22 @@
 //    • Added: Achievement detection hook — AchievementEngine.detectAll() after significant events
 //    • Added: newlyEarnedAchievements @Published so UI can animate badge awards
 //    PATCHED: B5 — closeActiveSession closes ALL active PageTiming entries
-//    AUDIT:   Task 9  — startSession logs warning when closing an already-active session
-//             Task 16 — save() logs the file path alongside the error
-//             Task 17 — updateBook() logs when book ID is not found
-//             Task 29 — removeBook() skips disk write when ID not found
-
+//    AUDIT:   Task 9/16/17/29 — logging contracts preserved below
+//
+//  ROADMAP 2.1 (RA-002 / D6) — DISK WRITES MOVED OFF THE MAIN ACTOR
+//    • Debounced saves encode ON the main actor (cheap, safe) but WRITE on a
+//      background task. Writes are CHAINED (each waits for its predecessor), so
+//      two rapid snapshots can never land out of order — the newest data always
+//      wins on disk, and failure reporting stays in enqueue order.
+//    • saveImmediately() remains a SYNCHRONOUS flush: it drains any queued
+//      background write (via semaphore around the detached chain tail) and then
+//      blocks briefly to write the current snapshot. Deliberate: the flush path
+//      runs at scenePhase .background and in tests, where "the file is on disk
+//      when this call returns" is the contract that matters. Only the hot
+//      page-turn path got the async treatment.
+//    • ROADMAP 2.2 (O-8): urls(for:).first! replaced with a guarded fallback
+//      directory; addBook now reports duplicate rejection so the UI can surface it.
+//
 import Combine
 import Foundation
 
@@ -28,12 +39,9 @@ final class DataStore: ObservableObject {
     @Published private(set) var libraryState: LibraryState = .init()
 
     /// Newly awarded achievements since the last UI observation.
-    /// UI should consume this array (display animation) and clear it via clearNewAchievements().
     @Published private(set) var newlyEarnedAchievements: [EarnedAchievement] = []
 
     /// AUDIT §1.2 / TECH_DEBT D1: Release-visible persistence status.
-    /// `.healthy` after any successful save; `.degraded(reason)` remains until the
-    /// next successful save (dismiss-on-fix — never auto-dismissed in the UI).
     enum PersistenceStatus: Equatable {
         case healthy
         case degraded(String)
@@ -49,17 +57,17 @@ final class DataStore: ObservableObject {
     private let decoder = JSONDecoder()
 
     /// Persists AudioContextProfile objects captured by AudioMonitorService.
-    /// Stored at: ~/Library/Application Support/ReadTracker/audio-profiles.json
     let audioProfileStore: AudioProfileStore
 
     /// Debounce timer: coalesces rapid updates into a single disk write.
     private var saveTimer: Timer?
     private let saveDebounceInterval: TimeInterval = 0.5
 
+    /// ROADMAP 2.1 (D6): tail of the serialized background-write chain.
+    /// Each enqueued write awaits its predecessor, guaranteeing on-disk ordering.
+    private var pendingWrite: Task<String?, Never>?
+
     #if DEBUG
-    /// Developer Console instrumentation only. Set inside the existing
-    /// save()/loadBooks() catch blocks below — purely additive, changes
-    /// nothing about what those methods actually do.
     private(set) var consoleLastSaveError: String?
     private(set) var consoleLastLoadRepairNote: String?
     #endif
@@ -67,37 +75,72 @@ final class DataStore: ObservableObject {
     // MARK: - Init
 
     init(fileURL: URL? = nil) {
-        let appSupport = FileManager.default.urls(
+        // AUDIT O-8 (roadmap 2.2): was `.first!` — an empty/misbehaving domain
+        // lookup crashed launch. Guarded degradation instead.
+        let appSupportCandidates = FileManager.default.urls(
             for: .applicationSupportDirectory,
             in: .userDomainMask
-        ).first!
-        let dir = appSupport.appendingPathComponent("ReadTracker", isDirectory: true)
-        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        )
+        let appSupportAvailable = !appSupportCandidates.isEmpty
+        let appSupport = appSupportCandidates.first
 
-        if let url = fileURL {
-            self.fileURL = url
-            stateURL = url.deletingLastPathComponent()
-                .appendingPathComponent("library-state.json")
-            audioProfileStore = AudioProfileStore(
-                directory: url.deletingLastPathComponent()
-            )
+        var degradedDirectoryMessage: String?
+
+        if let appSupport {
+            let dir = appSupport.appendingPathComponent("ReadTracker", isDirectory: true)
+            try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+
+            if let url = fileURL {
+                self.fileURL = url
+                stateURL = url.deletingLastPathComponent()
+                    .appendingPathComponent("library-state.json")
+                audioProfileStore = AudioProfileStore(
+                    directory: url.deletingLastPathComponent()
+                )
+            } else {
+                self.fileURL = dir.appendingPathComponent("library.json")
+                stateURL = dir.appendingPathComponent("library-state.json")
+                audioProfileStore = AudioProfileStore(directory: dir)
+            }
+
+            // AUDIT §1.2: surface silent sandbox/directory creation failures.
+            if !FileManager.default.fileExists(atPath: dir.path) {
+                degradedDirectoryMessage =
+                    "Data folder could not be created at \(dir.path). " +
+                    "Reading progress will not be saved."
+            }
         } else {
-            self.fileURL = dir.appendingPathComponent("library.json")
-            stateURL = dir.appendingPathComponent("library-state.json")
-            audioProfileStore = AudioProfileStore(directory: dir)
+            // Degraded environment: no Application Support available. Persist to a
+            // temporary directory so the session still works, loudly flagged below.
+            let fallbackDir = FileManager.default.temporaryDirectory
+                .appendingPathComponent("ReadTracker-degraded", isDirectory: true)
+            try? FileManager.default.createDirectory(at: fallbackDir, withIntermediateDirectories: true)
+
+            if let url = fileURL {
+                self.fileURL = url
+                stateURL = url.deletingLastPathComponent()
+                    .appendingPathComponent("library-state.json")
+                audioProfileStore = AudioProfileStore(
+                    directory: url.deletingLastPathComponent()
+                )
+            } else {
+                self.fileURL = fallbackDir.appendingPathComponent("library.json")
+                stateURL = fallbackDir.appendingPathComponent("library-state.json")
+                audioProfileStore = AudioProfileStore(directory: fallbackDir)
+            }
+
+            degradedDirectoryMessage =
+                "Application Support is unavailable — data is being stored in a " +
+                "temporary location and will not survive a restart."
         }
+        _ = appSupportAvailable // documented above via candidates check; kept explicit
 
         encoder.dateEncodingStrategy = .iso8601
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         decoder.dateDecodingStrategy = .iso8601
 
-        // AUDIT §1.2: surface silent sandbox/directory creation failures
-        // (previously swallowed by `try?` above).
-        if !FileManager.default.fileExists(atPath: dir.path) {
-            persistenceHealth = .degraded(
-                "Data folder could not be created at \(dir.path). " +
-                "Reading progress will not be saved."
-            )
+        if let message = degradedDirectoryMessage {
+            persistenceHealth = .degraded(message)
         }
 
         load()
@@ -109,13 +152,17 @@ final class DataStore: ObservableObject {
 
     // MARK: - Public API — Books
 
-    func addBook(_ book: Book) {
+    /// ROADMAP 2.2 (O-8): returns false when the book was rejected as a duplicate
+    /// of an existing fileURL, so callers can surface the no-op instead of silence.
+    @discardableResult
+    func addBook(_ book: Book) -> Bool {
         if books.contains(where: { $0.fileURL == book.fileURL }) {
-            return
+            return false
         }
         books.append(book)
         scheduleSave()
         detectAchievements()
+        return true
     }
 
     func updateBook(_ book: Book) {
@@ -169,10 +216,8 @@ final class DataStore: ObservableObject {
     }
     #endif
 
-    // MARK: - Public API — Collections (Phase 2: Progressive Filtering model layer)
+    // MARK: - Public API — Collections (Progressive Filtering model layer)
 
-    /// Creates and persists a named collection. LibraryFilterSidebarView can
-    /// filter BY collections; this is the creation half it deliberately lacks.
     @discardableResult
     func addCollection(name: String) -> BookCollection {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -222,24 +267,16 @@ final class DataStore: ObservableObject {
     }
 
     /// AUDIT §2.2: removes a single achievement from the unseen-toast queue
-    /// after its toast finished displaying (or was tapped). Complements the
-    /// all-at-once clearNewAchievements().
+    /// after its toast finished displaying (or was tapped).
     func markAchievementToastShown(id: UUID) {
         newlyEarnedAchievements.removeAll { $0.id == id }
     }
 
     // MARK: - Public API — Audio Context
 
-    /// Saves an AudioContextProfile and links it to its reading session.
-    /// Called by SessionCoordinator immediately after a session ends.
-    /// - Parameters:
-    ///   - sessionID: The ReadingSession.id that this profile describes.
-    ///   - profile:   The AudioContextProfile produced by AudioMonitorService.finalizeContext.
     func attachAudioContext(to sessionID: UUID, profile: AudioContextProfile) {
-        // 1. Persist the profile to the audio store.
         audioProfileStore.save(profile: profile)
 
-        // 2. Write the profileID back onto the session so analytics can join them.
         for i in books.indices {
             for j in books[i].sessions.indices
                 where books[i].sessions[j].id == sessionID
@@ -253,13 +290,10 @@ final class DataStore: ObservableObject {
             "not found — profile saved to store but session reference not updated.")
     }
 
-    /// Returns the AudioContextProfile for a specific session, if one was captured.
     func audioContextProfile(for sessionID: UUID) -> AudioContextProfile? {
         audioProfileStore.fetch(sessionID: sessionID)
     }
 
-    /// Returns all persisted AudioContextProfile objects.
-    /// Used by AnnualReportGenerator and MusicalAnalysisEngine.buildSessionRecords.
     func allAudioProfiles() -> [AudioContextProfile] {
         audioProfileStore.fetchAll()
     }
@@ -292,14 +326,12 @@ final class DataStore: ObservableObject {
 
         let now = Date()
 
-        // Close previous page timing (last active entry).
         if let pIdx = book.sessions[sIdx].pageTimes.indices.last,
            book.sessions[sIdx].pageTimes[pIdx].isActive
         {
             book.sessions[sIdx].pageTimes[pIdx].endTime = now
         }
 
-        // Open new page timing.
         let timing = PageTiming(pageNumber: newPage, startTime: now)
         book.sessions[sIdx].pageTimes.append(timing)
         book.sessions[sIdx].endPage = newPage
@@ -312,10 +344,10 @@ final class DataStore: ObservableObject {
         guard var book = book(id: bookID) else { return }
         closeActiveSession(for: &book)
         updateBook(book)
-        detectAchievements() // Check for session-count and page-count milestones.
+        detectAchievements()
     }
 
-    /// UPGRADE v3: Batch close — single scheduleSave() call instead of one per book.
+    /// Batch close — single scheduleSave() call instead of one per book.
     func endAllActiveSessions() {
         var anyChanged = false
         for i in books.indices where books[i].activeSessionID != nil {
@@ -330,8 +362,6 @@ final class DataStore: ObservableObject {
 
     // MARK: - Achievement Detection
 
-    /// Runs AchievementEngine.detectAll() and publishes newly earned achievements.
-    /// Debounced implicitly by being called from update/end session paths (not every page turn).
     private func detectAchievements() {
         let (allEarned, newly) = AchievementEngine.detectAll(
             books: books,
@@ -348,7 +378,6 @@ final class DataStore: ObservableObject {
     // MARK: - Private Helpers
 
     /// B5 FIX: Close ALL active PageTiming entries in the session, not just the last.
-    /// Idempotent and crash-recovery-safe.
     private func closeActiveSession(for book: inout Book) {
         guard let activeSessionID = book.activeSessionID else { return }
         guard let sIdx = book.sessions.firstIndex(where: { $0.id == activeSessionID }) else { return }
@@ -358,10 +387,10 @@ final class DataStore: ObservableObject {
         for pIdx in book.sessions[sIdx].pageTimes.indices
             where book.sessions[sIdx].pageTimes[pIdx].isActive
         {
-            book.sessions[sIdx].pageTimes[pIdx].endTime = now // page timings first (I-5)
+            book.sessions[sIdx].pageTimes[pIdx].endTime = now
         }
 
-        book.sessions[sIdx].endTime = now // then session endTime (I-5)
+        book.sessions[sIdx].endTime = now
         book.activeSessionID = nil
     }
 
@@ -376,19 +405,17 @@ final class DataStore: ObservableObject {
         guard FileManager.default.fileExists(atPath: fileURL.path) else { return }
         do {
             let data = try Data(contentsOf: fileURL)
-            var decoded = try decoder.decode([Book].self, from: data)
+            let decoded = try decoder.decode([Book].self, from: data)
 
-            // UPGRADE v3: Validate and repair on every load.
             let (repaired, report) = DataIntegrityValidator.validate(decoded)
             books = repaired
 
             // AUDIT §3.3: never re-persist books that still contain unrepaired
-            // errors — doing so overwrites the last-good file with corrupt content.
-            // Surface it instead; leave the source file untouched.
+            // errors — surface instead of overwriting the last-good file.
             if report.hasUnrepairableErrors {
                 persistenceHealth = .degraded(
                     "Library loaded with unrepaired issues. " +
-                    "\(report.summary) Auto-save skipped to protect the existing file."
+                        "\(report.summary) Auto-save skipped to protect the existing file."
                 )
                 #if DEBUG
                 consoleLastLoadRepairNote = report.summary
@@ -399,15 +426,13 @@ final class DataStore: ObservableObject {
                 #endif
                 save()
             }
-
         } catch {
             print("[DataStore] Load error at \(fileURL.path): \(error)")
-            // UPGRADE v3: Backup corrupt file before resetting, so data isn't destroyed.
             backupCorruptFile(at: fileURL)
             books = []
             persistenceHealth = .degraded(
                 "Library file could not be read and was backed up to library.bak.json. " +
-                "Starting with an empty library — check disk space and permissions."
+                    "Starting with an empty library — check disk space and permissions."
             )
         }
     }
@@ -419,23 +444,19 @@ final class DataStore: ObservableObject {
             libraryState = try decoder.decode(LibraryState.self, from: data)
         } catch {
             print("[DataStore] LibraryState load error at \(stateURL.path): \(error)")
-            // AUDIT F-04 Gate A (Phase 1): mirror the books path — back up the
-            // unreadable file BEFORE resetting, so goals/deadlines/earned-achievement
-            // history stays recoverable instead of being silently overwritten by
-            // the next saveLibraryState().
+            // AUDIT F-04 Gate A: back up the unreadable file BEFORE resetting.
             backupCorruptFile(at: stateURL)
             libraryState = LibraryState()
             let bakName = stateURL.deletingPathExtension()
                 .appendingPathExtension("bak.json").lastPathComponent
             persistenceHealth = .degraded(
                 "Goals & achievements file could not be read and was backed up to " +
-                bakName + ". Starting fresh — check disk space and permissions."
+                    bakName + ". Starting fresh — check disk space and permissions."
             )
         }
     }
 
-    /// UPGRADE v3: Debounced save. Multiple rapid calls within 0.5s coalesce into one.
-    /// This prevents N disk writes during rapid page-turn events.
+    /// Debounced save. Multiple rapid calls within 0.5s coalesce into one.
     func scheduleSave() {
         saveTimer?.invalidate()
         let timer = Timer(timeInterval: saveDebounceInterval, repeats: false) { [weak self] _ in
@@ -444,26 +465,38 @@ final class DataStore: ObservableObject {
             }
         }
         // AUDIT §3.1: `.common` mode keeps the debounced save alive during
-        // window resize/control tracking (default mode blocks there).
+        // window resize/control tracking.
         RunLoop.main.add(timer, forMode: .common)
         saveTimer = timer
     }
 
-    /// Immediate (non-debounced) save. Use for shutdown/background transitions.
+    /// Immediate (non-debounced) save — SYNCHRONOUS by contract.
+    ///
+    /// ROADMAP 2.1 (D6): drains any queued background write first (so this flush
+    /// cannot be overtaken by an older snapshot), then blocks briefly to write
+    /// current values. Callers — scenePhase teardown and tests — depend on
+    /// "file is on disk when this returns."
     func saveImmediately() {
         saveTimer?.invalidate()
         saveTimer = nil
-        save()
-    }
 
-    private func save() {
+        if let pending = pendingWrite {
+            let semaphore = DispatchSemaphore(value: 0)
+            Task.detached(priority: .userInitiated) {
+                _ = await pending.value
+                semaphore.signal()
+            }
+            semaphore.wait()
+            pendingWrite = nil
+        }
+
         do {
             let data = try encoder.encode(books)
             try data.write(to: fileURL, options: .atomic)
+            try encoder.encode(libraryState).write(to: stateURL, options: .atomic)
             persistenceHealth = .healthy
         } catch {
-            // TASK 16 FIX: Include the file path so permission/disk-full errors are actionable.
-            print("[DataStore] Save error at \(fileURL.path): \(error)")
+            print("[DataStore] Immediate save error at \(fileURL.path): \(error)")
             persistenceHealth = .degraded("Library could not be saved: \(error.localizedDescription)")
             #if DEBUG
             consoleLastSaveError = error.localizedDescription
@@ -471,15 +504,72 @@ final class DataStore: ObservableObject {
         }
     }
 
-    private func saveLibraryState() {
+    /// Encodes the CURRENT snapshot on the main actor, then hands the bytes to a
+    /// DETACHED write chained behind the previous one. Only the slow part left main.
+    private func save() {
+        let data: Data
         do {
-            let data = try encoder.encode(libraryState)
-            try data.write(to: stateURL, options: .atomic)
-            persistenceHealth = .healthy
+            data = try encoder.encode(books)
         } catch {
-            print("[DataStore] LibraryState save error at \(stateURL.path): \(error)")
-            persistenceHealth = .degraded("Goals & achievements could not be saved: \(error.localizedDescription)")
+            print("[DataStore] Save encode error at \(fileURL.path): \(error)")
+            persistenceHealth = .degraded("Library could not be saved: \(error.localizedDescription)")
+            #if DEBUG
+            consoleLastSaveError = error.localizedDescription
+            #endif
+            return
         }
+        enqueueWrite(data, to: fileURL, failureContext: "Library")
+    }
+
+    private func saveLibraryState() {
+        let data: Data
+        do {
+            data = try encoder.encode(libraryState)
+        } catch {
+            print("[DataStore] LibraryState encode error at \(stateURL.path): \(error)")
+            persistenceHealth = .degraded("Goals & achievements could not be saved: \(error.localizedDescription)")
+            return
+        }
+        enqueueWrite(data, to: stateURL, failureContext: "Goals & achievements")
+    }
+
+    /// Chains a detached atomic write behind every previously enqueued one.
+    private func enqueueWrite(_ data: Data, to url: URL, failureContext: String) {
+        let filePath = url.path
+        let predecessor = pendingWrite
+
+        let write = Task.detached(priority: .utility) { () -> String? in
+            _ = await predecessor?.value // strict on-disk ordering, oldest first
+            do {
+                try data.write(to: url, options: .atomic)
+                return nil
+            } catch {
+                return "\(error) (\(filePath))"
+            }
+        }
+        pendingWrite = write
+
+        // Observe completion on the main actor WITHOUT blocking it.
+        Task { [weak self] in
+            guard let self else { return }
+            if let message = await write.value {
+                self.markWriteFailed(message, context: failureContext)
+            } else {
+                self.markWriteSucceeded()
+            }
+        }
+    }
+
+    private func markWriteSucceeded() {
+        persistenceHealth = .healthy
+    }
+
+    private func markWriteFailed(_ message: String, context: String) {
+        print("[DataStore] \(context) save error: \(message)")
+        persistenceHealth = .degraded("\(context) could not be saved: \(message)")
+        #if DEBUG
+        consoleLastSaveError = message
+        #endif
     }
 
     /// Copies a corrupt file to a .bak sidecar so data isn't silently destroyed.

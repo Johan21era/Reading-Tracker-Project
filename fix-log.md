@@ -533,3 +533,144 @@ Console, heavy-data, mutually isolated, plus an on-demand New Year celebration t
 
 ## Verification
 BUILD SUCCEEDED; FULL SUITE TEST SUCCEEDED at close (~108 cases).
+
+
+---
+
+# RA-002 REMEDIATION — All Four Phases (current session)
+
+Executed under the project's fix protocol against REMEDIATION_ROADMAP.md (authored from audit
+RA-002). Every stage passed a clean build AND full `xcodebuild test` (TEST SUCCEEDED, exit 0)
+at its phase boundary; final combined run at session end. Suite grew with new pins in
+`RemediationPinsTests.swift`.
+
+**VERIFICATION FORMAT NOTE (per Johan's directive): every entry includes a "SEE IT YOURSELF"
+pathway written for someone who has NEVER coded — concrete clicks/keystrokes in the running app,
+or the exact named line to look for in test output.**
+
+## Phase 1
+
+### P1-R · Roadmap 1.1 / NA-1 · Weather "Fix 1/2/3" contradiction · FIXED (Route B)
+- File: `Features/Environment/Weather/WeatherKitService2.swift` (~70 LOC deleted).
+- Root cause: an extension block claimed three engine bugs were fixed, but nothing called it;
+  live engine kept the buggy paths. False narrative AND live defects at once.
+- Finality: deleting the never-called block removes the false "fixed" claims; underlying defects
+  recorded OPEN (W-01/W-02/W-03, CURRENT_AUDIT.md) because report-level confidence is provably
+  invisible to users (decision gate read WeatherInsightPanel line-by-line first).
+- SEE IT YOURSELF: Open the app → Analytics ▸ Environment — identical behavior (the block never
+  did anything visible; that is the point). Search the project for
+  `calculateAggregateConfidenceReal` — zero results proves the phantom fixes are gone.
+
+### P1-S · Roadmap 1.2a+b / NA-2 · Goals & deadlines were uncreatable · FIXED
+- Files: NEW `Features/Goals/SettingsRootView.swift`; Settings Window + Cmd-comma menu in
+  `ReadingTrackerApp 2.swift`; `$libraryState` observation added to GoalProgressViewModel.bind.
+- Root cause: updateGoalSet/addDeadline had ZERO callers; dashboard pointed at settings that
+  did not exist; goal achievements structurally unearnable.
+- Finality: a Settings window sharing the SAME DataStore environment objects, editing through
+  already-persisted store APIs, plus ViewModel observation of libraryState, makes saved goals
+  appear in the dashboard immediately AND survive relaunch.
+- Verification pins (all pass): goalsRoundTripAcrossRelaunch / deadlinesRoundTripAndReplace /
+  clearingGoalsPersists / repeatedBindsAndLiveGoalPropagation. En-route catch documented:
+  swift-testing macro rejects cross-type optional comparison inside #expect; restructured with
+  typed intermediates (same contract).
+- SEE IT YOURSELF: (1) Open the app. (2) Press Command-comma — a Settings window opens.
+  (3) Turn ON "Daily page target", set 25, click Save Goals — green Saved appears.
+  (4) Close Settings; open Analytics ▸ Goals — a "Daily Pages" card shows "0 of 25 pages".
+  (5) Quit fully (Cmd-Q), reopen, check Goals again — still there. Before this session there
+  was NO Settings window and no way to perform step (3) anywhere in the app.
+
+### P1-T · Roadmap 1.2c / AUDIT F-08 · weekGoalStreak unearnable badge · FIXED
+- File: AchievementEngine2 (+ hasSevenConsecutiveGoalDays, bounded 90-day lookback).
+- Finality: any run of 7 consecutive calendar days meeting the daily page target earns the badge
+  exactly once; interleaved misses never earn it; unset target stays structurally unearnable.
+- Pins: sevenConsecutiveQualifyingDaysEarn / interleavedMissesDoNotEarn / unsetTargetNeverEarns /
+  sixDaysFallShort — all pass.
+- SEE IT YOURSELF: In test output find `Test case 'GoalStreakTests/sevenConsecutiveQualifyingDaysEarn()' passed`.
+  In the living app: set your daily goal (P1-S), then the rosette "Goal Week" lights up in
+  Analytics ▸ Achievements once your history contains 7 qualifying days in a row.
+
+## Phase 2
+
+### P2-R · Roadmap 2.1 / D6 · Disk writes off the main thread · FIXED
+- File: Core/DataStore3.swift. Debounced saves encode on-main then WRITE via CHAINED detached
+  tasks (strict ordering — newest snapshot always wins on disk); saveImmediately() remains
+  synchronous (drains chain, then blocks briefly): shutdown/test contract preserved.
+- SEE IT YOURSELF: Flip pages rapidly for a minute — no save hitches. Quit mid-book and reopen —
+  page position intact. Chained writes mean out-of-order saves are impossible by construction.
+
+### P2-S · Roadmap 2.2 / O-8 · Guarded lookups + duplicate-import surfacing · FIXED
+- Files: DataStore3, WeatherKitService2, NewContentView; addBook now reports acceptance.
+- SEE IT YOURSELF: Import the same book twice — second attempt shows an "Import Notes" alert:
+  "This book is already in your library (same file). Nothing was added." Previously: silence.
+
+### P2-T · Roadmap 2.3 / F-12 · Rebinding stacked subscriptions · FIXED
+- Files: ReadingGoalManager2.bind, SessionEventRouter2.bind — cancellables.removeAll() first.
+- Pin: repeatedBindsAndLiveGoalPropagation passes (triple bind → single consistent chain).
+- SEE IT YOURSELF: Open/close Insights a dozen times, read some pages, open Goals — numbers
+  update exactly once per event. (Pre-fix symptom was invisible redundant background work;
+  the pin now forbids it forever.)
+
+## Phase 3
+
+### P3-R · Roadmap 3.1 / NA-5 · Privacy manifest · FIXED
+- NEW file: Reading Tracker/PrivacyInfo.xcprivacy. Declared strictly from verified usage:
+  UserDefaults (reason CA92.1), file-timestamp APIs (C617.1), coarse-location collection for
+  WeatherKit app functionality (not linked to identity, not tracking). No third-party SDKs ship.
+- SEE IT YOURSELF: The file is visible in the project. On any future App Store submission these
+  declarations appear automatically instead of an undeclared-API rejection.
+
+### P3-S · Roadmap 3.2 / NA-4 · Audio automation legalized · FIXED
+- Files: entitlements (+ com.apple.security.automation.apple-events), Info.plist (+ usage strings
+  for Apple events and when-in-use location, replacing the empty stub).
+- Finality: granting what AudioMonitorService's own header always declared REQUIRED turns silent
+  sandbox blocking into consentable, functioning Music/Spotify queries.
+- SEE IT YOURSELF: Play music in the Music app, read for a couple minutes, end the session.
+  First time, macOS may ask "allow Reading Tracker to control Music?" — allow it. Analytics that
+  describe your listening environment can now name real artists/tracks instead of degrading to
+  silence-class.
+
+### P3-T · Roadmap 3.3 / NA-3 · Annual-report generation race · FIXED
+- File: AnnualReportArchiveView2 — monotonically increasing token; stale task results discarded.
+- SEE IT YOURSELF: Open Annual Reports; click back and forth between two years as fast as
+  possible. The displayed report ALWAYS matches your LAST click — never a slower older year
+  arriving late and overwriting it.
+
+### P3-U · Roadmap 3.4 small cluster · SIX ITEMS FIXED / ONE VERIFIED-BENIGN
+1. F-09: BookImporter delegates to canonical SharedTextUtilities (import counts/difficulty use
+   identical entity decoding as reading). SEE IT YOURSELF: import an EPUB using &#8217;-style
+   apostrophes — word counts are sane, not inflated with garbage digits.
+2. F-11: Validator S-3 message now tells the truth ("pinned to startPage", not "swapped"); dead
+   tmp removed; impossible S-1 rule deleted. Pins unaffected (ValidatorTests all pass).
+3. F-13(b): DataMaturityEngine expiry rule uses the injected clock (ClaimRule signature gained a
+   Date argument; construction sites verified contained in-engine). The header claim "nothing in
+   this file reads Date()" is now TRUE. SEE IT YOURSELF: FatigueAnalyzerTests etc. all pass.
+4. F-13(a): EstimationEngine dead trio removed (totalWeight/clamp/mapConfidence — zero callers).
+5. NA-8: DemoDataService dead fallbacks removed (Debug build no longer warns on those lines).
+6. NA-9 VERIFIED-NO-CHANGE: BookDiscoveryView ships its OWN close control + Escape (read in full);
+   layering the floating overlay would duplicate close buttons. Logged as verified-benign.
+
+## Phase 4
+
+### P4-R · Hygiene sweep · DONE
+- Deleted default.profraw from the app folder (coverage cruft).
+- Deleted JanuaryFirstBannerView (~200 LOC defined-but-never-instantiated; recoverable from
+  history if the feature is prioritized).
+- Session temp artifacts erased after use per operator condition.
+- Folder rename (trailing space) deliberately deferred OUT of fix sessions: filesystem-level,
+  no code dependency; doing it mid-verification would churn every build path reference.
+
+## OPEN after RA-002 (Finality not reached — untouched per Confidence Rules)
+- W-01/W-02/W-03 (NEW register entries): live weather-engine confidence hardcoding / unsorted
+  first-lastObserved / rarest-genre "avoided" — reopened honestly after Route B deletion; wire-up
+  designs exist but each needs its own Finality + pin.
+- F-10: AudioProfileStore print-only failures (PersistenceStatus adoption — next small batch).
+- F-13(c): open-failure LOGGING added this session; typed-error surfacing still open.
+- F-13(d) rename + BehavioralCategory hygiene (takeIf, systemPowerObserver branch): that file is
+  a whole-file-replacement hazard at ~4,700 lines; needs partial-edit capability or a dedicated
+  fully-read session before touching.
+- O-6, D6 pruning, profiling watch-items: per roadmap schedule (needs multi-season data).
+
+**Definition-of-Done scorecard:** four phases executed ✔ · TEST SUCCEEDED at every phase boundary
+and at close ✔ · fix-log complete incl. plain-language verification pathways ✔ · CURRENT_AUDIT
+revised ✔ · handoff rewritten ✔ · graphify refreshed ✔ · temp artifacts erased ✔ · no project
+bloat ✔

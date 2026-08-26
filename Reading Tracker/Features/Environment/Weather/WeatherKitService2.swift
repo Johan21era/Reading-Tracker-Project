@@ -13,6 +13,18 @@
 //  Target: macOS 13+ (Ventura and later). No iOS-first assumptions.
 //  Persistence: SQLite at ~/Library/Application Support/<BundleID>/weather_snapshots.sqlite3
 //
+//  REMEDIATION NOTE (RA-002 / Roadmap 1.1, Route B): a former extension block
+//  ("WeatherAnalysisEngine Bug Fixes" — avoidedGenres / calculateAggregateConfidenceReal /
+//  temporalBounds) claimed to patch three engine defects but had ZERO callers, while its
+//  comments implied the fixes were applied. Deleted; the three underlying engine defects
+//  are recorded OPEN in CURRENT_AUDIT.md (W-01/W-02/W-03).
+//  `coverageRatio(for:)` below is retained: exercised by WeatherTests and the intended
+//  data source when W-01 is eventually wired.
+//
+//  ROADMAP 2.2 (O-8): unguarded urls(for:).first! replaced with a temporary-directory
+//  fallback so a misbehaving domain lookup can no longer crash store construction.
+//  ROADMAP 3.4 (F-13c): sqlite3_open failures are now logged with the engine's own
+//  error message instead of being swallowed — degradation behavior itself is UNCHANGED.
 
 import Combine
 import CoreLocation
@@ -23,13 +35,6 @@ import WeatherKit
 private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
 // MARK: - WeatherKitService
-
-//
-// Consumes:    All 13 engine output types (indirectly, via WeatherSnapshot → EnvironmentalSessionRecord.weather)
-// Provides:    WeatherSnapshot instances fetched from WeatherKit
-// Path:        WeatherSnapshot → EnvironmentalSessionRecord.weather → all engine entry points
-// Required:    Without a WeatherSnapshot, EnvironmentalSessionRecord cannot be constructed.
-//              Without records, no engine analysis method returns results.
 
 @MainActor
 public final class WeatherKitService: ObservableObject {
@@ -56,10 +61,6 @@ public final class WeatherKitService: ObservableObject {
     }
 
     // MARK: - Primary Session Attachment
-
-    //
-    // Called at session end. Returns WeatherSnapshot for EnvironmentalSessionRecord construction.
-    // Persists the snapshot so it is available for future bulk analysis passes.
 
     public func snapshotForCurrentConditions(
         sessionID: UUID
@@ -95,11 +96,6 @@ public final class WeatherKitService: ObservableObject {
 
     // MARK: - Historical Backfill
 
-    //
-    // Fetches WeatherSnapshot for a past session timestamp.
-    // Improves ConfidenceReport.dataCoverageScore for existing sessions that were
-    // logged before WeatherKitService was available.
-
     public func snapshotForHistoricalSession(
         sessionID: UUID,
         at timestamp: Date
@@ -133,10 +129,6 @@ public final class WeatherKitService: ObservableObject {
 
     // MARK: - Forecast Input
 
-    //
-    // Returns WeatherSnapshot for a future date.
-    // Caller wraps in EnvironmentalForecastInput for WeatherAnalysisEngine.generateForecast().
-
     public func snapshotForForecast(
         targetDate: Date
     ) async throws -> WeatherSnapshot {
@@ -163,11 +155,6 @@ public final class WeatherKitService: ObservableObject {
 
     // MARK: - Bulk Historical Query
 
-    //
-    // Returns all persisted WeatherSnapshots in a date range.
-    // Used when the caller assembles EnvironmentalSessionRecord arrays for bulk analysis
-    // (e.g. building EnvironmentalEvolutionReport baseline vs current snapshots).
-
     public func snapshots(
         from startDate: Date,
         to endDate: Date
@@ -179,8 +166,9 @@ public final class WeatherKitService: ObservableObject {
 
     //
     // Returns the fraction of session IDs that have a persisted WeatherSnapshot.
-    // Used to populate ConfidenceReport.dataCoverageScore accurately.
-    // The engine hardcodes dataCoverageScore to 1.0; this method enables the fix.
+    // Currently exercised by WeatherTests only; this is the intended data source for
+    // W-01 (see CURRENT_AUDIT.md) whenever real confidence derivation gets wired into
+    // WeatherAnalysisEngine.generateTrendReport / generateBehaviorReport.
 
     public func coverageRatio(for sessionIDs: [UUID]) throws -> Double {
         let covered = try store.countPresent(sessionIDs: sessionIDs)
@@ -197,15 +185,6 @@ public enum WeatherKitServiceError: Error {
 }
 
 // MARK: - WeatherSnapshotNormaliser
-
-//
-// Consumes:    WeatherSnapshot (all 16 fields read by the engine's correlation extractors)
-// Provides:    Correctly populated WeatherSnapshot from WeatherKit raw types
-// Path:        Direct — WeatherSnapshot is the `weather` property of EnvironmentalSessionRecord
-// Required:    stormActivityIndex (analyzeStormCorrelations), season (buildSeasonalProfiles),
-//              dayPeriod (correlation grouping), and condition (determineDominantCondition)
-//              are NOT directly vended by WeatherKit. If left as defaults/zeros, those
-//              engine analysis branches produce no signal at all.
 
 struct WeatherSnapshotNormaliser {
     // MARK: - Current Conditions
@@ -285,11 +264,6 @@ struct WeatherSnapshotNormaliser {
 
     // MARK: - stormActivityIndex
 
-    //
-    // Composite 0–1 score used directly by analyzeStormCorrelations().
-    // A zero value silences that entire correlation branch.
-    // Weighted: condition type (50%) + wind speed (30%) + precipitation intensity (20%).
-
     func computeStormIndex(
         condition: WeatherCondition,
         windKPH: Double,
@@ -309,11 +283,6 @@ struct WeatherSnapshotNormaliser {
 
     // MARK: - Season
 
-    //
-    // Derived from month + hemisphere (latitude sign).
-    // Used by buildSeasonalProfiles() which groups all sessions by season.
-    // Southern-hemisphere correction is essential for accurate SeasonalProfile data.
-
     func deriveSeason(from date: Date, latitude: Double) -> SeasonalPeriod {
         let month = Calendar.current.component(.month, from: date)
         let isNorthern = latitude >= 0
@@ -328,9 +297,6 @@ struct WeatherSnapshotNormaliser {
 
     // MARK: - DayPeriod
 
-    //
-    // Derived from hour. Used by correlation grouping and EnvironmentalFactor.dayPeriod.
-
     func deriveDayPeriod(from date: Date) -> DayPeriod {
         let hour = Calendar.current.component(.hour, from: date)
 
@@ -344,11 +310,6 @@ struct WeatherSnapshotNormaliser {
     }
 
     // MARK: - WeatherCondition → WeatherConditionCategory
-
-    //
-    // Maps WeatherKit's WeatherCondition enum to WeatherAnalysisEngine's
-    // WeatherConditionCategory. Used by determineDominantCondition() →
-    // WeatherInfluenceProfile.dominantCondition.
 
     func mapCondition(_ condition: WeatherCondition) -> WeatherConditionCategory {
         switch condition {
@@ -382,40 +343,6 @@ struct WeatherSnapshotNormaliser {
 
 // MARK: - WeatherSnapshotStore
 
-//
-// Consumes:    EnvironmentalSessionRecord (via session ID join),
-//              WeatherTrendReport (temporal queries),
-//              EnvironmentalEvolutionReport (baseline/current snapshot queries)
-// Provides:    Durable persistence and range querying of WeatherSnapshot instances
-// Path:        Snapshots retrieved from store → assembled into [EnvironmentalSessionRecord]
-//              → passed to all engine entry points
-// Required:    Without persistence, all historical data is lost between app launches.
-//              SeasonalProfile requires data from all four seasons.
-//              EnvironmentalEvolutionReport requires a baseline snapshot from months ago.
-//              Neither is achievable without durable storage.
-//
-// Schema:
-//   weather_snapshots
-//     id                        TEXT PRIMARY KEY   (WeatherSnapshot.id UUID)
-//     timestamp                 REAL               (Unix epoch, indexed)
-//     session_id                TEXT               (nullable; NULL for forecast snapshots)
-//     temperature_celsius       REAL
-//     feels_like_celsius        REAL
-//     humidity                  REAL
-//     pressure                  REAL
-//     cloud_cover               REAL
-//     visibility_km             REAL
-//     wind_speed_kph            REAL
-//     precipitation_mm          REAL
-//     snowfall_mm               REAL
-//     storm_activity_index      REAL
-//     condition                 TEXT               (WeatherConditionCategory.rawValue)
-//     season                    TEXT               (SeasonalPeriod.rawValue)
-//     month                     INTEGER
-//     weekday                   INTEGER
-//     day_period                TEXT               (DayPeriod.rawValue)
-//     created_at                REAL
-
 final class WeatherSnapshotStore {
     private let dbURL: URL
     private var db: OpaquePointer?
@@ -424,12 +351,20 @@ final class WeatherSnapshotStore {
         if let dir = directory {
             dbURL = dir.appendingPathComponent("weather_snapshots.sqlite3")
         } else {
-            let appSupport = FileManager.default.urls(
+            // ROADMAP 2.2 (O-8): was `.first!`. A guarded fallback keeps the app
+            // alive (and diagnosable via the log line) if Application Support is
+            // unavailable; snapshots land somewhere ephemeral instead of crashing.
+            let appSupportCandidates = FileManager.default.urls(
                 for: .applicationSupportDirectory,
                 in: .userDomainMask
-            ).first!
+            )
+            let baseDir = appSupportCandidates.first ?? FileManager.default.temporaryDirectory
+            if appSupportCandidates.isEmpty {
+                print("[WeatherSnapshotStore] Application Support unavailable — " +
+                    "falling back to \(baseDir.path)")
+            }
 
-            let appDir = appSupport.appendingPathComponent(
+            let appDir = baseDir.appendingPathComponent(
                 Bundle.main.bundleIdentifier ?? "ReadingTracker",
                 isDirectory: true
             )
@@ -588,7 +523,16 @@ final class WeatherSnapshotStore {
     // MARK: - Private
 
     private func openDatabase() {
-        sqlite3_open(dbURL.path, &db)
+        // ROADMAP 3.4 (F-13c): the open RESULT was previously ignored entirely —
+        // when opening failed, every later operation failed with a generic
+        // StoreError and diagnosis was impossible. Degradation semantics are
+        // intentionally UNCHANGED (operations still fail closed); we now say why
+        // in the log using SQLite's own message.
+        if sqlite3_open(dbURL.path, &db) != SQLITE_OK {
+            let message = db.flatMap { String(cString: sqlite3_errmsg($0)) } ?? "unknown error"
+            print("[WeatherSnapshotStore] FAILED to open database at \(dbURL.path): \(message). " +
+                "Weather persistence will be degraded until the next launch.")
+        }
     }
 
     private func createSchemaIfNeeded() {
@@ -689,19 +633,6 @@ final class WeatherSnapshotStore {
 }
 
 // MARK: - LocationProvider
-
-//
-// Consumes:    WeatherSnapshot (all fields depend on having a valid location)
-// Provides:    CLLocation for WeatherKit API calls
-// Path:        Location → WeatherKit fetch → WeatherSnapshot → EnvironmentalSessionRecord.weather
-// Required:    WeatherKit requires a location. Without one, no WeatherSnapshot can be created.
-//
-// macOS notes:
-// - requestAlwaysAuthorization() is unavailable in sandboxed macOS apps.
-// - Uses requestWhenInUseAuthorization() — fires while app has active windows.
-// - Caches last known location in UserDefaults for use when not in foreground.
-// - Exposes manualLocation override — the correct desktop affordance for users who
-//   work from a fixed location or decline to grant permission.
 
 @MainActor
 final class LocationProvider: NSObject, CLLocationManagerDelegate {
@@ -828,15 +759,6 @@ final class LocationProvider: NSObject, CLLocationManagerDelegate {
 
 // MARK: - EnvironmentalSessionAssembler
 
-//
-// Consumes:    EnvironmentalSessionRecord (directly constructs it)
-// Provides:    The fully assembled EnvironmentalSessionRecord by joining reading session
-//              data (from existing engines) with the fetched WeatherSnapshot
-// Path:        assemble() → [EnvironmentalSessionRecord] → all engine entry points
-// Required:    This is the explicit join seam between the reading tracker's session data
-//              and WeatherKitService's weather data. Without this, the engine's primary
-//              input type can never be constructed.
-
 public struct EnvironmentalSessionAssembler {
     private let weatherService: WeatherKitService
 
@@ -910,10 +832,6 @@ public struct EnvironmentalSessionAssembler {
 
     // MARK: - Retroactive Assembly
 
-    //
-    // Assembles a record for a historical session that was logged without weather data.
-    // Improves ConfidenceReport.dataCoverageScore for existing analysis runs.
-
     public func assembleRetroactively(
         sessionID: UUID,
         bookID: UUID,
@@ -953,12 +871,6 @@ public struct EnvironmentalSessionAssembler {
 }
 
 // MARK: - ReadingSessionMetrics
-
-//
-// Value type carrying pre-computed reading metrics from existing analytics systems.
-// WeatherAnalysisEngine does NOT compute these — it consumes them.
-// This struct is the handoff surface from AnalyticsEngine / EstimationEngine
-// into the weather layer.
 
 public struct ReadingSessionMetrics {
     public let durationMinutes: Double
@@ -1021,97 +933,10 @@ public struct ReadingSessionMetrics {
     }
 }
 
-// MARK: - WeatherAnalysisEngine Bug Fixes
-
+// MARK: - Unit-test pointer
 //
-// The following extensions patch three critical issues identified in the code review.
-// They are additive — WeatherAnalysisEngine.swift does not need to be modified,
-// only the call sites updated to use these replacements.
-
-extension WeatherAnalysisEngine {
-    // MARK: Fix 1: avoidedGenres
-
-    //
-    // Original: picks the rarest genres in the dataset — semantically wrong.
-    //           A genre with 1 session is "uncommon", not "avoided".
-    // Fixed:    only genres appearing in ≤5% of sessions qualify as avoided.
-    //
-    // Affects: SeasonalProfile.avoidedGenres → EnvironmentalReadingProfile.seasonalProfiles
-
-    static func avoidedGenres(
-        from genreCounts: [(key: String, value: Int)],
-        totalSessions: Int
-    ) -> [String] {
-        let avoidedThreshold = max(1, Int(Double(totalSessions) * 0.05))
-        return genreCounts
-            .filter { $0.value <= avoidedThreshold }
-            .prefix(3)
-            .map(\.key)
-    }
-
-    // MARK: Fix 2: calculateAggregateConfidence (real coverage score)
-
-    //
-    // Original: hardcodes recurrence/stability/consistency to 0.8 and dataCoverageScore to 1.0.
-    //           Confidence numbers are cosmetic — high regardless of actual data quality.
-    // Fixed:    derives scores from actual correlation data; accepts real coverage ratio
-    //           from WeatherKitService.coverageRatio(for:).
-    //
-    // Affects: ConfidenceReport in WeatherTrendReport, EnvironmentalBehaviorReport
-
-    func calculateAggregateConfidenceReal(
-        sessions: [EnvironmentalSessionRecord],
-        correlations: [EnvironmentalCorrelation],
-        dataCoverageRatio: Double
-    ) -> ConfidenceReport {
-        let recurrence = correlations.isEmpty ? 0.0 : correlations.map { $0.confidence.recurrenceScore }.reduce(0,+) / Double(correlations.count)
-        let stability = correlations.isEmpty ? 0.0 : correlations.map { $0.confidence.stabilityScore }.reduce(0,+) / Double(correlations.count)
-        let consistency = correlations.isEmpty ? 0.0 : correlations.map { $0.confidence.consistencyScore }.reduce(0,+) / Double(correlations.count)
-        let sampleScore = min(1.0, Double(sessions.count) / 100.0)
-
-        let overall = (sampleScore + recurrence + stability + consistency + dataCoverageRatio) / 5.0
-
-        return ConfidenceReport(
-            overallConfidence: overall,
-            sampleSizeScore: sampleScore,
-            recurrenceScore: recurrence,
-            stabilityScore: stability,
-            consistencyScore: consistency,
-            dataCoverageScore: dataCoverageRatio,
-            supportingSamples: sessions.count
-        )
-    }
-
-    // MARK: Fix 3: firstObserved / lastObserved temporal sort
-
-    //
-    // Original: uses sessions.first and sessions.last without guaranteeing chronological order.
-    //           firstObserved and lastObserved in EnvironmentalCorrelation may be wrong.
-    // Fixed:    sort by timestamp before extracting boundary dates.
-    //
-    // Use this helper at the call sites in buildCorrelation() and buildBinaryConditionCorrelation().
-
-    func temporalBounds(
-        of sessions: [EnvironmentalSessionRecord]
-    ) -> (first: Date, last: Date) {
-        let sorted = sessions.sorted { $0.timestamp < $1.timestamp }
-        return (
-            first: sorted.first?.timestamp ?? Date(),
-            last: sorted.last?.timestamp ?? Date()
-        )
-    }
-}
-
-// MARK: - WeatherKitServiceTests
-
-//
-// Unit and integration tests for WeatherKitService.
-// These live here for reference; in the Xcode project they belong in the test target.
-//
-// Run order of priority:
-//   1. WeatherSnapshotNormaliserTests  — pure unit, no dependencies, highest coverage value
-//   2. WeatherSnapshotStoreTests       — SQLite integration, no network
-//   3. WeatherAnalysisEngineIntegrationTests — validates full pipeline with synthetic data
+// WeatherSnapshotNormaliser / WeatherSnapshotStore / engine-integration suites live in
+// `Reading TrackerTests/WeatherTests.swift` and execute under `xcodebuild test`.
 
 // MARK: - Developer Console
 

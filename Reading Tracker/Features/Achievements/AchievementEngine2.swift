@@ -353,6 +353,15 @@ enum AchievementEngine {
         existing _: Set<AchievementKind>,
         award: (AchievementKind, UUID?) -> Void
     ) {
+        // AUDIT F-08 (roadmap 1.2c): weekGoalStreak was defined and registered in
+        // AchievementDefinition.all but NO code path ever awarded it — users saw a
+        // permanently locked "Goal Week" slot. Detection: any run of 7 consecutive
+        // calendar days whose page count meets the daily page target. Requires a set
+        // daily page target (reachable since roadmap 1.2b added the goal editor).
+        if hasSevenConsecutiveGoalDays(books: books, goalSet: goalSet) {
+            award(.weekGoalStreak, nil)
+        }
+
         // Annual goal
         if let annualTarget = goalSet.annualBookTarget {
             let statuses = ReadingGoalManager.allStatuses(for: goalSet, books: books)
@@ -372,6 +381,27 @@ enum AchievementEngine {
                 award(.firstDailyGoal, nil)
             }
         }
+    }
+
+    /// F-08 helper: true when some window of 7 consecutive calendar days each had
+    /// page count ≥ the daily page target. Uses AnalyticsEngine's own period math
+    /// (B7 clamped overlap) so the definition of "pages that day" matches what the
+    /// dashboard shows. Bounded 90-day lookback keeps this O(sessions-in-window).
+    static func hasSevenConsecutiveGoalDays(books: [Book], goalSet: ReadingGoalSet) -> Bool {
+        guard let dailyTarget = goalSet.dailyPageTarget, dailyTarget > 0 else { return false }
+
+        let activity = AnalyticsEngine.dailyActivity(books: books, days: 90)
+        var longest = 0
+        var run = 0
+        for day in activity {
+            if day.pagesRead >= dailyTarget {
+                run += 1
+                longest = max(longest, run)
+            } else {
+                run = 0
+            }
+        }
+        return longest >= 7
     }
 
     // MARK: - Summary

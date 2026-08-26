@@ -5,6 +5,34 @@
 **Framework applied:** the architecture & defect review method + `TESTING_STRATEGY.md` (coverage/risk mapping)
 **Status of this document:** this is the successor to the deleted `AUDIT_REPORT.md` / `TECH_DEBT.md`. Future sessions should treat **this file as the current defect & risk register** until superseded.
 
+> **REVISION — RA-002 remediation session (all four roadmap phases executed):**
+> Route-B verdict on the dead weather Fix-block (deleted; underlying engine defects re-registered
+> below as **W-01/W-02/W-03 OPEN**); NA-2 goals/deadlines creation surface SHIPPED (Settings
+> window ⌘, → goal editor → live dashboard propagation; F-08 weekGoalStreak now earnable);
+> D6 async chained writes landed (saveImmediately contract preserved); O-8 batch closed (guarded
+> lookups + duplicate-import surfacing); F-12 both bind sites fixed; NA-3 race guard; NA-4/NA-5
+> submission artifacts added (apple-events entitlement + usage strings; PrivacyInfo.xcprivacy);
+> F-09/F-11/F-13(a,b-c-logging)/NA-7(2 of 3)/NA-8 fixed; JanuaryFirstBannerView deleted;
+> default.profraw removed. Suite TEST SUCCEEDED at every phase boundary. Full detail + plain-
+> language verification pathways in fix-log.md §RA-002.
+> **NEW OPEN ENTRIES:**
+>
+> ### W-01 · 🟠 High · Live aggregate confidence is decorative (reopened from dead "Fix 2")
+> `WeatherAnalysisEngine.calculateAggregateConfidence` hardcodes recurrence/stability/consistency
+> to 0.8 and dataCoverageScore to 1.0; called by BOTH live entry points (generateTrendReport,
+> generateBehaviorReport). User-invisible today (panel renders neither report confidence field —
+> verified by decision-gate read), hence High not Critical. Fix shape: accept coverageRatio +
+> derive from correlation scores; pin with injected-ratio test.
+>
+> ### W-02 · 🟡 Medium · firstObserved/lastObserved derived from unsorted arrays
+> buildCorrelation / buildBinaryConditionCorrelation pass `sessions.first/.last` unsorted;
+> wrong temporal bounds flow into maturity gating evidence. Fix shape: sort by timestamp
+> (authored temporalBounds(of:) was deleted with Route B; reimplement inline).
+>
+> ### W-03 · 🟡 Medium · avoidedGenres still selects rarest genres
+> buildSeasonalProfiles uses suffix(3) of genre counts — labels least-read genres as "avoided".
+> Fix shape: ≤5%-of-sessions threshold (dead authored logic deleted with Route B).
+
 > **REVISION — Phase 2 (The Great Wiring) executed:** §8.2 refcount gate closed+pin;
 > Environment Engine WIRED (D5 flagship); Library Explorer + Progressive Filtering model
 > layer WIRED (collection CRUD w/ referential integrity); Import Intelligence verdict

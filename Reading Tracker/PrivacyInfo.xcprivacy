@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- ROADMAP 3.1 (RA-002 / NA-5): App Store privacy manifest.
+	     Reasoning recorded in fix-log.md. Declared from VERIFIED usage in this
+	     codebase only:
+	       • UserDefaults — LocationProvider caches (wks_lat/wks_lon/wks_manual_*),
+	         January-banner dismissal year, via UserDefaults.standard directly.
+	       • File timestamp APIs — import path reads file metadata attributes
+	         (.fileSizeKey family) on user-selected files.
+	     Collected data: coarse location coordinates are transmitted to Apple's
+	     WeatherKit solely to fetch weather conditions for analytics; declared as
+	     coarse location / app functionality / not linked to identity / not tracking.
+	     No advertising, no third-party SDKs ship in this app (sole dependency:
+	     ZIPFoundation, local archive extraction only).
+	-->
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyCollectedDataType</key>
+			<string>NSPrivacyCollectedDataTypeCoarseLocation</string>
+			<key>NSPrivacyCollectedDataTypeLinked</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypeTracking</key>
+			<false/>
+			<key>NSPrivacyCollectedDataTypePurposes</key>
+			<array>
+				<string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>C617.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
