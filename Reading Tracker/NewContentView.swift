@@ -368,6 +368,11 @@ struct ContentView: View {
                 PersistenceWarningBanner(message: message)
             }
         }
+        // P5 Feature 3: live reading HUD (top-left; toast owns top-center,
+        // persistence banner owns bottom).
+        .overlay(alignment: .topLeading) {
+            ReadingHUD()
+        }
     }
 
     // MARK: - Hover Handling (unchanged)
@@ -479,7 +484,11 @@ private struct ContentBookRowView: View {
     let book: Book
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        HStack(spacing: 10) {
+            // P5 Feature 3: real cover when captured at import.
+            BookCoverThumbnail(book: book)
+
+            VStack(alignment: .leading, spacing: 4) {
             Text(book.title)
                 .font(.headline)
             Text(book.author)
@@ -498,6 +507,7 @@ private struct ContentBookRowView: View {
                         .foregroundColor(.secondary)
                 }
             }
+        }
         }
         .padding(.vertical, 4)
     }

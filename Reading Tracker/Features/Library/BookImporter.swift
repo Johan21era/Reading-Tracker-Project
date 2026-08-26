@@ -1,5 +1,6 @@
 // BookImporter.swift
 // Handles importing EPUB and PDF files, extracting metadata and chapter structure.
+// P5 Feature 3: captures COVER ART at import (PDF first page / EPUB OPF cover).
 // PATCHED: B4 — security-scoped bookmark is now computed AND stored in Book.bookmarkData
 //               for both PDF and EPUB paths so file access survives app restart.
 // AUDIT:
@@ -113,6 +114,7 @@ enum BookImporter {
             fileType: .pdf,
             totalPages: totalPages,
             chapters: chapters,
+            coverImageData: BookCoverCapture.fromPDFDocument(doc), // P5
             bookmarkData: bookmarkData
         )
     }
@@ -204,6 +206,14 @@ enum BookImporter {
                 "Check that the app has the com.apple.security.files.bookmarks.app-scope entitlement.")
         }
 
+        // P5 Feature 3: load the OPF-declared cover relative to the OPF itself.
+        var coverData: Data?
+        if let coverHref = metadata.coverHref {
+            let coverURL = opfURL.deletingLastPathComponent()
+                .appendingPathComponent(coverHref.removingPercentEncoding ?? coverHref)
+            coverData = BookCoverCapture.fromFile(coverURL)
+        }
+
         return Book(
             title: metadata.title,
             author: metadata.author,
@@ -211,6 +221,7 @@ enum BookImporter {
             fileType: .epub,
             totalPages: estimatedPages,
             chapters: chapters,
+            coverImageData: coverData,
             difficultyProfile: difficulty,
             bookmarkData: bookmarkData
         )
@@ -223,6 +234,7 @@ enum BookImporter {
         var author: String
         var spineItems: [(id: String, href: URL)]
         var tocEntries: [(title: String, href: String)]
+        var coverHref: String? // OPF-declared cover image path (relative to OPF dir)
     }
 
     private static func findOPFURL(containerURL: URL, baseDir: URL) throws -> URL {
@@ -274,8 +286,44 @@ enum BookImporter {
             tocEntries = parseTOCncx(ncxURL: ncxURL)
         }
 
+        // P5 Feature 3: resolve the declared cover — EPUB3 uses
+        // <item properties="cover-image">; older EPUB2 uses <meta name="cover">
+        // pointing at a manifest id.
+        var coverHref: String?
+        if let items = try? xml.nodes(forXPath: "//*[local-name()='item']") {
+            for item in items {
+                guard let el = item as? XMLElement else { continue }
+                let props = el.attribute(forName: "properties")?.stringValue ?? ""
+                let id = el.attribute(forName: "id")?.stringValue ?? ""
+                let href = el.attribute(forName: "href")?.stringValue
+                if props.contains("cover-image"), let href {
+                    coverHref = href
+                    break
+                }
+                if id.lowercased() == "cover-image", let href {
+                    coverHref = href
+                    break
+                }
+            }
+        }
+        if coverHref == nil,
+           let coverMetaID = (try? xml.nodes(
+               forXPath: "//*[local-name()='meta'][@name='cover']/@content"
+           ).first?.stringValue),
+           let manifestItems = try? xml.nodes(forXPath: "//*[local-name()='item']")
+        {
+            for item in manifestItems {
+                guard let el = item as? XMLElement,
+                      el.attribute(forName: "id")?.stringValue == coverMetaID,
+                      let href = el.attribute(forName: "href")?.stringValue else { continue }
+                coverHref = href
+                break
+            }
+        }
+
         return OPFMetadata(title: title, author: creator,
-                           spineItems: spineItems, tocEntries: tocEntries)
+                           spineItems: spineItems, tocEntries: tocEntries,
+                           coverHref: coverHref)
     }
 
     private static func parseTOCncx(ncxURL: URL) -> [(title: String, href: String)] {
@@ -346,6 +394,59 @@ enum BookImporter {
             }
             return String(collected.prefix(maxChars))
         }.value
+    }
+}
+
+// MARK: - Cover Art Capture (P5 Feature 3)
+
+enum BookCoverCapture {
+    /// JPEG budget: sharp at pane sizes, small on disk (a few hundred books ~ few MB).
+    private static let maxDimension: CGFloat = 600
+
+    static func fromPDFDocument(_ doc: PDFDocument) -> Data? {
+        // PDFPage.thumbnail is non-optional on current SDKs; only the missing
+        // page needs guarding.
+        guard let page = doc.page(at: 0) else { return nil }
+        let image = page.thumbnail(of: CGSize(width: maxDimension, height: maxDimension * 1.5),
+                                   for: .mediaBox)
+        return jpegData(from: image)
+    }
+
+    static func fromFile(_ fileURL: URL) -> Data? {
+        guard let image = NSImage(contentsOf: fileURL) else { return nil }
+        return jpegData(from: image)
+    }
+
+    private static func jpegData(from image: NSImage) -> Data? {
+        let targetSize = downscaledSize(for: image.size)
+        let rep = NSBitmapImageRep(
+            bitmapDataPlanes: nil,
+            pixelsWide: Int(targetSize.width),
+            pixelsHigh: Int(targetSize.height),
+            bitsPerSample: 8,
+            samplesPerPixel: 4,
+            hasAlpha: true,
+            isPlanar: false,
+            colorSpaceName: .calibratedRGB,
+            bytesPerRow: 0,
+            bitsPerPixel: 0
+        )
+        guard let rep else { return nil }
+
+        NSGraphicsContext.saveGraphicsState()
+        defer { NSGraphicsContext.restoreGraphicsState() }
+        guard let context = NSGraphicsContext(bitmapImageRep: rep) else { return nil }
+        NSGraphicsContext.current = context
+        image.draw(in: NSRect(origin: .zero, size: targetSize))
+        return rep.representation(using: .jpeg, properties: [.compressionFactor: 0.85])
+    }
+
+    private static func downscaledSize(for original: NSSize) -> NSSize {
+        guard original.width > maxDimension || original.height > maxDimension else {
+            return original
+        }
+        let scale = min(maxDimension / original.width, maxDimension / original.height)
+        return NSSize(width: original.width * scale, height: original.height * scale)
     }
 }
 
