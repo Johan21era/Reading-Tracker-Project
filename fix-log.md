@@ -899,3 +899,34 @@ SEE IT YOURSELF:
 3. Open a book — the reading HUD has no accent ring anymore and matches the toast/banner corner radius exactly (Medium #4/#5).
 4. All floating surfaces (HUD, achievement toast, persistence banner, Sentinel card) now share ONE radius + inset vocabulary from DesignGrid.swift — change one constant, everything follows (Medium #4).
 En-route SDK lessons logged: .windowStyle is scene-level; containerBackground-for-window unavailable on this SDK; toolbarBackground navigation placement is iOS-only.
+
+---
+
+# P6.5 — Sentinel transparency + render-safety fix
+
+Johan reported bright-red console spam: "Modifying state during view update"
+every second, attributed to Sentinel. TWO causes fixed:
+1. SentinelEngine.init loaded journal counters into @Published — and init runs
+   during SwiftUI's first evaluation of @StateObject defaults = mutation
+   during render. Counters now hydrate lazily inside runCycle.
+2. runCycle wrote recentFindings/lastRunDate/counters synchronously when
+   invoked from .onAppear/.task (inside the update). All published writes now
+   deferred one runloop turn via Task { @MainActor }.
+Also: IntegrityProbe passes quiet:true to the validator — periodic probes no
+longer print the 🔧/❌ report lines that were flooding the log every cycle.
+
+NEW SURFACE (per Johan's spec): Dev Console ▸ Sentinel — two faces:
+• Technical: raw findings w/ timestamp/severity/probe.rule/outcome badges +
+  full debugDetail (literal live code evidence: ids, titles, actions taken),
+  rule filter, lifetime metrics, auto-repair mode indicator, Run Probe Now,
+  journal folder reveal.
+• Plain English: static userSummary sentences (S4-safe), duplicates collapsed
+  with counts, fix vs needs-you icons.
+
+En-route fixes: font API typo (.system(.system(...))); isAvailable/planned-
+Phase switches made exhaustive; bridge attach already last-wins so tests pass;
+writeScopeIsConfined pin exempted DataStore-owned artifacts after diagnosing
+that its own detached backup task created 'Backups' mid-diff (not Sentinel).
+
+SEE IT YOURSELF: ⌘⇧D ▸ Sentinel (sidebar) → Run Probe Now → flip between
+Technical and Plain English faces on the same data. Console stays silent.
