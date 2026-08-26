@@ -43,4 +43,78 @@ session can pick up exactly where I stopped.
   DurabilityPins round-trip still proves covers survive.
 - View surface unchanged: Book.coverImage checks store → falls back embedded.
 
-(status: IN PROGRESS)
+(status: ✅ COMPLETE — commit 25c7318)
+
+## PHASE A SHIPPED
+- CoverStore.swift: files at covers/<uuid>.jpg, NSCache(300), serial writes,
+  migrate/remove helpers. UUID-only filenames (security).
+- BookImporter: PDF+EPUB captures → CoverStore by newBook.id; payload lean.
+- DataStore.load: one-time migration embedded→files, clears payload field.
+- removeBook: deletes cover file (no orphans).
+- LibraryArchive v1.1: optional covers:[String:Data]; export collects files
+  (+embedded fallback); import restores; v1 archives still decode.
+- Pins: CoverStorePinsTests x5, DurabilityPins updated to store-contract.
+- Commits: 25c7318.
+
+## PHASE B LOG — Upgrade #5 AnalyticsCache
+(status: ✅ COMPLETE — commit f616d04)
+- AnalyticsCache.swift: signature = count ⊕ id-fold ⊕ session-count ⊕ epoch.
+  Memoizes readerProfile/streak/timeOfDay/genreProfiles/trend.
+- Engine entry points gain `epoch: UInt64 = 0` (>0 routes through cache;
+  0 = uncached back-compat so zero callers break).
+- DataStore.analyticsEpoch bumps in scheduleSave (all mutation paths flow
+  through it) → invalidation on any real change.
+- GoalProgressViewModel captures store ref at bind; refresh passes epoch.
+- InsightEngine wired.
+- Pins: AnalyticsCachePinsTests x3. Fixture lesson: updateBook w/ unknown id
+  is a no-op by contract — mutation tests must use addBook.
+
+## PHASE C/D LOG — Upgrade #4 safe slice (#3 groundwork next session)
+(status: ✅ PARTIAL — commit 57bef63)
+- PersistenceWriter.swift: owned serial queue for ALL library disk writes.
+  saveImmediately drain = one-line barrier (no semaphore dance). This is the
+  P6-G prescribed design — future DB adoption lands here.
+- Actor variant attempted first, spiraled on isolation gymnastics under
+  MainActor-default builds → git-reverted file, rewrote with DispatchQueue.
+  Lesson: pick the simplest primitive that satisfies the contract.
+
+## REMAINING BLUEPRINTS (for next sessions)
+
+### Upgrade #3 full execution (split @Observable stores) — MEDIUM effort
+Current: one ObservableObject (DataStore) publishes books/libraryState/
+newlyEarnedAchievements/persistenceHealth — every emission wakes ALL views.
+Plan:
+1. iOS 17+/macOS 14+: convert DataStore → @Observable final class (drop
+   ObservableObject/@Published). Views switch @EnvironmentObject → @Environment.
+2. Split into LibraryStore (books), GoalStore (libraryState), HealthStore
+   (persistenceHealth + newlyEarnedAchievements).
+3. SessionCoordinator/GoalVM keep their own observables; they observe only
+   the sub-store they read.
+4. Migration pins: existing RemediationPins suite must stay green untouched
+   (it exercises the same public API).
+RISK: touches every view file (whole-file rewrites ×~20 views). Schedule a
+fresh-context session; do 3 views per commit.
+
+### Upgrade #1 full execution (normalized DB core) — XL effort
+Prereq DONE: PersistenceWriter owns the disk queue (P6-G's blocker solved).
+Plan:
+1. Schema: books(id PK, payload JSON) / sessions(id PK, book_id, start, end,
+   start_page, end_page) / page_times(session_id FK, idx, page, t0, t1) /
+   library_state(key, payload). Indexes: sessions.book_id, page_times.session_id.
+2. FULLMUTEX open + ALL access via PersistenceWriter.queue (the fix P6-G
+   lacked).
+3. Dual-read migration: on open, if legacy JSON exists and DB empty → import
+   → rename *.migrated (never delete).
+4. DataStore keeps its PUBLIC API byte-for-byte; internals swap. The whole
+   RemediationPins battery is the acceptance test.
+5. Load lazily: books array holds summaries; sessions/pageTimes load per-book
+   on reader open. Analytics move to SQL aggregates (SUM/AVG/COUNT per book).
+ESTIMATE: 2–3 fresh sessions. Do NOT attempt at end-of-context.
+
+### Swift 6 mode (Upgrade #4 completion) — separate session
+Flip SWIFT_STRICT_CONCURRENCY=complete, fix fallout (est ~20-40 sites, mostly
+Sendable annotations on already-clean value types). Only after #3 lands.
+
+## FINAL STATE AT HANDOFF
+Commits this marathon: 25c7318 (#2), f616d04 (#5), 57bef63 (#4-slice),
++ this doc. Suite exit=0 verified after EACH phase. All pushed.
