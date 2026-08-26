@@ -47,3 +47,11 @@ like it belongs on someone's Dock.
 - Tooling constraint stands: whole-file rewrites only; BehaviorContextEngine2 stays no-touch.
 - swift-testing gotchas encountered twice now: cross-type comparisons inside #expect macros;
   fixtures must actually co-vary to prove correlation logic.
+
+
+## HOTFIX ADDENDUM (post-P5, commit 1a724a7)
+Johan reported constant freezes/force-quits. Root-caused FIVE main-thread stall sources — the
+worst was self-inflicted: ReadingHUD's 1-second tick re-sorted the entire library every second.
+All five fixed (HUD memoization, cover capture off-main, RSVP extraction off-main, launch backup
+off-main, location watchdog). Suite exit=0, pushed. **Lesson for future sessions: any computed
+property over dataStore.books consumed by a per-second-re-rendering view MUST be memoized.**

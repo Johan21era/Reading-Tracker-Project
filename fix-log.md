@@ -759,3 +759,34 @@ current tooling — documented previously).
 
 ## Final verification: xcodebuild test exit=0 on the restored baseline. Working tree clean,
 pushed through 8fb1bea/c4968cb lineage to origin/main.
+
+---
+
+# P5-HOTFIX — App-freeze report (Johan: "always getting stuck, I have to force quit") · commit 1a724a7
+
+Five confirmed main-thread stall sources — four introduced by the P5 feature pass, one pre-existing
+dormant F-05 cousin promoted to live by usage patterns. All fixed, suite green (exit=0), pushed.
+
+1. **HUD tick × whole-library re-sort** (CRITICAL, self-inflicted): visibleBooks was a computed
+   property; the ReadingHUD's once-per-second timer re-evaluated ContentView → filter+sort of the
+   ENTIRE library EVERY SECOND on main. Grew linearly with library size. Memoized on a
+   books/search/sort signature. **SEE IT YOURSELF:** open your library, hover books for a minute
+   while the HUD ticks — sidebar no longer stutters, and scrolling stays smooth as the library grows.
+2. **Cover capture on main during import**: PDF rasterization froze imports (worst during the
+   onboarding first-import!). Now detached; importPDF became async (caller already async).
+   **SEE IT YOURSELF:** import a 300-page PDF — the dialog returns promptly instead of beachballing.
+3. **RSVP whole-PDF extraction on main**: Speed Read on a large PDF froze the app solid before the
+   sheet even appeared. Now detached with progress-cancellation checks.
+   **SEE IT YOURSELF:** hare button on a big PDF → RSVP opens within moments, UI never freezes.
+4. **Launch-time backup I/O on main**: auto-backup file copies ran in DataStore.init. Now a
+   background utility task; rotation API converted to nonisolated static.
+   **SEE IT YOURSELF:** app launch reaches an interactive window immediately even on slow disks.
+5. **Location continuation could hang forever** (pre-existing dormant): if CLLocationManager never
+   calls back, every awaiting task wedged permanently. 30 s watchdog now fails the queue
+   (exactly-once drain preserved).
+   **SEE IT YOURSELF:** with location permission denied/radio off, session-end weather capture
+   fails gracefully after ≤30 s instead of silently hanging background work forever.
+
+Root-cause honesty: #1–#4 are MY regressions from shipping features fast without profiling the
+per-second re-render path. The memoization pattern should be the template for any future computed
+property over dataStore.books consumed by a frequently-re-rendering view.
