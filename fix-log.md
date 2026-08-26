@@ -836,3 +836,24 @@ PROBES (8, pure reads) → CLASSIFIER (autoFixed vs stalled) → DISPATCHER (aud
 
 Pins: SentinelPinsTests ×6 (orphan fix, phantom fix, stalled-stays-stalled,
 write-confinement SECURITY, kill-switch SECURITY, journal JSONL validity).
+
+---
+
+# P6-HOTFIX — Demo Profile installs froze the app · top-priority report from Johan
+
+ROOT CAUSE (confirmed by arithmetic): DemoProfileCatalog.install ran synthesis + full-library
+encode on the MAIN ACTOR inside the button handler. Winter Romantic alone synthesizes ~621
+sessions carrying ~185k page-timing chunks (~115k for Speed Demon); encode of that payload on
+main = multi-second lockup, worse back-to-back because debounced saves chained behind it.
+
+FIXED (commit "HOTFIX: Demo Profile installs…"):
+1. Install pipeline async: generation detached, swap-on-main trivial, staged progress UI.
+2. Re-entrancy guard + drain-before-swap in debug_replaceLibrary (saveImmediately before AND
+   after) so rapid #1→#2→#4 hopping can never tear snapshots or stack the write chain.
+3. Sentinel pauses during installs (bridge mutation flag) — S7 extended to torn-state reads.
+
+SEE IT YOURSELF: Dev Console ▸ Demo Profile Lab → fire Confirm on Winter Romantic, then
+immediately switch to Speed Demon and confirm, then Goal Crusher, as fast as you can click.
+The app stays responsive throughout (spinner + stage text per install), every swap lands
+completely (no blended books), and nothing hangs.
+PINS: DemoRapidSwitchTests ×2. TEST SUCCEEDED exit=0.
