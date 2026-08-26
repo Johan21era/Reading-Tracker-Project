@@ -145,9 +145,33 @@ final class DataStore: ObservableObject {
 
         load()
 
+        // P5 Feature 1: roll an automatic dated backup if content changed.
+        LibraryArchiveManager.shared.performAutoBackupIfNeeded(
+            booksURL: self.fileURL,   // qualify: init param `fileURL` is URL? and shadows here
+            stateURL: self.stateURL
+        )
+
         #if DEBUG
         DeveloperConsoleRegistry.shared.register(self)
         #endif
+    }
+
+    /// P5 Feature 1: production import path. Replaces books and the FULL
+    /// library state (goals, deadlines, earned achievements, collections) in
+    /// one persisted transaction-ish sequence. Used by LibraryArchiveManager;
+    /// distinct from debug_replaceLibrary (which resets state rather than
+    /// restoring it).
+    func restoreState(from archiveBooks: [Book], state: LibraryState) {
+        // Preserve referential integrity on collection IDs: strip dangling.
+        let validCollectionIDs = Set(state.collections.map(\.id))
+        var repairedBooks = archiveBooks
+        for i in repairedBooks.indices {
+            repairedBooks[i].collectionIDs.removeAll { !validCollectionIDs.contains($0) }
+        }
+        // Drop duplicate collection names by keeping archived ids where possible.
+        books = repairedBooks
+        libraryState = state
+        scheduleSave()
     }
 
     // MARK: - Public API — Books

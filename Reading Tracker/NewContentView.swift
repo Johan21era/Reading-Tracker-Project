@@ -138,6 +138,71 @@ struct ContentView: View {
         return filtered.sorted(by: sortMode.sort)
     }
 
+    // P5 Feature 1: durability
+    @State private var importNotice: String?
+    @State private var pendingImportURL: URL?
+
+    private func exportLibrary() {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [UTType(filenameExtension: LibraryArchiveManager.fileExtension) ?? .data]
+        panel.nameFieldStringValue = "ReadingTracker-Backup." + LibraryArchiveManager.fileExtension
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else { return }
+            do {
+                let data = try LibraryArchiveManager.shared.exportLibrary(from: dataStore)
+                try data.write(to: url, options: .atomic)
+                importNotice = "Library exported successfully."
+            } catch {
+                importError = error.localizedDescription
+            }
+        }
+    }
+
+    private func importLibrary() {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseFiles = true
+        panel.allowedContentTypes = [
+            UTType(filenameExtension: LibraryArchiveManager.fileExtension) ?? .data,
+            .json,
+        ]
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else { return }
+            guard let data = try? Data(contentsOf: url) else {
+                importError = "Could not read that file."
+                return
+            }
+            do {
+                let s = try LibraryArchiveManager.shared.summarize(archiveData: data)
+                pendingImportURL = url
+                let goalsText = s.hasGoals ? "goals included" : "no goals set"
+                importNotice = "REPLACE LIBRARY? Found \(s.bookCount) books, "
+                    + "\(s.sessionCount) sessions, \(goalsText). "
+                    + "Your current library is auto-backed-up first. Use Import again to confirm — or Cancel now."
+            } catch {
+                importError = error.localizedDescription
+            }
+        }
+    }
+
+    private func performConfirmedImportIfArmed() {
+        guard let url = pendingImportURL else {
+            importLibrary()
+            return
+        }
+        pendingImportURL = nil
+        guard let data = try? Data(contentsOf: url) else {
+            importError = "Could not read that file."
+            return
+        }
+        do {
+            try LibraryArchiveManager.shared.importLibrary(data, into: dataStore)
+            importNotice = "Library restored."
+        } catch {
+            importError = error.localizedDescription
+        }
+    }
+
     var body: some View {
         ZStack {
             EnvironmentBackgroundView(engine: environmentEngine)
@@ -219,6 +284,20 @@ struct ContentView: View {
                             showContextInsights = true
                         } label: {
                             Label("Your Context", systemImage: "brain")
+                        }
+
+                        Divider()
+
+                        Button {
+                            exportLibrary()
+                        } label: {
+                            Label("Export Library...", systemImage: "square.and.arrow.up")
+                        }
+
+                        Button {
+                            importLibrary()
+                        } label: {
+                            Label("Import Library...", systemImage: "square.and.arrow.down")
                         }
 
                     } label: {
@@ -319,6 +398,25 @@ struct ContentView: View {
             Button("OK") { importWarnings = nil }
         } message: {
             Text(importWarnings?.joined(separator: "\n") ?? "")
+        }
+
+        // P5 Feature 1: archive import confirm / result notices
+        .alert("Library Archive", isPresented: Binding(
+            get: { importNotice != nil },
+            set: { if !$0 { importNotice = nil; pendingImportURL = nil } }
+        )) {
+            if pendingImportURL != nil {
+                Button("Replace My Library", role: .destructive) {
+                    performConfirmedImportIfArmed()
+                }
+                Button("Cancel", role: .cancel) {
+                    pendingImportURL = nil
+                }
+            } else {
+                Button("OK") { importNotice = nil }
+            }
+        } message: {
+            Text(importNotice ?? "")
         }
 
         // ── Feature sheets ─────────────────────────────────────────────────
