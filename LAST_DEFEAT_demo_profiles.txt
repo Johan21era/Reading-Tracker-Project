@@ -1,0 +1,513 @@
+================================================================================
+THE LAST DEFEAT — DEMO PROFILE FREEZE: COMPLETE KNOWLEDGE TRANSFER
+Reading Tracker · Written by Ox after failing to fix this three times
+For: Johan (and whoever — human or AI — picks this up next)
+================================================================================
+
+Read this top to bottom. Every technical term is explained in plain English.
+Nothing here assumes you code.
+
+
+================================================================================
+PART 0 — WHAT ARE WE EVEN TALKING ABOUT? (30-second version)
+================================================================================
+
+Your app has a secret Dev Console (press Cmd+Shift+D) with 16 fake reader
+personalities — "The Winter Romantic", "The Speed Demon", etc. Clicking one and
+confirming an install is supposed to fill the app with months of fake reading
+history so you can test charts and reports.
+
+Instead: the moment you confirm, the ENTIRE app turns into a statue. Spinning
+beachball. Buttons dead. You wait minutes. Eventually macOS kills it or you
+force-quit.
+
+We tried to fix this three times. Three times you tested it and said "exact
+same thing." This document is everything I know, everything we tried, why it
+kept failing, and the complete map of what's left to try.
+
+
+================================================================================
+PART 1 — CODEBASE TOUR (the layman's map of the relevant parts)
+================================================================================
+
+Think of the app as a restaurant:
+
+THE DINING ROOM (what you see)
+  NewContentView.swift ......... The main window: sidebar of books, toolbar,
+                                 hover panels. Redraws whenever ANY data it
+                                 watches changes.
+  DemoProfileLabView.swift ..... The console screen with the 16 personas and
+                                 the Install button. (I added a spinner +
+                                 stage labels here in fix attempt #1.)
+  ReadingHUD ................... Little panel ticking your elapsed read time
+                                 once per second (added recently).
+  GoalsDashboard, Insights ..... Windows fed by live data.
+
+THE KITCHEN (where data work happens)
+  DataStore3.swift ............. THE pantry. Owns your entire library in memory
+                                 and saves it to disk as JSON. One giant list:
+                                 every book -> its sessions -> each session's
+                                 page-by-page timing records.
+  DemoDataService.swift ........ The factory that FABRICATES fake history.
+                                 Deterministic: same persona = same fake data
+                                 every time (seeded random number generator).
+  AnalyticsEngine.swift ........ The accountant. Any time someone asks "how
+                                 fast does this person read?", it walks the
+                                 page-timing records and does math.
+  AchievementEngine ............ The trophy clerk. Checks the whole library
+                                 against badge thresholds.
+  ReadingGoalManager2 .......... Progress-vs-goal calculator.
+  SessionEventRouter2 .......... The gossip. Listens for "library changed!"
+                                 and reacts.
+  SentinelEngine ............... The night watchman (newest addition). Probes
+                                 health every 15 min.
+
+THE PANTRY SHELF (disk)
+  ~/Library/Application Support/ReadTracker/library.json
+      One big JSON text file holding EVERYTHING. After installing Winter
+      Romantic this file describes roughly 620 reading sessions containing
+      roughly 185,000 individual page-timing records.
+
+THE WEIRD HOUSE RULE (critical!)
+  project.pbxproj contains: SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor
+  Translation: "By default, EVERY function in this codebase must run on the
+  ONE thread that also draws the screen (the 'main thread'), unless a
+  programmer explicitly stamps a function with the magic word 'nonisolated'."
+  This house rule is the villain of this story. More below.
+
+THE NUMBERS THAT MATTER
+  Winter Romantic: 9 romance novels, ~1,215 hours of claimed reading,
+                   ~620 sessions, ~185,000 page-timings.
+  Speed Demon:     ~232 hours, ~170 sessions, ~115,000 page-timings.
+  For comparison, a REAL heavy user of this app after a year might have a few
+  hundred sessions. The fake profiles are 10x-50x denser than anything a
+  human produces — which is exactly why they're such a perfect stress test.
+
+
+================================================================================
+PART 2 — HOW LOADING A PROFILE ACTUALLY WORKS (the chain reaction)
+================================================================================
+
+Pressing "Confirm — Replace Library" triggers this domino chain:
+
+ 1. Button handler builds the fake library (generateBooks):
+     loops day-by-day across ~780 simulated days, rolling dice for "did they
+     read today?", "which book?", "how long?", and for EACH session fabricates
+     one timing record per page-chunk. Winter Romantic ends up walking ~185k
+     of these.
+
+ 2. debug_replaceLibrary (DataStore3):
+     Swaps the pantry contents in one shot, wipes goals/achievements (so
+     personas never blend), recomputes badges, schedules a disk save.
+
+ 3. The "library changed!" bell rings. Everyone who listens wakes up:
+     - GoalProgressViewModel recomputes goal progress (reads timings),
+       recommended daily target (reads timings), yearly projection.
+     - SessionEventRouter checks for just-closed sessions.
+     - SwiftUI redraws the sidebar (cheap — only 9 books).
+     - Sentinel (if its timer fires) re-validates the WHOLE library.
+
+ 4. Half a second later, the debounced save encodes the ENTIRE library to JSON
+    and writes it to disk.
+
+The freeze means: steps 1–4 contain work that runs on the screen-drawing
+thread for seconds (or worse), so nothing can redraw, nothing responds.
+
+
+================================================================================
+PART 3 — THE COMPLETE FAILURE TIMELINE (every attempt, honestly graded)
+================================================================================
+
+ATTEMPT #0 — THE ORIGINAL SIN (when the feature was born)
+  What: The profiles were built in one earlier session and "worked" — the log
+        even says tests passed.
+  Why it seemed fine but wasn't: The automated tests only check that the fake
+        DATA is well-formed. No test ever pressed the real Install button
+        inside the real app with all the real listeners attached. Think of a
+        car that passes every parts inspection but was never once driven.
+  Grade: Feature shipped untested in the only way that matters.
+
+ATTEMPT #1 — "JUST MOVE IT TO THE BACKGROUND" (my first hotfix)
+  What I did: Wrapped generation in Task.detached (Swift's "do this on another
+        worker"), added a spinner, stage labels, a double-click guard, drained
+        pending saves before swapping.
+  Result: You reported identical freeze.
+  Why it failed: See Attempt #2's discovery. My background worker was secretly
+        commuting back to the main thread for every tiny step.
+
+ATTEMPT #2 — "FOUND THE SECRET HOUSE RULE" (the MainActor discovery)
+  What I did: Discovered SWIFT_DEFAULT_ACTOR_ISOLATION=MainActor (Part 1's
+        weird house rule). Stamped ~15 functions along the generation path
+        with 'nonisolated' ("you may run anywhere") — the model initializers,
+        dice roller, day-loop, chapter builder. ALSO moved the giant JSON
+        encoding off the main thread by passing the encoder job into the
+        background writer.
+  Result: Suite green, pushed... you re-tested. "Exact same concept."
+  Why it (probably) still failed: I fixed the GENERATION side and the SAVE
+        side — but there is a third beast I kept underestimating: the REACTION
+        side. The instant the huge library lands, badge-recomputation and
+        goal-recalculation walk all ~185k timings ON THE MAIN THREAD, right
+        then and there. I moved the piano up the stairs but the crowd watching
+        the piano still blocks the hallway.
+  Honest grade: Right diagnosis on 2 of 3 beasts. Underwhelming confirmed.
+
+ALSO ALONG THE WAY
+  - One over-clever rewrite of the generation loop was so risky I reverted it
+    with git before it ever shipped (good instinct, zero harm done).
+  - Two separate freezes got confused in our heads early on: the GENERAL app
+    sluggishness (fixed separately: HUD re-sorting the sidebar every second,
+    cover decoding on main, RSVP extraction on main, launch backups on main,
+    a GPS callback that could hang forever) and THIS profile-specific freeze.
+    Those five general fixes were real and shipped — but they were never THIS
+    bug.
+
+
+================================================================================
+PART 4 — THE LAST DEFEAT (every question, answered straight)
+================================================================================
+
+--------------------------------------------------------------------------------
+Q: WHY DID I FAIL? (and yes — "I", because the failures are mine)
+--------------------------------------------------------------------------------
+Three reasons stacked on top of each other:
+
+1. I TRUSTED MATH INSTEAD OF MEASUREMENT. Each round I reasoned: "the heavy
+   part is X, so move X off the main thread." Reasoning is how you pick
+   candidates. It is not proof. A $0 built-in Apple tool (Instruments, or the
+   'sample' command) would have handed me the EXACT line of code eating the
+   main thread in 60 seconds, on attempt #1. I never ran it. That is the
+   single professional mistake that turned one bug into three rounds.
+
+2. I FIXED THE OBVIOUS PIG WHILE THE PARADE WAS FORMING. Moving generation
+   and encoding off-main addressed the two loudest costs. But the moment the
+   giant library appears, THREE separate systems immediately re-analyze it
+   (badges, goals, and occasionally the Sentinel) — on the main thread. Even
+   with generation perfect, the arrival of Winter Romantic still triggers
+   seconds of main-thread accounting.
+
+3. THE APP HAS A HIDDEN HOUSE RULE that punishes standard advice. In most
+   Swift projects "move it to the background" works out of the box. Your
+   project's default-isolation setting means background tasks silently
+   commute home for every un-stamped function. Standard advice needed ~15
+   explicit stamps to become true. I lost a full round learning this.
+
+--------------------------------------------------------------------------------
+Q: HOW DID I FAIL? (mechanically — what did each attempt miss?)
+--------------------------------------------------------------------------------
+   Attempt 1 missed: the house rule (background wasn't background).
+   Attempt 2 missed: the REACTION wave (badge + goal recalculation on main
+        after the swap) and never verified with a profiler that the generation
+        side was truly clean — I assumed the stamps fixed it because the
+        project compiled and tests passed.
+   Both attempts also shared a blind spot: the automated tests can't catch
+   this class of bug. They run in a bare room with no furniture — none of the
+   real-time listeners (goals, router, HUD, Sentinel) are attached, so the
+   "crowd in the hallway" never exists during tests. Green suite ≠ smooth app.
+
+--------------------------------------------------------------------------------
+Q: WHAT'S HAPPENING? (play-by-play of your freeze)
+--------------------------------------------------------------------------------
+Most likely sequence, given everything:
+  1. You press Confirm.
+  2. Generation runs (possibly fine now, off-main, behind the spinner)…
+  3. …and the moment it finishes, the finished library is handed to the app.
+  4. Within milliseconds, badge-clerk + goal-accountant walk all ~185k
+     page-timings on the main thread. Seconds of solid main-thread math.
+  5. The once-a-second HUD tick, the spinner animation, every heartbeat that
+     keeps the window "alive" can't run. macOS judges the app dead. Beachball
+     → minutes → force-quit/crash.
+Alternative suspects (unconfirmed, ranked lower): a Sentinel health-probe
+firing mid-install and validating the giant library on main; a memory spike
+from pretty-printing the mega-JSON making the whole SYSTEM stutter.
+
+--------------------------------------------------------------------------------
+Q: WHAT ARE WE TRYING TO DO? (the actual goal, stripped of tech)
+--------------------------------------------------------------------------------
+Install a rich fake life into the app — instantly, safely, repeatably. Press
+a button, get months of believable history, press another button, replace it
+with a different fake life, forever, without the app ever hiccupping. Bonus:
+that same machinery should keep working when your REAL library eventually
+gets as big as the fakes.
+
+--------------------------------------------------------------------------------
+Q: WHY CAN'T WE DO IT? (the honest one-sentence answer)
+--------------------------------------------------------------------------------
+Because the fake profiles are 10–50x denser than any real user, and the app's
+design says: "whenever the library changes, IMMEDIATELY re-analyze all of it,
+on the one thread responsible for showing you things." We keep making the
+analysis input bigger and bigger — at some point 'immediately, on main'
+becomes impossible no matter where generation happens.
+
+--------------------------------------------------------------------------------
+Q: ASSUME SOMEONE SNAPPED THEIR FINGERS AND MAGICALLY MADE IT WORK.
+   WHAT WOULD THEN GO RIGHT IN THE SYSTEM?
+--------------------------------------------------------------------------------
+You'd click Winter Romantic. A spinner with stage labels animates for 2–4
+seconds ("Generating…" → "Writing…" → "Done"). The sidebar refills with 9
+romance novels with covers. Goals reset. Achievements pop. You immediately
+click Speed Demon — same thing, no hitch. Back and forth all day, zero
+freezes. And here's the part that matters MORE: every OTHER screen gets
+better too. Insights opens instantly on huge libraries. Hover estimates
+appear instantly. Saving never stutters. Scrolling stays smooth at 500 books.
+Because the magic wouldn't be a trick — it would mean the app finally handles
+BIG libraries gracefully everywhere, for real users too.
+
+--------------------------------------------------------------------------------
+Q: WHY DON'T WE HAVE THAT? (what's structurally missing)
+--------------------------------------------------------------------------------
+Three structural gaps:
+  • NO SPEED LIMIT: nothing in the app caps or downsamples the densest data
+    (page-timings). Real apps store summaries; ours stores every page-flip.
+  • NO TRAFFIC CONTROL: every listener reacts to "library changed" instantly
+    and fully, on main. There's no "hold on, big change incoming — stand by"
+    mechanism for the reaction wave (Sentinel got one; goals/badges didn't).
+  • NO MEASUREMENT CULTURE (mine): decisions were made by reasoning, not by
+    instrumenting. The profiler was always one command away.
+
+--------------------------------------------------------------------------------
+Q: WHAT HAVEN'T I TRIED? (the honest inventory)
+--------------------------------------------------------------------------------
+Not tried, in rough order of shame:
+  1. Running the profiler during an actual freeze. (The basics!)
+  2. Pausing the goal/badge listeners during a swap (Sentinel got this; the
+     two heaviest listeners didn't).
+  3. Making badge recomputation skip/defer after a known-huge bulk swap.
+  4. Downsampling fake page-timings (keep every Nth record).
+  5. Sampling instead of full-walking in the hot analytics (use the median of
+     the first 500 timings — statistically near-identical answers).
+  6. Caching per-book speed so it's computed once, not re-derived everywhere.
+  7. A stress-test that mimics the REAL pipeline (listeners attached) so
+     suites could have caught this.
+  8. Asking you to run 'sample' during a freeze on attempt #1.
+  Everything else on the 100-list below is also untouched, but these eight
+  are the ones that sting.
+
+--------------------------------------------------------------------------------
+Q: WHAT WOULD BE THE SINGLE BIGGEST THING TO TRY? (if you only do one)
+--------------------------------------------------------------------------------
+STOP GUESSING — CAPTURE THE CRIME SCENE.
+
+While it's frozen, open Terminal and run:
+     sample "Reading Tracker" 5 -file ~/Desktop/freeze.txt
+(or find the process ID first with:  pgrep -fl Reading ; then
+     sample <PID> 5 -file ~/Desktop/freeze.txt )
+Wait 5 seconds, force-quit, and open freeze.txt. It's a snapshot of exactly
+what every thread was doing, frame by frame, during the freeze. The main
+thread's stack will NAME the guilty function in black and white. Paste the
+top 30 lines back to me and the next fix stops being archaeology — it's
+surgery with the X-ray on the wall.
+
+If you'd rather try a FIX blindly first, the highest-probability single fix
+is the two-part "quiet the parade":
+  a) During a demo swap, temporarily suspend the goal-viewmodel and badge
+     listeners, swap, then wake them and refresh ONCE.
+  b) Downsample synthetic page-timings (keep every 4th record; the pinned
+     signature tests — winter-share, afternoon-share — still pass because
+     statistics survive thinning).
+Those two together shrink the reaction wave by ~10-50x and cost maybe an hour.
+
+--------------------------------------------------------------------------------
+Q: ASSUMING I HAD INFINITE COMPUTE, WHAT WOULD I DO WITH IT?
+--------------------------------------------------------------------------------
+Infinite compute doesn't mean "run the bad code harder" — it means removing
+every reason to be clever:
+  • Re-run the FULL app in a headless harness on every commit, with all
+    listeners attached and a robot clicking Install on all 16 personas,
+    measuring main-thread stalls automatically. The freeze could never land
+    unnoticed again.
+  • Keep per-frame performance traces of every session forever; any regression
+    over 16ms on main pings you.
+  • Snapshot the entire process state at the moment of a stall (memory,
+    stacks, recent I/O) and attach it to the bug report automatically.
+  • Generate personas in parallel across every core AND pre-generate all 16
+    at app-build time, shipping them pre-computed so install = file copy.
+  • Keep full-fidelity history AND live pre-computed summaries of every
+    question the UI ever asks, updated incrementally — so no screen ever
+    computes anything heavier than reading a number.
+Irony note: none of that makes bad code fast. It makes bad code IMPOSSIBLE
+TO MISS. Which is the real gift.
+
+--------------------------------------------------------------------------------
+Q: THE 100 STRONGEST CONCEPTS I HAVEN'T TRIED OR THOUGHT OF YET
+   (each in one plain-English line; grouped so they're usable, not a wall)
+--------------------------------------------------------------------------------
+
+— A. SEE THE CRIME FIRST (diagnostics) —
+ 1. 'sample' the frozen process for 5s (crime-scene photo of stacks).
+ 2. spindump (system-wide version; catches hangs the app can't self-report).
+ 3. Instruments Time Profiler template (visual flame chart of guilt).
+ 4. Instruments Hangs/Hitches templates (Apple's literal hang detector).
+ 5. os_signpost markers around each install phase (measure stages, not vibes).
+ 6. Unified logging with categories (grep-able timeline of what ran when).
+ 7. Thread Sanitizer build (surfaces hidden threading weirdness).
+ 8. Main-thread checker runtime flag (yells the moment UI work strays).
+ 9. Memory Graph Debugger (see if 185k objects are alive and where).
+10. MetricKit on-device hang reports (Apple mails you the autopsy).
+
+— B. SHRINK THE DATA (make the pig smaller) —
+11. Cap fake page-timings per session (e.g., max 40; keep first/last).
+12. Thin timings every-Nth during generation (statistics survive).
+13. Store per-session SUMMARY (avg sec/page) instead of every flip.
+14. Compress the JSON (gzip level 1 = 10x smaller, near-free).
+15. Binary format (FlatBuffers/Protobuf) instead of pretty JSON.
+16. Per-book files instead of one mega-file (smaller blast radius).
+17. Split hot data (recent) from cold data (archive) at rest.
+18. Deduplicate repeated timing shapes via interning.
+19. Round timestamps to the second (fewer bytes, identical charts).
+20. Store timings as two parallel arrays (starts[], durs[]) not objects.
+
+— C. GET WORK OFF MAIN — FOR REAL THIS TIME —
+21. Dedicated serial WorkerQueue actor owning all heavy jobs (no hops).
+22. AssumeIsolated audits: grep every nonisolated claim, verify with asserts.
+23. Custom TaskExecutor pinning demo work to background threads.
+24. Split generation into per-book subtasks (parallel across cores).
+25. Pipeline stages connected by AsyncStream (gen→validate→save flow).
+26. Move the validator run itself off-main (it's pure — easy win).
+27. Pre-warm a background JSONEncoder config (avoid first-use setup on main).
+28. Chunked encode: stream-write JSON per book instead of one mega-string.
+29. Copy-on-write snapshots audited: ensure no hidden O(n) copies on main.
+30. Priority inversion check: ensure UI task priority > background saves.
+
+— D. QUIET THE PARADE (reaction-wave control) —
+31. LibraryBatchUpdate bracket: listeners opt out during bulk swaps.
+32. Debounce goal-viewmodel refresh to next-runloop after big changes.
+33. Badge recompute deferred + chunked (100 sessions per heartbeat).
+34. Coalesce $books bursts: process only the LATEST emission (Combine .latest).
+35. EventRouter cascade: skip entirely for synthetic installs (flagged).
+36. Sentinel probe reschedule-after-mutation (already pauses; also re-times).
+37. Dirty-flag architecture: mark regions dirty, recompute lazily on view.
+38. Version counter on library; listeners compare versions, skip stale work.
+39. Explicit invalidation scopes per feature (only touched features recompute).
+40. "Heavy mode" flag when books.count×timings estimate exceeds threshold.
+
+— E. STORAGE SHAPE (beyond one big JSON) —
+41. SQLite with normalized session/timing tables (indexes beat scans).
+42. GRDB-backed store with reactive observers (database-driven UI updates).
+43. SwiftData migration (Apple-native, lazy faulting of relationships).
+44. Core Data + fetched-properties (precomputed columns for free).
+45. Blob-per-session inside SQLite (stream one session at a time).
+46. Append-only journal + periodic compaction (crash-safe by construction).
+47. File-per-book with an index manifest (parallel loads, partial writes).
+48. Memory-mapped binary column store (zero-copy reads).
+49. Background maintenance compaction (defrag while idle).
+50. Store aggregated day-rows for analytics; keep raw only on demand.
+
+— F. SMARTER MATH (ask smaller questions) —
+51. Memoize per-book speed on the Book (compute once, invalidate on edit).
+52. Sample-based analytics: median of first 500 timings ≈ median of 20k.
+53. Incremental streak computation (only inspect days since last checkpoint).
+54. Precomputed daily-aggregates table updated on session close only.
+55. Histogram of timing durations instead of raw arrays for stats.
+56. Early-exit validators (stop at first unrepairable, report count only).
+57. Reserve capacity everywhere (kill array-growth realloc storms).
+58. Replace Dictionary(grouping:) hot spots with manual single-pass buckets.
+59. Cache genreProfiles per library-version (invalidate on version bump).
+60. Math on Durations-as-IntMilliseconds (avoid Date/Double conversions).
+
+— G. UI PATTERNS (never block the picture) —
+61. Virtualized sidebar (LazyVStack) for 1,000+ book futures.
+62. Skeleton/placeholder panes while analytics warm up post-install.
+63. Progressive disclosure: compute detail-pane stats on open, not upfront.
+64. Cancelable hover estimations via .task(id:) (auto-cancel on re-hover).
+65. Toast coalescing: batch achievement announcements post-install.
+66. Optimistic UI: show persona card as "Installed" before persistence ends.
+67. ActivityIndicator driven by REAL phase milestones (already added; keep).
+68. Escape hatch: any sheet operation >2s offers "finish in background".
+69. Window-scoped re-render isolation (sidebar shouldn't redraw for console).
+70. Accessibility-driven reduced-motion path skips particle systems entirely.
+
+— H. PROCESS & SAFETY NETS (never be surprised again) —
+71. Headless end-to-end install test WITH all listeners attached (CI gate).
+72. XCTest measure-blocks asserting main-thread stall < 100ms per phase.
+73. CI runner that fails on any new '!' force-unwrap in hot paths.
+74. Runtime assertion: main-thread blockage detector in Debug (watchdog thread).
+75. Crash-time auto-export of last 60s of signposts (self-reporting bug).
+76. Golden-file perf baselines committed; diffs reviewed like code.
+77. Canary metric in console: "main-thread busiest function today".
+78. Automated persona smoke matrix: all 16 installed sequentially in CI.
+79. Property-based tests for generator determinism under chunk-size changes.
+80. Post-install integrity handshake: quick validate + report in summary card.
+
+— I. PRODUCT-LEVEL REDESIGNS (change the game, not the code) —
+81. Ship personas at three sizes (Lite/Standard/Full) — user picks depth.
+82. Generate-on-demand: install stores a recipe; sessions materialize lazily
+    as the user browses (instant install, background enrichment).
+83. Import-from-CSV persona format (users can craft their own histories).
+84. "Time machine" sandbox: demo installs live in an isolated profile space
+    with one-click restore of the real library (paranoid-mode demos).
+85. Streaming install: books appear progressively as generated (live feedback).
+86. Persona marketplace file format (shareable, versioned, signed archives).
+87. Cap total simulated history by config (hard ceiling with friendly notice).
+88. Demo mode as separate window-state (no mutation of real library at all).
+89. Undo system for destructive ops (install becomes undoable transaction).
+90. Scheduled regeneration: personas refresh nightly in background idle time.
+
+— J. EXOTIC / LAST RESORT (when the above somehow isn't enough) —
+91. Swift Distributed Actors across processes (isolate kitchen in helper app).
+92. XPC service owns all parsing/encoding (crash-proofing by isolation).
+93. GPU-accelerated statistical passes (Metal Performance Shaders for stats).
+94. Custom allocator zone for timing objects (arena frees in one call).
+95. Swift strict-concurrency complete mode migration (compiler-enforced safety).
+96. Move persistence layer to a Rust/C core via cinterop (nuclear option).
+97. Time-quantum scheduler: cooperative main-thread budget enforcer.
+98. Replay debugger (rr-style) capturing the freeze deterministically.
+99. Formal model of the swap protocol checked with TLA+ style exploration.
+100. Ship the demo lab as a separate companion app (total separation).
+
+Honest footnote on the 100: roughly 15 of them (11–14, 31–33, 51–52, 71–72,
+78) are, in my judgment, enough to kill this freeze dead. The rest are depth,
+future-proofing, or fascination. Don't build 100 things. Build the sample
+capture (item 1) and the quiet-the-parade pair (31–33), in that order.
+
+
+================================================================================
+PART 5 — THE EXACT PLAYBOOK FOR WHOEVER GOES NEXT
+================================================================================
+
+STEP 1 (10 minutes, zero risk — DO THIS FIRST):
+  Reproduce the freeze. While frozen, in Terminal:
+      pgrep -fl "Reading Tracker"
+      sample <PID> 5 -file ~/Desktop/freeze.txt
+  Force-quit. Open freeze.txt. Find the "Call graph" section, look at the
+  thread named main/com.apple.main-thread. Whatever function dominates the
+  samples IS the answer. (If Terminal feels scary: Instruments.app ▸ Time
+  Profiler ▸ record during install ▸ stop ▸ heaviest stack.)
+
+STEP 2 (the fix, once confirmed — expected candidates in order):
+  a) If the stack shows AnalyticsEngine/AchievementEngine/goal refresh:
+     implement LibraryBatchUpdate bracket (concepts 31–33): suspend goal VM +
+     badge recompute during debug_replaceLibrary; run one refresh AFTER, and
+     move the badge walk into the existing detached chain.
+  b) If the stack shows JSONEncoder/encode: the encode thunk didn't take, or
+     another caller (saveImmediately) is on main — route through concept 28.
+  c) If the stack shows DataIntegrityValidator: it's the Sentinel or load-path
+     validation — move it off-main (concept 26) and/or early-exit (56).
+  d) If the stack shows generateBooks ANYWAY despite nonisolated stamps:
+     something on the path regressed or another inferred-isolation hole exists
+     — audit with concept 22, or fall back to concept 24 (per-book parallelism
+     makes even slow paths invisible).
+
+STEP 3 (belt & suspenders, ~1 hour):
+  Implement Slim Timings (concept 11/12): cap synthetic timings per session.
+  Re-run DemoProfileServiceTests — the pinned persona signatures (winter
+  share >0.45, afternoon >70%) MUST still pass; if a threshold barely misses,
+  tune density, not the test.
+
+STEP 4 (never again):
+  Concept 71: one headless test that attaches ALL real listeners, installs
+  Winter Romantic, and asserts the main thread never blocks >250ms. This bug
+  class becomes extinct in this repo.
+
+FINAL NOTE TO JOHAN (human-readable):
+You didn't pick a bad feature; you picked the perfect stress test. The fake
+profiles are denser than a decade of real use, and they exposed that the app
+does "recount everything, right now, on the drawing thread" whenever data
+changes. Small libraries hid this forever. Fixing it isn't just about the Dev
+Console — it's the difference between an app that's fast NOW and an app
+that's fast in three years of real use. That's worth the fight, and now
+there's a map.
+
+— Ox
+================================================================================
+END OF FILE
+================================================================================
