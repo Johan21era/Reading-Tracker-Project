@@ -40,6 +40,7 @@ enum DeveloperConsoleWindowID {
 /// read it.
 enum DeveloperConsoleSection: String, CaseIterable, Identifiable, Hashable {
     case dashboard
+    case sentinel
     case demoLab
     case subsystemExplorer
     case eventTimeline
@@ -59,6 +60,7 @@ enum DeveloperConsoleSection: String, CaseIterable, Identifiable, Hashable {
     var displayName: String {
         switch self {
         case .dashboard: return "Dashboard"
+        case .sentinel: return "Sentinel"
         case .demoLab: return "Demo Profile Lab"
         case .subsystemExplorer: return "Subsystem Explorer"
         case .eventTimeline: return "Live Event Timeline"
@@ -78,6 +80,7 @@ enum DeveloperConsoleSection: String, CaseIterable, Identifiable, Hashable {
     var symbolName: String {
         switch self {
         case .dashboard: return "gauge.medium"
+        case .sentinel: return "shield.lefthalf.filled"
         case .demoLab: return "theatermasks"
         case .subsystemExplorer: return "square.stack.3d.up"
         case .eventTimeline: return "clock.arrow.circlepath"
@@ -99,12 +102,16 @@ enum DeveloperConsoleSection: String, CaseIterable, Identifiable, Hashable {
     /// its own phase is built, so the console never claims to show live
     /// data it does not actually have yet.
     var isAvailable: Bool {
-        self == .dashboard || self == .demoLab
+        switch self {
+        case .dashboard, .demoLab, .sentinel: return true
+        default: return false
+        }
     }
 
     var plannedPhaseLabel: String {
         switch self {
         case .dashboard: return "Phase 2"
+        case .sentinel: return "Live"
         case .demoLab: return "Live QA"
         case .subsystemExplorer: return "Phase 3"
         case .eventTimeline: return "Phase 5"
@@ -214,6 +221,8 @@ struct DeveloperConsoleRootView: View {
         if let section = selectedSection, section != .dashboard {
             if section == .demoLab {
                 DemoProfileLabView()
+            } else if section == .sentinel {
+                SentinelPaneView()
             } else {
                 comingSoon(section)
             }

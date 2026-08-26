@@ -124,7 +124,9 @@ enum DataIntegrityValidator {
     ///
     /// - Parameter books: The decoded books array.
     /// - Returns: A tuple of the (potentially repaired) books and a full report.
-    static func validate(_ books: [Book]) -> (books: [Book], report: ValidationReport) {
+    /// - Parameter quiet: when true (used by Sentinel's periodic probe),
+    ///   suppresses console printing — periodic monitoring must not spam logs.
+    static func validate(_ books: [Book], quiet: Bool = false) -> (books: [Book], report: ValidationReport) {
         var mutableBooks = books
         var issues: [ValidationIssue] = []
 
@@ -144,7 +146,7 @@ enum DataIntegrityValidator {
             hasUnrepairableErrors: hasErrors
         )
 
-        if !isClean {
+        if !isClean, !quiet {
             report.printReport()
         }
 

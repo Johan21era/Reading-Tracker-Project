@@ -96,9 +96,11 @@ final class SentinelEngine: ObservableObject {
     @Published private(set) var lastRunDate: Date?
     /// Findings from the most recent cycle, newest first.
     @Published private(set) var recentFindings: [SentinelFinding] = []
-    /// Cumulative counters since install (persisted in journal summary line).
+    /// Cumulative counters since install (hydrated from the journal).
     @Published private(set) var lifetimeAutoFixed: Int = 0
     @Published private(set) var lifetimeStalled: Int = 0
+
+    private var lifetimeCountersLoaded = false
 
     // MARK: Configuration
 
@@ -137,7 +139,12 @@ final class SentinelEngine: ObservableObject {
             try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
             journalURL = dir.appendingPathComponent("sentinel-journal.jsonl")
         }
-        loadLifetimeCounters()
+        // UI-RENDER SAFETY: init can be touched during a SwiftUI view update
+        // (@StateObject default-value evaluation). Reading journal counters
+        // here used to mutate @Published during that render — the source of
+        // the red "Modifying state during view update" console spam. Counters
+        // now hydrate lazily on first runCycle(), safely outside rendering.
+        lifetimeCountersLoaded = false
     }
 
     // MARK: Lifecycle
@@ -182,9 +189,18 @@ final class SentinelEngine: ObservableObject {
 
     /// Runs all probes, classifies, dispatches safe repairs, journals results.
     func runCycle() {
+        // UI-RENDER SAFETY: this method may be invoked from .onAppear/.task
+        // inside a view update. ALL published-state writes below are deferred
+        // to the next runloop turn via await MainActor.run, so SwiftUI never
+        // observes "state during view update".
         guard isEnabled else { return }
         guard !SentinelDataBridge.shared.isMutationInFlight else { return } // S7: never probe a torn state
         guard let dataStore = SentinelDataBridge.shared.store else { return }
+
+        if !lifetimeCountersLoaded {
+            loadLifetimeCounters()
+            lifetimeCountersLoaded = true
+        }
 
         let context = SentinelContext(
             books: dataStore.books,
@@ -222,15 +238,19 @@ final class SentinelEngine: ObservableObject {
             findings[i].outcome = .stalled
         }
 
-        recentFindings = findings.sorted { $0.date > $1.date }
-        lastRunDate = Date()
+        appendJournal(findings)
 
+        let sorted = findings.sorted { $0.date > $1.date }
         let fixed = findings.filter { $0.outcome == .autoFixed }.count
         let stalled = findings.filter { $0.outcome == .stalled }.count
-        lifetimeAutoFixed += fixed
-        lifetimeStalled += stalled
-        appendJournal(findings)
-        persistLifetimeCounters()
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            self.recentFindings = sorted
+            self.lastRunDate = Date()
+            self.lifetimeAutoFixed += fixed
+            self.lifetimeStalled += stalled
+        }
     }
 
     /// Returns true when an audited, Finality-grade in-code repair exists for
@@ -378,8 +398,6 @@ final class SentinelEngine: ObservableObject {
         }
     }
 
-    private func persistLifetimeCounters() { /* derived from journal; nothing to do */ }
-
     /// "While you were away" summary for the launch card. Static-safe strings.
     func overnightReport() -> (fixed: Int, stalled: Int, headline: String)? {
         guard let url = journalURL,
@@ -432,7 +450,8 @@ struct IntegrityProbe: SentinelProbe {
     }
 
     func run(context: SentinelContext) -> [SentinelFinding] {
-        let (_, report) = DataIntegrityValidator.validate(context.books)
+        // quiet: periodic monitoring must never spam the console log.
+        let (_, report) = DataIntegrityValidator.validate(context.books, quiet: true)
         return report.issues.map { issue in
             SentinelFinding(
                 probe: name,

@@ -26,6 +26,13 @@ final class SentinelPinsTests {
 
     private var libraryURL: URL { dir.appendingPathComponent("library.json") }
 
+    /// runCycle now defers its @Published writes to the next runloop turn
+    /// (UI-render safety). Await this after each cycle in tests.
+    private func settleAfterCycle() async {
+        await Task.yield()
+        try? await Task.sleep(for: .milliseconds(50))
+    }
+
     private func makeStore(withBook mutate: ((inout Book) -> Void)? = nil) -> DataStore {
         let store = DataStore(fileURL: libraryURL)
         var book = Book(title: "Sentinel Target", author: "A",
@@ -40,7 +47,7 @@ final class SentinelPinsTests {
     // MARK: Detection
 
     @Test("Orphan session >24h is DETECTED and AUTO-FIXED through audited API")
-    func orphanSessionAutoFixed() {
+    func orphanSessionAutoFixed() async {
         let engine = SentinelEngine(defaults: UserDefaults(suiteName: "sentinel-test")!, probes: [OrphanedActiveSessionProbe()])
         let store = makeStore { book in
             let staleStart = Date().addingTimeInterval(-48 * 3600)
@@ -51,6 +58,7 @@ final class SentinelPinsTests {
         SentinelDataBridge.shared.attach(store)
 
         engine.runCycle()
+        await settleAfterCycle()
 
         #expect(engine.recentFindings.contains { $0.rule == "orphan-active-session" && $0.outcome == .autoFixed })
         // The fix went through updateBook → session closed, active id cleared.
@@ -60,7 +68,7 @@ final class SentinelPinsTests {
     }
 
     @Test("Phantom activeSessionID is auto-fixed")
-    func phantomSessionAutoFixed() {
+    func phantomSessionAutoFixed() async {
         let ghost = UUID()
         let engine = SentinelEngine(
             defaults: UserDefaults(suiteName: "sentinel-test")!,
@@ -72,12 +80,13 @@ final class SentinelPinsTests {
         SentinelDataBridge.shared.attach(store)
 
         engine.runCycle()
+        await settleAfterCycle()
         #expect(engine.recentFindings.contains { $0.rule == "phantom-active-session-id" && $0.outcome == .autoFixed })
         #expect(store.books.first?.activeSessionID == nil)
     }
 
     @Test("Low-value info findings stay STALLED (never auto-mutated)")
-    func stalledFindingsStayStalled() {
+    func stalledFindingsStayStalled() async {
         let engine = SentinelEngine(
             defaults: UserDefaults(suiteName: "sentinel-test")!,
             probes: [DeadlineOverdueProbe()]
@@ -92,6 +101,7 @@ final class SentinelPinsTests {
         SentinelDataBridge.shared.attach(store)
 
         engine.runCycle()
+        await settleAfterCycle()
         let finding = engine.recentFindings.first { $0.rule == "deadline-overdue" }
         #expect(finding?.outcome == .stalled)
     }
@@ -99,7 +109,7 @@ final class SentinelPinsTests {
     // MARK: SECURITY PINS (the whole point)
 
     @Test("SECURITY S1: engine writes ONLY journal + quarantine — library file untouched")
-    func writeScopeIsConfined() throws {
+    func writeScopeIsConfined() async throws {
         _ = makeStore()
         SentinelDataBridge.shared.attach(makeStore())
 
@@ -111,15 +121,20 @@ final class SentinelPinsTests {
         let engine = SentinelEngine(defaults: UserDefaults(suiteName: "sentinel-test")!)
         engine.setJournalURLForTesting(dir.appendingPathComponent("sentinel-journal.jsonl"))
         engine.runCycle()
+        await settleAfterCycle()
 
         let after = Set((try? fm.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil))?
             .map(\.lastPathComponent) ?? [])
         let newFiles = after.subtracting(before)
 
         // Only allowed new artifact: the sentinel journal itself.
-        for added in newFiles {
+        // EXEMPT: files created by DataStore's own lifecycle (its detached
+        // Phase-D backup task races this test) — they are NOT Sentinel output.
+        let datastoreOwned: Set<String> = ["Backups", "library.json", "library-state.json",
+                                           "library.bak.json", "library-state.bak.json"]
+        for added in newFiles where !datastoreOwned.contains(added) {
             #expect(added.hasPrefix("sentinel"),
-                    "Sentinel created unauthorized file: \(added)")
+                    "Sentinel created unauthorized file: \(added); full listing: \(after.sorted().joined(separator: ", "))")
         }
         // Library file bytes unchanged by detection cycle.
         let libData = try Data(contentsOf: libraryURL)
@@ -149,13 +164,14 @@ final class SentinelPinsTests {
     }
 
     @Test("Journal is append-only JSONL with cycle summaries")
-    func journalAppends() throws {
+    func journalAppends() async throws {
         let engine = SentinelEngine(defaults: UserDefaults(suiteName: "sentinel-test")!)
         engine.setJournalURLForTesting(dir.appendingPathComponent("sentinel-journal.jsonl"))
         let store = makeStore()
         SentinelDataBridge.shared.attach(store)
 
         engine.runCycle()
+        await settleAfterCycle()
 
         let raw = try String(contentsOf: dir.appendingPathComponent("sentinel-journal.jsonl"), encoding: .utf8)
         let lines = raw.split(separator: "\n")
