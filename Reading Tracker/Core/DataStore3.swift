@@ -557,13 +557,10 @@ final class DataStore: ObservableObject {
         saveTimer?.invalidate()
         saveTimer = nil
 
-        if let pending = pendingWrite {
-            let semaphore = DispatchSemaphore(value: 0)
-            Task.detached(priority: .userInitiated) {
-                _ = await pending.value
-                semaphore.signal()
-            }
-            semaphore.wait()
+        // FINAL TRACES #4: owned serial queue makes draining a one-liner
+        // barrier — no detached-hop semaphore dance.
+        if pendingWrite != nil {
+            PersistenceWriter.shared.drainSync()
             pendingWrite = nil
         }
 
@@ -622,25 +619,22 @@ final class DataStore: ObservableObject {
         failureContext: String
     ) {
         let filePath = url.path
-        let predecessor = pendingWrite
 
-        let write = Task.detached(priority: .utility) { () -> String? in
-            _ = await predecessor?.value // strict on-disk ordering, oldest first
-            do {
-                let data = try encode()          // heavy encode OFF main
-                try data.write(to: url, options: .atomic)
-                return nil
-            } catch {
-                return "\(error) (\(filePath))"
-            }
-        }
+        // FINAL TRACES #4 (safe slice): writes now flow through the owned
+        // serial PersistenceWriter actor instead of an ad-hoc detached chain.
+        // Same FIFO ordering; a single owned executor that future DB stores
+        // can adopt without cross-thread handle issues.
+        let write = PersistenceWriter.shared.enqueue(
+            encode: encode,
+            write: { data in try data.write(to: url, options: .atomic) }
+        )
         pendingWrite = write
 
         // Observe completion on the main actor WITHOUT blocking it.
         Task { [weak self] in
             guard let self else { return }
             if let message = await write.value {
-                self.markWriteFailed(message, context: failureContext)
+                self.markWriteFailed("\(message) (\(filePath))", context: failureContext)
             } else {
                 self.markWriteSucceeded()
             }
