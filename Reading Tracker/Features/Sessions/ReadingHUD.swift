@@ -59,16 +59,12 @@ struct ReadingHUD: View {
                 .buttonStyle(.plain)
                 .help("End reading session")
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(Color.accentColor.opacity(0.25), lineWidth: 1)
-            )
+            .padding(.horizontal, DesignGrid.cardPaddingH)
+            .padding(.vertical, DesignGrid.cardPaddingV)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: DesignGrid.cardCornerRadius))
+            // UI REVIEW §5 (Medium #5): accent stroke removed — the material
+            // + shadow alone separate it; fewer boundaries, quieter chrome.
             .shadow(color: .black.opacity(0.14), radius: 6, y: 3)
-            .padding(.leading, 20)
-            .padding(.top, 12)
             .transition(.move(edge: .top).combined(with: .opacity))
         }
     }

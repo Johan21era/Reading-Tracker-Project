@@ -60,15 +60,18 @@ struct EnvironmentBackgroundView: View {
                     endPoint: .bottom
                 )
 
-                // Ambient edge glow — most visible at night (see
-                // EnvironmentPalette.night's saturated navy ambientLightColor
-                // against a near-black background), negligible during bright
-                // daytime snapshots by construction, not by special-cased logic.
+                // Ambient glow — UI REVIEW §3/§4 (P7): the previous
+                // treatment (0.35 opacity, 0.35–0.75 radii) read as a distinct
+                // curved SURFACE floating behind the chrome, misaligned with
+                // sidebar/content geometry. Per the review's own option B,
+                // it's now anchored to the WINDOW geometry via DesignGrid and
+                // diffused past the corners so its boundary is imperceptible:
+                // atmosphere, not a competing surface.
                 RadialGradient(
-                    colors: [engine.state.ambientLightColor.swiftUIColor.opacity(0.35), .clear],
+                    colors: [engine.state.ambientLightColor.swiftUIColor.opacity(DesignGrid.glowPeakOpacity), .clear],
                     center: .center,
-                    startRadius: min(proxy.size.width, proxy.size.height) * 0.35,
-                    endRadius: max(proxy.size.width, proxy.size.height) * 0.75
+                    startRadius: min(proxy.size.width, proxy.size.height) * DesignGrid.glowStartFraction,
+                    endRadius: max(proxy.size.width, proxy.size.height) * DesignGrid.glowEndFraction
                 )
                 .blendMode(.plusLighter)
 
@@ -116,7 +119,7 @@ struct EnvironmentBackgroundView: View {
 
     private var atmosphericHaze: some View {
         engine.state.ambientLightColor.swiftUIColor
-            .opacity(engine.state.atmosphericOpacity * 0.25)
+            .opacity(engine.state.atmosphericOpacity * 0.15) // UI REVIEW §6: softer support
             .blendMode(.softLight)
             .allowsHitTesting(false)
     }

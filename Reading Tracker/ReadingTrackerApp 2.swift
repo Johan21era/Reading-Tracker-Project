@@ -131,6 +131,10 @@ struct ReadingTrackerApp: App {
             }
             #endif
         }
+        // UI REVIEW §1 (HIGH): the gray title bar was the loudest surface in
+        // the app. Hiding it (scene-level modifier) lets the atmosphere extend
+        // to the window's top edge; traffic lights float over the starfield.
+        .windowStyle(.hiddenTitleBar)
         // Safe teardown when the app moves to the background.
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .background {

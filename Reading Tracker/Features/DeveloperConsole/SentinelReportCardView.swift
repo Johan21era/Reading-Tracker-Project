@@ -36,11 +36,11 @@ struct SentinelReportCardView: View {
                 .buttonStyle(.bordered)
                 .controlSize(.small)
         }
-        .padding(12)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+        .padding(DesignGrid.cardPaddingV + 2)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: DesignGrid.cardCornerRadius))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .strokeBorder((fixed > 0 ? Color.green : Color.orange).opacity(0.35), lineWidth: 1)
+            RoundedRectangle(cornerRadius: DesignGrid.cardCornerRadius)
+                .strokeBorder((fixed > 0 ? Color.green : Color.orange).opacity(0.25), lineWidth: 1)
         )
         .shadow(color: .black.opacity(0.12), radius: 6, y: 3)
         .transition(.move(edge: .top).combined(with: .opacity))

@@ -242,9 +242,13 @@ struct ContentView: View {
                 }
                 .onDelete(perform: deleteItems)
             }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
+            .navigationSplitViewColumnWidth(min: DesignGrid.sidebarMinWidth, ideal: DesignGrid.sidebarIdealWidth)
             .searchable(text: $searchText, placement: .sidebar, prompt: "Search title, author, series")
-            .scrollContentBackground(.hidden) // Phase 2 wiring: let the ambient gradient show through
+            // UI REVIEW §1/§2/§8 (P7): one cohesive plane. The sidebar and
+            // toolbar stop painting their own opaque surfaces; the single
+            // atmospheric background behind everything becomes THE surface.
+            .scrollContentBackground(.hidden)
+            .toolbarBackground(.hidden, for: .windowToolbar) // Phase 2 wiring: let the ambient gradient show through
             .toolbar {
                 // ── Existing: Add Book ─────────────────────────────────────
                 ToolbarItem(placement: .primaryAction) {
@@ -521,7 +525,8 @@ struct ContentView: View {
                     pendingToasts.removeAll()
                     showAchievements = true
                 }
-                .padding(.top, 12)
+                .padding(.top, DesignGrid.hudTopInset)
+                .padding(.horizontal, DesignGrid.toastHorizontalInset)
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
@@ -531,10 +536,11 @@ struct ContentView: View {
                 PersistenceWarningBanner(message: message)
             }
         }
-        // P5 Feature 3: live reading HUD (top-left; toast owns top-center,
-        // persistence banner owns bottom).
+        // P5 Feature 3 + UI REVIEW grid: HUD inset from shared constants.
         .overlay(alignment: .topLeading) {
             ReadingHUD()
+                .padding(.leading, DesignGrid.hudLeadingInset)
+                .padding(.top, DesignGrid.hudTopInset)
         }
 
         // P6: "While you were away" Sentinel card (top-center, above toasts).
@@ -753,13 +759,15 @@ private struct PersistenceWarningBanner: View {
             Spacer()
         }
         .padding(12)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 10))
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: DesignGrid.cardCornerRadius))
+        // UI REVIEW §5 (Medium #5): stroke softened — hierarchy via contrast,
+        // not an extra bright boundary.
         .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.yellow.opacity(0.5), lineWidth: 1)
+            RoundedRectangle(cornerRadius: DesignGrid.cardCornerRadius)
+                .stroke(Color.yellow.opacity(0.28), lineWidth: 1)
         )
-        .padding(.horizontal, 20)
-        .padding(.bottom, 12)
+        .padding(.horizontal, DesignGrid.bannerHorizontalInset)
+        .padding(.bottom, DesignGrid.bannerBottomInset)
     }
 }
 
