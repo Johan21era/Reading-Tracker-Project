@@ -1,78 +1,79 @@
 # Reading Tracker — Project Tree
 
-**Regenerated:** P5 close-out (five production features; four shipped + one honestly reverted).
-
-| Target | Swift files | Non-blank/non-comment LOC |
-|---|---|---|
-| Reading Tracker (app) | 92 | ~27,489 |
-| Reading TrackerTests | 15 | ~1,610 |
-| **Total** | **107** | **~29,099** |
-
-New this session: Features/RSVP/ (tokenizer+engine+reader), Features/Onboarding/,
-Features/Sessions/ReadingHUD.swift, Core/BookCoverSupport.swift,
-Core/LibraryArchiveManager.swift. Tests: WeatherConfidencePinsTests,
-RSVPLogicTests, DurabilityPinsTests. See fix-log §P5.
+(Regenerated Oct 17, 2026, post hotfix + documentation reorg. 100 app · 18 tests · 2 UITest Swift files; 39,900 raw app LOC / 28,697 code; 108 tests. `graphify-out/` and `.git/` omitted; machine-local xcuserdata omitted.)
 
 ```
-Reading Tracker Main/
-|   |-- 2026-08-23/
-|   |   |-- graph.json
-|   |   |-- GRAPH_REPORT.md
-|   |   `-- manifest.json
-|   |-- 2026-08-26/
-|   |   |-- graph.json
-|   |   |-- GRAPH_REPORT.md
-|   |   `-- manifest.json
-|   |-- cache/
-|   |   |-- ast/
-|   |   |   `-- v0.9.15/
-|   |   `-- stat-index.json
-|   |-- graph.html
-|   |-- graph.json
-|   |-- GRAPH_REPORT.md
-|   `-- manifest.json
-|-- Reading Tracker/
-|   |-- Assets.xcassets/
-|   |   |-- AccentColor.colorset/
+|-- docs
+|   |-- audits
+|   |   `-- DEEP_AUDIT_OCTOBER_2026.md
+|   |-- history
+|   |   |-- FINAL_TRACES.md
+|   |   |-- freeze.txt
+|   |   |-- LAST_DEFEAT_demo_profiles.txt
+|   |   |-- diagnostics-2026-08-26.txt
+|   |   `-- profilerfix.md
+|   |-- method
+|   |   `-- TESTING_STRATEGY.md
+|   |-- registers
+|   |   |-- CURRENT_AUDIT.md
+|   |   |-- fix-log.md
+|   |   `-- handoff.md
+|   |-- roadmap
+|   |   |-- REMEDIATION_ROADMAP.md
+|   |   `-- rsvp-speed-reading-feature-plan.md
+|   `-- tree.md
+|-- Reading Tracker
+|   |-- Assets.xcassets
+|   |   |-- AccentColor.colorset
 |   |   |   `-- Contents.json
-|   |   |-- AppIcon.appiconset/
+|   |   |-- AppIcon.appiconset
 |   |   |   `-- Contents.json
 |   |   `-- Contents.json
-|   |-- Core/
+|   |-- Core
+|   |   |-- AnalyticsCache.swift
 |   |   |-- Book2.swift
 |   |   |-- BookCoverSupport.swift
+|   |   |-- CoverStore.swift
 |   |   |-- DataIntegrityValidator.swift
 |   |   |-- DataStore3.swift
+|   |   |-- DesignGrid.swift
 |   |   |-- LibraryArchiveManager.swift
+|   |   |-- PersistenceWriter.swift
+|   |   |-- SentinelDataBridge.swift
+|   |   |-- SentinelEngine.swift
 |   |   `-- SharedTextUtilities.swift
-|   |-- Engines/
+|   |-- Engines
 |   |   |-- AnalyticsEngine.swift
 |   |   |-- DataMaturityEngine.swift
 |   |   |-- DataMaturityEngineAdapters.swift
 |   |   `-- EstimationEngine.swift
-|   |-- Features/
-|   |   |-- Achievements/
+|   |-- Features
+|   |   |-- Achievements
 |   |   |   |-- AchievementEngine2.swift
 |   |   |   `-- AchievementPanel.swift
-|   |   |-- Audio/
+|   |   |-- Audio
 |   |   |   |-- AudioSnapshot.swift
 |   |   |   |-- AudioTrackerMetadata2.swift
 |   |   |   `-- MusicalAnalysisEngine.swift
-|   |   |-- BehaviorContext/
+|   |   |-- BehaviorContext
 |   |   |   |-- BehavioralCategory.swift
 |   |   |   |-- BehaviorContextEngine2.swift
 |   |   |   |-- BehaviorEvidenceBuilder.swift
 |   |   |   `-- ContextInsightPanel.swift
-|   |   |-- DeveloperConsole/
+|   |   |-- DeveloperConsole
 |   |   |   |-- DemoProfileLabView.swift
 |   |   |   |-- DeveloperConsoleDashboardView.swift
 |   |   |   |-- DeveloperConsoleObservable.swift
 |   |   |   |-- DeveloperConsoleRegistry.swift
 |   |   |   |-- DeveloperConsoleRootView.swift
 |   |   |   |-- DeveloperConsoleSystemMetrics.swift
-|   |   |   `-- DeveloperConsoleTypes.swift
-|   |   |-- Discovery/
-|   |   |   |-- Providers/
+|   |   |   |-- DeveloperConsoleTypes.swift
+|   |   |   |-- SentinelPaneView.swift
+|   |   |   `-- SentinelReportCardView.swift
+|   |   |-- Discovery
+|   |   |   |-- Providers
+|   |   |   |   |-- GutenbergProvider.swift
+|   |   |   |   `-- OpenLibraryProvider.swift
 |   |   |   |-- BookDiscoveryView.swift
 |   |   |   |-- DemoDataService.swift
 |   |   |   |-- OnlineBook.swift
@@ -81,47 +82,71 @@ Reading Tracker Main/
 |   |   |   |-- OnlineBookDiscoveryViewModel.swift
 |   |   |   |-- OnlineBookProvider.swift
 |   |   |   `-- OnlineBookRow.swift
-|   |   |-- Environment/
-|   |   |   |-- Engine/
-|   |   |   |-- Stars/
-|   |   |   |-- Weather/
+|   |   |-- Environment
+|   |   |   |-- Engine
+|   |   |   |   |-- EnvironmentAnchorPeriod.swift
+|   |   |   |   |-- EnvironmentColor.swift
+|   |   |   |   |-- EnvironmentEngine2.swift
+|   |   |   |   |-- EnvironmentMath.swift
+|   |   |   |   |-- EnvironmentPalette.swift
+|   |   |   |   `-- EnvironmentState.swift
+|   |   |   |-- Stars
+|   |   |   |   |-- ShootingStar.swift
+|   |   |   |   |-- ShootingStarManager.swift
+|   |   |   |   |-- ShootingStarView.swift
+|   |   |   |   |-- Star.swift
+|   |   |   |   |-- StarField.swift
+|   |   |   |   `-- StarFieldView.swift
+|   |   |   |-- Weather
+|   |   |   |   |-- WeatherAnalysisEngine.swift
+|   |   |   |   |-- WeatherEnvironmentModifier.swift
+|   |   |   |   |-- WeatherInsightPanel2.swift
+|   |   |   |   `-- WeatherKitService2.swift
 |   |   |   `-- EnvironmentBackgroundView2.swift
-|   |   |-- Goals/
+|   |   |-- Goals
 |   |   |   |-- GoalsDashboard.swift
 |   |   |   |-- ReadingGoalManager2.swift
 |   |   |   `-- SettingsRootView.swift
-|   |   |-- Insights/
+|   |   |-- Insights
 |   |   |   |-- InsightEngine.swift
 |   |   |   `-- ReadingInsightsDashboard.swift
-|   |   |-- Library/
-|   |   |   |-- Spatial/
+|   |   |-- Library
+|   |   |   |-- Spatial
+|   |   |   |   |-- AdaptiveLayoutTier.swift
+|   |   |   |   |-- BookCoverCardView.swift
+|   |   |   |   |-- BookVisualState.swift
+|   |   |   |   |-- FloatingClusterView2.swift
+|   |   |   |   |-- ShallowPerspectiveView2.swift
+|   |   |   |   |-- SpatialLibraryView2.swift
+|   |   |   |   |-- SpatialNavigatorCard2.swift
+|   |   |   |   `-- SpatialNavigatorView2.swift
 |   |   |   |-- BookImporter.swift
 |   |   |   |-- LibraryExplorerView2.swift
 |   |   |   |-- LibraryFilterSidebarView.swift
 |   |   |   |-- LibraryFilterState.swift
 |   |   |   `-- LibraryView.swift
-|   |   |-- Notifications/
+|   |   |-- Notifications
 |   |   |   |-- IntelligentNotificationEngine.swift
 |   |   |   `-- NotificationScheduler2.swift
-|   |   |-- Onboarding/
+|   |   |-- Onboarding
 |   |   |   `-- OnboardingView.swift
-|   |   |-- Reader/
+|   |   |-- Reader
 |   |   |   |-- EPUBPackage.swift
 |   |   |   |-- EPUBReaderScreen.swift
 |   |   |   `-- PDFReaderView2.swift
-|   |   |-- Recommendations/
+|   |   |-- Recommendations
 |   |   |   |-- PredictiveRecommendationEngine.swift
 |   |   |   `-- RecommendationPanel2.swift
-|   |   |-- Reports/
+|   |   |-- Reports
 |   |   |   |-- AnnualReportArchiveView2.swift
 |   |   |   |-- AnnualReportData2.swift
 |   |   |   |-- AnnualReportView.swift
 |   |   |   `-- NewYearTransitionMonitor.swift
-|   |   |-- RSVP/
+|   |   |-- RSVP
 |   |   |   |-- RSVPPlaybackEngine.swift
 |   |   |   |-- RSVPReaderView.swift
 |   |   |   `-- RSVPTokenizer.swift
-|   |   `-- Sessions/
+|   |   `-- Sessions
 |   |       |-- ReadingHUD.swift
 |   |       |-- SessionCoordinator2.swift
 |   |       |-- SessionEventRouter2.swift
@@ -129,20 +154,18 @@ Reading Tracker Main/
 |   |-- NewContentView.swift
 |   |-- PrivacyInfo.xcprivacy
 |   `-- ReadingTrackerApp 2.swift
-|-- Reading Tracker.xcodeproj/
-|   |-- project.xcworkspace/
-|   |   |-- xcshareddata/
-|   |   |   `-- swiftpm/
-|   |   |-- xcuserdata/
-|   |   |   `-- johanrembeci.xcuserdatad/
+|-- Reading Tracker.xcodeproj
+|   |-- project.xcworkspace
+|   |   |-- xcshareddata
+|   |   |   `-- swiftpm
+|   |   |       |-- configuration
+|   |   |       `-- Package.resolved
 |   |   `-- contents.xcworkspacedata
-|   |-- xcuserdata/
-|   |   `-- johanrembeci.xcuserdatad/
-|   |       |-- xcdebugger/
-|   |       `-- xcschemes/
 |   `-- project.pbxproj
-|-- Reading TrackerTests/
+|-- Reading TrackerTests
+|   |-- AnalyticsCachePinsTests.swift
 |   |-- CelebrationTimelineTests.swift
+|   |-- CoverStorePinsTests.swift
 |   |-- DemoProfileServiceTests.swift
 |   |-- DurabilityPinsTests.swift
 |   |-- EnvironmentEngineTests.swift
@@ -154,21 +177,15 @@ Reading Tracker Main/
 |   |-- RemediationPinsTests.swift
 |   |-- RSVPLogicTests.swift
 |   |-- SchemaEvolutionTests.swift
+|   |-- SentinelPinsTests.swift
 |   |-- TextExtractionTests.swift
 |   |-- WeatherConfidencePinsTests.swift
 |   `-- WeatherTests.swift
-|-- Reading TrackerUITests/
+|-- Reading TrackerUITests
 |   |-- Reading_TrackerUITests.swift
 |   `-- Reading_TrackerUITestsLaunchTests.swift
-|-- CURRENT_AUDIT.md
-|-- fix-log.md
-|-- handoff.md
+|-- .gitignore
 |-- Reading Tracker.entitlements
 |-- Reading-Tracker-Info.plist
-|-- README.md
-|-- REMEDIATION_ROADMAP.md
-|-- rsvp-speed-reading-feature-plan.md
-|-- TESTING_STRATEGY.md
-|-- tree.md
-`-- UI REVIEW.rtf
+`-- README.md
 ```

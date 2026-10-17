@@ -43,6 +43,8 @@
 > section; suite green at close). Remaining OPEN: F-06, F-08–F-13. Executive-summary counts
 > below describe the register as originally written.
 
+> **REVISION — Oct 2026:** Deep audit RA-DEEP-20261017 merged into Appendix D (NEW-DE-1…NEW-DE-13 + release blockers + health scores). Full evidence: `docs/audits/DEEP_AUDIT_OCTOBER_2026.md`.
+
 ---
 
 ## 0. How to read this audit
@@ -268,5 +270,31 @@ Prior-work regressions found: **0**.
 ## Appendix B — Files fully read this audit (Tier A index)
 
 `ReadingTrackerApp 2` · `NewContentView` · `Book2` · `DataStore3` · `DataIntegrityValidator` · `SharedTextUtilities` · `AnalyticsEngine` · `EstimationEngine` · `DataMaturityEngine` · `DataMaturityEngineAdapters` · `SessionCoordinator2` · `SessionEventRouter2` · `AchievementEngine2` · `ReadingGoalManager2` · `InsightEngine` · `IntelligentNotificationEngine` · `BehavioralCategory` · `BehaviorContextEngine2` · `BehaviorEvidenceBuilder` · `WeatherKitService2` · `AnnualReportData2` · `NewYearTransitionMonitor` · `AudioTrackerMetadata2` · `BookImporter` · `DeveloperConsoleRegistry` · `ReliabilityTests` · `project.pbxproj` (membership/settings sections)
+
+// -- APPENDIX D — OCTOBER 2026 MERGE · DEEP AUDIT RA-DEEP-20261017 --
+> **REVISION — RA-DEEP-20261017 (docs/audits/DEEP_AUDIT_OCTOBER_2026.md):** a full-machine
+> audit (build exit 0 + suite TEST SUCCEEDED re-verified live, four-agent cluster deep-read,
+> byte-level inventory) incorporated **13 new defects** into this register with IDs
+> **NEW-DE-1 … NEW-DE-13** (kept in the audit doc; merge-by-reference to avoid duplication):
+> • NEW-DE-1 🟠 PersistenceWriter gates but does not serialize encode/write — stale-overwrite window
+>   (supersedes the "identical FIFO ordering contract" wording on PersistenceWriter.swift:5–6).
+> • NEW-DE-2 🟠 Spatial/BookCoverCardView reads legacy `coverImageData` → Explore cards never show
+>   real covers post-migration (use `book.coverImage`).
+> • NEW-DE-3 🟠 Crash-window <24 h stamps `endTime=now` (time inflation); Sentinel orphan repair
+>   records full wall-clock duration even at >24 h.
+> • NEW-DE-4 🟡 AnalyticsCache signature has no day component → streak/trend stale across midnight.
+> • NEW-DE-5 🟡 Onboarding import bypasses ImportIntelligence facade + duplicate check; commitGoal
+>   overwrites the whole ReadingGoalSet.
+> • NEW-DE-6 🟡 PDFReaderScreen.loadRSVPText detached task uncancellable (holds scope + memory).
+> • NEW-DE-7 🟡 LocationProvider silently defaults to NYC; snapshot join has no ±1 h window.
+> • NEW-DE-8 🟡 W-01 residual: per-correlation `dataCoverageScore` still hardcoded 1.0 (aggregate fixed).
+> • NEW-DE-9…13 🟢 BCE fabricated-timestamp hazard if V3 wired; double-recording detail; discovery
+>   stack edges (no limit/timeout/worldCat/desc); test-hygiene set; truth-drift set (incl. inverted
+>   phantom-claim on AnalyticsEngine header; DemoProfileLabView:156 `try?` on non-throwing).
+> Verified-FIXED this audit: F-13(b) MaturityEngine expiry now injected-clock; W-02/W-03 fixes real;
+> BCE activation mystery closed (trigger-driven, not threshold-driven — see audit §8).
+> Release blockers logged: empty AppIcon set, missing WeatherKit entitlement, ENABLE_USER_SELECTED_FILES
+> readonly vs read-write entitlements, empty `CFBundleIdentifier` key. Scores: pin-depth 0.9 /
+> breadth 0.4 / hygiene 0.65 / infra 0.7 → weighted 0.68; app target ~85–88% live, ~12–15% dead.
 
 *End of audit. This file supersedes AUDIT_REPORT.md / TECH_DEBT.md as the working defect register.*

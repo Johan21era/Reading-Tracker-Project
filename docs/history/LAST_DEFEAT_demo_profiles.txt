@@ -43,7 +43,7 @@ THE DINING ROOM (what you see)
                                  once per second (added recently).
   GoalsDashboard, Insights ..... Windows fed by live data.
 
-THE KITCHEN (where data work happens)
+THE KITCHEN (where data work happens) 
   DataStore3.swift ............. THE pantry. Owns your entire library in memory
                                  and saves it to disk as JSON. One giant list:
                                  every book -> its sessions -> each session's

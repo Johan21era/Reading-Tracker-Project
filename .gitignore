@@ -8,6 +8,9 @@ xcuserdata/
 # Build/coverage artifacts
 *.profraw
 DerivedData/
+build/
+*.xcresult/
+*.xctestrun
 
 # Generated code-analysis output
 graphify-out/
