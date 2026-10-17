@@ -1,6 +1,6 @@
-# Reading Tracker — Fix Log
+# 03 · Fix Log
 
-Companion to `AUDIT_REPORT.md`, `TECH_DEBT.md`, `TESTING_STRATEGY.md`, executed under
+Companion to AUDIT_REPORT, TECH_DEBT, `07-testing-strategy.md`, executed under
 the project's fix protocol. Organized by Fix Order (application execution path).
 
 **Verification status:** every entry below passed a clean `xcodebuild build` at patch time.
@@ -271,20 +271,20 @@ repairable-autosave), Library mutation ×2 (§2.1 identity contract, dedupe), Ob
 |---|---|---|---|
 | O-3 | Audit §8.1 | New-Year overlay timer chain can outlive `cleanup()` | Latent (feature unwired). Fix before Part 12 wiring; needs cancellation-token redesign reaching Finality. |
 | O-6 | This session | Weather SQLite rows keyed by sessionID while normaliser discards it → `coverageRatio(for:)` sees only legacy rows | Design decision required; logged, untouched. |
-| O-8 | Audit §3.2, §3.4, §7.1, §2.4 | Sync main-thread writes; `urls(...).first!` ×2; `turnToPage` weak-store divergence; duplicate-import silent no-op | Left untouched per Confidence Rules (Medium/Low confidence, or Low severity awaiting batch with UI feedback work). Prescribed fixes recorded in AUDIT_REPORT. |
+| O-8 | Audit §3.2, §3.4, §7.1, §2.4 | Sync main-thread writes; `urls(...).first!` ×2; `turnToPage` weak-store divergence; duplicate-import silent no-op | Left untouched per Confidence Rules (Medium/Low confidence, or Low severity awaiting batch with UI feedback work). Prescribed fixes recorded in the retired audit report. |
 
 **Definition-of-Done scorecard:** files read ✔ (all touched files + callers fully read; giants
 covered region-exhaustively around every edit) · confirmed bugs fixed-or-open ✔ (**23 fixed**
 incl. O-7 and the store-retry defect; 1 fixture corrected with rationale; 3 open tracked:
 O-3 latent celebration timers, O-6 weather session-key design, O-8 medium/low-confidence
-dispositions) · `fix-log.md` ✔ · `handoff.md` ✔ · **unit suite executing: 16/16 pass** ✔
+dispositions) · `03-fix-log.md` ✔ · `04-handoff.md` ✔ · **unit suite executing: 16/16 pass** ✔
 
 
 ---
 
 # Phase 1 — Foundation Strike (current session)
 
-Executed under the project's fix protocol against CURRENT_AUDIT.md findings.
+Executed under the project's fix protocol against 02-defect-register.md findings.
 Every entry below passed a clean `xcodebuild build` AND `xcodebuild test` (TEST SUCCEEDED)
 at patch time. Stage 0 protection landed first: commit `9f7c619` (tree reorg, frozen
 pre-fix content), commit `608868e` (remediation session + hygiene: .gitignore for
@@ -366,14 +366,14 @@ CURRENT_AUDIT §7.2).
 
 ## Open after Phase 1
 F-06 (dormant fatigue analyzer) · F-08–F-13 (Low) · O-6 · O-8 remainder · D6/D7 — all tracked in
-CURRENT_AUDIT.md, scheduled Phases 2–5.
+02-defect-register.md, scheduled Phases 2–5.
 
 
 ---
 
 # Phase 2 — The Great Wiring (current session)
 
-Executed under the project's fix protocol against CURRENT_AUDIT.md §8/D5 inventory.
+Executed under the project's fix protocol against 02-defect-register.md §8/D5 inventory.
 Every stage verified by clean build; full suite TEST SUCCEEDED after each pin landed.
 
 ## P2.0 — Baseline re-verified green before any edit (protocol step-zero).
@@ -540,7 +540,7 @@ BUILD SUCCEEDED; FULL SUITE TEST SUCCEEDED at close (~108 cases).
 
 # RA-002 REMEDIATION — All Four Phases (current session)
 
-Executed under the project's fix protocol against REMEDIATION_ROADMAP.md (authored from audit
+Executed under the project's fix protocol against 05-remediation-roadmap.md (authored from audit
 RA-002). Every stage passed a clean build AND full `xcodebuild test` (TEST SUCCEEDED, exit 0)
 at its phase boundary; final combined run at session end. Suite grew with new pins in
 `RemediationPinsTests.swift`.
@@ -556,7 +556,7 @@ or the exact named line to look for in test output.**
 - Root cause: an extension block claimed three engine bugs were fixed, but nothing called it;
   live engine kept the buggy paths. False narrative AND live defects at once.
 - Finality: deleting the never-called block removes the false "fixed" claims; underlying defects
-  recorded OPEN (W-01/W-02/W-03, CURRENT_AUDIT.md) because report-level confidence is provably
+  recorded OPEN (W-01/W-02/W-03, 02-defect-register.md) because report-level confidence is provably
   invisible to users (decision gate read WeatherInsightPanel line-by-line first).
 - SEE IT YOURSELF: Open the app → Analytics ▸ Environment — identical behavior (the block never
   did anything visible; that is the point). Search the project for
@@ -707,7 +707,7 @@ as its own commit. **Every entry includes a SEE IT YOURSELF pathway for non-code
   corner shows a live panel with your elapsed time ticking each second and current page.
 
 ### P5-B2 · RSVP speed reading (full feature per your plan doc) · commit f5ec995
-- Built exactly in rsvp-speed-reading-feature-plan.md's prescribed order: pure logic
+- Built exactly in 06-rsvp-feature-plan.md's prescribed order: pure logic
   (NLTokenizer + ORP pivot) → playback engine (WPM, length/punctuation adaptive pacing, seek,
   restart-on-finish) → UI (pivot-pinned word renderer, scrub bar, Space/←/→/Esc keys) → wiring
   (hare button streams the CURRENT EPUB chapter or an entire PDF's text; Settings ▸ Speed

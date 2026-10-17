@@ -1,4 +1,4 @@
-# Handoff — Reading Tracker
+# 04 · Handoff
 
 Plain-language answers, per the project's close-out contract.
 *Session of record: Oct 17, 2026 — deep-audit + documentation-reorganization session (no code fixes).*
@@ -18,7 +18,7 @@ to re-discover the map every time. (3) The README was two stale lines; nobody co
 project actually was from it.
 
 ## What did I end up doing, and how?
-1. **Verifier-first audit** → `docs/audits/DEEP_AUDIT_OCTOBER_2026.md`: build exit 0, unit target
+1. **Verifier-first audit** → `docs/audits/08-deep-audit.md`: build exit 0, unit target
    TEST SUCCEEDED, LOC validated by direct counting (100 app files / 39,900 raw / 28,697 code;
    18 test files / 2,763 / 108 tests), git forensics incl. the freeze-sample provenance, 4 parallel
    cluster deep-reads, 13 new defect-class items (NEW-DE-1…13), release readiness blockers, effort
@@ -30,7 +30,7 @@ project actually was from it.
 3. **Reorganized the docs**: `docs/registers/` (CURRENT_AUDIT · fix-log · handoff — living truth),
    `docs/roadmap/` (REMEDIATION_ROADMAP · rsvp plan), `docs/method/` (testing strategy),
    `docs/history/` (FINAL_TRACES · profilerfix · LAST_DEFEAT · freeze.txt ·
-   diagnostics-2026-08-26.txt), `docs/audits/` (this audit), `docs/tree.md`
+   diagnostics-2026-08-26.txt), `docs/audits/` (this audit), `docs/01-project-tree.md`
    (regenerated). `UI REVIEW.rtf` deleted (its content shipped as P7 and lives in fix-log).
 4. **Merged redundant records**: October findings are incorporated in CURRENT_AUDIT Appendix D
    by reference (no duplication); the entry blockquote at the top of CURRENT_AUDIT points to it.
@@ -63,6 +63,6 @@ Punch list, in the audit's recommended order (details + estimates in the README)
 - Standing constraints from prior sessions all still hold: whole-file rewrites only for
   BehaviorContextEngine2/BehavioralCategory; MainActor-default isolation means every background path
   needs explicit `nonisolated`; suite green at every boundary; `sample <pid>` during a freeze before
-  any performance reasoning (profilerfix.md is the proof).
-- The envelope: `docs/history/freeze.txt` + `docs/history/profilerfix.md` are the canonical evidence
+  any performance reasoning (10-profiler-fix.md is the proof).
+- The envelope: `docs/history/freeze.txt` + `docs/history/10-profiler-fix.md` are the canonical evidence
   pair for the demo-profile freeze saga — keep them.

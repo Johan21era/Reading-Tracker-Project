@@ -1,8 +1,8 @@
-# Reading Tracker
+# 00 · Reading Tracker — Project Report
 
 **A macOS reading-analytics app — and one of the most honestly documented indie codebases you'll ever read.** Built over ~30 focused working sessions, Jun 17 – Aug 26 2026, then hard-audited and reorganized (Oct 2026). Swift/SwiftUI only. One dependency.
 
-> **This README is the project report.** The full audit with file:line evidence for every claim lives in [`docs/audits/DEEP_AUDIT_OCTOBER_2026.md`](docs/audits/DEEP_AUDIT_OCTOBER_2026.md). Live registers: [`docs/registers/CURRENT_AUDIT.md`](docs/registers/CURRENT_AUDIT.md) (defects), [`docs/registers/fix-log.md`](docs/registers/fix-log.md) (protocol log), [`docs/registers/handoff.md`](docs/registers/handoff.md) (where we left off).
+> **This README is the project report.** The full audit with file:line evidence for every claim lives in [`docs/audits/08-deep-audit.md`](docs/audits/08-deep-audit.md). Live registers: [`docs/registers/02-defect-register.md`](docs/registers/02-defect-register.md) (defects), [`docs/registers/03-fix-log.md`](docs/registers/03-fix-log.md) (protocol log), [`docs/registers/04-handoff.md`](docs/registers/04-handoff.md) (where we left off).
 
 ---
 
@@ -52,7 +52,7 @@ Every planned remediation arc and feature package has been executed, with the su
 
 ## 5 · Open findings snapshot (October register)
 
-13 new defect-class items + 4 release blockers were logged by the October audit and merged into [`docs/registers/CURRENT_AUDIT.md` Appendix D](docs/registers/CURRENT_AUDIT.md). The ones that matter most, in fix order:
+13 new defect-class items + 4 release blockers were logged by the October audit and merged into [`docs/registers/02-defect-register.md` Appendix D](docs/registers/02-defect-register.md). The ones that matter most, in fix order:
 
 1. **NEW-DE-2 🟠** Explore/spatial card views read the legacy embedded-cover field, so real covers never show there post-migration — one-line fix (`book.coverImage`).
 2. **NEW-DE-5 🟡** Onboarding import bypasses the import-intelligence facade and duplicate check; its goal commit can overwrite an existing full goal set.
@@ -91,11 +91,11 @@ docs/
 ├── method/       testing strategy
 ├── history/      FINAL_TRACES marathon log · profilerfix post-mortem · LAST_DEFEAT knowledge transfer
 │                 freeze.txt (the 5-second sample of the frozen app) · diagnostics-2026-08-26.txt
-├── audits/       DEEP_AUDIT_OCTOBER_2026.md (the full audit behind this README)
-└── tree.md       regenerated project tree
+├── audits/       08-deep-audit.md (the full audit behind this README)
+└── 01-project-tree.md       regenerated project tree
 ```
 
-Engineering standards (carried by `docs/registers/fix-log.md`): every fix needs a Finality statement, a fix-log entry, and a pinned regression test; suites must be green at every phase boundary; probe a frozen process (`sample`) before reasoning about performance.
+Engineering standards (carried by `docs/registers/03-fix-log.md`): every fix needs a Finality statement, a fix-log entry, and a pinned regression test; suites must be green at every phase boundary; probe a frozen process (`sample`) before reasoning about performance.
 
 ## 9 · How to build / run / verify
 

@@ -1,13 +1,13 @@
-# Reading Tracker — Deep Audit · October 17, 2026
+# 08 · Deep Audit (Oct 2026)
 
 **Audit ID:** RA-DEEP-20261017 · **Performer:** Deep-audit session (live machine, this folder)
 **Scope:** every file, byte-level inventory, live build + full unit suite execution, git history, all 15 docs, graphify artifacts.
-**Supersedes nothing** — this complements `CURRENT_AUDIT.md` (defect register) and `fix-log.md` (protocol log). A future session should merge its NEW-DE defect IDs into the register.
+**Supersedes nothing** — this complements `02-defect-register.md` (defect register) and `03-fix-log.md` (protocol log). A future session should merge its NEW-DE defect IDs into the register.
 
 > **Path note (post-reorg):** this audit was written when registers sat at the repo root. After the
-> same-day documentation reorganization they now live as: `docs/registers/CURRENT_AUDIT.md`,
-> `docs/registers/fix-log.md`, `docs/registers/handoff.md`, `docs/history/{FINAL_TRACES.md, profilerfix.md,
-> LAST_DEFEAT_demo_profiles.txt, freeze.txt, diagnostics-2026-08-26.txt}`, `docs/tree.md`.
+> same-day documentation reorganization they now live as: `docs/registers/02-defect-register.md`,
+> `docs/registers/03-fix-log.md`, `docs/registers/04-handoff.md`, `docs/history/{09-final-traces.md, 10-profiler-fix.md,
+> LAST_DEFEAT_demo_profiles.txt, freeze.txt, diagnostics-2026-08-26.txt}`, `docs/01-project-tree.md`.
 > Read any bare root-level doc reference below as its `docs/…` equivalent.
 
 ---
@@ -72,7 +72,7 @@ xcodebuild test  ... -only-testing:"Reading TrackerTests"
 | Open from handoff | SQLite retry (session-sized), BCE V3 UI activation, CloudKit (deferred), LT-10/11/12 polish |
 | **This audit's flags** | 13 new defect-class items (§7) incl. 1 live UI bug (spatial covers), 1 durability regression (write-ordering), 4 release blockers |
 
-**Milestones timeline:** Jun 17 first commit → Jun weather/discovery → Jul debugging eras + house protocol written (Jul 21) → Aug 23–26 the big remediation/feature/sentinel marathon (24 of 45 commits on Aug 26 alone) → Aug 30 freeze sample captured (`freeze.txt`) → Sep 2 one-line fix found via that sample (`profilerfix.md`) → **Sep 2–Oct 17: dormant (no commits; fix never committed).**
+**Milestones timeline:** Jun 17 first commit → Jun weather/discovery → Jul debugging eras + house protocol written (Jul 21) → Aug 23–26 the big remediation/feature/sentinel marathon (24 of 45 commits on Aug 26 alone) → Aug 30 freeze sample captured (`freeze.txt`) → Sep 2 one-line fix found via that sample (`10-profiler-fix.md`) → **Sep 2–Oct 17: dormant (no commits; fix never committed).**
 
 ---
 
@@ -94,7 +94,7 @@ xcodebuild test  ... -only-testing:"Reading TrackerTests"
 | Achievement kinds | 25 | AchievementEngine2 census |
 | Developer personas | 16 deterministic (SplitMix64-seeded) | DemoProfileCatalog |
 
-> Historical claim check: tree.md's Aug-26 numbers (92 app files / ~27,489 nb-LOC) were accurate then; the file has since grown by 8 files / ~1.2k LOC (Sentinel + traces work). README's old "36k LOC" caveat was true at Jul 15; you are now at ~40k raw / ~28.7k effective.
+> Historical claim check: 01-project-tree.md's Aug-26 numbers (92 app files / ~27,489 nb-LOC) were accurate then; the file has since grown by 8 files / ~1.2k LOC (Sentinel + traces work). README's old "36k LOC" caveat was true at Jul 15; you are now at ~40k raw / ~28.7k effective.
 
 ---
 
@@ -124,7 +124,7 @@ xcodebuild test  ... -only-testing:"Reading TrackerTests"
 4. **Write-ordering weakened by the FINAL-TRACES #4 slice.** `PersistenceWriter.enqueue` resumes each job from the gate then runs encode+write on the *concurrent* cooperative pool — a slow encode can be overtaken by a fast later write ⇒ stale snapshot can land last. `saveImmediately` drains only jobs that already reached the gate. (See NEW-DE-1.)
 5. **Test-belt scope.** Excellent pin density (40%-axis: ~0.9) but narrow architecture coverage: discovery network stack (the only Release-reachable network code), all view flows, session pipeline, readers, notifications = zero tests; UI target = 3 template stubs; one vacuous assertion (AnalyticsCache zero-epoch's stub returns nil); two tests side-effect into the real `CoverStore.shared`; archive round-trip assertions `#if DEBUG`-gated (vacuous in Release); no shared scheme / no test plan / no coverage → CI not reproducible.
 6. **Release-formalities untouched.** Empty AppIcon set; no WeatherKit entitlement despite live WeatherKit use; `ENABLE_USER_SELECTED_FILES=readonly` build setting vs read-write entitlements file; empty-string `CFBundleIdentifier` key in the custom plist; macOS 26.5-only deployment target (cuts current macOS users out); " 2"-suffixed filenames (`ReadingTrackerApp 2.swift`) shipped in a synchronized folder that auto-includes strays.
-7. **Git hygiene.** Last commit Aug 26; the Sep-2 freezer fix + README rewrite + artifact deletions sit uncommitted (44 days); `freeze.txt`/`profilerfix.md` untracked and unignored; diagnostic corpus (`diagnostics-2026-08-26.txt`, `LAST_DEFEAT…`) tracked in the repo; `.xcscheme` file absent.
+7. **Git hygiene.** Last commit Aug 26; the Sep-2 freezer fix + README rewrite + artifact deletions sit uncommitted (44 days); `freeze.txt`/`10-profiler-fix.md` untracked and unignored; diagnostic corpus (`diagnostics-2026-08-26.txt`, `LAST_DEFEAT…`) tracked in the repo; `.xcscheme` file absent.
 
 ---
 
@@ -183,7 +183,7 @@ CoverStorePinsTests 3–4 write through global `CoverStore.shared` into the real
 
 ## 8. The BCE "needs more data" mystery — CLOSED (your pinned follow-up)
 
-Your INVESTIGATION NOTE from `profilerfix.md` (why does the engine stay silent with ~1,500 h of synthetic history — is it the engine or the profiles?) — answer, in code, with receipts:
+Your INVESTIGATION NOTE from `10-profiler-fix.md` (why does the engine stay silent with ~1,500 h of synthetic history — is it the engine or the profiles?) — answer, in code, with receipts:
 
 1. **It's mostly the trigger, not the thresholds.** `analyze()` runs ONLY when a *live session closes* (SessionEventRouter2:75–98, `.dropFirst()` = never on launch/link). Loading 1,500 h of synthetic history triggers **zero** engine runs. The panel's "Learning Your Patterns…" after import is copy shown because `summary == nil` (ContextInsightPanel:26–34) — an engine that was never asked.
 2. **Even when triggered, the synthetic evidence is thin.** The engine's *behavioral* evidence comes from `BehaviorContextAccessKit` — NSWorkspace foreground-app observations **in memory since app launch only** (:163 gate). A synthetic corpus creates zero app-usage evidence; the builder correctly refuses to invent it ("never derives context from absence").
@@ -271,7 +271,7 @@ The AnalyticsCache covers the 5 hottest whole-library reductions only when calle
 
 ## 11. Recommended order (next session(s))
 
-1. **Today, 30 minutes:** commit the Sep-2 fix with a message naming `profilerfix.md` + `freeze.txt` (delete or mark them `docs/` after), decide artifact policy (`freeze.txt`, `diagnostics-2026-08-26.txt`→ ignored or archived), commit the `UI REVIEW.rtf` deletion and README rewrite. *Removes the single riskiest state in the repo.*
+1. **Today, 30 minutes:** commit the Sep-2 fix with a message naming `10-profiler-fix.md` + `freeze.txt` (delete or mark them `docs/` after), decide artifact policy (`freeze.txt`, `diagnostics-2026-08-26.txt`→ ignored or archived), commit the `UI REVIEW.rtf` deletion and README rewrite. *Removes the single riskiest state in the repo.*
 2. **Punch list (§10.1 first block, ~half day):** NEW-DE-2 → NEW-DE-5 → NEW-DE-4 → NEW-DE-3 → NEW-DE-1 (ordering last, it's the toughest); suite green after each.
 3. **Punch list B (~half day):** release blockers + NEW-DE-7/8 + truth-drift set (NEW-DE-13) + test hygiene (NEW-DE-12).
 4. **Decision gate (you, no code):** (a) BCE Phase-2 — wire-or-delete (report recommends delete first, restore from git if ever wanted); (b) pruning policy shape; (c) monolith schedule (#1 SQLite next arc?).
@@ -285,17 +285,17 @@ The AnalyticsCache covers the 5 hottest whole-library reductions only when calle
 - `xcodebuild test -only-testing:"Reading TrackerTests"` → `** TEST SUCCEEDED **` (108 @Test funcs; parameterized expansions)
 - Verified file-by-file: 100/18/2 swift split; 5,252/3,187/… largest-file claims; 286 types; 28,697 nb-code LOC
 - Verified-in-code this audit: MaturityEngine expiry rule now uses injected `referenceDate` (F-13b closed); W-02/W-03 fixes real (`chronologicalBounds` order-independent; avoided-genre threshold); W-01 partial (row-level constant remains); spatial-cover bug real; PersistenceWriter gate-not-executor real
-- Freeze artifact confirmed authentic: `freeze.txt` shows main thread 100% occluded by `EnvironmentObject.error()` ← `DemoProfileLabView.install(_:):151–152` (5 s, 4090/4090 samples) — matching `profilerfix.md`'s one-line fix, currently uncommitted
+- Freeze artifact confirmed authentic: `freeze.txt` shows main thread 100% occluded by `EnvironmentObject.error()` ← `DemoProfileLabView.install(_:):151–152` (5 s, 4090/4090 samples) — matching `10-profiler-fix.md`'s one-line fix, currently uncommitted
 
 ## Appendix B — Artifact inventory
 
 | Artifact | Verdict |
 |---|---|
 | `freeze.txt` (222 KB) | Authentic forensic sample of the Last Defeat; keep (not in git) or add to `docs/` |
-| `profilerfix.md` | The Sep-2 post-mortem; the missing commit is its proof — commit both |
+| `10-profiler-fix.md` | The Sep-2 post-mortem; the missing commit is its proof — commit both |
 | `LAST_DEFEAT_demo_profiles.txt` | Fine as repo artifact (tracked); part of history |
-| `CURRENT_AUDIT.md` / `fix-log.md` / `handoff.md` / `tree.md` | Registers accurate as of Aug-26 stage; tree.md is 8 files stale (now 100 app files) |
-| `TESTING_STRATEGY.md` / `REMEDIATION_ROADMAP.md` | Method docs: excellent, reusable |
+| `02-defect-register.md` / `03-fix-log.md` / `04-handoff.md` / `01-project-tree.md` | Registers accurate as of Aug-26 stage; 01-project-tree.md is 8 files stale (now 100 app files) |
+| `07-testing-strategy.md` / `05-remediation-roadmap.md` | Method docs: excellent, reusable |
 | `graphify-out/` (30 MB) | Stale (built on commit c4968cb, Aug 26) but correctly gitignored; refresh after the next big code change, or prune old snapshots (29 MB of the 43 MB folder) |
 | `diagnostics-2026-08-26.txt` (42 KB) | Old diagnostic corpus; tracked in git — consider untracking (history-only) |
 | `.DS_Store` ×6 | Gitignored / untracked — fine |
@@ -306,4 +306,4 @@ Per roadmap Phase-4 item 5 (still open): the folder is literally named `Reading 
 
 ---
 
-*End of report. This document is an audit, not a fix session: no code was modified. NEW-DE items should be merged into `CURRENT_AUDIT.md`'s register (keeping the ID scheme) by the next fix session, per the register's own supersession rule.*
+*End of report. This document is an audit, not a fix session: no code was modified. NEW-DE items should be merged into `02-defect-register.md`'s register (keeping the ID scheme) by the next fix session, per the register's own supersession rule.*

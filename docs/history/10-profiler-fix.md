@@ -1,4 +1,4 @@
-# Profiler Fix
+# 10 · Profiler Fix (Freeze Post-Mortem)
 
 ## Reading Tracker — Developer Console Freeze / Crash Fix
 

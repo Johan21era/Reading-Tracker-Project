@@ -1,4 +1,4 @@
-# FINAL TRACES — Production Performance Upgrade Marathon
+# 09 · Final Traces (Performance Marathon)
 
 **Mission:** Execute the 5 systems-level upgrades (no new features):
 1. Normalized database core (retire mega-JSON)

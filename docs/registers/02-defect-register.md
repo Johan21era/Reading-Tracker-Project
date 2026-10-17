@@ -1,9 +1,9 @@
-# Reading Tracker — Current Audit
+# 02 · Defect Register
 
 **Audit ID:** RA-CURRENT-001 · **Date of record:** session of record, post remediation-pass baseline
 **Scope:** complete source tree of `Reading Tracker Main /` (app target, test targets, project configuration)
-**Framework applied:** the architecture & defect review method + `TESTING_STRATEGY.md` (coverage/risk mapping)
-**Status of this document:** this is the successor to the deleted `AUDIT_REPORT.md` / `TECH_DEBT.md`. Future sessions should treat **this file as the current defect & risk register** until superseded.
+**Framework applied:** the architecture & defect review method + `07-testing-strategy.md` (coverage/risk mapping)
+**Status of this document:** this is the successor to the deleted AUDIT_REPORT / TECH_DEBT. Future sessions should treat **this file as the current defect & risk register** until superseded.
 
 > **REVISION — RA-002 remediation session (all four roadmap phases executed):**
 > Route-B verdict on the dead weather Fix-block (deleted; underlying engine defects re-registered
@@ -14,7 +14,7 @@
 > submission artifacts added (apple-events entitlement + usage strings; PrivacyInfo.xcprivacy);
 > F-09/F-11/F-13(a,b-c-logging)/NA-7(2 of 3)/NA-8 fixed; JanuaryFirstBannerView deleted;
 > default.profraw removed. Suite TEST SUCCEEDED at every phase boundary. Full detail + plain-
-> language verification pathways in fix-log.md §RA-002.
+> language verification pathways in 03-fix-log.md §RA-002.
 > **NEW OPEN ENTRIES:**
 >
 > ### W-01 · 🟠 High · Live aggregate confidence is decorative (reopened from dead "Fix 2")
@@ -39,11 +39,11 @@
 > EXECUTED (surfaces at import); F-06 FIXED+pinned. BCE V3 activation intentionally
 > deferred to its UI work (Phase 3). Suite green at close.
 > **REVISION — Phase 1 (Foundation Strike) executed:** F-01, F-02, F-03, F-04 (Gates A+B),
-> F-05, and F-07 are **FIXED** and pinned by regression tests (see fix-log.md Phase-1
+> F-05, and F-07 are **FIXED** and pinned by regression tests (see 03-fix-log.md Phase-1
 > section; suite green at close). Remaining OPEN: F-06, F-08–F-13. Executive-summary counts
 > below describe the register as originally written.
 
-> **REVISION — Oct 2026:** Deep audit RA-DEEP-20261017 merged into Appendix D (NEW-DE-1…NEW-DE-13 + release blockers + health scores). Full evidence: `docs/audits/DEEP_AUDIT_OCTOBER_2026.md`.
+> **REVISION — Oct 2026:** Deep audit RA-DEEP-20261017 merged into Appendix D (NEW-DE-1…NEW-DE-13 + release blockers + health scores). Full evidence: `docs/audits/08-deep-audit.md`.
 
 ---
 
@@ -201,11 +201,11 @@ Future sessions may rely on these without re-investigating:
 | fix-log O-3: NY celebration "feature unwired," latent | Wired at app root via `.newYearTransitionAware()`; §8.1 defect live (F-02) | Corrected by this audit; treat O-3 as OPEN-live |
 | fix-log header: "16/16 pass" | Close-out stages record 27/27, handoff says 28 (16 weather + 12 reliability = 28) | Header drift; update when logs are next touched |
 | `SharedTextUtilities` header lists BookImporter as caller of canonical stripHTML | BookImporter shadows with a local divergent copy (F-09) | Corrected by this audit |
-| Old AUDIT_REPORT §8.1 severity "High (once wired)" | Now wired → effective severity High-live (F-02) | Promoted by this audit |
+| Old audit-report §8.1 severity "High (once wired)" | Now wired → effective severity High-live (F-02) | Promoted by this audit |
 
 ---
 
-## 7. Testing posture (TESTING_STRATEGY.md applied)
+## 7. Testing posture (07-testing-strategy.md applied)
 
 ### 7.1 What exists and is trusted
 - Step-zero satisfied historically: tests target is a synchronized group containing real suites; `ReliabilityTests` maps 1:1 onto the strategy's risk table (validator ×5, persistence ×4, mutation ×2, observer lifecycle ×1) and every test names its defect class.
@@ -272,7 +272,7 @@ Prior-work regressions found: **0**.
 `ReadingTrackerApp 2` · `NewContentView` · `Book2` · `DataStore3` · `DataIntegrityValidator` · `SharedTextUtilities` · `AnalyticsEngine` · `EstimationEngine` · `DataMaturityEngine` · `DataMaturityEngineAdapters` · `SessionCoordinator2` · `SessionEventRouter2` · `AchievementEngine2` · `ReadingGoalManager2` · `InsightEngine` · `IntelligentNotificationEngine` · `BehavioralCategory` · `BehaviorContextEngine2` · `BehaviorEvidenceBuilder` · `WeatherKitService2` · `AnnualReportData2` · `NewYearTransitionMonitor` · `AudioTrackerMetadata2` · `BookImporter` · `DeveloperConsoleRegistry` · `ReliabilityTests` · `project.pbxproj` (membership/settings sections)
 
 // -- APPENDIX D — OCTOBER 2026 MERGE · DEEP AUDIT RA-DEEP-20261017 --
-> **REVISION — RA-DEEP-20261017 (docs/audits/DEEP_AUDIT_OCTOBER_2026.md):** a full-machine
+> **REVISION — RA-DEEP-20261017 (docs/audits/08-deep-audit.md):** a full-machine
 > audit (build exit 0 + suite TEST SUCCEEDED re-verified live, four-agent cluster deep-read,
 > byte-level inventory) incorporated **13 new defects** into this register with IDs
 > **NEW-DE-1 … NEW-DE-13** (kept in the audit doc; merge-by-reference to avoid duplication):
@@ -297,4 +297,4 @@ Prior-work regressions found: **0**.
 > readonly vs read-write entitlements, empty `CFBundleIdentifier` key. Scores: pin-depth 0.9 /
 > breadth 0.4 / hygiene 0.65 / infra 0.7 → weighted 0.68; app target ~85–88% live, ~12–15% dead.
 
-*End of audit. This file supersedes AUDIT_REPORT.md / TECH_DEBT.md as the working defect register.*
+*End of audit. This file supersedes AUDIT_REPORT / TECH_DEBT as the working defect register.*

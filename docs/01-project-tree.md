@@ -1,27 +1,27 @@
-# Reading Tracker — Project Tree
+# 01 · Project Tree
 
-**(Regenerated Oct 17, 2026, post-scrub. 100 app · 18 tests · 2 UITest Swift files; 39,900 raw app LOC / 28,697 code; 108 tests. `graphify-out/` and `.git/` omitted; machine-local xcuserdata omitted.)**
+(Regenerated Oct 17, 2026. 100 app · 18 tests · 2 UITest Swift files; 39,900 raw app LOC / 28,697 code; 108 tests. `graphify-out/` and `.git/` omitted; machine-local xcuserdata omitted.)
 
 ```
 |-- docs
 |   |-- audits
-|   |   `-- DEEP_AUDIT_OCTOBER_2026.md
+|   |   `-- 08-deep-audit.md
 |   |-- history
+|   |   |-- 09-final-traces.md
+|   |   |-- 10-profiler-fix.md
 |   |   |-- diagnostics-2026-08-26.txt
-|   |   |-- FINAL_TRACES.md
 |   |   |-- freeze.txt
-|   |   |-- LAST_DEFEAT_demo_profiles.txt
-|   |   `-- profilerfix.md
+|   |   `-- LAST_DEFEAT_demo_profiles.txt
 |   |-- method
-|   |   `-- TESTING_STRATEGY.md
+|   |   `-- 07-testing-strategy.md
 |   |-- registers
-|   |   |-- CURRENT_AUDIT.md
-|   |   |-- fix-log.md
-|   |   `-- handoff.md
+|   |   |-- 02-defect-register.md
+|   |   |-- 03-fix-log.md
+|   |   `-- 04-handoff.md
 |   |-- roadmap
-|   |   |-- REMEDIATION_ROADMAP.md
-|   |   `-- rsvp-speed-reading-feature-plan.md
-|   `-- tree.md
+|   |   |-- 05-remediation-roadmap.md
+|   |   `-- 06-rsvp-feature-plan.md
+|   `-- 01-project-tree.md
 |-- Reading Tracker
 |   |-- Assets.xcassets
 |   |   |-- AccentColor.colorset

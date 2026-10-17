@@ -1,13 +1,13 @@
-# Reading Tracker — Remediation Roadmap
+# 05 · Remediation Roadmap
 
 **Source audit:** RA-002 · full-tree audit executed under the project's fix protocol
-and `TESTING_STRATEGY.md`.
+and `07-testing-strategy.md`.
 **Suite state at authoring:** `xcodebuild test` exit 0, every case passing (fresh run, not inherited).
-**Companion documents:** `CURRENT_AUDIT.md` (defect register), `fix-log.md` (protocol log),
-`TESTING_STRATEGY.md` (coverage mapping), `handoff.md`.
+**Companion documents:** `02-defect-register.md` (defect register), `03-fix-log.md` (protocol log),
+`07-testing-strategy.md` (coverage mapping), `04-handoff.md`.
 
 **Governing rule:** every phase opens with the protocol step-zero (clean build + full suite green,
-verified — not assumed) and closes with the same, plus `fix-log.md` entries per Guardrail 2.
+verified — not assumed) and closes with the same, plus `03-fix-log.md` entries per Guardrail 2.
 No edit without its own Finality statement. One defect, one Finality, one log entry — including
 downstream consequences discovered mid-fix (Bug Chain Discovery).
 
@@ -120,7 +120,7 @@ evidence-gated by `DataMaturityWeatherAdapter`; only report-level confidence is 
      threshold logic from the dead `avoidedGenres(from:totalSessions:)`, then delete the dead block.
 - **Route B (delete — acceptable if report confidence is nowhere displayed):** delete
   `WeatherKitService2.swift:1032–1104` entirely, reopen the three underlying defects in
-  `CURRENT_AUDIT.md` as OPEN with today's evidence, and note the partial mitigation (maturity gating)
+  `02-defect-register.md` as OPEN with today's evidence, and note the partial mitigation (maturity gating)
   in each entry.
 
 **Either way:** the surviving narrative must match reality — no file may continue claiming bugs are
@@ -254,15 +254,15 @@ landing, apply results only if index matches current selection; cancel-and-repla
 5. **Folder rename:** drop the trailing space in `Reading Tracker Main /` (pure filesystem op —
    do OUTSIDE any fix session; update nothing else, paths resolve relatively).
 
-**Phase exit:** final register pass — `CURRENT_AUDIT.md` superseded sections marked resolved with
-pointers to fix-log stages; handoff.md rewritten per Session Close-Out contract.
+**Phase exit:** final register pass — `02-defect-register.md` superseded sections marked resolved with
+pointers to fix-log stages; 04-handoff.md rewritten per Session Close-Out contract.
 
 ---
 
 ## Parallel tracks (explicitly out of scope here)
 
 Feature work continues independently of this roadmap and should interleave AFTER Phase 1:
-RSVP speed reading (see `rsvp-speed-reading-feature-plan.md`), BCE V3 activation with its UI
+RSVP speed reading (see `06-rsvp-feature-plan.md`), BCE V3 activation with its UI
 (gate: hardening pass items already closed by P2.5), achievements gallery (LT-10), star visual
 polish (LT-11), broader de-blocking pass (LT-12), symbol-color settings (rides Phase 1's shell).
 Do not mix feature commits with remediation commits — the fix-log's traceability depends on it.
@@ -271,7 +271,7 @@ Do not mix feature commits with remediation commits — the fix-log's traceabili
 
 1. Every NA/F item above is fixed-verified-and-logged or explicitly dispositioned in the register.
 2. Suite green at every phase boundary (verified runs, never assumed).
-3. `fix-log.md` carries a complete entry per Guardrail-2 pass; `CURRENT_AUDIT.md` superseded;
-   `handoff.md` answers the seven close-out questions.
+3. `03-fix-log.md` carries a complete entry per Guardrail-2 pass; `02-defect-register.md` superseded;
+   `04-handoff.md` answers the seven close-out questions.
 4. No file in the repo asserts a wiring/fixed state that code contradicts — spot-checkable via the
    three known-good patterns (status-correction comments, truthful headers, pinned behaviors).

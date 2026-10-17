@@ -1,4 +1,4 @@
-# RSVP Speed-Reading — Research & Build Plan
+# 06 · RSVP Feature Plan
 
 *A standalone, toggleable RSVP reading mode for the Reading Tracker app, modeled on readrrr (iOS).*
 

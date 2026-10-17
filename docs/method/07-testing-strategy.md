@@ -1,6 +1,6 @@
-# Reading Tracker — Testing Strategy
+# 07 · Testing Strategy
 
-Companion to `AUDIT_REPORT.md` and `TECH_DEBT.md`. Where those documents describe what's wrong, this describes what to build so the same classes of bug get caught automatically next time, rather than by another full manual audit pass.
+Companion to AUDIT_REPORT and TECH_DEBT. Where those documents describe what's wrong, this describes what to build so the same classes of bug get caught automatically next time, rather than by another full manual audit pass.
 
 ## Step zero: make the test target real
 
