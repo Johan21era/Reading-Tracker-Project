@@ -1,6 +1,7 @@
 # Reading Tracker — Fix Log
 
-Companion to `AUDIT_REPORT.md`, `TECH_DEBT.md`, `TESTING_STRATEGY.md`, executed under the project's fix protocol. Organized by Fix Order (application execution path).
+Companion to `AUDIT_REPORT.md`, `TECH_DEBT.md`, `TESTING_STRATEGY.md`, executed under
+the project's fix protocol. Organized by Fix Order (application execution path).
 
 **Verification status:** every entry below passed a clean `xcodebuild build` at patch time.
 The app launches standalone from today's binary (earlier "healthy launch" evidence came from a
@@ -796,7 +797,7 @@ property over dataStore.books consumed by a frequently-re-rendering view.
 # P6 — THE SENTINEL (current session) · commit 48e2e7a
 
 Johan's long-wanted admin system, built on the console framework he'd half-finished: a
-deterministic bug watchdog that finds problems, auto-fixes the provably-safe ones,
+deterministic rule-driven bug watchdog that finds problems, auto-fixes the provably-safe ones,
 and stalls the rest for human review — with "wake up to a report" as the headline feature.
 
 ## Architecture

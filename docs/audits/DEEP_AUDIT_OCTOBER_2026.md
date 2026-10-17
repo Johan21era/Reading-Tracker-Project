@@ -295,6 +295,7 @@ The AnalyticsCache covers the 5 hottest whole-library reductions only when calle
 | `profilerfix.md` | The Sep-2 post-mortem; the missing commit is its proof — commit both |
 | `LAST_DEFEAT_demo_profiles.txt` | Fine as repo artifact (tracked); part of history |
 | `CURRENT_AUDIT.md` / `fix-log.md` / `handoff.md` / `tree.md` | Registers accurate as of Aug-26 stage; tree.md is 8 files stale (now 100 app files) |
+| `TESTING_STRATEGY.md` / `REMEDIATION_ROADMAP.md` | Method docs: excellent, reusable |
 | `graphify-out/` (30 MB) | Stale (built on commit c4968cb, Aug 26) but correctly gitignored; refresh after the next big code change, or prune old snapshots (29 MB of the 43 MB folder) |
 | `diagnostics-2026-08-26.txt` (42 KB) | Old diagnostic corpus; tracked in git — consider untracking (history-only) |
 | `.DS_Store` ×6 | Gitignored / untracked — fine |

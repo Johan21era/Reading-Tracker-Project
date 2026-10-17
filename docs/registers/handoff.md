@@ -28,9 +28,9 @@ project actually was from it.
 2. **Committed the pending fix** as its own commit: "HOTFIX (final, profiler-proven): Developer
    Console window provides DataStore" (355d68e) — one line on the console Window scene.
 3. **Reorganized the docs**: `docs/registers/` (CURRENT_AUDIT · fix-log · handoff — living truth),
-   `docs/roadmap/` (REMEDIATION_ROADMAP · rsvp plan), `docs/method/` (protocol · arch-review
-   prompt · testing strategy), `docs/history/` (FINAL_TRACES · profilerfix · LAST_DEFEAT ·
-   freeze.txt · diagnostics-2026-08-26.txt), `docs/audits/` (this audit), `docs/tree.md`
+   `docs/roadmap/` (REMEDIATION_ROADMAP · rsvp plan), `docs/method/` (testing strategy),
+   `docs/history/` (FINAL_TRACES · profilerfix · LAST_DEFEAT · freeze.txt ·
+   diagnostics-2026-08-26.txt), `docs/audits/` (this audit), `docs/tree.md`
    (regenerated). `UI REVIEW.rtf` deleted (its content shipped as P7 and lives in fix-log).
 4. **Merged redundant records**: October findings are incorporated in CURRENT_AUDIT Appendix D
    by reference (no duplication); the entry blockquote at the top of CURRENT_AUDIT points to it.

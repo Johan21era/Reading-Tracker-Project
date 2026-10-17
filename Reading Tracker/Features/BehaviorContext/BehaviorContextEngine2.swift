@@ -2824,6 +2824,7 @@ struct EnvironmentalInfluenceAnalyzer {
 
 /// Deterministic narrative generation.
 ///
+/// No black-box generation.
 /// No probabilistic text.
 /// No external services.
 ///
@@ -3180,6 +3181,7 @@ extension BehaviorContextEngine {
 // 4. Absence is ONLY valid for routine disruption.
 //
 // 5. Continue building deterministic systems.
+//    No black-box generation.
 //    No probabilistic narratives.
 //
 // 6. Next major milestone should be:

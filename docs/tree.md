@@ -1,16 +1,16 @@
 # Reading Tracker — Project Tree
 
-(Regenerated Oct 17, 2026, post hotfix + documentation reorg. 100 app · 18 tests · 2 UITest Swift files; 39,900 raw app LOC / 28,697 code; 108 tests. `graphify-out/` and `.git/` omitted; machine-local xcuserdata omitted.)
+**(Regenerated Oct 17, 2026, post-scrub. 100 app · 18 tests · 2 UITest Swift files; 39,900 raw app LOC / 28,697 code; 108 tests. `graphify-out/` and `.git/` omitted; machine-local xcuserdata omitted.)**
 
 ```
 |-- docs
 |   |-- audits
 |   |   `-- DEEP_AUDIT_OCTOBER_2026.md
 |   |-- history
+|   |   |-- diagnostics-2026-08-26.txt
 |   |   |-- FINAL_TRACES.md
 |   |   |-- freeze.txt
 |   |   |-- LAST_DEFEAT_demo_profiles.txt
-|   |   |-- diagnostics-2026-08-26.txt
 |   |   `-- profilerfix.md
 |   |-- method
 |   |   `-- TESTING_STRATEGY.md
