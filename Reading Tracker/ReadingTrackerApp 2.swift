@@ -175,6 +175,7 @@ struct ReadingTrackerApp: App {
         // project.pbxproj, not assumed).
         Window("Developer Console", id: DeveloperConsoleWindowID.id) {
             DeveloperConsoleRootView()
+                .environmentObject(dataStore)
         }
         .defaultSize(width: 1200, height: 780)
         #endif
