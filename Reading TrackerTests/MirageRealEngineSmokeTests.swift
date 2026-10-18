@@ -52,7 +52,11 @@ struct MirageRealEngineSmokeTests {
             await supervisor.shutdown()
             return
         }
-        #expect(fields["status"] == .string("ok"))
+        // Source-verified (MirageV1.0 api/service.py:67-72): the `health` action
+        // returns service.health() itself — `status` is "ready", same payload as
+        // the startup banner (serve.py:48). An earlier session's invented
+        // "ok" literal failed here; the engine contract is the authority.
+        #expect(fields["status"] == .string("ready"))
 
         await supervisor.shutdown()
         #expect(!transport.isChildAlive())

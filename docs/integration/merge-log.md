@@ -218,7 +218,26 @@ Full campaign of record: `PR4-defect-analysis-2026-10-18.md` (in-repo snapshot a
 - **Census arithmetic note:** M-017's "133 baseline + 14 = 147" predates the current plan selection and the committed phase-1 log carries no test counts; the per-suite census above is the pinned record henceforth. Zero failures across the current selection; no regression indicated.
 - **Real-engine smoke:** not run (env-gated; OPE-004 stays an owner decision — disposable-DB-only if run).
 - **Covers state (post-census):** container `covers/` = **45 files = 15×3 stub-hash family** (13×3 pre-run; +6 from today's two full runs via `CoverStorePinsTests` stub pins — standing note NEW-DE-12 holds). `library.json` untouched; no data loss. OPE-001 deletion (45-file hash family) remains **owner-gated** (Class Δ, M-013 precedent).
-- **Commit:** `feat(merge): PR-4 — Mirage sidecar lifecycle (supervisor ladder, C2 raw-read transport hardening, pin+lifecycle suites)` — 3 runtime + 4 test files + merge-log refresh; the 8 owner-designated dirty docs files remain untouched (verified post-commit).
+- **Commit:** `863dac1` on `merge/integration` — 3 runtime + 4 test files + merge-log refresh + committed copy of the defect analysis (9 files, 2038 insertions); the 8 owner-designated dirty docs files remain untouched (verified post-commit).
+
+## M-021 · Session close note (2026-10-18 evening)
+
+- **State:** `merge/integration` at `863dac1` (PR-1 `ef198c5` → PR-2 `13ad970` → PR-3 `56bf5d8` → **PR-4 `863dac1`**). Working tree = exactly the 8 owner-designated dirty docs files, untouched; no untracked code remains; nothing pushed to `origin`.
+- **BUG-001 saga closed:** classified (H2 machinery-local), fixed (C2 raw `read(2)` + idempotent `closeRead`), verified (deterministic wedge 3/3 → 0/3; full census 138/0/1 with PR-4 suites green in one runner).
+- **Pending owner items (unchanged):** OPE-001 cover deletion — now the **45-file** stub-hash family (15×3; Class Δ countersign required, M-013 precedent); OPE-004 real-engine smoke (env-gated, optional pre-PR-5; disposable-DB only); PR-7 gates on ADR-7 + S10-ES-3 draft; PR-8 gates on ADR-3.
+- **Next unit — PR-5 (identity + one-book import):** playbook gate "explicit user-driven flow; mapping in its own stratum; RT persistence schema untouched; duplicate/changed/ambiguous/missing-file/cancel/crash cases pinned"; ADR-5 (fail-closed) owner-accepted. Execution plan drafted: `PR5-execution-plan-2026-10-18.md` (in-repo snapshot alongside this log).
+- **Standing discipline added:** no FileHandle read APIs on long-lived child-pipe transports (ADR-2 amendment candidate); default DerivedData only (no build products under the iCloud-synced repo dir).
+
+## M-022 · OPE-004 executed — real-engine smoke (owner-approved)
+
+**Pre-run block (recorded before execution):** intent = verify the REAL MirageV1.0 engine completes the pinned handshake + one health round-trip through PR-4's committed transport path · expected effect = one python child spawned via the RT locator; ledger = disposable temp file `mirage-smoke-<UUID>-library.db` deleted on exit (never the real ledger); pid-file guard in a disposable temp dir · recovery = no lasting state by construction; worst case `permanentDown`/typed fault — nothing persists; committed suites remain stub-only and unaffected · approver = owner in-session ("Run it now", 2026-10-18 evening). Command: `TEST_RUNNER_MIRAGE_REAL_ENGINE_DIR=/Users/johanrembeci/Desktop/MirageV1.0 xcodebuild test … -only-testing:"Reading TrackerTests/MirageRealEngineSmokeTests"` (default DerivedData; code tree identical to census-verified commit `863dac1`).
+
+**Result:**
+
+- **Run 1 failed on an invented literal, run 2 passed after correction against the engine contract.** The real MirageV1.0 sidecar was spawned from RT's committed transport path with a disposable temp DB: real banner received, id-correlated health round-trip succeeded, clean shutdown (child reaped, pid file removed) — ~2.6 s wall.
+- **Correction (evidence-typed):** the smoke test's `health → status "ok"` literal was invented in an earlier session (the value never verified at runtime — exactly what the opt-in gate exists to catch). Source-verified engine behavior: the `health` action returns `service.health()` itself, `status` = `"ready"` (`api/service.py:67-72`; startup banner identical per `serve.py:48`). Test re-pinned to the source value with in-code anchors.
+- **Full census re-witnessed after the change: 138 executed passed / 0 failed / 1 skipped** — identical totals to the PR-4 census (the gated smoke stays skipped in ungated runs, by design). Covers 45 → **48** (16×3 stub-hash family; standing note NEW-DE-12 holds).
+- **Verdict: the real engine works through RT's PR-4 transport — first end-to-end real-engine proof.** PR-5 begins from a proven spawn/serve/shutdown cycle; the smoke suite remains opt-in and was committed in the corrected (source-pinned) form.
 
 | Phase | § | Status | Gate evidence |
 |---|---|---|---|
