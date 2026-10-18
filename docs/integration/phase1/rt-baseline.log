@@ -1,0 +1,9 @@
+=== RT BASELINE (C-04 build + C-05 test) — commit 8fbd5357677a0bde6729454e565e12ba4c0ba9fc, branch merge/integration, operator: agent (owner-approved M-007) ===
+
+PruneExplicitPrecompiledModules /Users/johanrembeci/Library/Developer/Xcode/DerivedData/Reading_Tracker-ewbssfqcrfurpydglpntlstjgpfk/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+** BUILD SUCCEEDED **
+
+=== BUILD EXIT: 0 ===
+xcodebuild: error: Failed to build project Reading Tracker with scheme Reading Tracker.: Tests in the target “ReadingTrackerTests” can’t be run because “ReadingTrackerTests” isn’t a member of the specified test plan or scheme.
+=== TEST EXIT: done ===
