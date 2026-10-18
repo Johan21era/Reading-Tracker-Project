@@ -139,14 +139,34 @@ Full artifact: `evidence/phase1/mirage-protocol-extraction.md`. The playbook's S
 |---|---|---|
 | D3F7FAD0-D310-4B05-80DB-748C7B5F8491.jpg | fc16d7dc… | 6 |
 | 280A0949-EDBC-453E-834F-8EF456FB28DA.jpg | 6e568e1f… | 3 |
-| 5871B31D-A9A0-48EC-B655-7E2444E95F61.jpg | 99b620c1… | 7323 |
+## M-012 · PR-1 committed (§6.2 documentation record)
+
+- Commit `ef198c5` on branch `merge/integration` (parent `8fbd5357…`), 6 files, 360 insertions, DOCS-ONLY (no runtime code). Paths: `docs/integration/merge-log.md` + `docs/integration/phase1/{rt-normative-docs-extraction.md, mirage-protocol-extraction.md, touchpoint-inventory.md, rt-baseline.log, rt-baseline-test.log}`.
+- Verified post-commit: the owner-designated 8 dirty docs files remain uncommitted and byte-untouched (git status census unchanged).
+- Merge-log parity note: the committed copy under RT's `docs/integration/` is a snapshot at commit time; the working master remains `Merge Phase/merge-log.md` (append-only, re-committed in later PRs).
+
+## M-013 · Covers cleanup executed (owner-approved disposition)
+
+The 3 test-generated orphan covers were deleted: each file's sha256 re-verified against the pinned pre-hash immediately before deletion (hash-mismatch = abort path, not taken); container verified restored to exactly 39 covers. First cleanup attempt aborted by a shell-quoting fault (path never reached — no files touched); second attempt was the verified-delete. Class Δ operated with owner countersign.
+
+## M-014 · ADR drafts — PROPOSED (§9/§17, S17-ES-1 content contracts) — SIGN-OFF PENDING
+
+Canonical numbering note: the playbook's ADR slots are fixed by §17 (S17-ES-1): ADR-1 = repo consolidation (Class Ω, parked), ADR-2 = transport+protocol, ADR-3 = runtime distribution (gates PR-8 packaging), ADR-4 = data dirs/ledger/backup, ADR-5 = identity mapping, ADR-7 = spoiler-cursor contract + S10-ES-3 sub-document. Drafts below land in the canonical slots; ADR-3 and ADR-7 are intentionally deferred to their own draft batches (ADR-7 gates any spoiler-sensitive surface — until countersigned, read-only status surfaces only).
+
+| ADR | File (docs/integration/adr/) | Decision |
+|---|---|---|
+| ADR-2 | ADR-2-transport-and-protocol.md | Managed stdio NDJSON sidecar (one child: `python3 mirage_sidecar.py <abs db path>`); operational handshake (banner line 1 `status:"ready"` + `version`→`api_version "1.0.0"` pinned + contract hash); no invented wire fields; typed `protocol_incompatible` masking; single-instance supervision + bounded restart (≤3 attempts, 2/4/8 s backoff); HTTP/web surface never started by RT; pipe I/O off-MainActor, no ≥5 ms MainActor blocks. |
+| ADR-4 | ADR-4-ledger-placement-and-backup-ownership.md | Ledger at `…/ReadTracker/mirage/mirage.sqlite3` (absolute; RT-owned dir created on enablement); `mirage/` = exclusively Mirage-write territory; RT backups/archive exclude ledger (backup is engine doctrine; wire `backup` action BLOCKED today); Sentinel never touches `mirage/`; RT restore has no effect on ledger; nothing auto-deletes. |
+| ADR-5 | ADR-5-identity-mapping.md | Own stratum `…/ReadTracker/mirage/identity-map.json` (schema `mirage-identity-map@1`, atomic write); entries `(rtBookID, mirageBookID, mirageEditionID, sourceFingerprint, status)`; created only via user-initiated import receipt (idempotent `reused:true` or fresh `imported`); byte-hash drift ⇒ `identityDrift` refusal + orphaning (fail-closed); missing edition ⇒ `edition-gone`; `degraded_import` never mapped; RT persistence schema untouched; no title-guessing anywhere. |
+
+Alternatives rejected are documented inside each ADR (in-process embedding; HTTP loopback; Rust core; Book-field schema change; title fuzzy-mapping; etc.) with evidence-based rejection reasons. Status flip to ACCEPTED happens in the docs at owner sign-off, recorded here.
 
 | Phase | § | Status | Gate evidence |
 |---|---|---|---|
 | 0 Governance | §5 | **CLOSED** | M-005 (owners, scope, git strategy, dirty-tree) |
 | 1 Baselines | §6 | **CLOSED** | M-007 C-04/C-05b/C-06/C-07 — RT build ✅, tests TEST SUCCEEDED 133/0, Mirage 316✅+3✅; census arithmetic satisfied at both pinned SHAs |
 | 2 Discovery | §7 | **CLOSED** | M-008 + three full extraction artifacts in `evidence/phase1/` (RT normative docs; Mirage protocol contract; touchpoint inventory) |
-| 3 Defect triage | §8 | pending | — |
+| 3 Defect triage | §8 | IN PROGRESS | consolidation draft pending owner review (inputs: M-008 NEW-DE table + M-009/M-010 constraints) |
 | 4 Boundary | §9 | pending | — |
 | 5 Adapter | §10 | pending | — |
 | 6 Feature | §11 | pending | — |

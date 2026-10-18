@@ -1,0 +1,46 @@
+# ADR-2 — Integration transport & protocol: managed stdio NDJSON sidecar
+
+**Status:** PROPOSED (owner sign-off pending)
+**Date:** 2026-10-18 · **Series:** RT↔Mirage integration ADR-2 (§17 canonical slot: transport + protocol versioning)
+**Approving owners required:** Johan Rembeci (all six roles, M-005/D2) — countersign recorded in `docs/integration/merge-log.md` on acceptance.
+
+## Problem statement
+RT must call a local literary-intelligence engine (MirageV1.0) without importing it into the process, corrupting RT's single-writer persistence, or widening any attack surface. A transport must be chosen among Mirage's actual surfaces, with a deterministic handshake, version-compatibility rule, error model, and lifecycle semantics that satisfy S0-ES-6 (SLO budgets) and S2-ES-4 (wire discipline).
+
+## Context (evidence-anchored)
+- Mirage's public embedding surfaces (verified at SHA `81422613…`): Python API `MirageService`, CLI, **NDJSON sidecar** (`examples/mirage_sidecar.py DB`, docstring "The host owns the window and event loop. It spawns this process with a single database path and exchanges newline-delimited JSON on stdin/stdout", :3-5), and an opt-in local-loopback web UI (`--serve-web`, 127.0.0.1-only, default 8747).
+- The parity rule is structural: sidecar, `--serve`, and web `POST /command` all dispatch through the same `MirageService.run_command` — "the sidecar and `mirage --serve` can never drift apart (audit D11)" (:13-14; webserve.py:7-10). Favoring the sidecar cannot strand protocol features.
+- Proven wire facts (evidence/phase1/mirage-protocol-extraction.md, M-009): health banner stdout line 1; one JSON value per LF line; envelopes `{"ok":true,"result":…}` / `{"ok":false,"error":{type,code,status,message}}`; codes `mirage_error`/400, `validation_error`/422, `not_found`/404; unknown command → `unknown command: X`; optional `id` echoed verbatim (serve.py:38-40) → RT uses `id` for request/response correlation. **No version field exists on the wire** — pinning is operational via `version` (`api_version:"1.0.0"`, pinned by tests/test_public_api.py:120) and `health` (`status:"ready"`).
+- Engine internals are single-threaded around the SQLite connection and its own `ResourceScheduler` (one heavy job, 8192 MB RSS budget; service.py:37-40, 176-225). Embedding in-process would put `RUSAGE_SELF` RSS math in the wrong process and share a runloop with a MainActor-default app.
+- RT constraints: `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` (project.pbxproj:441-442); single-writer `PersistenceWriter` discipline; Sentinel S1–S7; sandbox without `com.apple.security.inherit` (children run unsandboxed but cannot reuse security-scoped bookmarks — RT owns scoped bytes).
+- Playbook governance: S2-ES-4 (wire discipline: one compact JSON per LF line, UTF-8 no BOM, pipes only, no invented fields), S12-ES-3 (localhost ≠ trusted call; HTTP ships disabled-by-default inside RT), S0-ES-6(b) (handshake pinned-contract check; `protocol_incompatible` masking), S0-ES-6(d) (kill -9 during mutation leaves RT strata unchanged; no leaked sidecar; single-instance supervision).
+
+## Alternatives considered
+1. **In-process Python embedding (CPython via PythonKit/dlopen):** rejected — (a) puts the 8192 MB RSS budget on the app's own process (`MemoryBudget` measures `RUSAGE_SELF`, scheduling/resource.py:14-19); (b) SQLite thread-affinity restricts engine concurrency at the host runloop's mercy (webserve.py:85-90); (c) forces raw-actor crossings that repeat RT's P6-HOTFIX v2 freeze class; (d) heaviest packaging/entitlement load (defers to ADR-3); (e) no memory-isolation: engine crash = app crash.
+2. **HTTP loopback (`--serve-web` / browser UI, port 8747):** rejected inside RT by S12-ES-3 (DNS-rebinding, cross-user hosts, port-occupied fallback ambiguity, request-validation divergence) and by evidence — binding servers from the sandboxed app is a feature-negative. Out of scope for RT; UI is a Mirage dev tool.
+3. **Rust core crate (`crates/mirage-core`):** rejected — ADR-0002 demotes it to experiment; canonicalization mismatch vs Python `book|edition|index|unit_id` order (ADR-0002 L5-12). Not a sanctioned integration surface (M-009 §8).
+4. **Managed versioned-pipe worker (playbook §10 / S2 family):** its mechanics (typed client, framing, supervision, disposal hooks) are retained as implementation doctrine, but it is not a separate wire format — realized as the sidecar below.
+
+## Decision
+1. **Transport = managed stdio NDJSON sidecar.** RT spawns exactly one child: `python3 mirage_sidecar.py <absolute ledger path>` (single argv; usage error envelope on argv≠2, examples/mirage_sidecar.py:29-33). Framing identical to proven engine behavior: UTF-8, no BOM, one compact JSON value per LF-terminated line, flush per line; request/lines carry `action`, `payload`, and an RT-generated `id` (echoed by engine, serve.py:38-40) for correlation; RT parses only the proven envelope shapes and never widens the wire (no invented fields — S2-ES-4; any future field is a PR-2 amendment or new ADR).
+2. **Handshake (operational, not wire-versioned):** at spawn, RT reads stdout line 1 and requires it to parse as the health JSON with `"status":"ready"`; then exchanges `{"action":"version"}` and requires `api_version` to match RT's pinned compatibility constant (min/max range declared in RT constants per S14-ES-2; today: exactly `"1.0.0"`, ledger `ledger@0.0.10` accepted). Any mismatch ⇒ typed `mirageProtocolIncompatible`: feature masked to a read-only status row, no entry beyond status (S0-ES-6(b)). RT records the contract hash of the pinned handshake transcript for the "exactly match" comparison.
+3. **Transport errors** map engine codes 1:1 onto RT's typed error model per S9-ES-5 (registry in PR-3): framework-level client faults (spawn failure, EOF mid-flight, banner-nonsense, framing timeout, oversized line) are RT-side typed failures — never surfaced as engine errors.
+4. **Lifecycle & supervision (single-instance):** supervisor owns exactly one sidecar per ledger at a time (S0-ES-6(d)); stale-instance policy: PID-file + liveness check at acquire; crash isolation by construction (RT writes nothing into the pipe mid-mutation that could corrupt a stratum — sidecar is a separate process; engine crash⇒ no RT-side mutation); bounded restart: ≤3 attempts with 2/4/8 s backoff, then permanent-down + status row; quit-time teardown: SIGTERM, bounded 5 s wait, SIGKILL; no pageturn-triggered respawn (I-INC1 respected: navigation triggers no analysis; page-turn events must never spur sidecar traffic beyond projection reads).
+5. **MainActor discipline:** all pipe I/O, framing, and parsing on a dedicated nonisolated worker; no MainActor-blocked work ≥5 ms (S0 PR-4 gate); handback to MainActor only for UI state mutations mirroring RT's `Task.detached` + `await MainActor.run` idiom.
+6. **The HTTP surface and web UI are never started by RT.** Disabled-by-default; RT exposes no setting to enable them (S12-ES-3).
+
+## Consequences
+- Positive: strongest isolation; stdlib-only on both ends (no new Swift dependency, no sockets); parity-bound protocol; envelope & census already test-pinned engine-side; sidecar crash cannot corrupt RT strata.
+- Negative: one child process lifetime to supervise across quit/sleep/kill -9; handshake adds a cold-start step (SLO ≤ 800 ms p95 — S0-ES-6(b), budget verified in PR-4); development-time testing needs the real engine on disk until ADR-3 packaging; RT cannot drive `Ledger.backup` over the wire (absent from dispatcher — M-009 P-10②): ledger backup stays engine-side; RT's Restore/Backup does not cover the ledger (explicit in ADR-4).
+- Neutral: `id`-echo correlation is an extension the engine already implements (not an invented field); request ids add no wire burden.
+
+## Security & privacy impact
+- Local-only preserved (I-PRIV1: engine opens zero sockets on this path — test_webserve.py:175-213); no network entitlement consumed by the sidecar path; child process runs unsandboxed (no `com.apple.security.inherit` exists) — mitigated: RT passes only a ledger path inside RT's own container and bytes/paths it already owns; child never handed unrestricted filesystem roles beyond its ledger + engine resources; no engine logs rastered to RT UI beyond typed status.
+- No telemetry either side (Mirage diagnostics are local-only stdlib logging to stderr; diagnostics.py:1-8).
+
+## Rollback implications
+- Purely additive on RT side (feature flag-off = zero spawns, zero reads — S0-ES-6(a)). Engine repo untouched. Revert PRs remove the supervisor/client; ledger may remain benignly on disk (cleanup is a deliberate Δ-class step, never automatic).
+## Tests required (named; implemented in the PR that introduces them)
+- `MirageProtocolConformanceTests` (PR-3, fake transport): banner/EOF/framing/error-code registry/oversized-line/timeouts.
+- `MirageHandshakePinTests` (PR-4): version assertion matrix (`1.0.0` accepted; drift ⇒ `protocol_incompatible` mask; contract-hash mismatch ⇒ mask).
+- `MirageSidecarLifecycleTests` (PR-4): single-instance acquisition, staleness PID check, bounded restart backoff, SIGTERM/SIGKILL teardown, kill -9 mid-mutation strata-invariance (S0-ES-6(d)).
