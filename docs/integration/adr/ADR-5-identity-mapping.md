@@ -1,6 +1,6 @@
 # ADR-5 — Identity-mapping contract: RT Book ↔ Mirage book/edition
 
-**Status:** PROPOSED (owner sign-off pending)
+**Status:** ACCEPTED — 2026-10-18, owner countersign: Johan Rembeci (merge log M-016)
 **Date:** 2026-10-18 · **Series:** RT↔Mirage integration ADR-5 (§17 canonical slot: identity-mapping contract)
 **Approving owners required:** Johan Rembeci (all six roles, M-005/D2) — countersign recorded in `docs/integration/merge-log.md` on acceptance.
 

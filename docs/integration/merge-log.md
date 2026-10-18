@@ -161,6 +161,38 @@ Canonical numbering note: the playbook's ADR slots are fixed by §17 (S17-ES-1):
 
 Alternatives rejected are documented inside each ADR (in-process embedding; HTTP loopback; Rust core; Book-field schema change; title fuzzy-mapping; etc.) with evidence-based rejection reasons. Status flip to ACCEPTED happens in the docs at owner sign-off, recorded here.
 
+## M-015 · PR-2 committed
+
+- Commit `13ad970` on `merge/integration`: 3 ADR files (PROPOSED) + merge-log refresh (4 files, 164 insertions). Docs-only; the 8 owner-designated dirty docs files remain untouched (verified post-commit).
+
+## M-016 · ADR sign-off (owner countersign) — PR-2 gate SATISFIED
+
+- Owner response (this session): **"Accept all three as written."** ADR-2, ADR-4, ADR-5 flipped to ACCEPTED 2026-10-18 (docs amended in PR-3 commit). Boundary preconditions now: baselines green ✓ · ADR-2 approved ✓ · protocol contract published & counter-interpreted (M-009, no edits) ✓ → proceeding to PR-3.
+- Note: §17 canonical slot numbering honored (transport=ADR-2, ledger=ADR-4, identity=ADR-5); ADR-1 (repo consolidation, Class Ω) parked; ADR-3 (runtime distribution) gates PR-8; ADR-7 + S10-ES-3 sub-document still REQUIRED before any spoiler-sensitive surface ships.
+
+## M-017 · PR-3 — Mirage host interface + fake transport (first runtime-code PR)
+
+Scope (S16-ES-1 PR-3): typed client + wire types + transport seam passes conformance suite against fake/test double; zero process spawns; zero RT persistence dependencies; RT suite green.
+
+**Runtime files** (synchronized-folder targets — no .pbxproj edits needed, verified):
+
+| File | Contents |
+|---|---|
+| `Reading Tracker/Features/Mirage/MirageWireTypes.swift` | 28-case `MirageWireAction` (engine dispatcher names verbatim; bare `import` alias intentionally unrepresented — RT sends canonical `import_epub`); `MirageJSONValue` flexible Sendable JSON value (full Codable, nonisolated witnesses — Swift-6-conformance stamped); `MirageWireRequestLine` (id+action+optional payload; the id echo IS proven engine behavior serve.py:38-40, not an RT invention); `MirageWireErrorPayload` strict 4-key; `MirageWireEnvelope`. |
+| `Reading Tracker/Features/Mirage/MirageTransport.swift` | `nonisolated protocol MirageTransport: Sendable` — framing contract (transport owns LF framing; no newline in/out; oversized-line guard + timeouts are PR-4 duties). |
+| `Reading Tracker/Features/Mirage/MirageClient.swift` | `final nonisolated class MirageClient: Sendable` — encode → exchange → decode → id-correlate → `Outcome.success(result)` or `engineError(verbatim payload)`; RT-side typed `Fault` registry (responseUnparsable / correlationFailure / envelopeShapeInvalid, Equatable); transport failures rethrow unchanged. |
+
+**Conformance suite:** `Reading TrackerTests/MirageProtocolConformanceTests.swift` — 14 tests: action census (dispatcher-set equality), exact-key encoding (+payload omission), success/error envelope verbatim (incl. asymmetric unknown-command pair code=validation_error/status=404 preserved), id correlation (echo ok / mismatched / missing), framing corruption (multi-value, array, scalar, broken-JSON → typed unparsable), transport rethrow unchanged.
+
+**Results:**
+- New suite: 14/14 pass.
+- Full RT suite: **TEST SUCCEEDED — census 147 executed, 0 failed, 0 skipped** (133 baseline + 14 new = exact arithmetic; SC-02 satisfied).
+- NEW-DE-12 standing note: every full-suite run recreates the 3 known stub covers; cleanup is hash-pinned-only (any non-matching file kept). Real library JSON hashes remain byte-identical throughout.
+
+## M-018 · PR-3 committed
+
+- Commit SHA recorded in git log below (commit made immediately after this entry): 3 runtime files + 1 test file + merge-log refresh. RT persistence surface untouched (zero DataStore references in Mirage files).
+
 | Phase | § | Status | Gate evidence |
 |---|---|---|---|
 | 0 Governance | §5 | **CLOSED** | M-005 (owners, scope, git strategy, dirty-tree) |

@@ -1,6 +1,6 @@
 # ADR-2 — Integration transport & protocol: managed stdio NDJSON sidecar
 
-**Status:** PROPOSED (owner sign-off pending)
+**Status:** ACCEPTED — 2026-10-18, owner countersign: Johan Rembeci (merge log M-016)
 **Date:** 2026-10-18 · **Series:** RT↔Mirage integration ADR-2 (§17 canonical slot: transport + protocol versioning)
 **Approving owners required:** Johan Rembeci (all six roles, M-005/D2) — countersign recorded in `docs/integration/merge-log.md` on acceptance.
 
