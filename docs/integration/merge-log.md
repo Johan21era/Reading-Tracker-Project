@@ -191,7 +191,34 @@ Scope (S16-ES-1 PR-3): typed client + wire types + transport seam passes conform
 
 ## M-018 · PR-3 committed
 
-- Commit SHA recorded in git log below (commit made immediately after this entry): 3 runtime files + 1 test file + merge-log refresh. RT persistence surface untouched (zero DataStore references in Mirage files).
+- Commit `56bf5d8` on `merge/integration`: 3 runtime files + 1 test file + merge-log refresh (8 files, 454 insertions). RT persistence surface untouched (zero DataStore references in Mirage files). The 8 owner-designated dirty docs files remain untouched (verified post-commit).
+
+## M-019 · PR-4 implemented — sidecar lifecycle runtime + suites; BUG-001 root-caused and fixed (C2)
+
+Full campaign of record: `PR4-defect-analysis-2026-10-18.md` (in-repo snapshot alongside this log — the living master and its postscript §R0–§R5 remain in the campaign bookkeeping dir outside the repo). Summary hierarchy below; evidence tags live in the analysis doc.
+
+**Defect chain closed today:**
+
+| ID | Disposition |
+|---|---|
+| BUG-001 (High: batch-context silent stdout from long-lived stub children) | **Root-caused + fixed.** E1 probe executed 3×3 cycles: machinery drift wedged `responseTimeout(6.0)` **3/3 deterministically** while a raw `read(2)` reader on the same-shaped pipe delivered **3/3** → H3/H1 falsified; **H2 confirmed machinery-local** (`FileHandle.read(upToCount:)` on a launcher-cycled pipe). C2 applied: raw `read(2)` on the captured descriptor + idempotent `closeRead` (nil stderr handler first, then close both read handles) at all three end-of-epoch sites. Post-fix probe: 0/3 wedge, every phase delivered. |
+| BUG-003 (CodeSign detritus) | **Root cause refined:** iCloud File Provider stamps (`com.apple.fileprovider.fpfs#P`) on Desktop-synced paths; `.rt-dd` under the repo is unusable for signing. Builds moved to default DerivedData — green repeatedly, no xattr dance needed. `.rt-dd` (449 MB) deleted from the repo; BUG-001 repro xcresult (104 MB) archived **outside the repo** in the campaign bookkeeping dir (excluded by size policy) as `BUG-001-repro-2026-10-18_17-51-51.xcresult`. |
+| BUG-005 (probe file hazard) | **Resolved:** probe deleted before commit (superseded by the corrected forensic probe). |
+| Oversize-cap chunk masking (unregistered) | Surfaced by C2: raw `read(2)` delivered the 201-byte line in one chunk whose LF bypassed the no-LF stream-cap check; `blockingReadLine` now enforces the cap on the complete line (unbounded-growth check retained). |
+| Pin-ready payload expectation (unregistered) | Test comment said "empty result" while the `version-ok` stub answers every line with `{"api_version":"1.0.0"}`; assertion aligned to the verbatim stub contract; the pin's protective behaviors unchanged. |
+
+**Runtime totals:** `MirageSidecarSupervisor.swift` (state machine `[disabled|handshaking|ready|protocolIncompatible|engineUnavailable|permanentDown]`, backoff ladder `[2,4,8]`, pid-file single-instance guard, terminal-fault non-restart, `clearTerminalState()` reserved PR-7), `MirageChildProcess.swift` (launcher + transport + C2 hardening + LF framer + JSON bridging + `MirageOnceCloser`), `MirageProtocolConstants.swift` (handshake contract-signature pin).
+
+**PR-4 suites (all `.serialized`, real engine touched only by the env-gated smoke):** `MirageStubSidecarSupport.swift` (stub script + configs + counting launcher), `MirageHandshakePinTests` (6: junk→non-restart masking, banner-without-status, drift→terminal, ready→serve → pid-file → shutdown, …), `MirageSidecarLifecycleTests` (8: compliant shutdown, SIGTERM, SIGKILL, oversize→typed fault + child reaped, never-responds→timeout+reap, restart ladder, …), `MirageRealEngineSmokeTests` (1, opt-in `mirageRealEngineEnabled`).
+
+## M-020 · PR-4 verified and committed
+
+- **PR-4 suites in ONE runner:** `TEST EXECUTE SUCCEEDED` (pin 6/6 + lifecycle 8/8, serialized) — the batch-context house standard holds post-C2.
+- **Full census (default plan, one runner):** `TEST SUCCEEDED`, result **Passed — 138 executed / 0 failed / 1 skipped**. The skip is `MirageRealEngineSmokeTests` (`.enabled(if:)` env gate — as designed). Suite level: `MirageProtocolConformanceTests` 14/14, `MirageHandshakePinTests` 6/6, `MirageSidecarLifecycleTests` 8/8; plan total 139 nodes (incl. UI-target tests).
+- **Census arithmetic note:** M-017's "133 baseline + 14 = 147" predates the current plan selection and the committed phase-1 log carries no test counts; the per-suite census above is the pinned record henceforth. Zero failures across the current selection; no regression indicated.
+- **Real-engine smoke:** not run (env-gated; OPE-004 stays an owner decision — disposable-DB-only if run).
+- **Covers state (post-census):** container `covers/` = **45 files = 15×3 stub-hash family** (13×3 pre-run; +6 from today's two full runs via `CoverStorePinsTests` stub pins — standing note NEW-DE-12 holds). `library.json` untouched; no data loss. OPE-001 deletion (45-file hash family) remains **owner-gated** (Class Δ, M-013 precedent).
+- **Commit:** `feat(merge): PR-4 — Mirage sidecar lifecycle (supervisor ladder, C2 raw-read transport hardening, pin+lifecycle suites)` — 3 runtime + 4 test files + merge-log refresh; the 8 owner-designated dirty docs files remain untouched (verified post-commit).
 
 | Phase | § | Status | Gate evidence |
 |---|---|---|---|
