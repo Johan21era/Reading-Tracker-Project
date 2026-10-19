@@ -273,6 +273,10 @@ struct EPUBReaderScreen: View {
                     .frame(minWidth: 720, minHeight: 520)
             }
         }
+        // PR-5: the Mirage analyze sheet (book detail entry per owner choice).
+        .sheet(isPresented: $showingMirageAnalysis) {
+            MirageAnalysisSheet(book: book)
+        }
     }
 
     /// Extracts plain text from the current chapter for RSVP streaming.
@@ -306,6 +310,8 @@ struct EPUBReaderScreen: View {
         .frame(minWidth: 280, minHeight: 320)
     }
 
+    @State private var showingMirageAnalysis = false
+
     private var metadataSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(book.title)
@@ -325,6 +331,15 @@ struct EPUBReaderScreen: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
+            // PR-5 mount (owner-approved): "Analyze with Mirage" lives on this
+            // book's detail popover. EPUB-only (PDF books are not Mirage-input),
+            // never auto-run, and the sheet carries all typed outcomes (ADR-5,
+            // S10-ES-1; the app writes no RT state — ADR-6 coherence note).
+            Divider()
+            Button("Analyze with Mirage…") {
+                showingMirageAnalysis = true
+            }
+            .buttonStyle(.bordered)
         }
     }
 }
