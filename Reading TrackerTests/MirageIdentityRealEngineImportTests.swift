@@ -182,6 +182,33 @@ struct MirageIdentityRealEngineImportTests {
                 }
             }
 
+            // 5 · PR-6 (ADR-7): engine-verified status, DETAIL-FREE — identity
+            // refresh and counts row arrive from the ONE books_list response;
+            // no projection/search request is ever composed; and the cursor
+            // gate refuses its own cursors against the engine's real maxCursor.
+            if let entry = linkedEntry {
+                do {
+                    let pair = try await flow.engineVerifiedIdentityAndInventory(
+                        for: source, client: client)
+                    guard case .linked(let verified) = pair.identity else {
+                        Issue.record("expected linked status, got \(pair.identity)"); return
+                    }
+                    #expect(verified == entry)
+                    #expect(pair.counts?.editionID == entry.mirageEditionID)
+                    #expect((pair.counts?.units ?? 0) >= 1)
+                    do {
+                        _ = try MirageCursorGate.validatedDisclosureUnits(
+                            for: .unit(pair.counts?.maxCursor ?? 1),
+                            mappedEditionID: entry.mirageEditionID)
+                        Issue.record("cursor gate accepted a unit cursor under the doctrine — ADR-7 violation")
+                    } catch let gate as MirageCursorGateError {
+                        #expect(gate.pinnedCode == "SPOILER-CURSOR-UNVERIFIED")
+                    }
+                } catch {
+                    Issue.record("engine-verified status threw: \(error)")
+                }
+            }
+
             // ---- Proof 4: degraded receipt refuses to map (same lifecycle) --
             let degradedEpub = try writeMinimalRealEpubFixture(
                 workDir: root, secondSpinePageMalformed: true)

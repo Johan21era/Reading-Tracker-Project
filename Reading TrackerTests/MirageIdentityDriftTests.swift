@@ -29,7 +29,11 @@ private func mirageReceiptFixture(
 }
 
 private func mirageBooksListFixture(id: String, pairs: [(String, String)]) -> Data {
-    let items = pairs.map { "{\"book_id\":\"\($0.0)\",\"edition_id\":\"\($0.1)\"}" }
+    // Real inventory row shape (MirageV1.0 api/service.py:505-554): every row
+    // carries book_id / edition_id / units / claims / max_cursor — PR-6's strict
+    // typed decode (fail-closed on missing required keys) pins that verbatim,
+    // so the fixture prints the full real row (counts are presence-neutral).
+    let items = pairs.map { "{\"book_id\":\"\($0.0)\",\"edition_id\":\"\($0.1)\",\"units\":42,\"claims\":7,\"max_cursor\":41}" }
         .joined(separator: ",")
     // Real wire export shape (probe-verified against MirageV1.0): the inventory
     // arrives wrapped — {"books": [...]} — never a bare array on the wire.

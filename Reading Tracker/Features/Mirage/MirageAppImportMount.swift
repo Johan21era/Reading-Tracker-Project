@@ -22,17 +22,22 @@ final class MirageAnalyzeSession {
     private let store: MirageIdentityMapStore
     private var transport: MirageProcessTransport?
 
+    /// The ADR-4 stratum identity-map store, exposed read-only for PR-6's
+    /// status surface (it serializes its reads through the same owning flow).
+    var identityStore: MirageIdentityMapStore { store }
+
+    /// Acquires (or reuses) the session's transport and wraps it in a client —
+    /// the same handshake discipline `performImport` uses.
+    func acquireTransportClient() async throws -> MirageClient {
+        try await acquire()
+    }
+
     init(engineCheckout: URL) throws {
         // ADR-4 stratum directory — <Application Support>/ReadTracker is RT's
         // same data root (DataStore3:91-95); mirage/ inside it is Mirage-write
         // territory (ledger db + identity map + pid guard). RT creates the
         // directory with an existence check before the first spawn.
-        let base = FileManager.default
-            .urls(for: .applicationSupportDirectory, in: .userDomainMask).first
-            .map { $0.appendingPathComponent("ReadTracker", isDirectory: true)
-                .appendingPathComponent("mirage", isDirectory: true) }
-            ?? FileManager.default.temporaryDirectory
-                .appendingPathComponent("ReadTracker-degraded/mirage", isDirectory: true)
+        let base = MirageSupportPaths.mirageDirectory()
         if !FileManager.default.fileExists(atPath: base.path) {
             try FileManager.default.createDirectory(at: base, withIntermediateDirectories: false)
         }
@@ -89,6 +94,18 @@ final class MirageAnalyzeSession {
 }
 
 nonisolated enum MirageAppImportMount {
+    /// ADR-4 stratum directory: <Application Support>/ReadTracker/mirage /
+    /// (the same temporary fallback when Application Support is unavailable
+    /// — degraded environments keep working on a throwaway path).
+    nonisolated static func mirageDirectory() -> URL {
+        FileManager.default
+            .urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            .map { $0.appendingPathComponent("ReadTracker", isDirectory: true)
+                .appendingPathComponent("mirage", isDirectory: true) }
+            ?? FileManager.default.temporaryDirectory
+                .appendingPathComponent("ReadTracker-degraded/mirage", isDirectory: true)
+    }
+
     /// Engine checkout discovery for PR-5: the dev-opt-in environment gate.
     static func engineCheckoutDirectory() -> URL? {
         let dir = ProcessInfo.processInfo.environment["MIRAGE_REAL_ENGINE_DIR"] ?? ""
@@ -107,6 +124,14 @@ nonisolated enum MirageAppImportMount {
             rtBookID: snapshot.id,
             fileTypeIsEpub: snapshot.fileType == .epub,
             resolveURL: { snapshot.resolveURL() })
+    }
+}
+
+nonisolated enum MirageSupportPaths {
+    /// Single source of the ADR-4 stratum path. (Kept as its own namespace so
+    /// the status surface and the session share the EXACT directory semantics.)
+    nonisolated static func mirageDirectory() -> URL {
+        MirageAppImportMount.mirageDirectory()
     }
 }
 

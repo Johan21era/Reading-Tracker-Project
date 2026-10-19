@@ -255,42 +255,59 @@ nonisolated struct MirageImportFlow: Sendable {
         for source: MirageImportSource,
         client: MirageClient
     ) async throws -> MirageIdentityState {
+        try await engineVerifiedIdentityAndInventory(for: source, client: client).identity
+    }
+
+    /// PR-6 (ADR-7): the SAME read-only books_list serves BOTH the identity
+    /// semantics above AND the matched inventory counts row — exactly ONE wire
+    /// exchange per engine-verified status refresh (S10-ES-4 pin-1 discipline:
+    /// the only action a status check serves is `books_list`). Row decode is
+    /// strictly typed (MirageInventoryEntry): ANY malformed row refuses the
+    /// whole list — a shape-tightening over the PR-5 presence scan, fail-closed.
+    func engineVerifiedIdentityAndInventory(
+        for source: MirageImportSource,
+        client: MirageClient
+    ) async throws -> (identity: MirageIdentityState, counts: MirageInventoryEntry?) {
         switch environment.store.load() {
         case .loaded(let map):
-            guard let entry = map.activeEntry(for: source.rtBookID) else { return .notImported }
+            guard let entry = map.activeEntry(for: source.rtBookID) else {
+                return (.notImported, nil)
+            }
             let outcome = try await client.perform(.booksList)
             guard case .success(let result) = outcome else {
                 if case .engineError(let payload) = outcome {
-                    return .unverifiable(reason: "books_list refused: \(payload)")
+                    return (.unverifiable(reason: "books_list refused: \(payload)"), nil)
                 }
-                return .unverifiable(reason: "books_list returned an unexpected shape")
+                return (.unverifiable(reason: "books_list returned an unexpected shape"), nil)
             }
             // Real-engine wire export (verified against MirageV1.0): the list is
             // wrapped — {"books": [...]} — so a service-level list[dict] return
             // does NOT surface bare on the wire.
             guard case .object(let wrapped) = result,
                   case .array(let books)? = wrapped["books"] else {
-                return .unverifiable(reason: "books_list result lacks the books inventory")
+                return (.unverifiable(reason: "books_list result lacks the books inventory"), nil)
             }
-            let found = books.contains { book in
-                if case .object(let fields) = book,
-                   case .string(let bookID)? = fields["book_id"],
-                   case .string(let editionID)? = fields["edition_id"] {
-                    return bookID == entry.mirageBookID && editionID == entry.mirageEditionID
+            var decoded: [MirageInventoryEntry] = []
+            for row in books {
+                guard let typed = MirageInventoryEntry.decode(row) else {
+                    return (.unverifiable(reason: "books_list contained an unexpected inventory row"), nil)
                 }
-                return false
+                decoded.append(typed)
             }
-            if found { return .linked(entry: entry) }
+            let matched = decoded.first { $0.bookID == entry.mirageBookID && $0.editionID == entry.mirageEditionID }
+            if matched != nil {
+                return (.linked(entry: entry), matched)
+            }
             do {
                 try environment.store.save(
                     map.orphaning(rtBookID: source.rtBookID, reason: .editionGone,
                                   now: MirageIdentityMapTime.canonical(Date())))
             } catch {
-                return .unverifiable(reason: "identity-map write failed: \(error)")
+                return (.unverifiable(reason: "identity-map write failed: \(error)"), nil)
             }
-            return .orphaned(.editionGone)
+            return (.orphaned(.editionGone), nil)
         case .unreadable(let reason):
-            return .mapUnreadable(reason: reason)
+            return (.mapUnreadable(reason: reason), nil)
         }
     }
 }
