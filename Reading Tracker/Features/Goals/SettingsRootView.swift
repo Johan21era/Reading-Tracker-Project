@@ -46,6 +46,11 @@ struct SettingsRootView: View {
                 .tabItem {
                     Label("Sentinel", systemImage: "shield.lefthalf.filled")
                 }
+
+            MirageSettingsPane()
+                .tabItem {
+                    Label("Mirage", systemImage: "sparkles.rectangle.stack")
+                }
         }
         .padding(20)
         .frame(minWidth: 560, minHeight: 430)
@@ -325,6 +330,40 @@ struct RSVPSettingsPane: View {
     }
 }
 
+
+// MARK: - Mirage Settings (PR-7 — §11 optional-feature governance)
+
+struct MirageSettingsPane: View {
+    @AppStorage(MirageSettings.enabledKey) private var isEnabled = true
+    @State private var engineAvailable = false
+
+    var body: some View {
+        Form {
+            Section {
+                Toggle("Enable Mirage analysis", isOn: $isEnabled)
+            } footer: {
+                Text("Mirage reads an EPUB book's file on this Mac and keeps its own spoiler-safe analysis locally — RT's library, goals, and progress are never touched. Analysis starts only when you ask for it from a book's page.")
+            }
+
+            Section("Engine availability") {
+                Label(engineAvailable
+                    ? "Engine found (development checkout)"
+                    : "Not available on this Mac yet — RT will bundle the engine in a future release.",
+                    systemImage: engineAvailable ? "checkmark.circle" : "info.circle")
+                    .foregroundColor(engineAvailable ? .green : .secondary)
+                Text("Turning Mirage off deletes nothing: stored analyses and RT's link records stay exactly as they are.")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .formStyle(.grouped)
+        .onAppear {
+            // Passive check only: the dev-gate existence test (no spawn, no
+            // process work — the availability probe stays side-effect-free).
+            engineAvailable = MirageAppImportMount.engineCheckoutDirectory() != nil
+        }
+    }
+}
 
 // MARK: - Sentinel Settings (P6)
 

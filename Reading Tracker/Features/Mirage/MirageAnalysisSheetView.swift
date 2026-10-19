@@ -46,25 +46,38 @@ struct MirageAnalysisSheet: View {
 
             switch status {
             case .idle:
-                // PR-6 (ADR-7): the read-only status section — local map state
-                // renders immediately; engine verification is an explicit
-                // gesture; read-state renders from RT's own record only.
-                MirageStatusSection(controller: statusController)
-                Divider()
-                ContentUnavailableView {
-                    Label("Ready to analyze", systemImage: "sparkles.rectangle.stack")
-                } description: {
-                    Text("Mirage will read this book's EPUB file and store its own analysis on this Mac. RT's library and your goals are never touched.")
-                } actions: {
-                    Button("Start analysis") {
-                        Task { await begin() }
+                if MirageSettings.isEnabled {
+                    // PR-6 (ADR-7): the read-only status section — local map
+                    // state renders immediately; engine verification is an
+                    // explicit gesture; read-state renders from RT's own
+                    // record only.
+                    MirageStatusSection(controller: statusController)
+                    Divider()
+                    ContentUnavailableView {
+                        Label("Ready to analyze", systemImage: "sparkles.rectangle.stack")
+                    } description: {
+                        Text("Mirage will read this book's EPUB file and store its own analysis on this Mac. RT's library and your goals are never touched.")
+                    } actions: {
+                        Button("Start analysis") {
+                            Task { await begin() }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(book.fileType != .epub)
+                        if book.fileType != .epub {
+                            Text("Only EPUB books can be analyzed with Mirage.")
+                                .font(.footnote)
+                                .foregroundColor(.secondary)
+                        }
                     }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(book.fileType != .epub)
-                    if book.fileType != .epub {
-                        Text("Only EPUB books can be analyzed with Mirage.")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
+                } else {
+                    // PR-7 disabled state (§11): honest, discoverable, and it
+                    // starts nothing — and it deletes nothing either (the copy
+                    // says so; there is no delete path to begin with).
+                    ContentUnavailableView {
+                        Label(MirageSettingsCopy.disabledHeadline,
+                              systemImage: "sparkles.rectangle.stack.slash")
+                    } description: {
+                        Text(MirageSettingsCopy.disabledDetail)
                     }
                 }
             case .running:
@@ -108,6 +121,9 @@ struct MirageAnalysisSheet: View {
 
     private func begin() async {
         guard status == .idle else { return }
+        // PR-7: the settings toggle gates the flow itself (defense in depth —
+        // the disabled state's UI already replaces the start button).
+        guard MirageSettings.isEnabled else { return }
         // DEV-OPT-IN engine policy until ADR-3 / PR-8 replaces it.
         guard let engineDir = MirageAppImportMount.engineCheckoutDirectory() else {
             status = .done(.sidecarUnavailable(

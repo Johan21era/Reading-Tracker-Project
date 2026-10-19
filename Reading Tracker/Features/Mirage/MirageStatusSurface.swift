@@ -243,7 +243,9 @@ final class MirageStatusController: ObservableObject {
     }
 
     /// The explicit user gesture — the ONLY way engine verification happens.
+    /// PR-7: the settings gate wins even here (a disabled feature never spawns).
     func refreshEngineStatus() async {
+        guard MirageSettings.isEnabled else { return }
         guard !checking else { return }
         checking = true
         cancelledRequested = false

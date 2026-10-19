@@ -1,6 +1,12 @@
-# ADR-6 — Mirage import-path independence from RT's onboarding-import bypass (NEW-DE-5)
+# ADR-6a — Mirage import-path independence from RT's onboarding-import bypass (NEW-DE-5)
 
-Status: **DECISION-REQUIRED (drafted 2026-10-18; awaiting owner countersign to gate PR-5's commit)**
+Status: **ACCEPTED — countersigned by the owner 2026-10-18** (the NEW-DE-5 block on PR-5 was discharged; PR-5 shipped on this decision; see the numbering note below)
+
+> **Numbering note (2026-10-18, M-025/M-027):** this record took the `ADR-6` seat before the
+> playbook's §17 numbering was resolved for it; the canonical ADR-6 seat is the FEATURE
+> LIFECYCLE decision (§17). This file is therefore **ADR-6a** — an interim discharge record
+> of NEW-DE-5, not one of §17's twelve numbered slots. The canonical ADR-6 draft lives in
+> `ADR-6-mirage-feature-lifecycle.md`.
 
 ## Context
 
