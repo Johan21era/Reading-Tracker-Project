@@ -1,6 +1,6 @@
 # ADR-3 — Packaged runtime distribution (engine + interpreter bundled with RT)
 
-Status: **DIRECTION ACCEPTED — countersigned by the owner 2026-10-18 (bundle with the app); implementation plan below is PR-8's charter**
+Status: **DIRECTION ACCEPTED + IMPLEMENTATION ACCEPTED — countersigned by the owner 2026-10-18 (bundle with the app); PR-8 implemented the plan below; closing round accepted the implementation with the app-embed delta (Resources/codesign exercised at first CI run / operator stage-into-app; owner Actions toggle pending)**
 
 ## Problem statement
 

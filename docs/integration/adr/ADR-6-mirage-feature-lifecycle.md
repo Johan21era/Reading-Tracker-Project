@@ -1,6 +1,6 @@
 # ADR-6 — Mirage as an optional RT feature: lifecycle governance (canonical §17 seat)
 
-Status: **DRAFTED 2026-10-18 — implemented by PR-7; ratification requested at session close**
+Status: **RATIFIED as written by the owner 2026-10-18, closing round (PR-7 implementation; PR-8 further implements decision 1's availability worlds)**
 
 > Numbering note: the interim record `ADR-6a-mirage-import-independence-newde5.md` (NEW-DE-5
 > discharge) briefly occupied this number before the §17 slot list was resolved; this file is

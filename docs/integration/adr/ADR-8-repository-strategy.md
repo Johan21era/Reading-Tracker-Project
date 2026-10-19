@@ -1,6 +1,6 @@
 # ADR-8 — Repository strategy: two canonical repositories, one verified vendored copy (canonical §17 seat)
 
-Status: **DRAFTED 2026-10-18 — the de-facto strategy of the whole ladder, now recorded; countersign requested at session close**
+Status: **RATIONALE COUNTERSIGNED 2026-10-18 — the de-facto strategy of the whole ladder, now the owner's recorded decision (closing round: countersign both)**
 
 ## Problem statement
 

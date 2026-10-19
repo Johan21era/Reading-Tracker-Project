@@ -1,6 +1,6 @@
 # ADR-12 — Titanium Bridge (TiB) charter: continuous convergence across the guarded boundary
 
-Status: **DRAFTED 2026-10-18 — voting item at the closing owner round; nothing below executes until countersigned (§21.0 non-execution charter binds §22)**
+Status: **ADOPTED — countersigned by the owner 2026-10-18, closing round ("Countersign both — the TiB era opens at TB-M0"). TB-M0 observe-mode execution is therefore OPEN; each milestone's EXIT still signs against its evidence (gates are the only brake — decision 6 stands, with opening ≠ exit)**
 
 > Numbering note: ADR-12 is the seat the playbook reserves for the TiB era (§22 header:
 > "ESCALATED-DESIGN pending ADR-12"). Numbers ADR-8…ADR-11 remain unclaimed for the

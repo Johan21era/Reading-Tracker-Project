@@ -1,0 +1,11 @@
+{
+  "engine_version": "MirageV1.0-81422613610701d81956394d9601bcb61e2938e9",
+  "engine_checkout_sha": "81422613610701d81956394d9601bcb61e2938e9",
+  "interpreter": "cpython-3.12.7+20241002-aarch64-apple-darwin",
+  "interpreter_sha256": "5a9cdbb8536839a83edae3e41eb44161b640d78181fec083e07c668ba796a875",
+  "bindings": {
+    "bin/python3.12": "fe2572aa0c87557fc41b07afe929ed39ca4020ce78712f5b952fd099ab7da179",
+    "examples/mirage_sidecar.py": "dfb19552368c0f16fa7bd12461110273e8016e8cbc598e075ecdcd6065b7a862",
+    "src/miragev10 (tree digest)": "b5ca1d35267510bcac93534de610747e82ad13f5678641eed7903bf30eacfd61"
+  }
+}

@@ -1,8 +1,9 @@
-# TB-M0 gate plan — manifest + hash-verify in observe mode (DRAFT, awaiting ADR-12 countersign)
+# TB-M0 gate plan — manifest + hash-verify in observe mode (OPEN — ADR-12 countersigned 2026-10-18)
 
-Sister to `ADR-12-titanium-bridge-charter.md`. §22's non-execution charter applies:
-**this plan does not execute until the owner countersigns ADR-12 and signs the TB-M0
-gate.** Nothing in tonight's session built or ran any TB instrument.
+Sister to `ADR-12-titanium-bridge-charter.md`. The owner countersigned ADR-12 at the
+2026-10-18 closing round ("the TiB era opens at TB-M0"), so this plan is now the
+OPEN observe-mode work order; M0's EXIT gate signature is reserved for the evidence
+review (7-day ledger + tamper drill), per ADR-12 decision 6 (opening ≠ exit).
 
 ## Goal
 
