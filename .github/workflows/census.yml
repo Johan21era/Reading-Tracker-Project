@@ -1,0 +1,33 @@
+name: census
+on:
+  push:
+    branches: [main, merge/integration]
+  workflow_dispatch:
+
+# PR-8 (ADR-3): CI publishes the merge-presence receipts. NOTE (owner toggle):
+# enabling Actions on the GitHub repository is a repo-settings change owned by
+# the owner (machine side stays read-only for this session); until toggled,
+# this workflow is inert text.
+
+jobs:
+  census:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Default census (green = merge-presence receipt)
+        run: |
+          xcodebuild test \
+            -project "Reading Tracker.xcodeproj" \
+            -scheme "Reading Tracker" \
+            -configuration Debug \
+            -destination 'platform=macOS' 2>&1 | tee census.log | grep -E "TEST (SUCCEEDED|FAILED)"
+          grep -q "TEST SUCCEEDED" census.log
+
+      - name: Upload census receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: census-log-${{ github.sha }}
+          path: census.log
+          if-no-files-found: error

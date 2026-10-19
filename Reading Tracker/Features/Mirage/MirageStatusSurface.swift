@@ -217,14 +217,16 @@ final class MirageStatusController: ObservableObject {
         guard await checkCancelled() == false else {
             return MirageAnalysisStatus(linkState: .checkCancelled, channel: .engineVerified)
         }
-        guard let engineDir = MirageAppImportMount.engineCheckoutDirectory() else {
+        guard let runtime = MirageRuntimeResolution.resolveRuntime() else {
             return MirageAnalysisStatus(
                 linkState: .unverifiable(
-                    reason: "the Mirage engine isn't set up on this Mac yet (dev gate MIRAGE_REAL_ENGINE_DIR)"),
+                    reason: "the Mirage engine isn't set up on this Mac yet (no bundled runtime; dev gate MIRAGE_REAL_ENGINE_DIR unset)"),
                 channel: .engineVerified)
         }
         do {
-            let session = try MirageAnalyzeSession(engineCheckout: engineDir)
+            let session = try MirageAnalyzeSession(
+                engineCheckout: runtime.engineRoot,
+                interpreterURL: runtime.interpreterURL)
             defer { Task { await session.shutdown() } }
             if await checkCancelled() {
                 return MirageAnalysisStatus(linkState: .checkCancelled, channel: .engineVerified)

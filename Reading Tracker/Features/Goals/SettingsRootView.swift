@@ -335,7 +335,7 @@ struct RSVPSettingsPane: View {
 
 struct MirageSettingsPane: View {
     @AppStorage(MirageSettings.enabledKey) private var isEnabled = true
-    @State private var engineAvailable = false
+    @State private var engineChannel: MirageRuntimeChannel?
 
     var body: some View {
         Form {
@@ -346,11 +346,8 @@ struct MirageSettingsPane: View {
             }
 
             Section("Engine availability") {
-                Label(engineAvailable
-                    ? "Engine found (development checkout)"
-                    : "Not available on this Mac yet — RT will bundle the engine in a future release.",
-                    systemImage: engineAvailable ? "checkmark.circle" : "info.circle")
-                    .foregroundColor(engineAvailable ? .green : .secondary)
+                Label(availabilityText, systemImage: availabilityIcon)
+                    .foregroundColor(engineChannel == nil ? .secondary : .green)
                 Text("Turning Mirage off deletes nothing: stored analyses and RT's link records stay exactly as they are.")
                     .font(.footnote)
                     .foregroundColor(.secondary)
@@ -358,10 +355,22 @@ struct MirageSettingsPane: View {
         }
         .formStyle(.grouped)
         .onAppear {
-            // Passive check only: the dev-gate existence test (no spawn, no
-            // process work — the availability probe stays side-effect-free).
-            engineAvailable = MirageAppImportMount.engineCheckoutDirectory() != nil
+            // Passive check only: the runtime ladder (no spawn, no process
+            // work — the availability probe stays side-effect-free).
+            engineChannel = MirageRuntimeResolution.resolveRuntime()?.channel
         }
+    }
+
+    private var availabilityText: String {
+        switch engineChannel {
+        case .bundled: return "Engine bundled in this build."
+        case .dev: return "Engine found (development checkout)."
+        case nil: return "Not available on this Mac yet — RT will bundle the engine in a future release."
+        }
+    }
+
+    private var availabilityIcon: String {
+        engineChannel == nil ? "info.circle" : "checkmark.circle"
     }
 }
 

@@ -32,7 +32,10 @@ final class MirageAnalyzeSession {
         try await acquire()
     }
 
-    init(engineCheckout: URL) throws {
+    /// PR-8 (ADR-3): the launcher takes the resolved runtime's interpreter.
+    /// `interpreterURL == nil` (dev channel) keeps the proven MiragePythonLocator
+    /// fallback; the bundled channel passes the verified `bin/python3.12`.
+    init(engineCheckout: URL, interpreterURL: URL? = nil) throws {
         // ADR-4 stratum directory — <Application Support>/ReadTracker is RT's
         // same data root (DataStore3:91-95); mirage/ inside it is Mirage-write
         // territory (ledger db + identity map + pid guard). RT creates the
@@ -44,10 +47,18 @@ final class MirageAnalyzeSession {
         var config = MirageProcessTransportConfig()
         config.bannerTimeout = 25 // import requests wait on real engine work
         config.responseTimeout = 25
+        // PR-8 (ADR-3): the bundled channel passes its verified interpreter;
+        // the dev channel keeps the proven locator resolution at spawn time.
+        let pythonURL: URL
+        if let interpreterURL {
+            pythonURL = interpreterURL
+        } else {
+            pythonURL = try MiragePythonLocator.shared.executableURL()
+        }
         supervisor = MirageSidecarSupervisor(
             configuration: .init(
                 launcher: MirageProcessLauncher(
-                    executableURL: try MiragePythonLocator.shared.executableURL(),
+                    executableURL: pythonURL,
                     arguments: [engineCheckout.path + "/examples/mirage_sidecar.py",
                                 base.appendingPathComponent("mirage.sqlite3").path]),
                 pidFileURL: base.appendingPathComponent("guard.pid"),

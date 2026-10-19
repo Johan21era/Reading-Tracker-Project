@@ -124,16 +124,19 @@ struct MirageAnalysisSheet: View {
         // PR-7: the settings toggle gates the flow itself (defense in depth —
         // the disabled state's UI already replaces the start button).
         guard MirageSettings.isEnabled else { return }
-        // DEV-OPT-IN engine policy until ADR-3 / PR-8 replaces it.
-        guard let engineDir = MirageAppImportMount.engineCheckoutDirectory() else {
+        // PR-8 (ADR-3): the runtime ladder — bundled runtime first, then the
+        // dev gate, else the honest unavailable copy.
+        guard let runtime = MirageRuntimeResolution.resolveRuntime() else {
             status = .done(.sidecarUnavailable(
-                reason: "MIRAGE_REAL_ENGINE_DIR engine checkout not provided"))
+                reason: "the Mirage engine isn't set up on this Mac yet (no bundled runtime; dev gate MIRAGE_REAL_ENGINE_DIR unset)"))
             return
         }
         let bookSnapshot = book
         let source = MirageAppImportMount.importSource(for: bookSnapshot)
         do {
-            let session = try MirageAnalyzeSession(engineCheckout: engineDir)
+            let session = try MirageAnalyzeSession(
+                engineCheckout: runtime.engineRoot,
+                interpreterURL: runtime.interpreterURL)
             liveSession = session
             status = .running
             let outcome = await session.performImport(

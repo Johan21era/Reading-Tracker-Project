@@ -90,11 +90,36 @@ it produced tonight's artifact — but the four-revert ladder itself is only 1/4
 - Census grep gate (PR-6): Features/Reader carries Mirage references ONLY in
   `EPUBReaderScreen.swift`.
 
+## R6 — Packaged-runtime staging + spawn-from-bundle (PR-8 / ADR-3, executed live)
+
+- **Executed tonight:** `scripts/stage-mirage-runtime.sh` ran end-to-end — pinned
+  python-build-standalone fetch (sha256 `5a9cdbb8…a875` recorded as the script's refusal
+  pin), interpreter 3.12.7, engine tree copied VERBATIM at the pinned SHA
+  (`81422613610701d81956394d9601bcb61e2938e9`), 47 MB bundle laid out with
+  `RUNTIME-MANIFEST.json` checksums. Spawn smoke FROM the bundle, self-hosted with the
+  bundle's own `bin/python3.12` driving the probe: banner `ready`, `version` and
+  `books_list` exchanged, clean SIGTERM teardown (`exit -15` = terminated by design).
+- **Fixture-fidelity note:** the sidecar bootstraps `sys.path` at `<script>/../src`
+  (pinned `mirage_sidecar.py:22-23`), so the bundle reproduces the engine's OWN src
+  layout (`src/miragev10/`) — the sidecar file stays byte-verbatim (never mutated).
+- **Runtime-swap rehearsal procedure (recorded; executes once a second staged runtime
+  exists):** stage the new bundle to a temp root → `mv` old→`.previous`, `mv` new→live
+  (atomic on the same volume) → re-run the spawn smoke → default census → either
+  confirm the swap or `mv` back. The app never mutates bundle contents except the
+  whole-directory replacement (ADR-3 Decision 6).
+- **App-embed status (honest):** the bundle is staging-root-proven tonight; embedding
+  into a built `.app` (Resources/mirage-runtime + codesign of the piece + the locator's
+  bundled channel consuming `Bundle.main`) is exercised by the CI run or an operator
+  stage-into-app step — pending the owner's Actions toggle (ADR-3's machine-side-only
+  prerequisite). The locator ladder + manifest verification are census-pinned already.
+
 ## Open items for the §15 ladder
 
 1. R1 remaining rollbacks (PR-7/PR-5/PR-4 target-states) — scheduled per PR close.
 2. Real-engine kill-staging R2 variants under the single-lifecycle harness — scheduled.
-3. S15-ES-4 operational handoff bundle — drafted with PR-8 (it needs the packaged-runtime
-   shape for the "disable the feature / recover from failed start" rows to be final).
+3. S15-ES-4 operational handoff bundle — PR-8 adds the runtime rows (staged/verified/
+   manifest paths); final assembly once CI publishes its first receipt.
 4. Content-level restore on a SEEDED ledger via the engine CLI once a backup surface exists
    (or a one-off engine-side operator run) — scheduled with the gap's owner decision.
+5. R6's live runtime-swap execution — when a second staged runtime exists (procedure above).
+
