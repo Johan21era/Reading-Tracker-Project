@@ -5,7 +5,7 @@ Per §19: the bundle ships the completed integration's evidence, user data exclu
 
 | §19 item | In-repo evidence | Location |
 |---|---|---|
-| Architecture ADRs | ADR-2 transport · ADR-3 packaging · ADR-4 stratum · ADR-5 identity · ADR-6 feature lifecycle · ADR-6a NEW-DE-5 discharge · ADR-7 spoiler cursor (+Annex A/S10-ES-3) | `docs/integration/adr/` |
+| Architecture ADRs | ADR-2 transport · ADR-3 packaging · ADR-4 stratum · ADR-5 identity · ADR-6 feature lifecycle · ADR-6a NEW-DE-5 discharge · ADR-7 spoiler cursor (+Annex A/S10-ES-3) · ADR-8 repository strategy · ADR-12 TiB charter (draft) | `docs/integration/adr/` |
 | Protocol schema | Mirage protocol extraction (28-action register, wire shapes, framing) | `docs/integration/phase1/mirage-protocol-extraction.md` |
 | Source-revision inventory | Engine pinned SHA `81422613610701d81956394d9601bcb61e2938e9` + RT ladder commits `0842b2b`→`0aa4ed8` | merge log M-014…M-028 + `RUNTIME-MANIFEST.json` (staged bundle) |
 | Baseline build/test logs | Per-PR census receipts; standing default census **191/0/4**; receipts referenced in every M-row; full xctest logs = CI artifacts once Actions toggled | merge-log rows; `.github/workflows/census.yml` |

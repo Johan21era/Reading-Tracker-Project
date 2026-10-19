@@ -56,9 +56,9 @@ is the campaign of record.
 
 ## Repository governance
 
-- [x] Strategy documented — §20 item 12's decision record + ADR-3; original repos recoverable (Mirage checkout untouched at pinned SHA; RT history intact).
+- [x] Strategy documented — ADR-8 (two canonical repositories, one verified vendored copy) + ADR-3; original repos recoverable (Mirage checkout untouched at pinned SHA; RT history intact).
 - [x] No implicit archive/deletion — all deletions were owner-countersigned Class Δ (OPE-001, with archived list).
-- [x] Migration refs/history — no repo-migration executed (none required by the ladder; consolidation decision record stands as §20 item 12's pending owner item).
+- [x] Migration refs/history — no repo-migration executed (none required by the ladder; ADR-8 records the strategy, and any future consolidation is its own owner ADR per §16/§17.1).
 - [x] Canonical location — communicated at session close (push authorization round).
 
 ## Honest deltas (not acceptance-blocking, ledgered)
