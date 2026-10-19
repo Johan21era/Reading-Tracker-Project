@@ -1,77 +1,98 @@
 # 07 · Testing Strategy
 
-Companion to AUDIT_REPORT and TECH_DEBT. Where those documents describe what's wrong, this describes what to build so the same classes of bug get caught automatically next time, rather than by another full manual audit pass.
+## What this document is
 
-## Step zero: make the test target real
+This describes **what to build so the same classes of bug get caught automatically next time**, rather than by another full manual audit pass. Where other documents describe what is wrong, this describes how to prevent it from happening again.
 
-Every recommendation below is moot until Audit §6.1 / Tech Debt D3 is fixed: **`Reading TrackerTests` currently runs exactly one empty placeholder test.** Before writing a single new test, either:
-- Add `WeatherKitService2.swift`'s three existing suites to the `Reading TrackerTests` synchronized folder (converting `XCTestCase`/`XCTAssert*` to `Testing`/`@Test`/`#expect` for consistency with the stub file already there), or
-- Give the test target explicit Sources membership and confirm `XCTest.framework` is actually linked for it.
+**Who should read this:** Anyone who wants to write tests for the project, or understand how the project guards itself against regressions.
 
-Either way, confirm with a deliberately-failing assertion that `⌘U` / `xcodebuild test` actually reports a failure — right now there's no evidence that path has ever been exercised, so it's worth not assuming it works even after the fix.
+**Status:** Current as of the October 2026 RT–Mirage merge close. The audit-era "step zero" (the test target running one placeholder) was resolved long ago: the suite is now real, wide, and enforced at every work boundary.
 
-## Testing pyramid for this app
+---
 
-```
-        /  UI/Flow tests  \        Few — launch, import, delete, session lifecycle end-to-end
-       /  Integration tests \      Some — DataStore read/write round-trips, Achievement→toast queue, SQLite store
-      /     Unit tests        \    Many — pure functions: AnalyticsEngine, EstimationEngine, AchievementEngine, DifficultyAnalyzer, date math
-```
-This codebase is unusually well-suited to a unit-heavy pyramid: most of the highest-risk logic (`AnalyticsEngine`, `EstimationEngine`, `AchievementEngine2`, `DataIntegrityValidator`, `WeatherAnalysisEngine`) is already written as pure `enum`-namespaced static functions or side-effect-free structs with no SwiftUI or persistence dependency — exactly the shape that's cheap to unit test and currently has close to zero coverage actually running.
+## The test landscape today
 
-## What to cover, mapped to what's actually risky here
+| | |
+|---|---|
+| **Framework** | Swift Testing — `@Suite` / `@Test` / `#expect` (the project standardized after converting the original XCTest suites) |
+| **Scale** | 34 test files · 192 `@Test` functions |
+| **Standing census** | **191 passed / 0 failed / 4 skipped** — the default, ungated census of every ordinary run |
+| **The 4 skips** | Three Mirage suites whose real-engine gates are deliberately unset in ordinary runs (identity import, sidecar smoke, boot diagnostic) + one disabled-by-design case |
+| **Census discipline** | Every fixing session opens and closes on a green census; canonical numbers come from `xcrun xcresulttool get test-results summary --path <.xcresult>` — never from eyeballing the console |
 
-| Area | Test type | Why (ties to audit finding) |
+---
+
+## House conventions (pinned by practice)
+
+1. **Harness-shared helpers live at the tests root** — e.g. `MirageStubSidecarSupport.swift` (temp-dir factory, scripted-transport double). A transport double that runs `#expect` inside the double is an accepted, precedented pattern.
+2. **Suites serialize with `.serialized`** — tests that touch process machinery or shared singletons run one-at-a-time inside their suite.
+3. **Runtime `Skip` is not supported by the runtime — use `.enabled(if:)`** for conditional suites. That is why the four "skipped" census cases appear as skips: the gating is compile-time metadata, not a throw.
+4. **Test-runner `print()` output lands in the xcresult, not in the xcodebuild console.** To capture diagnostics, read them from the `.xcresult` bundle or write to a file.
+5. **Never pass `-derivedDataPath` on a Desktop/iCloud-synced checkout.** The iCloud File Provider stamp (`com.apple.fileprovider.fpfs#P`) on the derived-data tree breaks code signing outright (BUG-003). `.rt-dd` debris was deleted; default DerivedData is the standing rule — including in worktrees built outside the synced tree.
+6. **Green census at every PR boundary** — one green default census per commit unit; at least one named suite per defect class.
+
+---
+
+## The Mirage integration band (added by the merge campaign)
+
+The Mirage surface is tested as bands, mirroring the boundary's enforcement rules (`docs/integration/` is the campaign of record; the playbook's census receipts tie to these):
+
+| Band | Suites | What they pin |
 |---|---|---|
-| `DataStore.save()` / `loadBooks()` failure paths | Unit + integration | D1 — inject a `FileManager` that fails writes; assert the new failure-surfacing property gets set, not just `print()`-ed |
-| `deleteItems` / multi-index removal | Unit | §2.1 — feed a multi-index `IndexSet` and assert the correct book IDs are removed, not index-shifted ones |
-| Achievement toast queue | Unit | §2.2 — assert two simultaneously-earned achievements both eventually surface, and that a mid-toast arrival doesn't get dropped |
-| `BehaviorContextAccessKit.startMonitoring`/`stopMonitoring` | Integration | §4.1 — assert observer count doesn't grow across repeated start/stop cycles (this is exactly the kind of bug a "call stop→start 50 times, assert no duplicate notifications" test catches immediately) |
-| `AnalyticsPeriod.dateRange` / `.previousPeriod` | Unit, parameterized by `Calendar` | §5.1 — run the existing logic against a Hebrew or Japanese `Calendar` explicitly, not just `.current` on the test machine, to catch the force-unwrap risk in CI regardless of the CI runner's locale |
-| `WeatherSnapshotStore` round-trip | Integration (already written, just not running) | §6.1 |
-| `DataIntegrityValidator.validate` | Unit | D1/§3.3 — assert `hasUnrepairableErrors` is both computed correctly *and* actually changes `loadBooks()`'s behavior once that's wired up |
-| `NewYearCelebrationOverlay` timer chain | Unit (with a controllable clock/scheduler, not real `Timer`) | §8.1 — inject a fake timer source so tests can force the "disappear mid-phase-transition" race deterministically instead of relying on real 1.5–10s timing windows |
+| **Wire conformance** | `MirageWire*Tests`-family | Every NDJSON shape — request lines, envelopes, malformed-line refusals, protocol version gates |
+| **Process lifecycle** | `MirageSidecarLifecycleTests` | Spawn → banner → exchange → teardown; EOF/timeout/reap; SIGTERM→SIGKILL escalation; foreign-guard pid files |
+| **Identity & drift** | `MirageIdentity*Tests` | Entry birth only from validated receipts; superseded-orphan transitions; crash-atomic writes; fail-closed on unknown schema |
+| **Spoiler contract** | `MirageSpoilerProbeTests`, `MirageCursorContractTests` | Fail-closed refusal codes (`CURSOR-MISSING`, `SPOILER-CURSOR-UNVERIFIED`, `SPOILER-PROBE-REJECTED`); no unverified cursor is ever produced |
+| **Feature lifecycle** | `MirageFeatureLifecycleTests` | One switch, disable-spawns-nothing, **disable-deletes-nothing (byte-identical)** |
+| **Page-turn isolation** | `MiragePageTurnNonTriggerTests` | Reader navigation carries no Mirage machinery; analysis is gesture-only |
+| **Bundled runtime** | `MirageBundledRuntimeTests` | Manifest strict decode, SHA-256 tamper refusals, the locator ladder (bundled → dev gate → nothing) |
+| **Opt-in real-engine** | `MirageIdentityRealEngineImportTests`, `MirageRealEngineProxy…`, `MirageZBootDiagnosticTests` | The actual Python engine, spawned live for ONE lifecycle: real identity receipt, detail-free status, version/inventory exchange |
 
-**Skip:** `Book`/`Chapter`/`ReadingSession` model `Codable` conformance (auto-synthesized, low-value to hand-test), SwiftUI view layout code, the Developer Console (debug-only, not user-facing).
+### Engaging the opt-in suites
 
-## Example test cases
+```bash
+# Real engine, one lifecycle, the proven dev channel:
+TEST_RUNNER_MIRAGE_REAL_ENGINE_DIR=/path/to/MirageV1.0 \
+xcodebuild test … -only-testing:"Reading TrackerTests/MirageIdentityRealEngineImportTests"
 
-A few concrete ones, written against what the code actually looks like today, to make "add tests for this" less abstract:
+# The standing M-027 boundary probe (only when deliberately hunting the machinery boundary):
+TEST_RUNNER_MIRAGE_REAL_ENGINE_DIR=/path/to/MirageV1.0 \
+TEST_RUNNER_MIRAGE_BOOT_DIAGNOSTIC=1 \
+xcodebuild test … -only-testing:"Reading TrackerTests/MirageZBootDiagnosticTests"
+```
+
+`-only-testing` matches Swift Testing type identifiers. The boot diagnostic uses the **disposable-data** path plus `MIRAGE_BOOT_DIAGNOSTIC=1`; the single-lifecycle doctrine holds even under it.
+
+### Standing Mirage doctrine (same rules the code enforces)
+
+- Entries are born **only** from validated `import_epub` receipts — a test may not invent a mapping.
+- The engine's spawn contract is `<interpreter> <engine>/examples/mirage_sidecar.py <ledger>` on a disposable ledger; the real ledger is never touched by tests.
+- The packaged runtime bundle must verify byte-verbatim: no test mutates the staged bundle except the whole-directory swap rehearsal.
+
+---
+
+## What to cover, mapped to what's risky
+
+The original audit-era table earned its keep: the risky classes it listed (persistence failure paths, multi-index deletes, toast FIFO, calendar math, observer lifecycle, SQLite transactions, celebration timers) are now all **covered and pinned by named suites** — that is what the census is made of. The current frontier of coverage:
+
+1. **Mirage-era deltas (ledgered, not blocking):** a dedicated Mirage performance-budget report (spawn latency is measured; per-exchange paths have no standing regression budget); large-library soak beyond fixtures.
+2. **RSVP edge conditions:** the feature ships (P5-B2); its tokenizer and pacing engine have production paths but only partial direct pins — worth a tokenizer-matrix suite before any format overhaul.
+3. **Weather honesty (NEW-DE-7/8):** the missing coverage is the honesty behavior itself — coverage ratio and locale fallback are product decisions still pending, so their tests wait on the decision.
+4. **BCE Phase-2:** dormant by product decision; its activation must arrive with its own band (see the register) or the scaffold must go.
+
+---
+
+## Example: the shape of a pin in this repo
 
 ```swift
-// Regression test for Audit §2.1 — deleteItems index-shift bug
-@Test func deletingMultipleBooksRemovesCorrectOnes() {
-    let store = DataStore(inMemory: true) // or however the store is made test-injectable
-    let books = (0..<6).map { Book.mock(title: "Book \($0)") }
-    books.forEach(store.addBook)
-    let toDelete = IndexSet([2, 5])
-    // exercise the same logic ContentView.deleteItems uses
-    let idsToDelete = Set(toDelete.map { store.books[$0].id })
-    idsToDelete.forEach { store.removeBook(id: $0) }
-    #expect(store.books.count == 4)
-    #expect(store.books.map(\.title).sorted() == ["Book 0", "Book 1", "Book 3", "Book 4"])
-}
-
-// Regression test for Audit §4.1 — observer duplication across start/stop cycles
-@Test func repeatedStartStopDoesNotDuplicateScreenLockObservers() async {
-    let kit = BehaviorContextAccessKit()
-    for _ in 0..<10 { kit.startMonitoring(); kit.stopMonitoring() }
-    NotificationCenter... // post a synthetic com.apple.screenIsLocked and assert recordEvent fires exactly once, not 10x
-}
-
-// Regression test for Audit §3.3 — unrepairable errors shouldn't get silently resaved
-@Test func unrepairableCorruptionIsNotSilentlyPersisted() {
-    let corrupted = [Book.mock(withInvalidPageRange: true)]
-    let (repaired, report) = DataIntegrityValidator.validate(corrupted)
-    #expect(report.hasUnrepairableErrors == true)
-    // once loadBooks() is fixed to check this flag: assert save() was NOT called / .bak was preserved
+// From the merge campaign — the disable-deletes-nothing pin:
+@Suite("Mirage Feature Lifecycle", .serialized)
+struct MirageFeatureLifecycleTests {
+    @Test func disablingMirageDeletesNothing() throws {
+        // Seed the stratum, toggle mirage.enabled OFF,
+        // assert every stored byte is identical across the toggle.
+    }
 }
 ```
 
-## Coverage gaps to close, roughly in priority order
-
-1. **Zero running tests today** for anything (Step zero above) — this is the actual current state, not "low coverage."
-2. **Persistence failure paths** — no test anywhere exercises a failed write, a failed directory creation, or a corrupted-but-decodable file with unrepairable content.
-3. **Concurrency/lifecycle** — nothing tests repeated start/stop, repeated appear/disappear, or rapid double-invocation of anything (`startReading` re-entry, `spawnParticles` re-entry). These are exactly the categories this audit's methodology found real bugs in by inspection; they're also the categories unit tests catch cheaply and permanently once written.
-4. **Calendar/locale edge cases** — nothing pins `AnalyticsEngine` behavior against a non-Gregorian calendar, so a regression here would currently only surface as a field crash report from an affected user, not a CI failure.
-5. **The Environment Engine / Spatial Library / Progressive Filtering systems** have no tests at all yet — reasonable given they're not wired in (Audit §1.1), but worth building alongside the Part 12 wiring work rather than after, especially for `AdaptiveLayoutTier`'s boundary logic and the `NewYearCelebrationOverlay` timer chain (§8.1), which is exactly the kind of narrow-timing-window bug that's far cheaper to catch with a fake clock in a unit test than by manual QA.
+When you add a pin, name it after the defect or the contract it guards so the suite reads like the defect history — the standing examples are `TextExtractionTests` ↔ F-03, `NonGregorianCalendarTests` ↔ F-01, `CelebrationTimelineTests` ↔ F-02, `SentinelPinsTests` ↔ S1/S5, and the Mirage band ↔ the merge playbook's census receipts.

@@ -1,68 +1,88 @@
 # 04 · Handoff
 
-Plain-language answers, per the project's close-out contract.
-*Session of record: Oct 17, 2026 — deep-audit + documentation-reorganization session (no code fixes).*
+## Plain-language answers
+
+This document answers the seven questions every close-out should answer, in plain language. It is written so that anyone — whether or not they have ever written code — can pick up the project and know exactly where things stand.
+
+**Refreshed 2026-10-19: the RT–Mirage merge campaign is closed** — this handoff now covers the integration era plus the standing remediation plan.
+
+---
 
 ## What was I doing?
-A top-to-bottom machine audit of the entire project (fresh build + full unit suite executed live,
-+ clean TEST SUCCEEDED), then the documentation housekeeping it surfaced: committing the 44-day-old
-one-line freeze fix that was still only in the working tree, reorganizing every doc into a clean
-`docs/` tree, merging the October findings into the defect register, and rewriting the README as a
-full project report.
+
+First, the October audit era (already closed: verifying, fixing the freeze saga, and re-documenting the app — see the previous edition of this file in git history for that close-out).
+
+Then, the **RT–Mirage merge campaign** (Oct 2026): integrating a separately-owned analysis engine ("Mirage") into Reading Tracker behind a typed, guarded boundary — eight terraced PRs (`PR-1`…`PR-8`) under a governing playbook, each closed on a green census, ending with an owner signing round and the opening of the post-merge "Titanium Bridge" era.
+
+---
 
 ## Why?
-Three reasons. (1) The Sep-2 fix for the Winter-Romantic freeze — the single most important line in
-the repo — had sat uncommitted since Sep 2; that was the riskiest state in the project. (2) The root
-had accumulated 15 loose markdown/text/PDF artifacts with no structure, so any future AI session had
-to re-discover the map every time. (3) The README was two stale lines; nobody could tell what the
-project actually was from it.
 
-## What did I end up doing, and how?
-1. **Verifier-first audit** → `docs/audits/08-deep-audit.md`: build exit 0, unit target
-   TEST SUCCEEDED, LOC validated by direct counting (100 app files / 39,900 raw / 28,697 code;
-   18 test files / 2,763 / 108 tests), git forensics incl. the freeze-sample provenance, 4 parallel
-   cluster deep-reads, 13 new defect-class items (NEW-DE-1…13), release readiness blockers, effort
-   and scale estimates, strengths/weaknesses/risk register, and the BCE "needs more data" mystery
-   closed from code (trigger-driven: analyze() only fires on a live session close; synthetic
-   profiles generate zero NSWorkspace evidence — the profiles themselves are innocent).
-2. **Committed the pending fix** as its own commit: "HOTFIX (final, profiler-proven): Developer
-   Console window provides DataStore" (355d68e) — one line on the console Window scene.
-3. **Reorganized the docs**: `docs/registers/` (CURRENT_AUDIT · fix-log · handoff — living truth),
-   `docs/roadmap/` (REMEDIATION_ROADMAP · rsvp plan), `docs/method/` (testing strategy),
-   `docs/history/` (FINAL_TRACES · profilerfix · LAST_DEFEAT · freeze.txt ·
-   diagnostics-2026-08-26.txt), `docs/audits/` (this audit), `docs/01-project-tree.md`
-   (regenerated). `UI REVIEW.rtf` deleted (its content shipped as P7 and lives in fix-log).
-4. **Merged redundant records**: October findings are incorporated in CURRENT_AUDIT Appendix D
-   by reference (no duplication); the entry blockquote at the top of CURRENT_AUDIT points to it.
-5. **Rewrote `README.md`** as the authoritative project report (replace-everything).
-6. **Refreshed graphify** against the reorganized tree (graph.json + GRAPH_REPORT + manifest,
-   old date-stamped snapshots pruned; `graphify-out/` stays gitignored, so it is not committed).
+1. **A capability, not a rewrite:** Mirage analyzes EPUB books (chapter analysis, provenance, spoiler-safety) as a *companion* engine — RT stays the parent app, its library and store untouched.
+2. **Safety first, capability second:** the campaign's whole doctrine (ownership strata, fail-closed refusals, receipt-born entries, one-lifecycle-per-gesture) exists so the integration can never silently corrupt either side's data.
+3. **A signed ending, not a drifting one:** every step was receipted; the ladder ends with an owner-signed acceptance, so the merge state is *evidenced*, not assumed.
 
-## Overarching goal?
-Unchanged: an app that can be trusted with years of reading history — and now, with a repo whose
-paper trail matches the quality of its code.
+---
 
-## What needs to happen next?
-Punch list, in the audit's recommended order (details + estimates in the README):
-1. Commit-hygiene extras: none left — but keep committing at every boundary.
-2. Quick fixes (~2–4 h): NEW-DE-2 (spatial covers), NEW-DE-5 (onboarding bypass + goal clobber),
-   NEW-DE-4 (midnight cache staleness), NEW-DE-3 (crash-window duration), NEW-DE-1 (write ordering).
-3. Release blockers (~2–4 h + icon art): AppIcon art, WeatherKit entitlement, drop the empty
-   `CFBundleIdentifier` key, resolve the `ENABLE_USER_SELECTED_FILES=readonly` vs read-write
-   entitlement conflict; consider deployment target one step below 26.5.
-4. Weather honesty set (NEW-DE-7/8). 5. Dead-code sweep (~5.5–6.5 k LOC candidates; LibraryView.swift
-   deleted first). 6. Then the architectural tracks strictly per their blueprints: store split (#3) →
-   SQLite (#1) → Swift 6. 7. Product decision needed: BCE Phase-2 — the audit recommends DELETE
-   (~4.2 k LOC) unless a dedicated wiring arc is scheduled.
+## What did I end up doing?
 
-## What should the next AI or human know to start instantly?
-- Baseline: build exit 0, suite TEST SUCCEEDED (fresh, Oct 17), working tree clean, everything pushed.
-- Docs map: start at README.md; registers under docs/registers/; audit with full findings under
-  docs/audits/. The defect register's merge rule applies: fold NEW-DE fixes into
-  CURRENT_AUDIT Appendix D as they close.
-- Standing constraints from prior sessions all still hold: whole-file rewrites only for
-  BehaviorContextEngine2/BehavioralCategory; MainActor-default isolation means every background path
-  needs explicit `nonisolated`; suite green at every boundary; `sample <pid>` during a freeze before
-  any performance reasoning (10-profiler-fix.md is the proof).
-- The envelope: `docs/history/freeze.txt` + `docs/history/10-profiler-fix.md` are the canonical evidence
-  pair for the demo-profile freeze saga — keep them.
+| # | What | Evidence |
+|---|------|----------|
+| 1 | **PR-1…PR-3 — scaffolding + the typed wire + transport** | `docs/integration/merge-log.md` (M-014…) |
+| 2 | **PR-4 — sidecar lifecycle machinery + campaign BUG-stripe with externalized repro receipts** | `docs/integration/PR4-defect-analysis-2026-10-18.md` |
+| 3 | **PR-5 — identity map + one-book import + live real-engine identity proof** | same log + `PR5-execution-plan…` |
+| 4 | **PR-6 — spoiler-safe status surface + the gated cursor contract (ADR-7)** | same log (M-025/M-026) |
+| 5 | **PR-7 — feature lifecycle (one switch; disable-deletes-nothing, byte-proven) + the countersigned stub-file deletion + the boundary root-cause ladder** | same log (M-027) |
+| 6 | **PR-8 — the packaged runtime: pinned staging, verified manifest, locator ladder, clean-machine gate, CI workflow, self-hosted spawn smoke** | same log (M-028) |
+| 7 | **§18/§19/§15.4 — acceptance checklist, evidence bundle, operational handoff** + §22 founding docs (TiB charter + TB-M0 plan) | `docs/integration/final-acceptance-2026-10-18.md`, `evidence/`, `tib/` |
+| 8 | **Owner signing round + branch consolidation + the first TB-M0 observation receipts** | same log (M-032…M-034) |
+| 9 | **Post-merge documentation refresh** (this cleanup: README, project tree, testing strategy, registers, roadmap) | this commit |
+
+---
+
+## Overarching goal
+
+Unchanged at its core: an app that can be trusted with years of reading history — now extended three ways: (a) it features a cleanly-owned optional analysis engine, (b) its change process is receipt-driven end-to-end (the census at every boundary), and (c) the repo now carries its own governance documents (stub playbook register, ADRs) so future decisions are recorded, not guessed.
+
+---
+
+## What needs to happen next? (in order)
+
+| # | Item | Estimate | Details |
+|---|------|----------|---------|
+| 1 | **TB-M0 observation cadence (Mirage era)** | ~zero code | `scripts/tib/observe.py verify <stage-root>` daily for 7 consecutive days (day-one receipt already GREEN, plus an archived tamper-refusal drill); then the owner signs the M0 exit gate → TB-M1 opens. Re-staging is idempotent by pins, so a reclaimed temp dir is harmless — just re-run the staging script. |
+| 2 | **Verify the CI receipt stream** | minutes | Actions enabled on GitHub? (Owner setting.) Every push (including this one) triggers `census.yml`; first green run = the CI census receipt + can exercise the packaged-runtime embed path. |
+| 3 | **NEW-DE punch list (audit-era, all open)** | ~2–4 h | NEW-DE-2 → NEW-DE-5 → NEW-DE-4 → NEW-DE-3 → NEW-DE-1, per `02-defect-register.md` + README §5 |
+| 4 | **Release blockers** | ~2–4 h + art | AppIcon artwork, WeatherKit entitlement, empty `CFBundleIdentifier` key, `ENABLE_USER_SELECTED_FILES=readonly` conflict |
+| 5 | **Weather honesty set** | — | NEW-DE-7/8 |
+| 6 | **Dead-code sweep** | ~3–5 h | zero-caller scaffolding, verified call-site by call-site |
+| 7 | **Architectural tracks** | — | Store split (#3) → SQLite (#1) → Swift 6, per their blueprints |
+| 8 | **Product decision** | — | BCE Phase-2: wire (~15–25 h) or delete (~4.2k LOC); the audit recommends delete |
+
+Mirage-era deltas deliberately ledgered, not blocking: the perf-budget report, the backup-surface wire gap (engine-side duty, named owner), R1's remaining rollback rehearsals.
+
+---
+
+## What should the next person know to start instantly?
+
+**Baseline:** `xcodebuild build` exit 0; default census **191 passed / 0 failed / 4 skipped**; working tree clean after this refresh; everything pushed to GitHub. Canonical census numbers via `xcrun xcresulttool get test-results summary`.
+
+**Docs map:** start at `README.md` → `docs/registers/04-handoff.md` (this) → for anything Mirage, `docs/integration/` (the playbook is the law, the merge log is the history, the ADRs are the decisions).
+
+**Standing constraints** (union of the app era and the merge era):
+- Whole-file rewrites only for `BehaviorContextEngine2` and `BehavioralCategory`
+- `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` — every background path needs explicit `nonisolated`
+- Census green at every boundary; `-derivedDataPath` is forbidden on Desktop/iCloud checkouts (BUG-003)
+- **Mirage rules:** never unify the two stores; entries are born only from validated receipts; one sidecar lifecycle per gesture; the spoiler detail surfaces stay disabled until a verified calibration amendment (ADR-7, fail-closed)
+- During a freeze, run `sample <pid>` before reasoning about performance (`10-profiler-fix.md` is the proof)
+
+**The envelope(s):** `docs/history/freeze.txt` + `docs/history/10-profiler-fix.md` for the freeze saga; `docs/integration/` (playbook, merge log, rehearsal log, evidence) for the whole merge campaign — keep both.
+
+---
+
+## Related documents
+
+- `docs/registers/02-defect-register.md` — Everything known to be broken or risky (incl. the integration-era cross-reference block)
+- `docs/registers/03-fix-log.md` — Everything that has been fixed, with proof (Stage M covers the merge era by reference)
+- `docs/integration/RT_Mirage_Codebase_Merge_Playbook.md` — the merge-era constitution (§22 still executes the TiB era)
+- `docs/audits/08-deep-audit.md` — The full independent audit (Oct 2026)

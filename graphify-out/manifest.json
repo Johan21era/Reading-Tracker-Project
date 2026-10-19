@@ -1,0 +1,987 @@
+{
+  "Reading Tracker/Assets.xcassets/AccentColor.colorset/Contents.json": {
+    "mtime": 1781536529.4105368,
+    "ast_hash": "55019f7265dde0a78318b0807f98e847",
+    "semantic_hash": "55019f7265dde0a78318b0807f98e847"
+  },
+  "Reading Tracker/Assets.xcassets/AppIcon.appiconset/Contents.json": {
+    "mtime": 1781536530.673941,
+    "ast_hash": "312293803cc066cebe794885fe1ddcfe",
+    "semantic_hash": "312293803cc066cebe794885fe1ddcfe"
+  },
+  "Reading Tracker/Assets.xcassets/Contents.json": {
+    "mtime": 1781536529.4117656,
+    "ast_hash": "9deb2ada1cc834bbebf8bbad9c8978a1",
+    "semantic_hash": "9deb2ada1cc834bbebf8bbad9c8978a1"
+  },
+  "Reading Tracker/Core/Book2.swift": {
+    "mtime": 1787736362.374183,
+    "ast_hash": "2a82e0bc364d9734bbdca481effde00d",
+    "semantic_hash": "2a82e0bc364d9734bbdca481effde00d"
+  },
+  "Reading Tracker/Core/DataIntegrityValidator.swift": {
+    "mtime": 1792273692.2329867,
+    "ast_hash": "0a75240d405a6e6f640554bcf760624e",
+    "semantic_hash": "0a75240d405a6e6f640554bcf760624e"
+  },
+  "Reading Tracker/Core/DataStore3.swift": {
+    "mtime": 1792267528.327318,
+    "ast_hash": "949c1b14da910bbaf28a3ff9828e973d",
+    "semantic_hash": "949c1b14da910bbaf28a3ff9828e973d"
+  },
+  "Reading Tracker/Core/SharedTextUtilities.swift": {
+    "mtime": 1787535791.7022655,
+    "ast_hash": "c83f1766e18e4ebbbe7a793444711eab",
+    "semantic_hash": "c83f1766e18e4ebbbe7a793444711eab"
+  },
+  "Reading Tracker/Engines/AnalyticsEngine.swift": {
+    "mtime": 1792273692.233208,
+    "ast_hash": "5c295dc4a7f3c8a31313c11c9b6d21f6",
+    "semantic_hash": "5c295dc4a7f3c8a31313c11c9b6d21f6"
+  },
+  "Reading Tracker/Engines/DataMaturityEngine.swift": {
+    "mtime": 1792273692.2336485,
+    "ast_hash": "e9e26ceeca9b871b6c7c5ef05615ce13",
+    "semantic_hash": "e9e26ceeca9b871b6c7c5ef05615ce13"
+  },
+  "Reading Tracker/Engines/DataMaturityEngineAdapters.swift": {
+    "mtime": 1784000835.9007823,
+    "ast_hash": "c5c610a247f2257edc839cc0011e65c7",
+    "semantic_hash": "c5c610a247f2257edc839cc0011e65c7"
+  },
+  "Reading Tracker/Engines/EstimationEngine.swift": {
+    "mtime": 1792273692.2343035,
+    "ast_hash": "18fb667cdefbf237e9b5a79f1f8cc455",
+    "semantic_hash": "18fb667cdefbf237e9b5a79f1f8cc455"
+  },
+  "Reading Tracker/Features/Achievements/AchievementEngine2.swift": {
+    "mtime": 1787722832.598023,
+    "ast_hash": "e1e2995e243f3c9888f84ac62e80b2ec",
+    "semantic_hash": "e1e2995e243f3c9888f84ac62e80b2ec"
+  },
+  "Reading Tracker/Features/Achievements/AchievementPanel.swift": {
+    "mtime": 1784153454.9122698,
+    "ast_hash": "9e42711c54cfbeaa857eb2e674a1032e",
+    "semantic_hash": "9e42711c54cfbeaa857eb2e674a1032e"
+  },
+  "Reading Tracker/Features/Audio/AudioSnapshot.swift": {
+    "mtime": 1784153454.8137865,
+    "ast_hash": "99bae107caa788c215a3466be851962c",
+    "semantic_hash": "99bae107caa788c215a3466be851962c"
+  },
+  "Reading Tracker/Features/Audio/AudioTrackerMetadata2.swift": {
+    "mtime": 1784153454.8182678,
+    "ast_hash": "a29114367c3f0598321276bd9a0ae55c",
+    "semantic_hash": "a29114367c3f0598321276bd9a0ae55c"
+  },
+  "Reading Tracker/Features/Audio/MusicalAnalysisEngine.swift": {
+    "mtime": 1783846978.1893067,
+    "ast_hash": "31f3da27c18fcd30cc8aa59b88d88047",
+    "semantic_hash": "31f3da27c18fcd30cc8aa59b88d88047"
+  },
+  "Reading Tracker/Features/BehaviorContext/BehaviorContextEngine2.swift": {
+    "mtime": 1792267676.4693503,
+    "ast_hash": "9eca4b2ce65f113facf81b7bcb4cf961",
+    "semantic_hash": "9eca4b2ce65f113facf81b7bcb4cf961"
+  },
+  "Reading Tracker/Features/BehaviorContext/BehaviorEvidenceBuilder.swift": {
+    "mtime": 1784153454.7616737,
+    "ast_hash": "757afa7bea4923a7f701d8472c8f7c3c",
+    "semantic_hash": "757afa7bea4923a7f701d8472c8f7c3c"
+  },
+  "Reading Tracker/Features/BehaviorContext/BehavioralCategory.swift": {
+    "mtime": 1787536134.4311323,
+    "ast_hash": "7e66a43e3a4af94e699eb3ec1136c214",
+    "semantic_hash": "7e66a43e3a4af94e699eb3ec1136c214"
+  },
+  "Reading Tracker/Features/BehaviorContext/ContextInsightPanel.swift": {
+    "mtime": 1784153454.9615645,
+    "ast_hash": "8a1ccb74e08db4d2db4ec83db5f1f2fe",
+    "semantic_hash": "8a1ccb74e08db4d2db4ec83db5f1f2fe"
+  },
+  "Reading Tracker/Features/DeveloperConsole/DeveloperConsoleDashboardView.swift": {
+    "mtime": 1787470573.0270631,
+    "ast_hash": "a18781445a53128dfc58c157e288f40a",
+    "semantic_hash": "a18781445a53128dfc58c157e288f40a"
+  },
+  "Reading Tracker/Features/DeveloperConsole/DeveloperConsoleObservable.swift": {
+    "mtime": 1784143443.348904,
+    "ast_hash": "662bc4d269cbea946bf29af56e3abc4d",
+    "semantic_hash": "662bc4d269cbea946bf29af56e3abc4d"
+  },
+  "Reading Tracker/Features/DeveloperConsole/DeveloperConsoleRegistry.swift": {
+    "mtime": 1787476516.783772,
+    "ast_hash": "48736169199920a552381f41cc0ff65b",
+    "semantic_hash": "48736169199920a552381f41cc0ff65b"
+  },
+  "Reading Tracker/Features/DeveloperConsole/DeveloperConsoleRootView.swift": {
+    "mtime": 1787738912.811536,
+    "ast_hash": "97f372a606fe79ca54918a31520e4eea",
+    "semantic_hash": "97f372a606fe79ca54918a31520e4eea"
+  },
+  "Reading Tracker/Features/DeveloperConsole/DeveloperConsoleSystemMetrics.swift": {
+    "mtime": 1784143443.3662677,
+    "ast_hash": "06bdf2269a2ea09700c3aaa6b0483e84",
+    "semantic_hash": "06bdf2269a2ea09700c3aaa6b0483e84"
+  },
+  "Reading Tracker/Features/DeveloperConsole/DeveloperConsoleTypes.swift": {
+    "mtime": 1784143443.3258193,
+    "ast_hash": "4d1b9c9b66e3ba3f31bcd4d067689ec7",
+    "semantic_hash": "4d1b9c9b66e3ba3f31bcd4d067689ec7"
+  },
+  "Reading Tracker/Features/Discovery/BookDiscoveryView.swift": {
+    "mtime": 1787540457.8890145,
+    "ast_hash": "e581853379ae376314cec91b965e24c1",
+    "semantic_hash": "e581853379ae376314cec91b965e24c1"
+  },
+  "Reading Tracker/Features/Discovery/OnlineBook.swift": {
+    "mtime": 1784153454.9558287,
+    "ast_hash": "e52d3b0d2589ed70a1d4a06733d1e62d",
+    "semantic_hash": "e52d3b0d2589ed70a1d4a06733d1e62d"
+  },
+  "Reading Tracker/Features/Discovery/OnlineBookDetailView.swift": {
+    "mtime": 1784153454.7676291,
+    "ast_hash": "97033cf85c367c1e355437b1c0dbbfe8",
+    "semantic_hash": "97033cf85c367c1e355437b1c0dbbfe8"
+  },
+  "Reading Tracker/Features/Discovery/OnlineBookDiscoveryService.swift": {
+    "mtime": 1783846978.190519,
+    "ast_hash": "acf9a7ef02585e3f223dce150c7127c5",
+    "semantic_hash": "acf9a7ef02585e3f223dce150c7127c5"
+  },
+  "Reading Tracker/Features/Discovery/OnlineBookDiscoveryViewModel.swift": {
+    "mtime": 1783846978.1914623,
+    "ast_hash": "88a2a4070dc2532d38b4c70507ef6e67",
+    "semantic_hash": "88a2a4070dc2532d38b4c70507ef6e67"
+  },
+  "Reading Tracker/Features/Discovery/OnlineBookProvider.swift": {
+    "mtime": 1783846978.1917136,
+    "ast_hash": "176b3af917d390adc0dacb73ccca95fa",
+    "semantic_hash": "176b3af917d390adc0dacb73ccca95fa"
+  },
+  "Reading Tracker/Features/Discovery/OnlineBookRow.swift": {
+    "mtime": 1783846978.1918802,
+    "ast_hash": "a92b42c5b62086a650e20add0a7b16bc",
+    "semantic_hash": "a92b42c5b62086a650e20add0a7b16bc"
+  },
+  "Reading Tracker/Features/Discovery/Providers/GutenbergProvider.swift": {
+    "mtime": 1783846978.1882946,
+    "ast_hash": "a818d38d754ee0ad1424d8b3421b91ef",
+    "semantic_hash": "a818d38d754ee0ad1424d8b3421b91ef"
+  },
+  "Reading Tracker/Features/Discovery/Providers/OpenLibraryProvider.swift": {
+    "mtime": 1783846978.1922936,
+    "ast_hash": "c2d30f513feac26eb4d255614e61030d",
+    "semantic_hash": "c2d30f513feac26eb4d255614e61030d"
+  },
+  "Reading Tracker/Features/Environment/Engine/EnvironmentAnchorPeriod.swift": {
+    "mtime": 1784153454.8663557,
+    "ast_hash": "83c80fc8883db62828cc4e963dcbb132",
+    "semantic_hash": "83c80fc8883db62828cc4e963dcbb132"
+  },
+  "Reading Tracker/Features/Environment/Engine/EnvironmentColor.swift": {
+    "mtime": 1783846978.1863985,
+    "ast_hash": "c8d2c872559f8fb09e83bdfada6fca28",
+    "semantic_hash": "c8d2c872559f8fb09e83bdfada6fca28"
+  },
+  "Reading Tracker/Features/Environment/Engine/EnvironmentEngine2.swift": {
+    "mtime": 1787536790.5461464,
+    "ast_hash": "c5de876cc96b3b3206db8e4129d1a764",
+    "semantic_hash": "c5de876cc96b3b3206db8e4129d1a764"
+  },
+  "Reading Tracker/Features/Environment/Engine/EnvironmentMath.swift": {
+    "mtime": 1784153454.8090608,
+    "ast_hash": "8125708a9cdf26eb52697ce8f296992a",
+    "semantic_hash": "8125708a9cdf26eb52697ce8f296992a"
+  },
+  "Reading Tracker/Features/Environment/Engine/EnvironmentPalette.swift": {
+    "mtime": 1783846978.1870513,
+    "ast_hash": "8210f7522968a976ec172d4301815d38",
+    "semantic_hash": "8210f7522968a976ec172d4301815d38"
+  },
+  "Reading Tracker/Features/Environment/Engine/EnvironmentState.swift": {
+    "mtime": 1783846978.1873937,
+    "ast_hash": "888f60f5234f0b8e4aa5f9464646903c",
+    "semantic_hash": "888f60f5234f0b8e4aa5f9464646903c"
+  },
+  "Reading Tracker/Features/Environment/EnvironmentBackgroundView2.swift": {
+    "mtime": 1792267496.7862747,
+    "ast_hash": "94f62f3b0047f1808cbf2623815116ee",
+    "semantic_hash": "94f62f3b0047f1808cbf2623815116ee"
+  },
+  "Reading Tracker/Features/Environment/Stars/ShootingStar.swift": {
+    "mtime": 1784153454.8619666,
+    "ast_hash": "3ee034efb2a5fdb4a97d50d583716de6",
+    "semantic_hash": "3ee034efb2a5fdb4a97d50d583716de6"
+  },
+  "Reading Tracker/Features/Environment/Stars/ShootingStarManager.swift": {
+    "mtime": 1784153454.7368362,
+    "ast_hash": "3387184e1cb8065a956e9a63863b47ec",
+    "semantic_hash": "3387184e1cb8065a956e9a63863b47ec"
+  },
+  "Reading Tracker/Features/Environment/Stars/ShootingStarView.swift": {
+    "mtime": 1784153454.794344,
+    "ast_hash": "968e598b9aca80dc25be73dc4ef37400",
+    "semantic_hash": "968e598b9aca80dc25be73dc4ef37400"
+  },
+  "Reading Tracker/Features/Environment/Stars/Star.swift": {
+    "mtime": 1783846978.1992939,
+    "ast_hash": "e6422fbe38e3042499f94dab36af16c5",
+    "semantic_hash": "e6422fbe38e3042499f94dab36af16c5"
+  },
+  "Reading Tracker/Features/Environment/Stars/StarField.swift": {
+    "mtime": 1784153454.7984104,
+    "ast_hash": "3f34025c8cac3cfacd0fde829479b385",
+    "semantic_hash": "3f34025c8cac3cfacd0fde829479b385"
+  },
+  "Reading Tracker/Features/Environment/Stars/StarFieldView.swift": {
+    "mtime": 1784153454.9511647,
+    "ast_hash": "63e21874394a0e4bc81050566e3d661a",
+    "semantic_hash": "63e21874394a0e4bc81050566e3d661a"
+  },
+  "Reading Tracker/Features/Environment/Weather/WeatherAnalysisEngine.swift": {
+    "mtime": 1792273692.234614,
+    "ast_hash": "cead039f7f114380b4491aff078ddd97",
+    "semantic_hash": "cead039f7f114380b4491aff078ddd97"
+  },
+  "Reading Tracker/Features/Environment/Weather/WeatherEnvironmentModifier.swift": {
+    "mtime": 1784153454.8560154,
+    "ast_hash": "220e0e8588160bf84d2ec1a158fbafa7",
+    "semantic_hash": "220e0e8588160bf84d2ec1a158fbafa7"
+  },
+  "Reading Tracker/Features/Environment/Weather/WeatherInsightPanel2.swift": {
+    "mtime": 1792273692.2348526,
+    "ast_hash": "1985fccd25d7c32f7afebfaefe35780d",
+    "semantic_hash": "1985fccd25d7c32f7afebfaefe35780d"
+  },
+  "Reading Tracker/Features/Environment/Weather/WeatherKitService2.swift": {
+    "mtime": 1792273692.2352931,
+    "ast_hash": "cc0d25f61dc88084a87afe3e56c76859",
+    "semantic_hash": "cc0d25f61dc88084a87afe3e56c76859"
+  },
+  "Reading Tracker/Features/Goals/GoalsDashboard.swift": {
+    "mtime": 1784153454.8251019,
+    "ast_hash": "a1bb388cf3ae215ffc73005577b8d4cd",
+    "semantic_hash": "a1bb388cf3ae215ffc73005577b8d4cd"
+  },
+  "Reading Tracker/Features/Goals/ReadingGoalManager2.swift": {
+    "mtime": 1787741453.9954991,
+    "ast_hash": "13abf763372d0734758530a4125dc456",
+    "semantic_hash": "13abf763372d0734758530a4125dc456"
+  },
+  "Reading Tracker/Features/Insights/InsightEngine.swift": {
+    "mtime": 1787741472.9045177,
+    "ast_hash": "10215c14d4001ad8fd4b927bb0738625",
+    "semantic_hash": "10215c14d4001ad8fd4b927bb0738625"
+  },
+  "Reading Tracker/Features/Insights/ReadingInsightsDashboard.swift": {
+    "mtime": 1783846978.1976237,
+    "ast_hash": "3f4173e39fe7d632ad39c2309e580be4",
+    "semantic_hash": "3f4173e39fe7d632ad39c2309e580be4"
+  },
+  "Reading Tracker/Features/Library/BookImporter.swift": {
+    "mtime": 1792273692.2355146,
+    "ast_hash": "7ee2c6b37c5b3ef9e591e2f451980b84",
+    "semantic_hash": "7ee2c6b37c5b3ef9e591e2f451980b84"
+  },
+  "Reading Tracker/Features/Library/LibraryExplorerView2.swift": {
+    "mtime": 1784153454.9379706,
+    "ast_hash": "5f6a5a597c4ed2707b36b766c10bee2f",
+    "semantic_hash": "5f6a5a597c4ed2707b36b766c10bee2f"
+  },
+  "Reading Tracker/Features/Library/LibraryFilterSidebarView.swift": {
+    "mtime": 1783916463.3806276,
+    "ast_hash": "2a5423874c2489d17d2dc78ba00950a5",
+    "semantic_hash": "2a5423874c2489d17d2dc78ba00950a5"
+  },
+  "Reading Tracker/Features/Library/LibraryFilterState.swift": {
+    "mtime": 1783916463.3907964,
+    "ast_hash": "2ae32ec84f9a37c30b32da1dc799acfa",
+    "semantic_hash": "2ae32ec84f9a37c30b32da1dc799acfa"
+  },
+  "Reading Tracker/Features/Library/LibraryView.swift": {
+    "mtime": 1784000835.8430147,
+    "ast_hash": "fc4bd008b56d83cb9f44cc87c51e4b90",
+    "semantic_hash": "fc4bd008b56d83cb9f44cc87c51e4b90"
+  },
+  "Reading Tracker/Features/Library/Spatial/AdaptiveLayoutTier.swift": {
+    "mtime": 1783902171.030127,
+    "ast_hash": "8586487f2ed76f5bd2a4173ef72dbae3",
+    "semantic_hash": "8586487f2ed76f5bd2a4173ef72dbae3"
+  },
+  "Reading Tracker/Features/Library/Spatial/BookCoverCardView.swift": {
+    "mtime": 1784153454.7891963,
+    "ast_hash": "011365d43a7e316153b4fffc50c1133e",
+    "semantic_hash": "011365d43a7e316153b4fffc50c1133e"
+  },
+  "Reading Tracker/Features/Library/Spatial/BookVisualState.swift": {
+    "mtime": 1784153454.9333358,
+    "ast_hash": "bd3caf18a49888ad2a1c393961ef7e8a",
+    "semantic_hash": "bd3caf18a49888ad2a1c393961ef7e8a"
+  },
+  "Reading Tracker/Features/Library/Spatial/FloatingClusterView2.swift": {
+    "mtime": 1784153454.99248,
+    "ast_hash": "cd22acb29f4c1b4636ea1a1c133693d5",
+    "semantic_hash": "cd22acb29f4c1b4636ea1a1c133693d5"
+  },
+  "Reading Tracker/Features/Library/Spatial/ShallowPerspectiveView2.swift": {
+    "mtime": 1784153454.987987,
+    "ast_hash": "6ab3987ce737e6a8c10ed49134bb34c8",
+    "semantic_hash": "6ab3987ce737e6a8c10ed49134bb34c8"
+  },
+  "Reading Tracker/Features/Library/Spatial/SpatialLibraryView2.swift": {
+    "mtime": 1784153454.845295,
+    "ast_hash": "4d753602b3a1ac7fa83762d0f2b2a015",
+    "semantic_hash": "4d753602b3a1ac7fa83762d0f2b2a015"
+  },
+  "Reading Tracker/Features/Library/Spatial/SpatialNavigatorCard2.swift": {
+    "mtime": 1784153454.754772,
+    "ast_hash": "f2b9a9e53dc963fd8c696f15b221186d",
+    "semantic_hash": "f2b9a9e53dc963fd8c696f15b221186d"
+  },
+  "Reading Tracker/Features/Library/Spatial/SpatialNavigatorView2.swift": {
+    "mtime": 1784153454.840404,
+    "ast_hash": "d86591af3152257888a6eec78982416c",
+    "semantic_hash": "d86591af3152257888a6eec78982416c"
+  },
+  "Reading Tracker/Features/Notifications/IntelligentNotificationEngine.swift": {
+    "mtime": 1784000835.8338735,
+    "ast_hash": "cf0e6370d2c70d6ff41b4dda9284493d",
+    "semantic_hash": "cf0e6370d2c70d6ff41b4dda9284493d"
+  },
+  "Reading Tracker/Features/Notifications/NotificationScheduler2.swift": {
+    "mtime": 1784153454.7740047,
+    "ast_hash": "ace0fa45848f3a5463cebb66814c4204",
+    "semantic_hash": "ace0fa45848f3a5463cebb66814c4204"
+  },
+  "Reading Tracker/Features/Reader/EPUBPackage.swift": {
+    "mtime": 1784000835.806257,
+    "ast_hash": "fedf384b6036a65d0cada1142b1c530c",
+    "semantic_hash": "fedf384b6036a65d0cada1142b1c530c"
+  },
+  "Reading Tracker/Features/Reader/EPUBReaderScreen.swift": {
+    "mtime": 1792370040.5680778,
+    "ast_hash": "ccc196bcb80325c716a36030ac8b3942",
+    "semantic_hash": "ccc196bcb80325c716a36030ac8b3942"
+  },
+  "Reading Tracker/Features/Reader/PDFReaderView2.swift": {
+    "mtime": 1792273692.2358935,
+    "ast_hash": "6b59f551c999ed6cea2108922c006e1f",
+    "semantic_hash": "6b59f551c999ed6cea2108922c006e1f"
+  },
+  "Reading Tracker/Features/Recommendations/PredictiveRecommendationEngine.swift": {
+    "mtime": 1784000835.820375,
+    "ast_hash": "5a26ec5d0fb14dafc4788fa3dd1bd5f5",
+    "semantic_hash": "5a26ec5d0fb14dafc4788fa3dd1bd5f5"
+  },
+  "Reading Tracker/Features/Recommendations/RecommendationPanel2.swift": {
+    "mtime": 1784153454.9726431,
+    "ast_hash": "8513f19d57c22b201ddbb8fdc22b4c17",
+    "semantic_hash": "8513f19d57c22b201ddbb8fdc22b4c17"
+  },
+  "Reading Tracker/Features/Reports/AnnualReportArchiveView2.swift": {
+    "mtime": 1792273692.2361095,
+    "ast_hash": "41c994df96fdded5b9061dd6a298ed9e",
+    "semantic_hash": "41c994df96fdded5b9061dd6a298ed9e"
+  },
+  "Reading Tracker/Features/Reports/AnnualReportData2.swift": {
+    "mtime": 1792273692.2363021,
+    "ast_hash": "84ba3340baaba4049ee456bac9ba68de",
+    "semantic_hash": "84ba3340baaba4049ee456bac9ba68de"
+  },
+  "Reading Tracker/Features/Reports/AnnualReportView.swift": {
+    "mtime": 1787540430.7704606,
+    "ast_hash": "a87c8d2a1270c54da4b990ff55e0dd49",
+    "semantic_hash": "a87c8d2a1270c54da4b990ff55e0dd49"
+  },
+  "Reading Tracker/Features/Reports/NewYearTransitionMonitor.swift": {
+    "mtime": 1787541415.5828676,
+    "ast_hash": "c63ea782cf00f6152c2244378a5a1cf5",
+    "semantic_hash": "c63ea782cf00f6152c2244378a5a1cf5"
+  },
+  "Reading Tracker/Features/Sessions/SessionCoordinator2.swift": {
+    "mtime": 1784153454.982251,
+    "ast_hash": "d83a1583043c49a403af24802f59fe92",
+    "semantic_hash": "d83a1583043c49a403af24802f59fe92"
+  },
+  "Reading Tracker/Features/Sessions/SessionEventRouter2.swift": {
+    "mtime": 1792273692.2365906,
+    "ast_hash": "5816a2f76a9de7b3c1a01c3c5b46190c",
+    "semantic_hash": "5816a2f76a9de7b3c1a01c3c5b46190c"
+  },
+  "Reading Tracker/Features/Sessions/SessionHistoryView.swift": {
+    "mtime": 1784000835.8852608,
+    "ast_hash": "14391410f025ed87e892643ec7ea6ca3",
+    "semantic_hash": "14391410f025ed87e892643ec7ea6ca3"
+  },
+  "Reading Tracker/NewContentView.swift": {
+    "mtime": 1792273692.2367966,
+    "ast_hash": "e2ec1ee34394968773b2496fb52cae1e",
+    "semantic_hash": "e2ec1ee34394968773b2496fb52cae1e"
+  },
+  "Reading Tracker/ReadingTrackerApp 2.swift": {
+    "mtime": 1792263838.858059,
+    "ast_hash": "7a89358cf31c64111d3b7e05f40f1d42",
+    "semantic_hash": "7a89358cf31c64111d3b7e05f40f1d42"
+  },
+  "Reading TrackerTests/Reading_TrackerTests.swift": {
+    "mtime": 1783846978.1958132,
+    "ast_hash": "ecc55fcbaae509693cb2940a9b16f761",
+    "semantic_hash": "ecc55fcbaae509693cb2940a9b16f761"
+  },
+  "Reading TrackerTests/ReliabilityTests.swift": {
+    "mtime": 1787536154.0480046,
+    "ast_hash": "d0db299d772626631df435dcce24d5e9",
+    "semantic_hash": "d0db299d772626631df435dcce24d5e9"
+  },
+  "Reading TrackerTests/WeatherTests.swift": {
+    "mtime": 1787477052.2736335,
+    "ast_hash": "886c270015ced66aaa9e7fdec25a4ada",
+    "semantic_hash": "886c270015ced66aaa9e7fdec25a4ada"
+  },
+  "Reading TrackerUITests/Reading_TrackerUITests.swift": {
+    "mtime": 1784320090.5379715,
+    "ast_hash": "0d488ad5d8c8acdf5df83d3f4c490613",
+    "semantic_hash": "0d488ad5d8c8acdf5df83d3f4c490613"
+  },
+  "Reading TrackerUITests/Reading_TrackerUITestsLaunchTests.swift": {
+    "mtime": 1783846978.196848,
+    "ast_hash": "56f1d25171f5c6c3baba51ac7f01c3ab",
+    "semantic_hash": "56f1d25171f5c6c3baba51ac7f01c3ab"
+  },
+  "Reading TrackerTests/CelebrationTimelineTests.swift": {
+    "mtime": 1787536327.2091694,
+    "ast_hash": "d85ed3f1b1faea32dfc5948f72edcbb9",
+    "semantic_hash": "d85ed3f1b1faea32dfc5948f72edcbb9"
+  },
+  "Reading TrackerTests/NonGregorianCalendarTests.swift": {
+    "mtime": 1787535729.5176404,
+    "ast_hash": "2d5dcc6f9b9ff1e3bda8137b232b5414",
+    "semantic_hash": "2d5dcc6f9b9ff1e3bda8137b232b5414"
+  },
+  "Reading TrackerTests/SchemaEvolutionTests.swift": {
+    "mtime": 1787536022.9758284,
+    "ast_hash": "ee8bcf52a23c78d9470c3444606f6595",
+    "semantic_hash": "ee8bcf52a23c78d9470c3444606f6595"
+  },
+  "Reading TrackerTests/TextExtractionTests.swift": {
+    "mtime": 1787535818.2025785,
+    "ast_hash": "83ead2d26a77c92095d3a1cd0c0d82e7",
+    "semantic_hash": "83ead2d26a77c92095d3a1cd0c0d82e7"
+  },
+  "README.md": {
+    "mtime": 1792375834.3662515,
+    "ast_hash": "270530ce54511ca3f764be4cdf893098",
+    "semantic_hash": "270530ce54511ca3f764be4cdf893098"
+  },
+  "Reading TrackerTests/EnvironmentEngineTests.swift": {
+    "mtime": 1787536913.1037931,
+    "ast_hash": "b2d031cb7543b512c7beaec62b705d62",
+    "semantic_hash": "b2d031cb7543b512c7beaec62b705d62"
+  },
+  "Reading TrackerTests/FatigueAnalyzerTests.swift": {
+    "mtime": 1787537595.6455822,
+    "ast_hash": "01858d3f4f91b71c428aab1946f6c2f8",
+    "semantic_hash": "01858d3f4f91b71c428aab1946f6c2f8"
+  },
+  "Reading TrackerTests/LibraryCollectionTests.swift": {
+    "mtime": 1787537479.2971356,
+    "ast_hash": "74f780fadca00966515428312847e9d9",
+    "semantic_hash": "74f780fadca00966515428312847e9d9"
+  },
+  "Reading Tracker/Features/DeveloperConsole/DemoProfileLabView.swift": {
+    "mtime": 1792267496.7783008,
+    "ast_hash": "38ca73fd6bae11355c8e9e860117d5e7",
+    "semantic_hash": "38ca73fd6bae11355c8e9e860117d5e7"
+  },
+  "Reading Tracker/Features/Discovery/DemoDataService.swift": {
+    "mtime": 1792267528.3393774,
+    "ast_hash": "b68ec843d060ed7f199324fa66d44f98",
+    "semantic_hash": "b68ec843d060ed7f199324fa66d44f98"
+  },
+  "Reading Tracker/Features/Goals/SettingsRootView.swift": {
+    "mtime": 1792374858.597306,
+    "ast_hash": "69dfe01ec54a22a2df633d077b980331",
+    "semantic_hash": "69dfe01ec54a22a2df633d077b980331"
+  },
+  "Reading TrackerTests/DemoProfileServiceTests.swift": {
+    "mtime": 1787542431.140123,
+    "ast_hash": "e56f838288e219f1854bcba038674161",
+    "semantic_hash": "e56f838288e219f1854bcba038674161"
+  },
+  "Reading TrackerTests/RemediationPinsTests.swift": {
+    "mtime": 1792267528.3526607,
+    "ast_hash": "bc9f1bfb1185f889248380a409fd5982",
+    "semantic_hash": "bc9f1bfb1185f889248380a409fd5982"
+  },
+  "Reading Tracker/Core/BookCoverSupport.swift": {
+    "mtime": 1792267496.7620997,
+    "ast_hash": "d4fe984ea7be118f26f9917854d847df",
+    "semantic_hash": "d4fe984ea7be118f26f9917854d847df"
+  },
+  "Reading Tracker/Core/LibraryArchiveManager.swift": {
+    "mtime": 1792267496.7647147,
+    "ast_hash": "5fe9f424245a64a384422d72ef63f184",
+    "semantic_hash": "5fe9f424245a64a384422d72ef63f184"
+  },
+  "Reading Tracker/Features/Onboarding/OnboardingView.swift": {
+    "mtime": 1792267496.7968483,
+    "ast_hash": "a00222beb759b0cdb177cc48f659eb7d",
+    "semantic_hash": "a00222beb759b0cdb177cc48f659eb7d"
+  },
+  "Reading Tracker/Features/RSVP/RSVPPlaybackEngine.swift": {
+    "mtime": 1792267496.7972915,
+    "ast_hash": "d6bd8fcaf64555b82d0a1d4a680c5266",
+    "semantic_hash": "d6bd8fcaf64555b82d0a1d4a680c5266"
+  },
+  "Reading Tracker/Features/RSVP/RSVPReaderView.swift": {
+    "mtime": 1792267496.7976573,
+    "ast_hash": "01761f9f180be37124d3c9a2884af627",
+    "semantic_hash": "01761f9f180be37124d3c9a2884af627"
+  },
+  "Reading Tracker/Features/RSVP/RSVPTokenizer.swift": {
+    "mtime": 1792267496.7978392,
+    "ast_hash": "21200971bcf43d201fda969652e5d3fc",
+    "semantic_hash": "21200971bcf43d201fda969652e5d3fc"
+  },
+  "Reading Tracker/Features/Sessions/ReadingHUD.swift": {
+    "mtime": 1792267496.8030019,
+    "ast_hash": "926c6a21d5662b8641aa132702251fc2",
+    "semantic_hash": "926c6a21d5662b8641aa132702251fc2"
+  },
+  "Reading TrackerTests/DurabilityPinsTests.swift": {
+    "mtime": 1792267496.806991,
+    "ast_hash": "8af8e19fef0b655c25b4bca445bdc109",
+    "semantic_hash": "8af8e19fef0b655c25b4bca445bdc109"
+  },
+  "Reading TrackerTests/RSVPLogicTests.swift": {
+    "mtime": 1792267496.808186,
+    "ast_hash": "88668d03c64a2a6d3d69f8f1a05f65b2",
+    "semantic_hash": "88668d03c64a2a6d3d69f8f1a05f65b2"
+  },
+  "Reading TrackerTests/WeatherConfidencePinsTests.swift": {
+    "mtime": 1792267496.81014,
+    "ast_hash": "201fe40826a7ee470bafe4b50d72eff4",
+    "semantic_hash": "201fe40826a7ee470bafe4b50d72eff4"
+  },
+  "Reading Tracker/Core/AnalyticsCache.swift": {
+    "mtime": 1787741332.2480469,
+    "ast_hash": "1d94dee523f48799cec0255d05b22271",
+    "semantic_hash": "1d94dee523f48799cec0255d05b22271"
+  },
+  "Reading Tracker/Core/CoverStore.swift": {
+    "mtime": 1787740571.9863656,
+    "ast_hash": "0407739f1fa854c2dc0ed1e117c02c6e",
+    "semantic_hash": "0407739f1fa854c2dc0ed1e117c02c6e"
+  },
+  "Reading Tracker/Core/DesignGrid.swift": {
+    "mtime": 1792267496.7641754,
+    "ast_hash": "924729facc40dd7a7e793151ee8a00c9",
+    "semantic_hash": "924729facc40dd7a7e793151ee8a00c9"
+  },
+  "Reading Tracker/Core/PersistenceWriter.swift": {
+    "mtime": 1792267496.7653065,
+    "ast_hash": "02b3c4874e209441fa3931fd905498cd",
+    "semantic_hash": "02b3c4874e209441fa3931fd905498cd"
+  },
+  "Reading Tracker/Core/SentinelDataBridge.swift": {
+    "mtime": 1792267496.7656233,
+    "ast_hash": "470ae6a5aef9574ed613f0588d4c43f4",
+    "semantic_hash": "470ae6a5aef9574ed613f0588d4c43f4"
+  },
+  "Reading Tracker/Core/SentinelEngine.swift": {
+    "mtime": 1792267496.7663012,
+    "ast_hash": "84f44ca23f124e2dd78c67b1ff0ae0cc",
+    "semantic_hash": "84f44ca23f124e2dd78c67b1ff0ae0cc"
+  },
+  "Reading Tracker/Features/DeveloperConsole/SentinelPaneView.swift": {
+    "mtime": 1792267496.780621,
+    "ast_hash": "4f76c09f507c544d5ae651b42c676057",
+    "semantic_hash": "4f76c09f507c544d5ae651b42c676057"
+  },
+  "Reading Tracker/Features/DeveloperConsole/SentinelReportCardView.swift": {
+    "mtime": 1792267496.7811067,
+    "ast_hash": "ab9e2274d5b0e9f36beebcb4eb874351",
+    "semantic_hash": "ab9e2274d5b0e9f36beebcb4eb874351"
+  },
+  "Reading TrackerTests/AnalyticsCachePinsTests.swift": {
+    "mtime": 1787741727.9348648,
+    "ast_hash": "bba97c3c9f3495cb53eb240e51eec9de",
+    "semantic_hash": "bba97c3c9f3495cb53eb240e51eec9de"
+  },
+  "Reading TrackerTests/CoverStorePinsTests.swift": {
+    "mtime": 1787740829.7985713,
+    "ast_hash": "eb5d535266a5cc88f7f851208b742066",
+    "semantic_hash": "eb5d535266a5cc88f7f851208b742066"
+  },
+  "Reading TrackerTests/SentinelPinsTests.swift": {
+    "mtime": 1792267496.809502,
+    "ast_hash": "200d86e252a4790180db453e161d84c1",
+    "semantic_hash": "200d86e252a4790180db453e161d84c1"
+  },
+  "docs/history/LAST_DEFEAT_demo_profiles.txt": {
+    "mtime": 1792263838.8705993,
+    "ast_hash": "dd0e24a64b14cde3251855050abb6a9b",
+    "semantic_hash": "dd0e24a64b14cde3251855050abb6a9b"
+  },
+  "docs/history/freeze.txt": {
+    "mtime": 1792263838.872015,
+    "ast_hash": "41465959e33699d9b3a4b10834aeaff5",
+    "semantic_hash": "41465959e33699d9b3a4b10834aeaff5"
+  },
+  "Reading Tracker/Features/Mirage/MirageAnalysisSheetView.swift": {
+    "mtime": 1792374858.5975232,
+    "ast_hash": "e0f2f2e7c63d249e1ec427d6671050be",
+    "semantic_hash": "e0f2f2e7c63d249e1ec427d6671050be"
+  },
+  "Reading Tracker/Features/Mirage/MirageAppImportMount.swift": {
+    "mtime": 1792374858.5977948,
+    "ast_hash": "d59323f0a47f864b9e796336430f887c",
+    "semantic_hash": "d59323f0a47f864b9e796336430f887c"
+  },
+  "Reading Tracker/Features/Mirage/MirageChildProcess.swift": {
+    "mtime": 1792370040.5658462,
+    "ast_hash": "653da748917976e562ef0e25c6b8b9df",
+    "semantic_hash": "653da748917976e562ef0e25c6b8b9df"
+  },
+  "Reading Tracker/Features/Mirage/MirageClient.swift": {
+    "mtime": 1792370040.5661352,
+    "ast_hash": "e8216be98936024a50cb5ffdc5b0edd4",
+    "semantic_hash": "e8216be98936024a50cb5ffdc5b0edd4"
+  },
+  "Reading Tracker/Features/Mirage/MirageCursor.swift": {
+    "mtime": 1792374858.5979981,
+    "ast_hash": "115e9eb593f9a77feb9c0c77903f70ba",
+    "semantic_hash": "115e9eb593f9a77feb9c0c77903f70ba"
+  },
+  "Reading Tracker/Features/Mirage/MirageIdentityMap.swift": {
+    "mtime": 1792370040.566425,
+    "ast_hash": "8a0f6c7cbf78fe10d14a62dd0bf3bbf0",
+    "semantic_hash": "8a0f6c7cbf78fe10d14a62dd0bf3bbf0"
+  },
+  "Reading Tracker/Features/Mirage/MirageImportFlow.swift": {
+    "mtime": 1792374858.5982444,
+    "ast_hash": "054aa2368b317c2d0b2280d245dd877e",
+    "semantic_hash": "054aa2368b317c2d0b2280d245dd877e"
+  },
+  "Reading Tracker/Features/Mirage/MirageProtocolConstants.swift": {
+    "mtime": 1792370040.5668643,
+    "ast_hash": "90467486d8e8dfe0172b6dd037295f8a",
+    "semantic_hash": "90467486d8e8dfe0172b6dd037295f8a"
+  },
+  "Reading Tracker/Features/Mirage/MirageRuntimeLocator.swift": {
+    "mtime": 1792374858.5984113,
+    "ast_hash": "6e6e97662bcdfcc5280dc07b744a9047",
+    "semantic_hash": "6e6e97662bcdfcc5280dc07b744a9047"
+  },
+  "Reading Tracker/Features/Mirage/MirageSettings.swift": {
+    "mtime": 1792374858.5986223,
+    "ast_hash": "70631a2f4816b3464f4b6ebfe1ad3210",
+    "semantic_hash": "70631a2f4816b3464f4b6ebfe1ad3210"
+  },
+  "Reading Tracker/Features/Mirage/MirageSidecarSupervisor.swift": {
+    "mtime": 1792370040.56705,
+    "ast_hash": "953a6a12b51a0165547d60bc91972d8a",
+    "semantic_hash": "953a6a12b51a0165547d60bc91972d8a"
+  },
+  "Reading Tracker/Features/Mirage/MirageStatusSurface.swift": {
+    "mtime": 1792374858.5987923,
+    "ast_hash": "62dd9e3aa159c9b5b9b87a56bd8f4666",
+    "semantic_hash": "62dd9e3aa159c9b5b9b87a56bd8f4666"
+  },
+  "Reading Tracker/Features/Mirage/MirageTransport.swift": {
+    "mtime": 1792370040.5672472,
+    "ast_hash": "f8c4e88e85edbdc56c4ca65c575e506e",
+    "semantic_hash": "f8c4e88e85edbdc56c4ca65c575e506e"
+  },
+  "Reading Tracker/Features/Mirage/MirageWireTypes.swift": {
+    "mtime": 1792370040.5674567,
+    "ast_hash": "b3f2f3bd96373b75a8150ba3ff521a19",
+    "semantic_hash": "b3f2f3bd96373b75a8150ba3ff521a19"
+  },
+  "Reading TrackerTests/MirageAppImportMountTests.swift": {
+    "mtime": 1792370040.5681877,
+    "ast_hash": "74e4624a554a6e118860a4ccda4d975c",
+    "semantic_hash": "74e4624a554a6e118860a4ccda4d975c"
+  },
+  "Reading TrackerTests/MirageBundledRuntimeTests.swift": {
+    "mtime": 1792374858.5989988,
+    "ast_hash": "6a15bfdb2cfd1ffd662603ce616f10ce",
+    "semantic_hash": "6a15bfdb2cfd1ffd662603ce616f10ce"
+  },
+  "Reading TrackerTests/MirageCursorContractTests.swift": {
+    "mtime": 1792374858.5991504,
+    "ast_hash": "4ed7e5114d9113336ff13a677a239f8f",
+    "semantic_hash": "4ed7e5114d9113336ff13a677a239f8f"
+  },
+  "Reading TrackerTests/MirageFeatureLifecycleTests.swift": {
+    "mtime": 1792374858.599371,
+    "ast_hash": "a49f007c439b583c89f7c4b63798fa71",
+    "semantic_hash": "a49f007c439b583c89f7c4b63798fa71"
+  },
+  "Reading TrackerTests/MirageHandshakePinTests.swift": {
+    "mtime": 1792370040.5683749,
+    "ast_hash": "25e8883ae4ab1211e42358fcb38dfce2",
+    "semantic_hash": "25e8883ae4ab1211e42358fcb38dfce2"
+  },
+  "Reading TrackerTests/MirageIdentityDriftTests.swift": {
+    "mtime": 1792374858.5996132,
+    "ast_hash": "4c7adbbd9fba9439c7e21ea68a44bbf1",
+    "semantic_hash": "4c7adbbd9fba9439c7e21ea68a44bbf1"
+  },
+  "Reading TrackerTests/MirageIdentityMapContractTests.swift": {
+    "mtime": 1792370040.5687418,
+    "ast_hash": "a31ea185009980d12d27862941a74e98",
+    "semantic_hash": "a31ea185009980d12d27862941a74e98"
+  },
+  "Reading TrackerTests/MirageIdentityRealEngineImportTests.swift": {
+    "mtime": 1792374858.5998554,
+    "ast_hash": "6958c27178a8d47dc4432a3360127fe3",
+    "semantic_hash": "6958c27178a8d47dc4432a3360127fe3"
+  },
+  "Reading TrackerTests/MiragePageTurnNonTriggerTests.swift": {
+    "mtime": 1792374858.6001556,
+    "ast_hash": "96f7ee9c9ec04aab86568b6135bcf086",
+    "semantic_hash": "96f7ee9c9ec04aab86568b6135bcf086"
+  },
+  "Reading TrackerTests/MirageProtocolConformanceTests.swift": {
+    "mtime": 1792370040.5691397,
+    "ast_hash": "d7fe9dda2a9b5a573085d2f7ff9b3412",
+    "semantic_hash": "d7fe9dda2a9b5a573085d2f7ff9b3412"
+  },
+  "Reading TrackerTests/MirageRealEngineSmokeTests.swift": {
+    "mtime": 1792370040.5693207,
+    "ast_hash": "f8f0b92873ca76a3c1bc967a4329ab02",
+    "semantic_hash": "f8f0b92873ca76a3c1bc967a4329ab02"
+  },
+  "Reading TrackerTests/MirageSidecarLifecycleTests.swift": {
+    "mtime": 1792370040.5695398,
+    "ast_hash": "10454c1d7d7e5a4a11dffd47a42e6691",
+    "semantic_hash": "10454c1d7d7e5a4a11dffd47a42e6691"
+  },
+  "Reading TrackerTests/MirageSpoilerProbeTests.swift": {
+    "mtime": 1792374858.6003382,
+    "ast_hash": "ed41b7a26de20cfebdafc27a5a274d70",
+    "semantic_hash": "ed41b7a26de20cfebdafc27a5a274d70"
+  },
+  "Reading TrackerTests/MirageStatusSurfaceTests.swift": {
+    "mtime": 1792374858.600466,
+    "ast_hash": "6817f6f34ab673ce36acb138ae164013",
+    "semantic_hash": "6817f6f34ab673ce36acb138ae164013"
+  },
+  "Reading TrackerTests/MirageStubSidecarSupport.swift": {
+    "mtime": 1792370040.569896,
+    "ast_hash": "7e33f4f57f8dd76af6389c6f205c99c3",
+    "semantic_hash": "7e33f4f57f8dd76af6389c6f205c99c3"
+  },
+  "Reading TrackerTests/MirageZBootDiagnosticTests.swift": {
+    "mtime": 1792374858.6006532,
+    "ast_hash": "53317b9bd37d59811165bf994ce8c4c4",
+    "semantic_hash": "53317b9bd37d59811165bf994ce8c4c4"
+  },
+  "docs/integration/tib/subset-manifest.gen-0001.json": {
+    "mtime": 1792374858.6041632,
+    "ast_hash": "bf95db148308d00e5a597bb269520ea5",
+    "semantic_hash": "bf95db148308d00e5a597bb269520ea5"
+  },
+  "scripts/bundle_smoke.py": {
+    "mtime": 1792374858.6044123,
+    "ast_hash": "05b8e5eeef4cfa09cc4fa22c079d4441",
+    "semantic_hash": "05b8e5eeef4cfa09cc4fa22c079d4441"
+  },
+  "scripts/stage-mirage-runtime.sh": {
+    "mtime": 1792374858.60464,
+    "ast_hash": "04b802fd65688106b5ff4d73f37ed84b",
+    "semantic_hash": "04b802fd65688106b5ff4d73f37ed84b"
+  },
+  "scripts/tib/observe.py": {
+    "mtime": 1792374858.6048188,
+    "ast_hash": "e654dc716ce38280575dd364663ec481",
+    "semantic_hash": "e654dc716ce38280575dd364663ec481"
+  },
+  "scripts/verify-clean-machine.sh": {
+    "mtime": 1792374858.605125,
+    "ast_hash": "f9d3b048b6e08253ec00572cec7b1854",
+    "semantic_hash": "f9d3b048b6e08253ec00572cec7b1854"
+  },
+  ".github/workflows/census.yml": {
+    "mtime": 1792374858.5969737,
+    "ast_hash": "2f6632ddf53b850a316c20310516cdc4",
+    "semantic_hash": "2f6632ddf53b850a316c20310516cdc4"
+  },
+  "docs/01-project-tree.md": {
+    "mtime": 1792375866.911486,
+    "ast_hash": "5510cdf823b818c92d3817da96c0e787",
+    "semantic_hash": "5510cdf823b818c92d3817da96c0e787"
+  },
+  "docs/audits/08-deep-audit.md": {
+    "mtime": 1792274680.0965211,
+    "ast_hash": "e91afecbb873b0a8025e8d717a982a6a",
+    "semantic_hash": "e91afecbb873b0a8025e8d717a982a6a"
+  },
+  "docs/history/09-final-traces.md": {
+    "mtime": 1792274680.0966055,
+    "ast_hash": "b8bfc279c30e21ac2e4942b9254afdf8",
+    "semantic_hash": "b8bfc279c30e21ac2e4942b9254afdf8"
+  },
+  "docs/history/10-profiler-fix.md": {
+    "mtime": 1792274680.1005728,
+    "ast_hash": "ac5702db232d7b7da0cf5ade5f6b39e7",
+    "semantic_hash": "ac5702db232d7b7da0cf5ade5f6b39e7"
+  },
+  "docs/history/diagnostics-2026-08-26.txt": {
+    "mtime": 1792263838.8721788,
+    "ast_hash": "66fc154d55f0adfb3172029752f9f54e",
+    "semantic_hash": "66fc154d55f0adfb3172029752f9f54e"
+  },
+  "docs/integration/PR4-defect-analysis-2026-10-18.md": {
+    "mtime": 1792370040.5703578,
+    "ast_hash": "53e91fc28cfcb1348e11d59c0d8880c3",
+    "semantic_hash": "53e91fc28cfcb1348e11d59c0d8880c3"
+  },
+  "docs/integration/PR5-execution-plan-2026-10-18.md": {
+    "mtime": 1792370040.5705636,
+    "ast_hash": "fafd6f639c8c3ede5cde60523a9cfd55",
+    "semantic_hash": "fafd6f639c8c3ede5cde60523a9cfd55"
+  },
+  "docs/integration/RT_Mirage_Codebase_Merge_Playbook.md": {
+    "mtime": 1792375221.0925806,
+    "ast_hash": "438752ea5716db6346b4d287e38b6c36",
+    "semantic_hash": "438752ea5716db6346b4d287e38b6c36"
+  },
+  "docs/integration/Twin-READMES-2026-10-18.md": {
+    "mtime": 1792375221.0958457,
+    "ast_hash": "24e702ae72e356a9b769c12033cb60b2",
+    "semantic_hash": "24e702ae72e356a9b769c12033cb60b2"
+  },
+  "docs/integration/adr/ADR-12-titanium-bridge-charter.md": {
+    "mtime": 1792374858.6008444,
+    "ast_hash": "f06b8ee63ed5db716f9f9f67e591ce47",
+    "semantic_hash": "f06b8ee63ed5db716f9f9f67e591ce47"
+  },
+  "docs/integration/adr/ADR-2-transport-and-protocol.md": {
+    "mtime": 1792370040.5708654,
+    "ast_hash": "78e06bded113c959fbbd07a6f551efc8",
+    "semantic_hash": "78e06bded113c959fbbd07a6f551efc8"
+  },
+  "docs/integration/adr/ADR-3-packaged-runtime-distribution.md": {
+    "mtime": 1792374858.6010091,
+    "ast_hash": "97788898c0806d6588e080ebd60e918f",
+    "semantic_hash": "97788898c0806d6588e080ebd60e918f"
+  },
+  "docs/integration/adr/ADR-4-ledger-placement-and-backup-ownership.md": {
+    "mtime": 1792370040.5710003,
+    "ast_hash": "b2329e71f44a6984a5aab6400d353041",
+    "semantic_hash": "b2329e71f44a6984a5aab6400d353041"
+  },
+  "docs/integration/adr/ADR-5-identity-mapping.md": {
+    "mtime": 1792370040.571205,
+    "ast_hash": "8b3783f1b22f7259ab35205a8c851d44",
+    "semantic_hash": "8b3783f1b22f7259ab35205a8c851d44"
+  },
+  "docs/integration/adr/ADR-6-mirage-feature-lifecycle.md": {
+    "mtime": 1792374858.6011622,
+    "ast_hash": "2796e729548c9b09d987463e512ba769",
+    "semantic_hash": "2796e729548c9b09d987463e512ba769"
+  },
+  "docs/integration/adr/ADR-6a-mirage-import-independence-newde5.md": {
+    "mtime": 1792374858.6013906,
+    "ast_hash": "a88046370346a00b025dd5f6aa681bb4",
+    "semantic_hash": "a88046370346a00b025dd5f6aa681bb4"
+  },
+  "docs/integration/adr/ADR-7-spoiler-cursor-contract.md": {
+    "mtime": 1792374858.6015217,
+    "ast_hash": "1f7a1e1d8f9992306fc20a2c99ac0bd5",
+    "semantic_hash": "1f7a1e1d8f9992306fc20a2c99ac0bd5"
+  },
+  "docs/integration/adr/ADR-8-repository-strategy.md": {
+    "mtime": 1792374858.6016822,
+    "ast_hash": "244e3f3d168dc4e86430458b85ec3831",
+    "semantic_hash": "244e3f3d168dc4e86430458b85ec3831"
+  },
+  "docs/integration/evidence/OPE-001-deleted-stub-list-2026-10-18.txt": {
+    "mtime": 1792374858.6019306,
+    "ast_hash": "d81785d235cb63de3709c49c57dfb8a7",
+    "semantic_hash": "d81785d235cb63de3709c49c57dfb8a7"
+  },
+  "docs/integration/evidence/README.md": {
+    "mtime": 1792374858.602112,
+    "ast_hash": "ad9c5befb21ad74bb4cee3bc96bc188d",
+    "semantic_hash": "ad9c5befb21ad74bb4cee3bc96bc188d"
+  },
+  "docs/integration/evidence/handoff-bundle-2026-10-18.md": {
+    "mtime": 1792374858.6023242,
+    "ast_hash": "00bfc561fd6f31bdfb47e62938d2a3b1",
+    "semantic_hash": "00bfc561fd6f31bdfb47e62938d2a3b1"
+  },
+  "docs/integration/final-acceptance-2026-10-18.md": {
+    "mtime": 1792374858.6024766,
+    "ast_hash": "5a645ac26cd2f1be4303c2230fa902d8",
+    "semantic_hash": "5a645ac26cd2f1be4303c2230fa902d8"
+  },
+  "docs/integration/merge-log.md": {
+    "mtime": 1792375221.1114697,
+    "ast_hash": "56ba721b30c1f9878098d8f73b58ffd9",
+    "semantic_hash": "56ba721b30c1f9878098d8f73b58ffd9"
+  },
+  "docs/integration/phase1/mirage-protocol-extraction.md": {
+    "mtime": 1792370040.5721467,
+    "ast_hash": "74e5213e8441c38e135e85eee3e95e9d",
+    "semantic_hash": "74e5213e8441c38e135e85eee3e95e9d"
+  },
+  "docs/integration/phase1/rt-normative-docs-extraction.md": {
+    "mtime": 1792370040.5726252,
+    "ast_hash": "5a25c0191cbb8897499b80fd6e2eb8d5",
+    "semantic_hash": "5a25c0191cbb8897499b80fd6e2eb8d5"
+  },
+  "docs/integration/phase1/touchpoint-inventory.md": {
+    "mtime": 1792370040.5728035,
+    "ast_hash": "ed6839505b3933f6a91c2df698a77029",
+    "semantic_hash": "ed6839505b3933f6a91c2df698a77029"
+  },
+  "docs/integration/rehearsals/rehearsal-log-2026-10-18.md": {
+    "mtime": 1792374858.603313,
+    "ast_hash": "b1f32ba037b2c472bbd0c9eb79693b01",
+    "semantic_hash": "b1f32ba037b2c472bbd0c9eb79693b01"
+  },
+  "docs/integration/tib/TB-M0-gate-plan.md": {
+    "mtime": 1792374858.603546,
+    "ast_hash": "c0804dcf1bfe2053cb40e50d516a6916",
+    "semantic_hash": "c0804dcf1bfe2053cb40e50d516a6916"
+  },
+  "docs/integration/tib/observe-ledger.md": {
+    "mtime": 1792374858.6037085,
+    "ast_hash": "5649bcfa5bdf18d842374e96d6113a76",
+    "semantic_hash": "5649bcfa5bdf18d842374e96d6113a76"
+  },
+  "docs/method/07-testing-strategy.md": {
+    "mtime": 1792375907.592665,
+    "ast_hash": "ad880050e0f258d7b592e7d4af01a1df",
+    "semantic_hash": "ad880050e0f258d7b592e7d4af01a1df"
+  },
+  "docs/registers/02-defect-register.md": {
+    "mtime": 1792375935.7417877,
+    "ast_hash": "90927a2eae6ffbff24ce296fd6622ae2",
+    "semantic_hash": "90927a2eae6ffbff24ce296fd6622ae2"
+  },
+  "docs/registers/03-fix-log.md": {
+    "mtime": 1792375975.7631993,
+    "ast_hash": "7e8f921d63f52d7c07af9f81923669b2",
+    "semantic_hash": "7e8f921d63f52d7c07af9f81923669b2"
+  },
+  "docs/registers/04-handoff.md": {
+    "mtime": 1792376009.2765083,
+    "ast_hash": "f0bc45392ac118ff2edadfedc7e3cc5d",
+    "semantic_hash": "f0bc45392ac118ff2edadfedc7e3cc5d"
+  },
+  "docs/roadmap/05-remediation-roadmap.md": {
+    "mtime": 1792376029.0525773,
+    "ast_hash": "a4007a8b5ef84f6b45436a42525fa90b",
+    "semantic_hash": "a4007a8b5ef84f6b45436a42525fa90b"
+  },
+  "docs/roadmap/06-rsvp-feature-plan.md": {
+    "mtime": 1792376029.0477848,
+    "ast_hash": "80dd853cf196e1c810932405ce48f58d",
+    "semantic_hash": "80dd853cf196e1c810932405ce48f58d"
+  }
+}

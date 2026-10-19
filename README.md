@@ -1,114 +1,253 @@
 # 00 · Reading Tracker — Project Report
 
-**A macOS reading-analytics app — and one of the most honestly documented indie codebases you'll ever read.** Built over ~30 focused working sessions, Jun 17 – Aug 26 2026, then hard-audited and reorganized (Oct 2026). Swift/SwiftUI only. One dependency.
-
-> **This README is the project report.** The full audit with file:line evidence for every claim lives in [`docs/audits/08-deep-audit.md`](docs/audits/08-deep-audit.md). Live registers: [`docs/registers/02-defect-register.md`](docs/registers/02-defect-register.md) (defects), [`docs/registers/03-fix-log.md`](docs/registers/03-fix-log.md) (protocol log), [`docs/registers/04-handoff.md`](docs/registers/04-handoff.md) (where we left off).
+> **TL;DR** — A macOS reading-tracker app written entirely in Swift/SwiftUI. You import your PDF and EPUB books, read them inside the app, and it quietly records everything: per-page reading speed, time of day, live weather, and the app you were using just before opening the book. As of the October 2026 merge campaign, it also carries **Mirage** — a separately-owned companion engine for EPUB analysis, integrated behind a typed one-way boundary. Builds clean; standing default census is **191 passed / 0 failed / 4 skipped** (verified live). Remaining work is documented honestly below.
 
 ---
 
-## 1 · What it is
+## Contents
 
-**Plain English.** You import your PDFs and EPUBs, read them inside the app, and it quietly remembers everything: how fast you turned each page, what hour you read, what the weather was, what you were doing on your Mac beforehand. It draws a living night-sky background that follows real time and weather, tracks goals/streaks/25 achievement badges, renders a year-in-review slideshow, and has an optional speed-reading mode. A slow-learning "context brain" tries to reconstruct *where and why* you read. Hidden Developer Console (⌘⇧D) stress-tests the app with 16 fake reader personas; a "Sentinel" watchdog scans for data problems at launch, auto-repairs the provably-safe ones, snapshots everything before touching anything, and reports overnight.
+| § | Section |
+|---|---------|
+| 1 | What the app does |
+| 2 | The project at a glance |
+| 3 | Technical overview |
+| 4 | Verified health status |
+| 5 | Open work, in priority order |
+| 6 | Documentation map |
+| 7 | Build & run |
+| 8 | The fix protocol (for contributors) |
 
-**Technical.** Swift/SwiftUI macOS app, 3 targets, `MACOSX_DEPLOYMENT_TARGET = 26.5`, Swift 5 language mode with **`SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`** + approachable concurrency (the project's defining build setting — and the root cause of its hardest freeze bug). Persistence is hand-rolled and layered: a debounced pretty-printed JSON monolith (`library.json` — every book → session → page-turn timing), sidecar `library-state.json` (goals/achievements/collections), keyed-access SQLite for weather snapshots, a content-addressed cover file store (NSCache'd), 10-deep hash-gated backup rotation, `.readingarchive` v1 export/import, and an append-only JSONL Sentinel journal (500-line rotation). Analytics are pure static-namespace engines; `AnalyticsCache` memoizes five whole-library reductions behind a mutation-epoch counter; `PersistenceWriter` owns disk writes on a utility queue; `DataMaturityEngine` gates every intelligence claim behind evidence floors with an injected clock.
+---
 
-## 2 · The numbers (validated by direct count, Oct 17 2026)
+## §1 · What the app does
+
+**Reading Tracker** imports PDF and EPUB books and lets you read them in-app — including an RSVP (Rapid Serial Visual Presentation) speed-reading mode that streams a chapter or a whole PDF one word at a time. While you read, the app records:
+
+- **Per-page timing** — turn speed captured for every single page, feeding analytics and estimates
+- **Temporal habits** — hour-of-day and day-of-week engagement patterns
+- **Environmental context** — live WeatherKit snapshots correlated with sessions
+- **Behavioral context** — foreground-app observation (via `NSWorkspace`) to reconstruct *where and why* you read
+- **Goals, streaks, and 25 achievements** — daily/weekly/annual targets with a toast system
+- **Annual Reports** — a yearly review rendered as slides
+- **Night-sky ambience** — a starfield background that tracks real time of day, weather, and location
+- **Mirage analysis (optional, opt-in per gesture)** — for an imported EPUB, an explicit "Analyze with Mirage" gesture sends that single book to a separately-owned analysis engine and wires the results to your reading state; the engine keeps its own ledger and never writes RT's store (see §3.5)
+
+There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for stress-testing with **16 deterministic fake reader personas**, and a built-in **Sentinel** watchdog that scans for data problems at launch, auto-repairs the provably-safe ones, snapshots everything before touching anything, and reports what happened while you were away.
+
+---
+
+## §2 · The project at a glance
 
 | | |
 |---|---|
-| Swift files | **120** — 100 app · 18 unit tests · 2 UI-test stubs |
-| Application LOC | **39,900 raw** (28,697 code / 5,869 comment / 5,334 blank) |
-| Test suite | **2,763 LOC · 108 `@Test`** functions (~160+ executed with parameterization); 25 achievement kinds; 16 deterministic personas; 286 top-level types |
-| Dependencies | exactly **1** — ZIPFoundation 0.9.20 (pinned) |
-| History | 45 commits (Jun 17 – Aug 26 2026) + Oct 2026 audit/reorg commits |
-| Toolchain | Xcode 27.1 · deployment target macOS 26.5 |
-| Docs | ~30k words of registers, method docs, and session history under `docs/` |
-| Repo | 43 MB on disk (30 MB is regenerable `graphify-out/` analysis artifacts — gitignored) |
-
-## 3 · Current health (verified live, not inherited)
-
-- ✅ **`xcodebuild build` → BUILD SUCCEEDED (exit 0)** — fresh Debug build of the exact current tree.
-- ✅ **`xcodebuild test` (unit target) → TEST SUCCEEDED** — full suite green on a fresh run Oct 17, 2026.
-- ✅ The once-critical Sep-2 one-line freeze fix (`.environmentObject(dataStore)` on the console window) is now **committed** (355d68e) instead of living only in an uncommitted working tree.
-- ⚠️ See §5 for what's still open.
-
-**Test-suitability score: 0.68 / 1.0** — exceptional defect-pin depth (0.9; nearly every test is named for a numbered historical defect), narrow architecture breadth (0.4; views/network/readers untested), good hygiene (0.65), sound infrastructure (0.7).
-
-## 4 · Where we are project-wise
-
-Every planned remediation arc and feature package has been executed, with the suite green at every phase boundary:
-
-| Track | Status |
-|---|---|
-| Bug-hunt remediation (Stages 1–4, 10 compile + behavioral + observer/calendar fixes) | ✅ shipped, pinned |
-| Four-phase remediation of the full RA-002 re-audit | ✅ shipped |
-| Five production features (weather evidentiary · covers + reading HUD · RSVP speed-reading · onboarding + search/sort · archive durability) | ✅ shipped (SQLite engine attempted → honestly reverted; post-mortem preserved) |
-| THE SENTINEL (deterministic watchdog + safe auto-repair + kill switch) | ✅ shipped with security doctrine S1–S7 pinned |
-| Demo-profile freeze saga (3 failed rounds → probe-the-frozen-process → 1-line root cause) | ✅ closed; evidence pair kept in `docs/history/` |
-| Performance marathon FINAL TRACES (covers→files · AnalyticsCache · PersistenceWriter slice) | ✅ shipped; store-split & SQLite blueprints written |
-| UI Review execution (chrome recedes, one atmosphere) | ✅ shipped |
-
-**Not yet done** (deliberate, blueprinted): the normalized SQLite core ( retiring the JSON monolith — the roadmap's one XL item), split `@Observable` stores, Swift 6 strict mode, BCE V3 UI activation (audit recommends delete-first), CloudKit (deferred by design), App Store submission.
-
-## 5 · Open findings snapshot (October register)
-
-13 new defect-class items + 4 release blockers were logged by the October audit and merged into [`docs/registers/02-defect-register.md` Appendix D](docs/registers/02-defect-register.md). The ones that matter most, in fix order:
-
-1. **NEW-DE-2 🟠** Explore/spatial card views read the legacy embedded-cover field, so real covers never show there post-migration — one-line fix (`book.coverImage`).
-2. **NEW-DE-5 🟡** Onboarding import bypasses the import-intelligence facade and duplicate check; its goal commit can overwrite an existing full goal set.
-3. **NEW-DE-4 🟡** AnalyticsCache signature has no day component → streak/trend values can go stale across midnight.
-4. **NEW-DE-3 🟠** A crash + relaunch under 24 h silently converts idle time into reading time (Sentinel only repairs >24 h, and even then books the full wall-clock duration).
-5. **NEW-DE-1 🟠** `PersistenceWriter` gates but does not serialize the encode/write work — a narrow stale-overwrite window exists; restore the ordering contract and re-pin.
-6. **Release blockers** — empty AppIcon set; missing WeatherKit entitlement (weather will 403 at runtime); `ENABLE_USER_SELECTED_FILES=readonly` build setting vs read-write entitlements file; empty-string `CFBundleIdentifier` key in the custom plist.
-
-Also worth knowing: per-correlation weather confidence still hardcodes coverage = 1.0 (aggregate fixed, row-level not); location-denied weather silently describes New York; RSVP text extraction tasks aren't cancellable; ~5.5–6.5 k LOC (~12–15% of the app target) is dead/dormant scaffolding, headlined by the Behavior Context Engine's 81%-dead Phase-2 append and the never-instantiated `LibraryView.swift`.
-
-**Closed mysteries:** the Behavior Context Engine's silence on 1,500 h of synthetic history was diagnosed from code — `analyze()` only fires when a *live session closes* (`.dropFirst()` suppresses launch/import), and synthetic personas generate zero NSWorkspace evidence; day-span floors bind before hour-volumes do. The profiles are proven innocent (16/16 validator-clean, pinned).
-
-## 6 · Estimates (multi-basis)
-
-| Scenario | Sessions | Hours |
-|---|---|---|
-| Quick fixes + release blockers + commit hygiene (minimal-ship shape) | 1–2 | **~6–10 h** |
-| + dead-code retirement, discovery hardening, weather honesty, achievement-flood UX, pruning policy, BCE V1 activation | 4–6 | **~20–35 h** |
-| + store split (#3) + normalized SQLite core (#1) + Swift 6 completion | +3.5–6 | **+23–40 h** |
-
-**Scale reality check (monolith kept):** 100 books/300 sessions → fine. Persona-scale (~185k page-timings) → 1–3 s encodes (the codebase's own measurement). A multi-year real library (~1–10 M timing records) → a 250 MB–5 GB single JSON re-encoded per save burst with launch validation on main — which is exactly why the SQLite blueprint exists and is the recommended next architectural arc.
-**Monolith-breaking risks are real even now:** the write-ordering window (NEW-DE-1) and 10× back copies of the full library are the two mechanisms by which a crash could cost real history; both are small, bounded fixes.
-
-## 7 · Strengths & weaknesses (verified)
-
-**Strengths.** Protocol-driven traceability — every historical fix is implemented, Finality-verified, logged, and pinned by a test named for its defect (the suite reads like a defect history). A layered data-loss defense stack (corrupt→`.bak`→banner→repair-blocks-save→rotation→archive→Sentinel). Honest session logs including documented failures. Correct handling of the brutal MainActor-default isolation. Genuinely well-engineered files (`EPUBPackage`, `DataMaturityEngine`, `EstimationEngine`, the Sentinel security doctrine). Submission-adjacent basics already exist (privacy manifest, usage strings, sandbox, ATS-clean network).
-
-**Weaknesses.** Unpruned lifetime-growth persistence; several main-actor re-analysis paths that stall at 10× volume; ~12–15% dead code; a test belt that pins the persistence/engine layers superbly but leaves the only Release-reachable network feature (Discovery) and all view flows untested; zero App Store formalities attempted (icon, entitlements-gap, scheme/test-plan hygiene); historical " 2"-suffixed filenames in an auto-including synchronized folder.
-
-## 8 · Documentation map
-
-```
-docs/
-├── registers/    living truth: CURRENT_AUDIT (defects) · fix-log (protocol log) · handoff (session state)
-├── roadmap/      REMEDIATION_ROADMAP (phases, mostly executed) · rsvp feature plan
-├── method/       testing strategy
-├── history/      FINAL_TRACES marathon log · profilerfix post-mortem · LAST_DEFEAT knowledge transfer
-│                 freeze.txt (the 5-second sample of the frozen app) · diagnostics-2026-08-26.txt
-├── audits/       08-deep-audit.md (the full audit behind this README)
-└── 01-project-tree.md       regenerated project tree
-```
-
-Engineering standards (carried by `docs/registers/03-fix-log.md`): every fix needs a Finality statement, a fix-log entry, and a pinned regression test; suites must be green at every phase boundary; probe a frozen process (`sample`) before reasoning about performance.
-
-## 9 · How to build / run / verify
-
-```
-open "Reading Tracker.xcodeproj"          # Xcode 26.5+ tooling (built here with Xcode 27.1)
-# Run: ⌘R        Develop console: ⌘⇧D (Debug only)     Settings (goal editor): ⌘,
-# Verify:
-xcodebuild build -project "Reading Tracker.xcodeproj" -scheme "Reading Tracker" -configuration Debug -destination 'platform=macOS'
-xcodebuild test  -project "Reading Tracker.xcodeproj" -scheme "Reading Tracker" -configuration Debug -destination 'platform=macOS' -only-testing:"Reading TrackerTests"
-```
-
-Runtime data lives under `~/Library/Application Support/johan.Reading-Tracker/` (`library.json`, `library-state.json`, covers, weather SQLite, `Backups/`, `sentinel-journal.jsonl`).
+| **What it is** | A sandboxed macOS AppKit/SwiftUI app for tracking your reading — plus the integrated Mirage companion engine (optional feature) |
+| **Language** | Swift 5 mode, SwiftUI + AppKit only |
+| **Build config** | `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, `SWIFT_APPROACHABLE_CONCURRENCY = YES`, deployment target macOS 26.5, Xcode 27.1 |
+| **Dependencies** | Exactly one Swift dependency: ZIPFoundation 0.9.20 (SPM, pinned via `Package.resolved` — used for unzipping EPUBs). Mirage ships as a self-contained bundled runtime (its own Python interpreter), not a Swift dependency |
+| **App size** | 114 app files · 42,569 raw LOC (counted directly — not estimated) |
+| **Tests** | 34 test files · 192 `@Test` functions · **standing default census: 191 passed / 0 failed / 4 skipped** (the 4 skips are opt-in real-engine gates) |
+| **How it is tested** | Swift Testing (`@Suite` / `@Test` / `#expect`) — not XCTest |
+| **History** | ~30 working sessions (Jun–Oct 2026), 45+ commits, then the **RT–Mirage merge campaign** (Oct 2026): the 8-PR integration ladder PR-1…PR-8, closed with owner signatures |
+| **Where your data lives** | Sandbox container: `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/ReadTracker/` (see §3) — plus Mirage's own stratum (§3.5) |
 
 ---
 
-**Status: healthy, building, fully tested, and finally telling the truth about itself.** The next session should start at §5 §item 1 — and commit at every boundary, exactly like this one.
+## §3 · Technical overview
+
+### 3.1 Architecture
+
+The codebase is split into three layers, all pure Swift — no bridges, no C extensions:
+
+| Layer | Path | What lives there |
+|---|---|---|
+| **Core** | `Core/` | `DataStore3` (persistence), `Book2` (models), `PersistenceWriter` (serial disk writes), `AnalyticsCache` (memoization), `CoverStore` (content-addressed cover files + NSCache), `DataIntegrityValidator`, `SentinelEngine`, `LibraryArchiveManager` (`.readingarchive` I/O) |
+| **Engines** | `Engines/` | Pure static-namespace analytics: `AnalyticsEngine`, `EstimationEngine` (weighted-blend speed estimates), `DataMaturityEngine` (evidence gating with injected clocks) |
+| **Features** | `Features/` | Everything user-facing: Library, Reader (PDF/EPUB), RSVP, Reports, Insights, Goals, Achievements, BehaviorContext, Environment (weather/stars), Discovery, Sessions, Audio, Notifications, Onboarding, DeveloperConsole, **and `Mirage/` — the integration surface (14 typed Swift files)** |
+
+### 3.2 Concurrency model
+
+The project's defining (and historically most destructive) build setting is `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`: **every function is main-actor-isolated unless explicitly annotated `nonisolated`**. The freeze era is documented in `docs/history/10-profiler-fix.md`. The discipline now in place:
+
+- Heavy paths (demo synthesis, library encode, cover capture, RSVP extraction, backup I/O, and **all Mirage transport/pruning work**) are explicitly stamped `nonisolated` so they truly leave the main thread
+- The fix is **compiler-enforced** — a regression reintroducing a main-actor hop breaks the build loudly, rather than freezing at runtime
+
+### 3.3 Data & persistence surface
+
+All user data lives in one place (sandbox container):
+
+```text
+~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/ReadTracker/
+├── library.json              Every book → session → individual page-turn timing (pretty-printed JSON monolith)
+├── library-state.json        Goals, deadlines, earned achievements, collections
+├── library.bak.json          Automatic same-name backup written before corruption resets
+├── library.sqlite3 (+wal/shm) SQLite weather snapshot store (keyed by session ID)
+├── covers/                   Content-addressed cover files (NSCache-fronted)
+├── Backups/                  Automatic dated backups — newest 10 kept, hash-gated
+├── mirage/                   Mirage's OWN stratum (created on first use): ledger db, identity map, supervisor guard file — Mirage-write territory, RT never writes it
+└── sentinel-journal.jsonl    Append-only Sentinel audit log (rotates at 500 entries)
+```
+
+At the time of writing, the author's own working library weighs **~28 MB of `library.json`** with ~43 MB of backups — and these numbers scale linearly with pages turned forever (zero pruning exists). That scaling ceiling is the app's main architectural open item (§5).
+
+Writes go through `PersistenceWriter` on a serial utility queue behind a debounce. All analytics reductions are static and pure; `AnalyticsCache` memoizes the five hottest whole-library reductions behind a mutation-epoch counter.
+
+### 3.4 Sentinel (self-repair watchdog)
+
+| Stage | Behavior |
+|---|---|
+| **Probes** | 8 deterministic, read-only probes run at launch + every N minutes |
+| **Classifier** | Each finding is either provably-safe (`autoFixed`) or stalled for human review |
+| **Dispatcher** | Repairs only through audited APIs; **all artifacts confined to `sentinel-*` files** |
+| **Journal** | Append-only JSONL, atomic temp+rename rotation at 500 entries |
+
+Security doctrine S1–S7 is pinned by tests (`SentinelPinsTests`), including write-confinement and the kill switch. Release builds default to **monitor + report only**; automatic fixes must be enabled in Settings ▸ Sentinel. To disable entirely:
+
+```bash
+defaults write johan.Reading-Tracker sentinel.enabled -bool false
+```
+
+### 3.5 The Mirage integration (October 2026)
+
+Mirage is a **separately-owned companion engine** (Python) that integrates over a single spawn boundary: RT launches its sidecar on an explicit user gesture, speaks a typed NDJSON wire to it, and consumes typed outcomes. The enforcement rules, in plain English:
+
+- **Ownership**: RT's store belongs to RT; Mirage's ledger belongs to Mirage. The only thing crossing the boundary is the analyzed-context handoff. Mirage entries in RT are born **only** from a validated import receipt — nothing is invented on either side.
+- **Language**: the wire contract is immutable (`MirageWireTypes`) and version-gated; conformance test suites pin every shape.
+- **Lifecycle**: one analyze gesture = one clean sidecar lifecycle (spawn → work → SIGTERM; no zombie processes, no persistence leavings).
+- **Optional & safe**: a single Settings switch (`mirage.enabled`) turns the feature off entirely — which deletes nothing; disabled state spawns nothing. Spoiler-sensitive detail surfaces are disabled by design until a verified chapter→cursor mapping exists (fail-closed; typed refusal codes).
+- **Packaged**: the engine ships inside the app as a digest-verifiable bundled runtime (staging script + manifest + SHA-256 checks + clean-machine gate).
+
+The full campaign of record — playbook, ADR register (ADR-2…ADR-8, ADR-12), merge log M-014…M-034, evidence bundle, §22/TiB charter — lives in `docs/integration/` (see §6).
+
+---
+
+## §4 · Verified health status
+
+Checked directly against the working tree during the October 2026 sessions — not inherited from an old note:
+
+- ✅ `xcodebuild build` (Debug, default DerivedData) → **BUILD SUCCEEDED, exit 0**
+- ✅ `xcodebuild test` (full unit target) → **TEST SUCCEEDED** — standing default census **191 passed / 0 failed / 4 skipped** (the 4 skips are three opt-in real-engine suites whose gates are deliberately unset in ordinary runs)
+- ✅ The Mirage merge ladder closed green at every PR boundary (each PR's census receipt lives in `docs/integration/merge-log.md` M-014…M-028)
+- ✅ Real-engine receipts: the sidecar identity proof and the packaged-runtime spawn smoke (banner → version → inventory → clean teardown) both executed live, single-lifecycle
+- ✅ Working tree: the merge-era commits are all pushed to GitHub; the only working-tree edits at print time are this documentation refresh itself
+
+---
+
+## §5 · Open work, in priority order
+
+IDs reference the defect register (`docs/registers/02-defect-register.md`) and the audit (`docs/audits/08-deep-audit.md` §7). Effort estimates assume a project-familiar working session.
+
+| # | Item | Why it matters | Estimate |
+|---|------|----------------|----------|
+| 1 | **Punch list: NEW-DE-1 … NEW-DE-5** (audit-era items, all still open — the merge campaign did not touch the legacy defect list) | Write-ordering so an older snapshot can never overwrite a newer one (NEW-DE-1); spatial Explore cards never show real covers (NEW-DE-2); crash-window time inflation (NEW-DE-3); midnight-stale analytics cache (NEW-DE-4); onboarding import bypass + goal-set clobber (NEW-DE-5) | ~2–4 h |
+| 2 | **App Store readiness** | Empty AppIcon set, missing WeatherKit entitlement, empty `CFBundleIdentifier` key, `ENABLE_USER_SELECTED_FILES=readonly` conflicting with the read-write entitlement | ~2–4 h + icon artwork |
+| 3 | **Weather honesty set** | Denied location silently defaults to NYC; per-correlation coverage still hardcodes 1.0 (NEW-DE-7/8) | ~2–3 h |
+| 4 | **Dead-code retirement** | Dead scaffolding — zero-caller code with zero behavior risk, verified call-site by call-site | ~3–5 h |
+| 5 | **Architectural tracks** (in blueprint order) | Split the `@Observable` store monolith (#3) → SQLite normalized core with dual-read migration (#1, blueprint + full post-mortem exist) → Swift 6 strict concurrency | Multi-session arc |
+| 6 | **Product decision needed** | Behavior Context Engine Phase-2: 81% of its file is dead scaffold — wire it (15–25 h, needs hardening) or delete it (1 session, 4.2k LOC). The audit recommends delete | Decision, then 1+ session |
+| 7 | **Mirage era — standing items** | TB-M0 observation cadence (7 consecutive ledger days → owner's exit gate → TB-M1; day-one receipt already green); Mirage app-embed exercise at the first CI run or an operator stage-into-app; a Mirage perf-budget report as deltas; the backup-surface wire gap named to the engine owner («docs/integration/final-acceptance-2026-10-18.md» ledgered deltas) | Process, not code |
+
+---
+
+## §6 · Documentation map
+
+Every deeper document has its own numbered ID and plain-English introduction. Start at any of them without guessing what a file is for:
+
+```text
+README.md                                    ← you are here
+docs/
+├── 01-project-tree.md                       Where every file lives
+├── registers/                               Living truth
+│   ├── 02-defect-register.md                Everything known to be broken or risky
+│   ├── 03-fix-log.md                        Everything fixed, with verification proof
+│   └── 04-handoff.md                        What to do next, in order
+├── roadmap/
+│   ├── 05-remediation-roadmap.md            The long-term plan, phase by phase
+│   └── 06-rsvp-feature-plan.md              Historical design record — RSVP SHIPPED (P5-B2)
+├── method/
+│   └── 07-testing-strategy.md               How tests are written and why
+├── audits/
+│   └── 08-deep-audit.md                     Full independent audit (Oct 2026) — file:line evidence for every claim
+├── integration/                             THE RT–MIRAGE MERGE CAMPAIGN (Oct 2026)
+│   ├── RT_Mirage_Codebase_Merge_Playbook.md The governing playbook — still executes the §22/TiB era
+│   ├── merge-log.md                         The campaign log of record (M-014… M-034+)
+│   ├── final-acceptance-2026-10-18.md       §18 acceptance checklist with receipts
+│   ├── evidence/                            §19 evidence bundle manifest + handoff bundle + receipt artifacts
+│   ├── adr/                                 The ADR register (transport, packaging, stratum, identity, lifecycle, spoiler contract, repo strategy, TiB charter)
+│   ├── phase1/                              Pre-ladder extraction: wire protocol, touchpoints, normative docs
+│   ├── rehearsals/                          §15 rehearsal log (rollbacks, backup restore, runtime swap)
+│   └── tib/                                 §22 Titanium Bridge — TB-M0 gate plan + observation ledger
+└── history/
+    ├── 09-final-traces.md                   Performance upgrade diary
+    ├── 10-profiler-fix.md                   The freeze post-mortem
+    ├── freeze.txt                           Raw 5-second `sample` capture taken during the actual freeze
+    ├── diagnostics-2026-08-26.txt           Raw build output from Aug 26
+    └── LAST_DEFEAT_demo_profiles.txt        The freeze hunt, told to be read by anyone
+```
+
+Campaign bookkeeping note: the root copies `merge-log.md` and `RT_Mirage_Codebase_Merge_Playbook.md` are the owner's personal kept snapshots — canonical, versioned copies live in `docs/integration/` and move forward there; the root copies are frozen at the campaign's close.
+
+**If you are new to the project,** read `docs/registers/04-handoff.md` next — it answers what was done, why, and what comes next in order.
+
+---
+
+## §7 · Build & run
+
+Requires a Mac with Xcode installed.
+
+1. **Open the project:** double-click `Reading Tracker.xcodeproj`
+2. **Run:** ⌘R (or the Play button)
+3. **Developer Console:** ⌘⇧D (Debug builds only)
+4. **Settings:** ⌘, — includes the **Mirage pane** (feature switch, engine availability)
+
+To verify from the command line:
+
+```bash
+xcodebuild build -project "Reading Tracker.xcodeproj" \
+  -scheme "Reading Tracker" \
+  -configuration Debug \
+  -destination 'platform=macOS'
+
+xcodebuild test -project "Reading Tracker.xcodeproj" \
+  -scheme "Reading Tracker" \
+  -configuration Debug \
+  -destination 'platform=macOS'
+```
+
+Both should end with `BUILD SUCCEEDED` / `TEST SUCCEEDED`. Run these **before and after every change** — the suite must be green at every boundary. Canonical census numbers come from `xcrun xcresulttool get test-results summary --path <latest .xcresult>`.
+
+Mirage real-engine development (opt-in only, never part of the default suite):
+
+```bash
+TEST_RUNNER_MIRAGE_REAL_ENGINE_DIR=/path/to/MirageV1.0 \
+  xcodebuild test -project "Reading Tracker.xcodeproj" \
+  -scheme "Reading Tracker" -configuration Debug \
+  -destination 'platform=macOS' \
+  -only-testing:"Reading TrackerTests/MirageIdentityRealEngineImportTests"
+```
+
+Builds under Desktop/iCloud paths must use the **default DerivedData** — a custom `-derivedDataPath` there breaks code signing (BUG-003's iCloud stamp root cause; see the defect register).
+
+---
+
+## §8 · The fix protocol (for contributors)
+
+Every fix in this repo's history followed the same three-step protocol, and new fixes must too:
+
+1. **Finality** — write down exactly what you are fixing and *why this fix is the right one*, before touching code
+2. **Log it** — record the entry in `docs/registers/03-fix-log.md`, with the root cause and proof of verification
+3. **Pin it** — add a named regression test that proves the bug cannot return (the test name should cite the defect ID)
+
+House rules:
+
+- **Start at the handoff** (`docs/registers/04-handoff.md`) and pick one small item from the register — each is marked with severity, confidence, and effort
+- **Baseline green first:** run the §7 commands and confirm the suite passes before editing anything
+- **Commit at every boundary** — never leave a fix uncommitted for more than a day
+- **During a freeze, profile first:** run `sample <pid>` before reasoning about performance (`docs/history/10-profiler-fix.md` is the proof this works)
+- **Honest reverts are successes:** a fix that never reaches Finality gets reverted and documented, never shipped half-broken
+- **Mirage-specific rules (from the merge playbook, standing):** never unify Mirage's store with RT's; never spawn a second sidecar lifecycle while one lives; work on `main`, one commit at a green census boundary
+
+---
+
+## Status
+
+**Healthy, building, fully tested, integrated, and honest about what remains.** The merge campaign is closed and signed. The next session starts at `docs/registers/04-handoff.md` — either the TB-M0 observation cadence (Mirage era) or §5 item 1 (the NEW-DE punch list), baseline green first, commit at every boundary — exactly as every session before it did.
