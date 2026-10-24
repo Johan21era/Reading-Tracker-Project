@@ -108,7 +108,10 @@ cd "$B" && find . -type f -print0 | xargs -0 shasum -a 256 > SHA256-MANIFEST.txt
 ```
 
 The snapshot is outside the repo. It is the rollback source if a test damages
-the live library.
+the live library. The owner deleted the earlier 2026-10-24 snapshots; this
+command creates a fresh one only when you choose to run it. If you do not keep
+local snapshots, make sure Time Machine or an external backup covers the live
+`Asterisma/` directory.
 
 ## How results are recorded
 

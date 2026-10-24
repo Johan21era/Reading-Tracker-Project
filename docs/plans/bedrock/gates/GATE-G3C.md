@@ -42,7 +42,7 @@
 3. Check out `bedrock-g3a` or the pre-Bedrock snapshot.
 4. The pre-Bedrock snapshot at
    `~/Desktop/ReadingTracker-Backups/2026-10-24-pre-bedrock/` is the last-resort
-   restore.
+   restore (historical; deleted by the owner on 2026-10-24).
 
 ## Known deltas
 

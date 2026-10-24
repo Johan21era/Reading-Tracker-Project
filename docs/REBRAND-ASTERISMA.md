@@ -74,11 +74,12 @@ The weather store migrates into the Asterisma root on next weather-service init.
 
 ## Rollback
 
-The pre-rename snapshot is at:
+The pre-rename snapshot was deleted by the owner on 2026-10-24:
 
 ```text
-~/Desktop/Asterisma-Backups/2026-10-24-pre-rename/
+~/Desktop/Asterisma-Backups/2026-10-24-pre-rename/   (deleted)
 ```
 
-Restore the folder as `ReadTracker`, then check out `bedrock-g8` (the last
-pre-rebrand release candidate) if needed.
+There is no local data snapshot anymore. Use Time Machine or an external
+backup if one exists, then check out `bedrock-g8` (the last pre-rebrand release
+candidate) if needed.

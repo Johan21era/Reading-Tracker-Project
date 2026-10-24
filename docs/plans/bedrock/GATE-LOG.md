@@ -32,4 +32,8 @@ accepted release at `0ec5127`, tag `asterisma-v1.0-owner-test-fixes`; candidate
 package SHA-256 `31dc0abf35ea7cba4eeb9ab8580b6a60eeee6e10086bc7d3759f174dd33447cc`.
 Owner retest is the acceptance gate.
 
+**Snapshot note:** the owner deleted all local backup snapshots on 2026-10-24.
+Rollback paths recorded in older gate receipts are historical; no local data
+snapshot remains. Use Time Machine or an external backup if one exists.
+
 **Standing rule:** no gate advances without an explicit owner APPROVE / CHANGES / STOP.

@@ -42,7 +42,8 @@
 git checkout bedrock-g0
 ```
 or restore the pre-Bedrock snapshot at
-`~/Desktop/ReadingTracker-Backups/2026-10-24-pre-bedrock/`.
+`~/Desktop/ReadingTracker-Backups/2026-10-24-pre-bedrock/` (historical; deleted
+by the owner on 2026-10-24).
 
 ## Decision requested
 

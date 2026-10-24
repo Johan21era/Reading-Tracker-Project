@@ -77,7 +77,7 @@ The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old �
 
 > **Owner-test authority:** the owner's personal test results are the absolute source of truth and override every benchmark, census, gate receipt, and documentation claim. See `docs/12-owner-test-authority.md`; record sessions in `docs/owner-test-results/`.
 
-**Live data:** `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` — 7 books / 292 sessions / 138,459 page timings. The pre-rename snapshot is at `~/Desktop/Asterisma-Backups/2026-10-24-pre-rename/`.
+**Live data:** `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` — 7 books / 292 sessions / 138,459 page timings. The owner deleted the local backup snapshots on 2026-10-24, so the live library is currently the only copy; rely on Time Machine or an external backup before risky work.
 
 **Docs map:** start at `README.md` → this handoff → `docs/plans/bedrock/` for the release gates → `docs/integration/` for anything Mirage.
 

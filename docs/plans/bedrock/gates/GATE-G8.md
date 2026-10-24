@@ -83,9 +83,9 @@ on top of the accepted release:
 git checkout asterisma-v1.0-mvp
 ```
 
-Data rollback: restore
-`~/Desktop/Asterisma-Backups/2026-10-24-pre-rename/ReadTracker/` as the
-application-support root and check out the pre-rebrand tag if needed.
+Data rollback: the pre-rename snapshot was deleted by the owner on 2026-10-24.
+No local data snapshot remains; use Time Machine or an external backup if one
+exists, and check out the pre-rebrand tag if needed.
 
 ## Decision
 

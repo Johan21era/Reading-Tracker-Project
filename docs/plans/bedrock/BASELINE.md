@@ -53,6 +53,7 @@
 ## Data snapshot
 
 - Destination: `~/Desktop/ReadingTracker-Backups/2026-10-24-pre-bedrock/`
+  (historical; deleted by the owner on 2026-10-24)
 - Contents: `ReadTracker/` app-support tree, 61 files, 102 MB
 - Checksum manifest: `SHA256-MANIFEST.txt`
 - This snapshot is outside the repo and is the rollback source of record.
