@@ -40,10 +40,10 @@ private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.sel
 public final class WeatherKitService: ObservableObject {
     public static let shared = WeatherKitService()
 
-    private let weatherService = WeatherService.shared
     private let store: WeatherSnapshotStore
     private let normaliser = WeatherSnapshotNormaliser()
     private let locationProvider: LocationProvider
+    private let provider: WeatherProviding
 
     #if DEBUG
     private(set) var consoleLastAttemptAt: Date?
@@ -54,10 +54,16 @@ public final class WeatherKitService: ObservableObject {
     private init() {
         store = WeatherSnapshotStore()
         locationProvider = LocationProvider()
+        provider = OpenMeteoProvider()
 
         #if DEBUG
         DeveloperConsoleRegistry.shared.register(self)
         #endif
+    }
+
+    /// Honest availability surface for the weather panel.
+    public var locationAuthorizationStatus: CLAuthorizationStatus {
+        locationProvider.authorizationStatus
     }
 
     // MARK: - Primary Session Attachment
@@ -71,18 +77,10 @@ public final class WeatherKitService: ObservableObject {
 
         let location = try await locationProvider.currentLocation()
 
-        let weather = try await weatherService.weather(
-            for: location,
-            including: .current, .hourly
-        )
-
-        let snapshot = normaliser.normalise(
-            current: weather.0,
-            hourly: weather.1,
-            at: Date(),
-            location: location,
-            sessionID: sessionID
-        )
+        // G4: Open-Meteo is the default provider. No WeatherKit entitlement
+        // is required, and the provider protocol keeps WeatherKit optional.
+        let snapshot = try await provider.snapshot(
+            at: Date(), location: location)
 
         try store.save(snapshot, sessionID: sessionID)
 
@@ -104,23 +102,12 @@ public final class WeatherKitService: ObservableObject {
             return cached
         }
 
-        let location = locationProvider.cachedLocation ?? locationProvider.defaultLocation
-
-        let hourlyWeather = try await weatherService.weather(
-            for: location,
-            including: .hourly(startDate: timestamp, endDate: timestamp.addingTimeInterval(3600))
-        )
-
-        guard let hourlyEntry = hourlyWeather.forecast.first else {
-            throw WeatherKitServiceError.noHistoricalDataAvailable(timestamp)
+        guard let location = locationProvider.cachedLocation else {
+            throw WeatherKitServiceError.locationUnavailable
         }
 
-        let snapshot = normaliser.normaliseFromHourly(
-            hourly: hourlyEntry,
-            at: timestamp,
-            location: location,
-            sessionID: sessionID
-        )
+        let snapshot = try await provider.snapshot(
+            at: timestamp, location: location)
 
         try store.save(snapshot, sessionID: sessionID)
 
@@ -134,23 +121,8 @@ public final class WeatherKitService: ObservableObject {
     ) async throws -> WeatherSnapshot {
         let location = try await locationProvider.currentLocation()
 
-        let hourlyForecast = try await weatherService.weather(
-            for: location,
-            including: .hourly(startDate: targetDate, endDate: targetDate.addingTimeInterval(3600))
-        )
-
-        guard let entry = hourlyForecast.forecast.first(where: {
-            Calendar.current.isDate($0.date, equalTo: targetDate, toGranularity: .hour)
-        }) else {
-            throw WeatherKitServiceError.noForecastAvailable(targetDate)
-        }
-
-        return normaliser.normaliseFromHourly(
-            hourly: entry,
-            at: targetDate,
-            location: location,
-            sessionID: nil
-        )
+        return try await provider.snapshot(
+            at: targetDate, location: location)
     }
 
     // MARK: - Bulk Historical Query
@@ -283,7 +255,7 @@ struct WeatherSnapshotNormaliser {
 
     // MARK: - Season
 
-    func deriveSeason(from date: Date, latitude: Double) -> SeasonalPeriod {
+    nonisolated func deriveSeason(from date: Date, latitude: Double) -> SeasonalPeriod {
         let month = Calendar.current.component(.month, from: date)
         let isNorthern = latitude >= 0
 
@@ -297,7 +269,7 @@ struct WeatherSnapshotNormaliser {
 
     // MARK: - DayPeriod
 
-    func deriveDayPeriod(from date: Date) -> DayPeriod {
+    nonisolated func deriveDayPeriod(from date: Date) -> DayPeriod {
         let hour = Calendar.current.component(.hour, from: date)
 
         switch hour {
@@ -350,6 +322,9 @@ final class WeatherSnapshotStore {
     init(directory: URL? = nil) {
         if let dir = directory {
             dbURL = dir.appendingPathComponent("weather_snapshots.sqlite3")
+        } else if let testRoot = RuntimeEnvironment.isolatedStoreDirectory {
+            RuntimeEnvironment.ensureDirectory(testRoot)
+            dbURL = testRoot.appendingPathComponent("weather_snapshots.sqlite3")
         } else {
             // ROADMAP 2.2 (O-8): was `.first!`. A guarded fallback keeps the app
             // alive (and diagnosable via the log line) if Application Support is
@@ -667,15 +642,14 @@ final class LocationProvider: NSObject, CLLocationManagerDelegate {
         }
     }
 
-    /// Fallback used only when no cached or manual location exists.
-    /// New York City. This will be wrong for most users;
-    /// the manual override path is the correct resolution.
-    let defaultLocation = CLLocation(latitude: 40.7128, longitude: -74.0060)
-
     override init() {
         super.init()
         manager.delegate = self
         restorePersistedLocation()
+    }
+
+    var authorizationStatus: CLAuthorizationStatus {
+        manager.authorizationStatus
     }
 
     func currentLocation() async throws -> CLLocation {
@@ -688,14 +662,17 @@ final class LocationProvider: NSObject, CLLocationManagerDelegate {
             return try await fetchOneTimeLocation()
         case .notDetermined:
             manager.requestWhenInUseAuthorization()
-            return cachedLocation ?? defaultLocation
+            if let cached = cachedLocation { return cached }
+            // G4: never invent a city while the user is deciding.
+            throw LocationError.permissionPending
         case .denied, .restricted:
             if let cached = cachedLocation {
                 return cached
             }
             throw LocationError.permissionDenied
         default:
-            return cachedLocation ?? defaultLocation
+            if let cached = cachedLocation { return cached }
+            throw LocationError.permissionDenied
         }
     }
 
@@ -764,6 +741,7 @@ final class LocationProvider: NSObject, CLLocationManagerDelegate {
     }
 
     enum LocationError: Error {
+        case permissionPending
         case permissionDenied
         case timeout
     }

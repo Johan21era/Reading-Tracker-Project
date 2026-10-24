@@ -727,8 +727,10 @@ public extension WeatherAnalysisEngine {
     // MARK: Full Correlation Analysis
 
     func analyzeCorrelations(
-        from sessions: [EnvironmentalSessionRecord]
+        from sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double? = nil
     ) -> [EnvironmentalCorrelation] {
+        let coverage = dataCoverageRatio ?? 1.0
         guard sessions.count >= 5 else {
             return []
         }
@@ -736,31 +738,31 @@ public extension WeatherAnalysisEngine {
         var correlations: [EnvironmentalCorrelation] = []
 
         correlations.append(contentsOf:
-            analyzeTemperatureCorrelations(from: sessions))
+            analyzeTemperatureCorrelations(from: sessions, dataCoverageRatio: coverage))
 
         correlations.append(contentsOf:
-            analyzeHumidityCorrelations(from: sessions))
+            analyzeHumidityCorrelations(from: sessions, dataCoverageRatio: coverage))
 
         correlations.append(contentsOf:
-            analyzePressureCorrelations(from: sessions))
+            analyzePressureCorrelations(from: sessions, dataCoverageRatio: coverage))
 
         correlations.append(contentsOf:
-            analyzeCloudCoverCorrelations(from: sessions))
+            analyzeCloudCoverCorrelations(from: sessions, dataCoverageRatio: coverage))
 
         correlations.append(contentsOf:
-            analyzeVisibilityCorrelations(from: sessions))
+            analyzeVisibilityCorrelations(from: sessions, dataCoverageRatio: coverage))
 
         correlations.append(contentsOf:
-            analyzeWindSpeedCorrelations(from: sessions))
+            analyzeWindSpeedCorrelations(from: sessions, dataCoverageRatio: coverage))
 
         correlations.append(contentsOf:
-            analyzeRainCorrelations(from: sessions))
+            analyzeRainCorrelations(from: sessions, dataCoverageRatio: coverage))
 
         correlations.append(contentsOf:
-            analyzeSnowCorrelations(from: sessions))
+            analyzeSnowCorrelations(from: sessions, dataCoverageRatio: coverage))
 
         correlations.append(contentsOf:
-            analyzeStormCorrelations(from: sessions))
+            analyzeStormCorrelations(from: sessions, dataCoverageRatio: coverage))
 
         return correlations.sorted {
             abs($0.influenceScore) > abs($1.influenceScore)
@@ -774,7 +776,8 @@ public extension WeatherAnalysisEngine {
         dataCoverageRatio: Double? = nil
     ) -> WeatherTrendReport {
         let correlations = analyzeCorrelations(
-            from: sessions
+            from: sessions,
+            dataCoverageRatio: dataCoverageRatio
         )
 
         let strongest = correlations
@@ -815,7 +818,8 @@ public extension WeatherAnalysisEngine {
         )
 
         let correlations = analyzeCorrelations(
-            from: sessions
+            from: sessions,
+            dataCoverageRatio: dataCoverageRatio
         )
 
         let insights = generateInsights(
@@ -1011,7 +1015,8 @@ private extension WeatherAnalysisEngine {
         dataCoverageRatio: Double? = nil
     ) -> WeatherInfluenceProfile {
         let correlations = analyzeCorrelations(
-            from: sessions
+            from: sessions,
+            dataCoverageRatio: dataCoverageRatio
         )
 
         let strongestPositive = correlations
@@ -1066,110 +1071,128 @@ private extension WeatherAnalysisEngine {
     // MARK: Temperature Correlations
 
     func analyzeTemperatureCorrelations(
-        from sessions: [EnvironmentalSessionRecord]
+        from sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double
     ) -> [EnvironmentalCorrelation] {
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.temperatureCelsius },
             metricExtractor: { $0.readingSpeed },
             factor: .temperature,
-            metric: .readingSpeed
+            metric: .readingSpeed,
+            dataCoverageRatio: dataCoverageRatio
         )
     }
 
     func analyzeHumidityCorrelations(
-        from sessions: [EnvironmentalSessionRecord]
+        from sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double
     ) -> [EnvironmentalCorrelation] {
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.humidity },
             metricExtractor: { $0.engagementScore },
             factor: .humidity,
-            metric: .engagement
+            metric: .engagement,
+            dataCoverageRatio: dataCoverageRatio
         )
     }
 
     func analyzePressureCorrelations(
-        from sessions: [EnvironmentalSessionRecord]
+        from sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double
     ) -> [EnvironmentalCorrelation] {
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.pressure },
             metricExtractor: { $0.consistencyScore },
             factor: .pressure,
-            metric: .readingConsistency
+            metric: .readingConsistency,
+            dataCoverageRatio: dataCoverageRatio
         )
     }
 
     func analyzeCloudCoverCorrelations(
-        from sessions: [EnvironmentalSessionRecord]
+        from sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double
     ) -> [EnvironmentalCorrelation] {
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.cloudCover },
             metricExtractor: { $0.engagementScore },
             factor: .cloudCover,
-            metric: .engagement
+            metric: .engagement,
+            dataCoverageRatio: dataCoverageRatio
         )
     }
 
     func analyzeVisibilityCorrelations(
-        from sessions: [EnvironmentalSessionRecord]
+        from sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double
     ) -> [EnvironmentalCorrelation] {
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.visibilityKilometers },
             metricExtractor: { $0.readingDurationMinutes },
             factor: .visibility,
-            metric: .readingDuration
+            metric: .readingDuration,
+            dataCoverageRatio: dataCoverageRatio
         )
     }
 
     func analyzeWindSpeedCorrelations(
-        from sessions: [EnvironmentalSessionRecord]
+        from sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double
     ) -> [EnvironmentalCorrelation] {
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.windSpeedKPH },
             metricExtractor: { $0.momentumScore },
             factor: .windSpeed,
-            metric: .momentum
+            metric: .momentum,
+            dataCoverageRatio: dataCoverageRatio
         )
     }
 
     func analyzeRainCorrelations(
-        from sessions: [EnvironmentalSessionRecord]
+        from sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double
     ) -> [EnvironmentalCorrelation] {
         return buildBinaryConditionCorrelation(
             sessions: sessions,
             conditionExtractor: { $0.weather.precipitationMillimeters > 0 },
             metricExtractor: { $0.readingDurationMinutes },
             factor: .rain,
-            metric: .readingDuration
+            metric: .readingDuration,
+            dataCoverageRatio: dataCoverageRatio
         )
     }
 
     func analyzeSnowCorrelations(
-        from sessions: [EnvironmentalSessionRecord]
+        from sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double
     ) -> [EnvironmentalCorrelation] {
         return buildBinaryConditionCorrelation(
             sessions: sessions,
             conditionExtractor: { $0.weather.snowfallMillimeters > 0 },
             metricExtractor: { $0.readingDurationMinutes },
             factor: .snow,
-            metric: .readingDuration
+            metric: .readingDuration,
+            dataCoverageRatio: dataCoverageRatio
         )
     }
 
     func analyzeStormCorrelations(
-        from sessions: [EnvironmentalSessionRecord]
+        from sessions: [EnvironmentalSessionRecord],
+        dataCoverageRatio: Double
     ) -> [EnvironmentalCorrelation] {
         return buildCorrelation(
             sessions: sessions,
             factorExtractor: { $0.weather.stormActivityIndex },
             metricExtractor: { $0.engagementScore },
             factor: .stormActivity,
-            metric: .engagement
+            metric: .engagement,
+            dataCoverageRatio: dataCoverageRatio
         )
     }
 }
@@ -1192,7 +1215,8 @@ private extension WeatherAnalysisEngine {
         factorExtractor: (EnvironmentalSessionRecord) -> Double,
         metricExtractor: (EnvironmentalSessionRecord) -> Double,
         factor: EnvironmentalFactor,
-        metric: ReadingBehaviorMetric
+        metric: ReadingBehaviorMetric,
+        dataCoverageRatio: Double = 1.0
     ) -> [EnvironmentalCorrelation] {
         guard sessions.count >= 5 else { return [] }
 
@@ -1218,7 +1242,8 @@ private extension WeatherAnalysisEngine {
             sampleCount: sessions.count,
             recurrence: significance,
             stability: abs(coefficient),
-            consistency: averageConsistency(pairs)
+            consistency: averageConsistency(pairs),
+            dataCoverageScore: dataCoverageRatio
         )
 
         guard let bounds = chronologicalBounds(sessions) else { return [] }
@@ -1244,7 +1269,8 @@ private extension WeatherAnalysisEngine {
         conditionExtractor: (EnvironmentalSessionRecord) -> Bool,
         metricExtractor: (EnvironmentalSessionRecord) -> Double,
         factor: EnvironmentalFactor,
-        metric: ReadingBehaviorMetric
+        metric: ReadingBehaviorMetric,
+        dataCoverageRatio: Double = 1.0
     ) -> [EnvironmentalCorrelation] {
         guard sessions.count >= 5 else { return [] }
 
@@ -1273,7 +1299,8 @@ private extension WeatherAnalysisEngine {
             stability: abs(coefficient),
             // Measured group separation stands in for consistency here —
             // larger separation = more consistent discrimination.
-            consistency: max(0, min(1, abs(coefficient)))
+            consistency: max(0, min(1, abs(coefficient))),
+            dataCoverageScore: dataCoverageRatio
         )
 
         guard let bounds = chronologicalBounds(sessions) else { return [] }
@@ -1393,7 +1420,8 @@ private extension WeatherAnalysisEngine {
         sampleCount: Int,
         recurrence: Double,
         stability: Double,
-        consistency: Double
+        consistency: Double,
+        dataCoverageScore: Double = 1.0
     ) -> ConfidenceReport {
         let sampleSizeScore = min(1.0, Double(sampleCount) / 100.0)
 
@@ -1401,7 +1429,8 @@ private extension WeatherAnalysisEngine {
             (sampleSizeScore +
                 recurrence +
                 stability +
-                consistency) / 4.0
+                consistency +
+                dataCoverageScore) / 5.0
 
         return ConfidenceReport(
             overallConfidence: overall,
@@ -1409,7 +1438,7 @@ private extension WeatherAnalysisEngine {
             recurrenceScore: recurrence,
             stabilityScore: stability,
             consistencyScore: consistency,
-            dataCoverageScore: 1.0,
+            dataCoverageScore: dataCoverageScore,
             supportingSamples: sampleCount
         )
     }

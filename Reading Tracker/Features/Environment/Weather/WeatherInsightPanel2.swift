@@ -21,6 +21,7 @@
 //  much of the analyzed history genuinely has persisted weather — no more
 //  hardcoded 1.0.
 
+import CoreLocation
 import SwiftUI
 
 private let minimumSessionsForWeather = 5
@@ -35,22 +36,39 @@ struct WeatherInsightPanel: View {
     @State private var isLoading = true
     @State private var sessionCount = 0
     @State private var errorMessage: String?
+    @State private var locationDenied = false
 
     var body: some View {
         NavigationStack {
-            Group {
-                if isLoading {
-                    ProgressView("Loading weather data…")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if let error = errorMessage {
-                    errorState(message: error)
-                } else if sessionCount < minimumSessionsForWeather {
-                    tooLittleDataState
-                } else if let profile {
-                    content(profile: profile)
-                } else {
-                    tooLittleDataState
+            VStack(spacing: 0) {
+                if locationDenied {
+                    HStack(spacing: 8) {
+                        Image(systemName: "location.slash.fill")
+                        Text("Location is off, so new weather data is paused. Enable Location for Reading Tracker in System Settings to resume.")
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer()
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(10)
+                    .background(Color.orange.opacity(0.10))
                 }
+
+                Group {
+                    if isLoading {
+                        ProgressView("Loading weather data…")
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    } else if let error = errorMessage {
+                        errorState(message: error)
+                    } else if sessionCount < minimumSessionsForWeather {
+                        tooLittleDataState
+                    } else if let profile {
+                        content(profile: profile)
+                    } else {
+                        tooLittleDataState
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .navigationTitle("Environment")
             .toolbar {
@@ -260,6 +278,8 @@ struct WeatherInsightPanel: View {
     private func load() async {
         isLoading = true
         errorMessage = nil
+        let status = WeatherKitService.shared.locationAuthorizationStatus
+        locationDenied = (status == .denied || status == .restricted)
 
         do {
             let records = try buildEnvironmentalRecords()
@@ -285,7 +305,9 @@ struct WeatherInsightPanel: View {
             // only decides which of its results have earned the right to
             // be shown (DataMaturityWeatherAdapter asks per-correlation).
             correlations = DataMaturityWeatherAdapter
-                .gate(engine.analyzeCorrelations(from: records))
+                .gate(engine.analyzeCorrelations(
+                    from: records,
+                    dataCoverageRatio: coverage))
                 .map(\.correlation)
             trend = engine.generateTrendReport(
                 sessions: records,
@@ -336,7 +358,11 @@ struct WeatherInsightPanel: View {
                     < abs($1.timestamp.timeIntervalSince(session.startTime))
             }
 
-            guard let snap = snapshot else { continue }
+            // G4: a snapshot more than an hour from the session is not evidence
+            // about that session. Do not bind sparse weather to old sessions.
+            guard let snap = snapshot,
+                  abs(snap.timestamp.timeIntervalSince(session.startTime)) <= 3600
+            else { continue }
 
             // AnalyticsEngine.adjustedReadingSpeed returns seconds/page
             let secsPerPage = AnalyticsEngine.adjustedReadingSpeed(for: book)

@@ -42,6 +42,11 @@ struct SettingsRootView: View {
                     Label("Speed Reading", systemImage: "hare")
                 }
 
+            WeatherSettingsPane()
+                .tabItem {
+                    Label("Weather", systemImage: "cloud.sun")
+                }
+
             SentinelSettingsPane()
                 .tabItem {
                     Label("Sentinel", systemImage: "shield.lefthalf.filled")
@@ -371,6 +376,76 @@ struct MirageSettingsPane: View {
 
     private var availabilityIcon: String {
         engineChannel == nil ? "info.circle" : "checkmark.circle"
+    }
+}
+
+// MARK: - Weather Settings (G4)
+
+struct WeatherSettingsPane: View {
+    @State private var latitude = ""
+    @State private var longitude = ""
+    @State private var saved = false
+
+    var body: some View {
+        Form {
+            Section {
+                Text("Weather uses your approximate location to capture conditions during reading sessions. If Location is off, set a manual latitude/longitude here.")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                TextField("Latitude (e.g. 40.7128)", text: $latitude)
+                TextField("Longitude (e.g. -74.0060)", text: $longitude)
+                HStack {
+                    Button("Save Location") { save() }
+                        .keyboardShortcut(.defaultAction)
+                    Button("Clear") { clear() }
+                    if saved {
+                        Label("Saved", systemImage: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                            .font(.caption)
+                    }
+                }
+            } header: {
+                Text("Location")
+            } footer: {
+                Text("Leave both fields empty to use macOS Location Services.")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .formStyle(.grouped)
+        .onAppear(perform: load)
+    }
+
+    private func load() {
+        let defaults = UserDefaults.standard
+        let lat = defaults.double(forKey: "wks_manual_lat")
+        let lon = defaults.double(forKey: "wks_manual_lon")
+        if lat != 0 || lon != 0 {
+            latitude = String(lat)
+            longitude = String(lon)
+        }
+    }
+
+    private func save() {
+        guard let lat = Double(latitude), let lon = Double(longitude),
+              (-90 ... 90).contains(lat), (-180 ... 180).contains(lon)
+        else {
+            saved = false
+            return
+        }
+        let defaults = UserDefaults.standard
+        defaults.set(lat, forKey: "wks_manual_lat")
+        defaults.set(lon, forKey: "wks_manual_lon")
+        saved = true
+    }
+
+    private func clear() {
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: "wks_manual_lat")
+        defaults.removeObject(forKey: "wks_manual_lon")
+        latitude = ""
+        longitude = ""
+        saved = true
     }
 }
 
