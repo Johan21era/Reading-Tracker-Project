@@ -36,6 +36,10 @@
 - Release package: `dist/AsterismaV1.0-1.0-arm64.zip`
 - SHA-256: `06078dea3f21d81d6e9f2ca5a3dfa659f46ad8f2beccb7ceb17fa041df67b774`
 
+**Post-acceptance authority:** the owner's personal test results are the
+absolute source of truth from 2026-10-24 onward and override this receipt and
+every prior benchmark/census. See `docs/12-owner-test-authority.md`.
+
 ## Known deltas (must be read with acceptance)
 
 1. **Swift 6 language mode deferred.** Strict mode produced 148 actor-isolation

@@ -6,6 +6,8 @@
 
 > **Release status (2026-10-24):** `AsterismaV1.0` is merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`) and pushed to GitHub. Release package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `06078dea3f21d81d6e9f2ca5a3dfa659f46ad8f2beccb7ceb17fa041df67b774`. It is ad-hoc signed, not notarized; first launch requires right-click → Open.
 
+> **Owner-test authority (2026-10-24):** results from Johan's personal testing are the **absolute source of truth** and override all previous benchmarks, censuses, gate receipts, and documentation claims. See `docs/12-owner-test-authority.md`; sessions are recorded in `docs/owner-test-results/` and pinned by tag `owner-test-authority-2026-10-24`.
+
 ---
 
 ## Contents
@@ -134,6 +136,7 @@ Checked directly against the merged `main` worktree on 2026-10-24 — not inheri
 - ✅ Live library intact after the data-root migration: **7 books / 292 sessions / 138,459 page timings**.
 - ✅ Release package built, ad-hoc signed, `codesign --verify --deep --strict` passes, and the packaged-app launch smoke passes.
 - ✅ `main == origin/main` at `aba8aa4`; all release and Bedrock tags are pushed. The working tree is clean except the untracked `.obsidian/` vault config.
+- 👑 **Owner-test authority:** the owner's personal test results outrank every item above. See `docs/12-owner-test-authority.md`.
 
 ---
 
@@ -178,6 +181,8 @@ docs/
 │   ├── 08-deep-audit.md                     Full independent audit (Oct 2026) — file:line evidence for every claim
 │   └── 11-completion-and-health-report-2026-10-24.md  Bedrock-era completion and health snapshot
 ├── plans/bedrock/                           G0–G8 gate record, master plan, baseline, distribution notes
+├── 12-owner-test-authority.md               Owner results are the absolute source of truth
+├── owner-test-results/                      Personal test sessions + template
 ├── REBRAND-ASTERISMA.md                     Asterisma rename + data-root migration record
 ├── integration/                             THE RT–MIRAGE MERGE CAMPAIGN (Oct 2026)
 │   ├── RT_Mirage_Codebase_Merge_Playbook.md The governing playbook — still executes the §22/TiB era

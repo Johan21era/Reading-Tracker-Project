@@ -47,6 +47,8 @@ Every documentation file begins with a number so you can read them in order:
 | `docs/audits/11-completion-and-health-report-2026-10-24.md` | 11 | Bedrock-era completion and health snapshot | Anyone reviewing the release |
 | `docs/REBRAND-ASTERISMA.md` | — | Asterisma rename + data-root migration record | Anyone touching names, paths, or the bundle ID |
 | `docs/plans/bedrock/` | — | G0–G8 gate record, master plan, baseline, distribution notes | Anyone auditing the release |
+| `docs/12-owner-test-authority.md` | 12 | The owner's personal test results are the absolute source of truth | Everyone — this overrides all other claims |
+| `docs/owner-test-results/` | — | Personal test sessions, template, and evidence | The owner, then anyone acting on the results |
 | `docs/history/09-final-traces.md` | 09 | Diary of the performance upgrade marathon | Anyone interested in performance history |
 | `docs/history/10-profiler-fix.md` | 10 | The story of how the big freeze was finally fixed | Anyone interested in the freeze mystery |
 

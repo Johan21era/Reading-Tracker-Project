@@ -21,4 +21,9 @@
 `origin/main`; all seven release/Bedrock tags pushed. The merged worktree
 re-ran the census at **212 passed / 0 failed / 9 skipped**.
 
+**Owner-test authority:** from 2026-10-24 onward, the owner's personal test
+results are the **absolute source of truth** and override all gate receipts,
+censuses, benchmarks, and documentation claims above. See
+`docs/12-owner-test-authority.md`; policy tag `owner-test-authority-2026-10-24`.
+
 **Standing rule:** no gate advances without an explicit owner APPROVE / CHANGES / STOP.

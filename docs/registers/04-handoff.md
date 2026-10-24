@@ -75,6 +75,8 @@ The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old �
 
 **Baseline:** `main == origin/main` at `aba8aa4`; census **212 passed / 0 failed / 9 skipped**; release tag `asterisma-v1.0-mvp`; package `dist/AsterismaV1.0-1.0-arm64.zip` with SHA-256 `06078dea3f21d81d6e9f2ca5a3dfa659f46ad8f2beccb7ceb17fa041df67b774`. Canonical census numbers come from `xcrun xcresulttool get test-results summary`.
 
+> **Owner-test authority:** the owner's personal test results are the absolute source of truth and override every benchmark, census, gate receipt, and documentation claim. See `docs/12-owner-test-authority.md`; record sessions in `docs/owner-test-results/`.
+
 **Live data:** `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` — 7 books / 292 sessions / 138,459 page timings. The pre-rename snapshot is at `~/Desktop/Asterisma-Backups/2026-10-24-pre-rename/`.
 
 **Docs map:** start at `README.md` → this handoff → `docs/plans/bedrock/` for the release gates → `docs/integration/` for anything Mirage.
@@ -83,6 +85,7 @@ The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old �
 - Whole-file rewrites only for `BehaviorContextEngine2` and `BehavioralCategory`.
 - `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` — every background path needs explicit `nonisolated`.
 - Census green at every boundary; `-derivedDataPath` is forbidden on Desktop/iCloud checkouts (BUG-003).
+- **Owner results outrank the census.** A personal test failure is a real failure even if the suite is green; record it and fix it.
 - Data root is `Application Support/Asterisma/`; the legacy `ReadTracker/` name is migration-only.
 - The bundle ID is intentionally stable for this MVP; changing it needs a container migration.
 - **Mirage rules:** never unify the two stores; entries are born only from validated receipts; one sidecar lifecycle per gesture; spoiler detail surfaces stay disabled until a verified calibration amendment (ADR-7, fail-closed).

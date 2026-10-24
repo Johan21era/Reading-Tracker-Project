@@ -8,6 +8,8 @@ This describes **what to build so the same classes of bug get caught automatical
 
 **Status:** Current as of the AsterismaV1.0 release (2026-10-24), after the Bedrock and rebrand programs. The audit-era "step zero" (the test target running one placeholder) was resolved long ago: the suite is now real, wide, and enforced at every work boundary.
 
+> **Precedence:** the automated census is a strong early-warning system, not the final judge. The owner's personal test results are the absolute source of truth and override every benchmark, census, gate receipt, and documentation claim. See `docs/12-owner-test-authority.md`.
+
 ---
 
 ## The test landscape today
