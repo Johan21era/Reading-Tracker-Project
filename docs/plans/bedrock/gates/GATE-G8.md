@@ -40,6 +40,20 @@
 absolute source of truth from 2026-10-24 onward and override this receipt and
 every prior benchmark/census. See `docs/12-owner-test-authority.md`.
 
+### Owner-test fixes (post-acceptance)
+
+The first owner run found three defects the green census missed. They are fixed
+on top of the accepted release:
+
+- Commit `0ec5127`; tag `asterisma-v1.0-owner-test-fixes`.
+- Package: `dist/AsterismaV1.0-1.0-arm64.zip`
+- SHA-256: `31dc0abf35ea7cba4eeb9ab8580b6a60eeee6e10086bc7d3759f174dd33447cc`
+- F1: packaged app now carries its sandbox/entitlements.
+- F2: onboarding Finish now dismisses the sheet.
+- F3: Add Book accepts iBooks-style unzipped `.epub` directories.
+- Regression pin: `FolderEPUBImportTests`.
+- Owner retest is the acceptance gate for this candidate.
+
 ## Known deltas (must be read with acceptance)
 
 1. **Swift 6 language mode deferred.** Strict mode produced 148 actor-isolation

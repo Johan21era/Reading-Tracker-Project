@@ -285,6 +285,7 @@ store to SQLite, and finished with the Asterisma rebrand. Gate receipts live in
 | G7 | −1,157 lines of dead code; Swift 6 deferred (148 actor-isolation errors) | `gates/GATE-G7.md` |
 | G8 | Release candidate accepted: census 213/0/9, package + launch smoke | `gates/GATE-G8.md` |
 | R1 | AsterismaV1.0 rebrand + `ReadTracker` → `Asterisma` data-root migration | `docs/REBRAND-ASTERISMA.md` |
+| OT | Owner-test fixes: packaged entitlements, onboarding dismissal, folder-form EPUB import | `docs/owner-test-results/2026-10-24-session-1.md` |
 
 **Live-data receipt after migration:** 7 books / 292 sessions / 138,459 page
 timings. The app relaunched successfully from `Application Support/Asterisma/`.
