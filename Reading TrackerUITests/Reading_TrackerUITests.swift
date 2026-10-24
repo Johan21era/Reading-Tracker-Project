@@ -19,7 +19,7 @@ final class Reading_TrackerUITests: XCTestCase {
     @MainActor
     func testExample() {
         // UI tests must launch the application that they test.
-        let app = XCUIApplication()
+        let app = makeIsolatedApp()
         app.launch()
 
         // Use XCTAssert and related functions to verify your tests produce the correct results.
@@ -31,7 +31,7 @@ final class Reading_TrackerUITests: XCTestCase {
     func testLaunchPerformance() {
         // This measures how long it takes to launch your application.
         measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
+            makeIsolatedApp().launch()
         }
     }
 }

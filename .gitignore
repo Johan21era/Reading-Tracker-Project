@@ -12,6 +12,10 @@ build/
 *.xcresult/
 *.xctestrun
 
+# Packaged Mirage runtime (staged locally; never commit a 47 MB interpreter)
+.mirage-runtime/
+dist/
+
 # Generated code-analysis output — track the graph deliverables, ignore the ephemera
 graphify-out/**
 !graphify-out/graph.json

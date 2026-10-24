@@ -16,6 +16,9 @@
 	<true/>
 	<key>com.apple.security.network.client</key>
 	<true/>
+	<!-- G2: sandboxed CoreLocation access for Open-Meteo weather. -->
+	<key>com.apple.security.personal-information.location</key>
+	<true/>
 	<!-- ROADMAP 3.2 (RA-002 / NA-4): AudioMonitorService queries Music.app and
 	     Spotify via NSAppleScript every 60 s during reading sessions. Its own
 	     header has always declared this entitlement REQUIRED; without it the

@@ -2,8 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleIdentifier</key>
-	<string></string>
+	<!-- G2: CFBundleIdentifier is supplied by PRODUCT_BUNDLE_IDENTIFIER.
+	     The old empty key was confusing and could shadow the generated value. -->
 	<!-- ROADMAP 3.2 (RA-002 / NA-4): usage descriptions for permissions this
 	     app actually requests at runtime. GENERATE_INFOPLIST_FILE=YES merges
 	     these keys with the generated plist.

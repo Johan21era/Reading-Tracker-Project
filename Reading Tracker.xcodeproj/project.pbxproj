@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CA272B662FE05F8D0031387F /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = CA272B652FE05F8D0031387F /* ZIPFoundation */; };
+		CA272B912FE066670031387F /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = CA272B922FE066670031387F /* GRDB */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CA272B662FE05F8D0031387F /* ZIPFoundation in Frameworks */,
+				CA272B912FE066670031387F /* GRDB in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,6 +119,7 @@
 				CA272B232FE04E910031387F /* Sources */,
 				CA272B242FE04E910031387F /* Frameworks */,
 				CA272B252FE04E910031387F /* Resources */,
+				CA272B902FE066670031387F /* Embed Mirage Runtime */,
 			);
 			buildRules = (
 			);
@@ -128,6 +131,7 @@
 			name = "Reading Tracker";
 			packageProductDependencies = (
 				CA272B652FE05F8D0031387F /* ZIPFoundation */,
+				CA272B922FE066670031387F /* GRDB */,
 			);
 			productName = "Reading Tracker";
 			productReference = CA272B272FE04E910031387F /* Reading Tracker.app */;
@@ -213,6 +217,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				CA272B642FE05F8D0031387F /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				CA272B932FE066670031387F /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CA272B282FE04E910031387F /* Products */;
@@ -250,6 +255,25 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+		CA272B902FE066670031387F /* Embed Mirage Runtime */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Mirage Runtime";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "set -euo pipefail\nSTAGE=\"${MIRAGE_RUNTIME_STAGE:-$SRCROOT/.mirage-runtime/mirage-runtime}\"\nDEST=\"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/mirage-runtime\"\nif [ ! -d \"$STAGE\" ]; then\n  echo \"warning: Mirage runtime stage missing at $STAGE — building without Mirage\"\n  exit 0\nfi\nrm -rf \"$DEST\"\n/usr/bin/ditto \"$STAGE\" \"$DEST\"\n# Verify the two manifest-pinned file hashes before declaring the bundle usable.\nMANIFEST=\"$DEST/RUNTIME-MANIFEST.json\"\nif [ -f \"$MANIFEST\" ]; then\n  PY_SHA=$(/usr/bin/shasum -a 256 \"$DEST/bin/python3.12\" | awk '{print $1}')\n  SIDECAR_SHA=$(/usr/bin/shasum -a 256 \"$DEST/examples/mirage_sidecar.py\" | awk '{print $1}')\n  grep -q \"$PY_SHA\" \"$MANIFEST\"\n  grep -q \"$SIDECAR_SHA\" \"$MANIFEST\"\nfi\necho \"Embedded Mirage runtime at $DEST\"\n";
+		};
 /* Begin PBXSourcesBuildPhase section */
 		CA272B232FE04E910031387F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -423,7 +447,8 @@
 				CODE_SIGN_ENTITLEMENTS = "Reading Tracker.entitlements";
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Reading-Tracker-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
@@ -459,7 +484,8 @@
 				CODE_SIGN_ENTITLEMENTS = "Reading Tracker.entitlements";
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_USER_SELECTED_FILES = readwrite;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Reading-Tracker-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.books";
@@ -612,6 +638,14 @@
 				minimumVersion = 0.9.20;
 			};
 		};
+		CA272B932FE066670031387F /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.9.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -619,6 +653,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CA272B642FE05F8D0031387F /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
+		};
+		CA272B922FE066670031387F /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CA272B932FE066670031387F /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = GRDB;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

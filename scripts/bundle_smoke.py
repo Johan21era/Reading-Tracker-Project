@@ -33,10 +33,12 @@ def main() -> int:
     work = tempfile.mkdtemp(prefix="bundle-smoke-")
     proc = None
     try:
+        env = dict(os.environ)
+        env["PYTHONDONTWRITEBYTECODE"] = "1"
         proc = subprocess.Popen(
-            [python, sidecar, os.path.join(work, "smoke.sqlite3")],
+            [python, "-B", sidecar, os.path.join(work, "smoke.sqlite3")],
             cwd=stage, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, text=True, bufsize=1)
+            stderr=subprocess.PIPE, text=True, bufsize=1, env=env)
         banner = proc.stdout.readline().strip()
         if not banner:
             stderr = proc.stderr.read()

@@ -9,7 +9,7 @@ import Testing
 
 @testable import Reading_Tracker
 
-@Suite("Sentinel Engine")
+@Suite("Sentinel Engine", .serialized)
 @MainActor
 final class SentinelPinsTests {
 
@@ -25,6 +25,7 @@ final class SentinelPinsTests {
     }
 
     private var libraryURL: URL { dir.appendingPathComponent("library.json") }
+    private var testJournalURL: URL { dir.appendingPathComponent("sentinel-journal.jsonl") }
 
     /// runCycle now defers its @Published writes to the next runloop turn
     /// (UI-render safety). Await this after each cycle in tests.
@@ -48,7 +49,7 @@ final class SentinelPinsTests {
 
     @Test("Orphan session >24h is DETECTED and AUTO-FIXED through audited API")
     func orphanSessionAutoFixed() async {
-        let engine = SentinelEngine(defaults: UserDefaults(suiteName: "sentinel-test")!, probes: [OrphanedActiveSessionProbe()])
+        let engine = SentinelEngine(defaults: UserDefaults(suiteName: "sentinel-test")!, probes: [OrphanedActiveSessionProbe()], journalURL: testJournalURL)
         let store = makeStore { book in
             let staleStart = Date().addingTimeInterval(-48 * 3600)
             let session = ReadingSession(bookID: book.id, startTime: staleStart, startPage: 0, endPage: 5)
@@ -72,7 +73,8 @@ final class SentinelPinsTests {
         let ghost = UUID()
         let engine = SentinelEngine(
             defaults: UserDefaults(suiteName: "sentinel-test")!,
-            probes: [IntegrityProbe()]
+            probes: [IntegrityProbe()],
+            journalURL: testJournalURL
         )
         let store = makeStore { book in
             book.activeSessionID = ghost // points at a session that doesn't exist
@@ -89,7 +91,8 @@ final class SentinelPinsTests {
     func stalledFindingsStayStalled() async {
         let engine = SentinelEngine(
             defaults: UserDefaults(suiteName: "sentinel-test")!,
-            probes: [DeadlineOverdueProbe()]
+            probes: [DeadlineOverdueProbe()],
+            journalURL: testJournalURL
         )
         let store = DataStore(fileURL: libraryURL)
         var book = Book(title: "Overdue", author: "A",
@@ -118,7 +121,7 @@ final class SentinelPinsTests {
         let before = Set((try? fm.contentsOfDirectory(at: dir, includingPropertiesForKeys: [.contentModificationDateKey]))?
             .map(\.lastPathComponent) ?? [])
 
-        let engine = SentinelEngine(defaults: UserDefaults(suiteName: "sentinel-test")!)
+        let engine = SentinelEngine(defaults: UserDefaults(suiteName: "sentinel-test")!, journalURL: testJournalURL)
         engine.setJournalURLForTesting(dir.appendingPathComponent("sentinel-journal.jsonl"))
         engine.runCycle()
         await settleAfterCycle()
@@ -146,7 +149,7 @@ final class SentinelPinsTests {
         let defaults = UserDefaults(suiteName: "sentinel-killswitch")!
         defaults.set(false, forKey: SentinelEngine.enabledKey)
 
-        let engine = SentinelEngine(defaults: defaults, probes: [OrphanedActiveSessionProbe()])
+        let engine = SentinelEngine(defaults: defaults, probes: [OrphanedActiveSessionProbe()], journalURL: testJournalURL)
         let store = makeStore { book in
             let stale = Date().addingTimeInterval(-72 * 3600)
             let s = ReadingSession(bookID: book.id, startTime: stale, startPage: 0, endPage: 2)
@@ -165,7 +168,7 @@ final class SentinelPinsTests {
 
     @Test("Journal is append-only JSONL with cycle summaries")
     func journalAppends() async throws {
-        let engine = SentinelEngine(defaults: UserDefaults(suiteName: "sentinel-test")!)
+        let engine = SentinelEngine(defaults: UserDefaults(suiteName: "sentinel-test")!, journalURL: testJournalURL)
         engine.setJournalURLForTesting(dir.appendingPathComponent("sentinel-journal.jsonl"))
         let store = makeStore()
         SentinelDataBridge.shared.attach(store)

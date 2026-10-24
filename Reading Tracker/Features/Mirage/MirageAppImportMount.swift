@@ -59,7 +59,8 @@ final class MirageAnalyzeSession {
             configuration: .init(
                 launcher: MirageProcessLauncher(
                     executableURL: pythonURL,
-                    arguments: [engineCheckout.path + "/examples/mirage_sidecar.py",
+                    arguments: ["-B",
+                                engineCheckout.path + "/examples/mirage_sidecar.py",
                                 base.appendingPathComponent("mirage.sqlite3").path]),
                 pidFileURL: base.appendingPathComponent("guard.pid"),
                 transportConfig: config))

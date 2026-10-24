@@ -23,7 +23,7 @@ extension Book {
     /// first (post-migration covers live on disk, not in the payload);
     /// embedded data remains as legacy fallback.
     var coverImage: NSImage? {
-        if let image = CoverStore.shared.image(forBookID: id) {
+        if let image = CoverStore.active.image(forBookID: id) {
             return image
         }
         guard let data = coverImageData else { return nil }
@@ -32,7 +32,7 @@ extension Book {
 
     /// True when a cover exists anywhere (file store or embedded).
     var hasCoverArt: Bool {
-        CoverStore.shared.hasCover(forBookID: id) || coverImageData != nil
+        CoverStore.active.hasCover(forBookID: id) || coverImageData != nil
     }
 }
 

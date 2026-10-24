@@ -120,7 +120,9 @@ final class SentinelEngine: ObservableObject {
     /// Registered probes. Order matters for journal readability only.
     private let probes: [SentinelProbe]
 
-    init(defaults: UserDefaults = .standard, probes: [SentinelProbe]? = nil) {
+    init(defaults: UserDefaults = .standard,
+         probes: [SentinelProbe]? = nil,
+         journalURL: URL? = nil) {
         self.defaults = defaults
         self.probes = probes ?? [
             IntegrityProbe(),
@@ -133,11 +135,16 @@ final class SentinelEngine: ObservableObject {
             AchievementDriftProbe(),
         ]
 
-        if let dir = FileManager.default.urls(
+        if let journalURL {
+            self.journalURL = journalURL
+        } else if let testRoot = RuntimeEnvironment.isolatedStoreDirectory {
+            RuntimeEnvironment.ensureDirectory(testRoot)
+            self.journalURL = testRoot.appendingPathComponent("sentinel-journal.jsonl")
+        } else if let dir = FileManager.default.urls(
             for: .applicationSupportDirectory, in: .userDomainMask
         ).first?.appendingPathComponent("ReadTracker", isDirectory: true) {
             try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-            journalURL = dir.appendingPathComponent("sentinel-journal.jsonl")
+            self.journalURL = dir.appendingPathComponent("sentinel-journal.jsonl")
         }
         // UI-RENDER SAFETY: init can be touched during a SwiftUI view update
         // (@StateObject default-value evaluation). Reading journal counters
@@ -294,13 +301,20 @@ final class SentinelEngine: ObservableObject {
                let sIdx = b.sessions.firstIndex(where: { $0.id == sid }),
                b.sessions[sIdx].endTime == nil,
                Date().timeIntervalSince(b.sessions[sIdx].startTime) > 86_400 {
-                b.sessions[sIdx].endTime = Date()
+                // G1 FIX: the old repair stamped "now", inflating a crashed
+                // session by up to 24h. End at the last real page activity
+                // (plus a 5-minute grace) instead.
+                let lastActivity = b.sessions[sIdx].pageTimes
+                    .compactMap { $0.endTime ?? $0.startTime }
+                    .max() ?? b.sessions[sIdx].startTime
+                let end = min(Date(), lastActivity.addingTimeInterval(300))
+                b.sessions[sIdx].endTime = end
                 for p in b.sessions[sIdx].pageTimes.indices where b.sessions[sIdx].pageTimes[p].isActive {
-                    b.sessions[sIdx].pageTimes[p].endTime = Date()
+                    b.sessions[sIdx].pageTimes[p].endTime = end
                 }
                 b.activeSessionID = nil
                 markFixed(&findings, rule: "orphan-active-session",
-                          detail: "closed >24h orphan session on '\(b.title)'")
+                          detail: "closed >24h orphan session on '\(b.title)' at last activity")
             }
             // Negative page-timing durations → pin endTime=startTime (validator S-5).
             for s in b.sessions.indices {

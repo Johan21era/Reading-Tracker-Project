@@ -10,7 +10,7 @@ import Testing
 
 @testable import Reading_Tracker
 
-@Suite("CoverStore (Upgrade #2)")
+@Suite("CoverStore (Upgrade #2)", .serialized)
 @MainActor
 final class CoverStorePinsTests {
 
@@ -21,9 +21,15 @@ final class CoverStorePinsTests {
         dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         coversDir = dir.appendingPathComponent("covers")
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        #if DEBUG
+        CoverStore.testOverride = CoverStore(directory: coversDir)
+        #endif
     }
 
     deinit {
+        #if DEBUG
+        CoverStore.testOverride = nil
+        #endif
         try? FileManager.default.removeItem(at: dir)
     }
 
@@ -81,7 +87,7 @@ final class CoverStorePinsTests {
         let reopened = DataStore(fileURL: url)
         let book = reopened.books.first!
         #expect(book.coverImageData == nil, "embedded cover was not cleared after migration")
-        #expect(CoverStore.shared.hasCover(forBookID: book.id), "cover file missing after migration")
+        #expect(CoverStore.active.hasCover(forBookID: book.id), "cover file missing after migration")
     }
 
     @Test("removeBook removes the cover file too (no orphans)")
@@ -90,11 +96,11 @@ final class CoverStorePinsTests {
         let store = DataStore(fileURL: url)
         let book = makeBook(withEmbeddedCover: false)
         store.addBook(book)
-        CoverStore.shared.store(jpegPayload(), forBookID: book.id)
-        #expect(CoverStore.shared.hasCover(forBookID: book.id))
+        CoverStore.active.store(jpegPayload(), forBookID: book.id)
+        #expect(CoverStore.active.hasCover(forBookID: book.id))
 
         store.removeBook(id: book.id)
-        #expect(!CoverStore.shared.hasCover(forBookID: book.id),
+        #expect(!CoverStore.active.hasCover(forBookID: book.id),
                 "orphaned cover file left behind after removeBook")
     }
 

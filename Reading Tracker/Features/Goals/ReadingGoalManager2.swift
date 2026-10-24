@@ -49,6 +49,14 @@ struct ReadingGoalSet: Codable, Hashable {
     var weeklyReadingDays: Int?
 
     static let empty = ReadingGoalSet()
+
+    /// G1: merge semantics for callers that only own one field. Never replace
+    /// the whole goal set just because one target was edited.
+    func withDailyPageTarget(_ target: Int?) -> ReadingGoalSet {
+        var copy = self
+        copy.dailyPageTarget = target
+        return copy
+    }
 }
 
 /// A per-book deadline goal: finish this book by a given date.

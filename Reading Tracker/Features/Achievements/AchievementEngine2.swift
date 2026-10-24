@@ -221,7 +221,11 @@ enum AchievementEngine {
         recordConsoleInvocation()
         #endif
 
-        let existingKinds = Set(existing.map(\.kind))
+        // G1 FIX: this used to be a `let`. The award closure checked it but
+        // never inserted the kind it just awarded, so a loop over N qualifying
+        // sessions appended N copies of the same badge. Keep it mutable and
+        // insert on every award.
+        var awardedKinds = Set(existing.map(\.kind))
         var earned = existing
         var newly: [EarnedAchievement] = []
 
@@ -230,7 +234,8 @@ enum AchievementEngine {
         let sessions = books.flatMap(\.sessions).filter { $0.endTime != nil }
 
         func award(_ kind: AchievementKind, bookID: UUID? = nil) {
-            guard !existingKinds.contains(kind) else { return }
+            guard !awardedKinds.contains(kind) else { return }
+            awardedKinds.insert(kind)
             let achievement = EarnedAchievement(kind: kind, relatedBookID: bookID)
             earned.append(achievement)
             newly.append(achievement)
@@ -312,13 +317,12 @@ enum AchievementEngine {
 
         // MARK: Speed Milestones
 
-        detectSpeedAchievements(sessions: sessions, existing: existingKinds, award: award)
+        detectSpeedAchievements(sessions: sessions, award: award)
 
         // MARK: Goal Milestones
 
         detectGoalAchievements(
-            books: books, goalSet: goalSet,
-            existing: existingKinds, award: award
+            books: books, goalSet: goalSet, award: award
         )
 
         return (earned, newly)
@@ -328,7 +332,6 @@ enum AchievementEngine {
 
     private static func detectSpeedAchievements(
         sessions: [ReadingSession],
-        existing _: Set<AchievementKind>,
         award: (AchievementKind, UUID?) -> Void
     ) {
         for session in sessions {
@@ -350,7 +353,6 @@ enum AchievementEngine {
     private static func detectGoalAchievements(
         books: [Book],
         goalSet: ReadingGoalSet,
-        existing _: Set<AchievementKind>,
         award: (AchievementKind, UUID?) -> Void
     ) {
         // AUDIT F-08 (roadmap 1.2c): weekGoalStreak was defined and registered in
@@ -402,6 +404,26 @@ enum AchievementEngine {
             }
         }
         return longest >= 7
+    }
+
+    // MARK: - Deduplication / migration
+
+    /// G1: one badge per kind, keeping the earliest award. Idempotent.
+    /// This is the migration path for libraries written by the old loop bug
+    /// (the live store had 592 records for 10 unique kinds).
+    static func deduplicated(
+        _ achievements: [EarnedAchievement]
+    ) -> (kept: [EarnedAchievement], removed: Int) {
+        var earliest: [AchievementKind: EarnedAchievement] = [:]
+        for achievement in achievements.sorted(by: { $0.earnedAt < $1.earnedAt }) {
+            if earliest[achievement.kind] == nil {
+                earliest[achievement.kind] = achievement
+            }
+        }
+        let kept = achievements.filter { achievement in
+            earliest[achievement.kind]?.id == achievement.id
+        }
+        return (kept, achievements.count - kept.count)
     }
 
     // MARK: - Summary

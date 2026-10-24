@@ -8,7 +8,7 @@ import Testing
 
 @testable import Reading_Tracker
 
-@Suite("Library Archive Durability")
+@Suite("Library Archive Durability", .serialized)
 @MainActor
 final class DurabilityPinsTests {
 
@@ -17,9 +17,15 @@ final class DurabilityPinsTests {
     init() throws {
         dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        #if DEBUG
+        CoverStore.testOverride = CoverStore(directory: dir.appendingPathComponent("covers"))
+        #endif
     }
 
     deinit {
+        #if DEBUG
+        CoverStore.testOverride = nil
+        #endif
         try? FileManager.default.removeItem(at: dir)
     }
 
@@ -81,7 +87,7 @@ final class DurabilityPinsTests {
         #expect(restoredBook.title == "Export Me")
         #expect(restoredBook.sessions.count == 1)
         // Upgrade #2: covers live in CoverStore files now, not the payload.
-        #expect(CoverStore.shared.hasCover(forBookID: restoredBook.id),
+        #expect(CoverStore.active.hasCover(forBookID: restoredBook.id),
                 "archived cover did not survive import into the external store")
         #expect(fresh.libraryState.goalSet.dailyPageTarget == 30)  // goals survived
         #expect(fresh.libraryState.collections.count == 1)   // collections survived

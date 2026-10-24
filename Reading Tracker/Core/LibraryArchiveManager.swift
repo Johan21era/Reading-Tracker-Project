@@ -82,7 +82,7 @@ final class LibraryArchiveManager: ObservableObject {
         // embedded payloads (pre-migration libraries).
         var covers: [String: Data] = [:]
         for book in store.books {
-            if let fileData = try? Data(contentsOf: CoverStore.shared.url(forBookID: book.id)) {
+            if let fileData = try? Data(contentsOf: CoverStore.active.url(forBookID: book.id)) {
                 covers[book.id.uuidString] = fileData
             } else if let embedded = book.coverImageData {
                 covers[book.id.uuidString] = embedded
@@ -129,7 +129,7 @@ final class LibraryArchiveManager: ObservableObject {
         if let covers = archive.covers {
             for (idString, data) in covers {
                 if let id = UUID(uuidString: idString) {
-                    CoverStore.shared.store(data, forBookID: id)
+                    CoverStore.active.store(data, forBookID: id)
                 }
             }
         }

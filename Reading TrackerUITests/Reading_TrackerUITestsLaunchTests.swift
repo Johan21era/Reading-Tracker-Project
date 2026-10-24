@@ -18,7 +18,7 @@ final class Reading_TrackerUITestsLaunchTests: XCTestCase {
 
     @MainActor
     func testLaunch() {
-        let app = XCUIApplication()
+        let app = makeIsolatedApp()
         app.launch()
 
         // Insert steps here to perform after app launch but before taking a screenshot,

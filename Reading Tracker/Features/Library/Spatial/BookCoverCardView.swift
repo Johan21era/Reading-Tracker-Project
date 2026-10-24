@@ -43,7 +43,10 @@ struct BookCoverCardView: View {
 
     @ViewBuilder
     private var coverArt: some View {
-        if let data = book.coverImageData, let nsImage = NSImage(data: data) {
+        // G1 FIX: imports write covers to CoverStore and migrateEmbeddedCovers
+        // clears `coverImageData`, so reading the raw field made every spatial
+        // card a permanent placeholder. `coverImage` is the store-aware accessor.
+        if let nsImage = book.coverImage {
             Image(nsImage: nsImage)
                 .resizable()
                 .aspectRatio(contentMode: .fill)

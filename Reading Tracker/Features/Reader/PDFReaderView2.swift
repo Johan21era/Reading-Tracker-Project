@@ -320,6 +320,8 @@ struct PDFReaderScreen: View {
     @AppStorage("rsvp.enabled") private var rsvpEnabled = true
     @State private var rsvpText: String?
     @State private var showingRSVP = false
+    /// G1: held so dismissal can actually cancel the whole-document extraction.
+    @State private var rsvpTask: Task<Void, Never>?
 
     init(book: Book, coordinator: SessionCoordinator) {
         self.book = book
@@ -387,6 +389,8 @@ struct PDFReaderScreen: View {
             }
         }
         .onDisappear {
+            rsvpTask?.cancel()
+            rsvpTask = nil
             coordinator.endCurrentSession()
         }
     }
@@ -398,7 +402,11 @@ struct PDFReaderScreen: View {
     private func loadRSVPText() {
         guard let resolvedURL = book.resolveURL() else { return }
 
-        Task.detached(priority: .userInitiated) {
+        // G1 FIX: cancel any previous extraction, and keep the handle so
+        // onDisappear can cancel this one. Previously Task.isCancelled could
+        // never become true because nothing held or cancelled the task.
+        rsvpTask?.cancel()
+        rsvpTask = Task.detached(priority: .userInitiated) {
             let didStart = resolvedURL.startAccessingSecurityScopedResource()
             defer { if didStart { resolvedURL.stopAccessingSecurityScopedResource() } }
 
@@ -411,10 +419,12 @@ struct PDFReaderScreen: View {
                     extracted.append(pageText)
                 }
             }
+            guard !Task.isCancelled else { return }
             let joined = extracted.joined(separator: "\n\n")
             guard !joined.isEmpty else { return }
 
             await MainActor.run {
+                guard !Task.isCancelled else { return }
                 rsvpText = joined
                 showingRSVP = true
             }

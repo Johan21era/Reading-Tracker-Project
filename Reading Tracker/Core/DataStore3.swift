@@ -84,6 +84,13 @@ final class DataStore: ObservableObject {
     // MARK: - Init
 
     init(fileURL: URL? = nil) {
+        // Test/UI-test isolation: a process-scoped store directory overrides
+        // Application Support. XCTest hosts get one automatically.
+        let testStoreDir = RuntimeEnvironment.isolatedStoreDirectory
+        if let testStoreDir {
+            RuntimeEnvironment.ensureDirectory(testStoreDir)
+        }
+
         // AUDIT O-8 (roadmap 2.2): was `.first!` — an empty/misbehaving domain
         // lookup crashed launch. Guarded degradation instead.
         let appSupportCandidates = FileManager.default.urls(
@@ -106,6 +113,10 @@ final class DataStore: ObservableObject {
                 audioProfileStore = AudioProfileStore(
                     directory: url.deletingLastPathComponent()
                 )
+            } else if let testStoreDir {
+                self.fileURL = testStoreDir.appendingPathComponent("library.json")
+                stateURL = testStoreDir.appendingPathComponent("library-state.json")
+                audioProfileStore = AudioProfileStore(directory: testStoreDir)
             } else {
                 self.fileURL = dir.appendingPathComponent("library.json")
                 stateURL = dir.appendingPathComponent("library-state.json")
@@ -132,6 +143,10 @@ final class DataStore: ObservableObject {
                 audioProfileStore = AudioProfileStore(
                     directory: url.deletingLastPathComponent()
                 )
+            } else if let testStoreDir {
+                self.fileURL = testStoreDir.appendingPathComponent("library.json")
+                stateURL = testStoreDir.appendingPathComponent("library-state.json")
+                audioProfileStore = AudioProfileStore(directory: testStoreDir)
             } else {
                 self.fileURL = fallbackDir.appendingPathComponent("library.json")
                 stateURL = fallbackDir.appendingPathComponent("library-state.json")
@@ -188,6 +203,12 @@ final class DataStore: ObservableObject {
         // Drop duplicate collection names by keeping archived ids where possible.
         books = repairedBooks
         libraryState = state
+        // G1 migration: archives written by the old award loop may contain
+        // duplicate badges. Keep the earliest award per kind.
+        let deduped = AchievementEngine.deduplicated(libraryState.earnedAchievements)
+        if deduped.removed > 0 {
+            libraryState.earnedAchievements = deduped.kept
+        }
         scheduleSave()
     }
 
@@ -219,7 +240,7 @@ final class DataStore: ObservableObject {
     func removeBook(id: UUID) {
         guard books.contains(where: { $0.id == id }) else { return }
         books.removeAll { $0.id == id }
-        CoverStore.shared.remove(forBookID: id) // FINAL TRACES #2: no orphans
+        CoverStore.active.remove(forBookID: id) // FINAL TRACES #2: no orphans
         scheduleSave()
     }
 
@@ -364,7 +385,11 @@ final class DataStore: ObservableObject {
                 "is active for book \(bookID) — closing previous session.")
         }
 
-        closeActiveSession(for: &book)
+        // G1 FIX: an open session found at startSession is usually a crash
+        // survivor. Clamp its end to the last real page activity (plus grace)
+        // instead of stamping "now", which turned the crash+idle gap into
+        // reading time.
+        closeActiveSession(for: &book, clampToLastActivity: true)
 
         var session = ReadingSession(bookID: bookID, startPage: page, endPage: page)
         let timing = PageTiming(pageNumber: page)
@@ -434,19 +459,30 @@ final class DataStore: ObservableObject {
     // MARK: - Private Helpers
 
     /// B5 FIX: Close ALL active PageTiming entries in the session, not just the last.
-    private func closeActiveSession(for book: inout Book) {
+    /// G1: when `clampToLastActivity` is true (crash-recovery path), end at the
+    /// last evidence of activity plus a short grace, never at "now".
+    private func closeActiveSession(
+        for book: inout Book,
+        clampToLastActivity: Bool = false
+    ) {
         guard let activeSessionID = book.activeSessionID else { return }
         guard let sIdx = book.sessions.firstIndex(where: { $0.id == activeSessionID }) else { return }
 
         let now = Date()
+        let lastActivity = book.sessions[sIdx].pageTimes
+            .compactMap { $0.endTime ?? $0.startTime }
+            .max() ?? book.sessions[sIdx].startTime
+        let effectiveEnd = clampToLastActivity
+            ? min(now, lastActivity.addingTimeInterval(300))
+            : now
 
         for pIdx in book.sessions[sIdx].pageTimes.indices
             where book.sessions[sIdx].pageTimes[pIdx].isActive
         {
-            book.sessions[sIdx].pageTimes[pIdx].endTime = now
+            book.sessions[sIdx].pageTimes[pIdx].endTime = effectiveEnd
         }
 
-        book.sessions[sIdx].endTime = now
+        book.sessions[sIdx].endTime = effectiveEnd
         book.activeSessionID = nil
     }
 
@@ -466,7 +502,7 @@ final class DataStore: ObservableObject {
         for i in books.indices where books[i].coverImageData != nil {
             let id = books[i].id
             let data = books[i].coverImageData!
-            if CoverStore.shared.migrateEmbedded(data, forBookID: id) {
+            if CoverStore.active.migrateEmbedded(data, forBookID: id) {
                 migrated += 1
             }
             books[i].coverImageData = nil
@@ -518,6 +554,16 @@ final class DataStore: ObservableObject {
         do {
             let data = try Data(contentsOf: stateURL)
             libraryState = try decoder.decode(LibraryState.self, from: data)
+            // G1 migration: collapse duplicate achievement records written by
+            // the old per-session award loop (one badge per kind, earliest kept).
+            let deduped = AchievementEngine.deduplicated(libraryState.earnedAchievements)
+            if deduped.removed > 0 {
+                libraryState.earnedAchievements = deduped.kept
+                saveLibraryState()
+                #if DEBUG
+                print("[DataStore] Deduplicated \(deduped.removed) stale achievement record(s).")
+                #endif
+            }
         } catch {
             print("[DataStore] LibraryState load error at \(stateURL.path): \(error)")
             // AUDIT F-04 Gate A: back up the unreadable file BEFORE resetting.

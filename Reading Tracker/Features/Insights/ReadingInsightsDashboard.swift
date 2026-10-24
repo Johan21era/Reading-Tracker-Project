@@ -23,19 +23,19 @@ struct ReadingInsightsDashboard: View {
     /// No @State caching needed — these are pure functions on value types and
     /// SwiftUI's body diffing prevents unnecessary recomputation.
     private var profile: ReaderProfileAnalytics {
-        AnalyticsEngine.readerProfile(books: dataStore.books)
+        AnalyticsEngine.readerProfile(books: dataStore.books, epoch: dataStore.analyticsEpoch)
     }
 
     private var streak: ReadingStreak {
-        AnalyticsEngine.streak(books: dataStore.books)
+        AnalyticsEngine.streak(books: dataStore.books, epoch: dataStore.analyticsEpoch)
     }
 
     private var trend: TrendAnalytics {
-        AnalyticsEngine.trendAnalysis(books: dataStore.books)
+        AnalyticsEngine.trendAnalysis(books: dataStore.books, epoch: dataStore.analyticsEpoch)
     }
 
     private var timeOfDay: TimeOfDayAnalytics {
-        AnalyticsEngine.timeOfDayAnalysis(books: dataStore.books)
+        AnalyticsEngine.timeOfDayAnalysis(books: dataStore.books, epoch: dataStore.analyticsEpoch)
     }
 
     private var activity: [DailyActivity] {
@@ -46,7 +46,8 @@ struct ReadingInsightsDashboard: View {
         InsightEngine.generateAll(
             books: dataStore.books,
             goalSet: dataStore.libraryState.goalSet,
-            earnedAchievements: dataStore.libraryState.earnedAchievements
+            earnedAchievements: dataStore.libraryState.earnedAchievements,
+            epoch: dataStore.analyticsEpoch
         )
     }
 

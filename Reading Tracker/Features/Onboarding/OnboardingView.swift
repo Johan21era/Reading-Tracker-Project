@@ -205,8 +205,29 @@ struct OnboardingView: View {
             Task {
                 do {
                     let book = try await BookImporter.importBook(from: url)
-                    await MainActor.run {
+
+                    // G1 FIX: onboarding used to bypass the shared import path.
+                    // Run the same import-intelligence report and duplicate
+                    // rejection as the main window before accepting the book.
+                    let fileSizeBytes = (try? url.resourceValues(
+                        forKeys: [.fileSizeKey]).fileSize) ?? nil
+                    let report = ImportIntelligenceFacade.analyze(
+                        book: book,
+                        fileName: url.lastPathComponent,
+                        fileSizeBytes: fileSizeBytes,
+                        fileType: book.fileType.displayName
+                    )
+                    let accepted = await MainActor.run {
                         dataStore.addBook(book)
+                    }
+                    await MainActor.run {
+                        guard accepted else {
+                            importError = "This book is already in your library."
+                            return
+                        }
+                        if let critical = report.warnings.first(where: { $0.level == .critical }) {
+                            importError = critical.message
+                        }
                         importSucceeded = true
                         advance()
                     }
@@ -218,9 +239,11 @@ struct OnboardingView: View {
     }
 
     private func commitGoal() {
-        var set = ReadingGoalSet.empty
-        set.dailyPageTarget = dailyPagesEnabled ? dailyPages : nil
-        dataStore.updateGoalSet(set) // same persisted API as Settings
+        // G1 FIX: preserve annual/weekly/deadline goals. The old code wrote a
+        // fresh ReadingGoalSet and destroyed everything except the daily target.
+        let merged = dataStore.libraryState.goalSet
+            .withDailyPageTarget(dailyPagesEnabled ? dailyPages : nil)
+        dataStore.updateGoalSet(merged)
         goalSet = dailyPagesEnabled
         advance()
     }

@@ -28,6 +28,21 @@ import Foundation
 final class CoverStore {
     static let shared = CoverStore()
 
+    #if DEBUG
+    /// Test-only redirect. Production always resolves to `shared`.
+    static var testOverride: CoverStore?
+    #endif
+
+    /// The store every app path should use. In Debug, tests may point this at
+    /// a temp directory so a full test run never mutates real app-support data.
+    static var active: CoverStore {
+        #if DEBUG
+        testOverride ?? shared
+        #else
+        shared
+        #endif
+    }
+
     private let directory: URL
     private let cache = NSCache<NSString, NSImage>()
     private let queue = DispatchQueue(label: "coverstore.serial")
@@ -36,14 +51,26 @@ final class CoverStore {
         if let directory {
             self.directory = directory
         } else {
-            let base = FileManager.default.urls(for: .applicationSupportDirectory,
-                                                in: .userDomainMask).first
-                ?? FileManager.default.temporaryDirectory
-            self.directory = base.appendingPathComponent("ReadTracker/covers", isDirectory: true)
+            #if DEBUG
+            if let testRoot = RuntimeEnvironment.isolatedStoreDirectory {
+                self.directory = testRoot.appendingPathComponent("covers", isDirectory: true)
+            } else {
+                self.directory = Self.defaultDirectory()
+            }
+            #else
+            self.directory = Self.defaultDirectory()
+            #endif
         }
         try? FileManager.default.createDirectory(at: self.directory,
                                                  withIntermediateDirectories: true)
         cache.countLimit = 300 // decoded images are small after thumbnail use
+    }
+
+    private static func defaultDirectory() -> URL {
+        let base = FileManager.default.urls(for: .applicationSupportDirectory,
+                                            in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        return base.appendingPathComponent("ReadTracker/covers", isDirectory: true)
     }
 
     // MARK: - Path scheme

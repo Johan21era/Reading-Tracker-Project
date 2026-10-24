@@ -16,9 +16,9 @@
 //      - timeOfDayAnalysis    (O sessions)
 //      - genreProfiles        (O sessions)
 //      - trendAnalysis        (O 60-day activity build)
-//      - perBookSpeed         (O timings — THE hot one: called by hover,
-//                              estimates, goals, recommendations everywhere)
 //  • Thread-safety: MainActor (all callers already are).
+//  • G1: the old perBookSpeed member was deleted. It validated against an
+//    always-empty array and had no callers.
 //
 //  INVALIDATION GUARANTEE: signature includes a monotonically bumped epoch
 //  from DataStore so deletes/edits that keep counts equal still invalidate.
@@ -34,6 +34,9 @@ final class AnalyticsCache {
         var idFold: Int
         var sessionCount: Int
         var epoch: UInt64
+        /// G1: streak/trend answers bake in "today". Without a day bucket a
+        /// value computed at 23:59 was served all next day until a mutation.
+        var dayBucket: Int
 
         static func signature(for books: [Book], epoch: UInt64) -> Signature {
             var fold = 0
@@ -42,8 +45,13 @@ final class AnalyticsCache {
                 fold = fold &+ b.id.hashValue
                 sessions += b.sessions.count
             }
-            return Signature(bookCount: books.count, idFold: fold,
-                             sessionCount: sessions, epoch: epoch)
+            let day = Calendar.current.startOfDay(for: Date())
+            return Signature(
+                bookCount: books.count,
+                idFold: fold,
+                sessionCount: sessions,
+                epoch: epoch,
+                dayBucket: Int(day.timeIntervalSince1970 / 86_400))
         }
     }
 
@@ -53,7 +61,6 @@ final class AnalyticsCache {
     private var timeOfDayCache: TimeOfDayAnalytics?
     private var genreProfilesCache: [ReadingGenre: GenreProfile]?
     private var trendCache: TrendAnalytics?
-    private var perBookSpeeds: [UUID: Double] = [:]
 
     private init() {}
 
@@ -74,7 +81,6 @@ final class AnalyticsCache {
             timeOfDayCache = nil
             genreProfilesCache = nil
             trendCache = nil
-            perBookSpeeds.removeAll()
             return false
         }
         return true
@@ -125,20 +131,6 @@ final class AnalyticsCache {
         return v
     }
 
-    func perBookSpeed(book: Book, epoch: UInt64,
-                      compute: () -> Double) -> Double {
-        _ = ensureValid([book].isEmpty ? [] : [], epoch: epoch) // no-op guard
-        if let v = perBookSpeeds[book.id], book.sessions.count == perBookSessionCount[book.id] ?? -1 {
-            return v
-        }
-        let v = compute()
-        perBookSpeeds[book.id] = v
-        perBookSessionCount[book.id] = book.sessions.count
-        return v
-    }
-
-    private var perBookSessionCount: [UUID: Int] = [:]
-
     func invalidate() {
         signature = nil
         readerProfileCache = nil
@@ -146,7 +138,5 @@ final class AnalyticsCache {
         timeOfDayCache = nil
         genreProfilesCache = nil
         trendCache = nil
-        perBookSpeeds.removeAll()
-        perBookSessionCount.removeAll()
     }
 }

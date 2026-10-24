@@ -127,7 +127,7 @@ enum BookImporter {
             bookmarkData: bookmarkData
         )
         if let coverData {
-            CoverStore.shared.store(coverData, forBookID: newBook.id)
+            CoverStore.active.store(coverData, forBookID: newBook.id)
         }
         return newBook
     }
@@ -242,7 +242,7 @@ enum BookImporter {
         )
         // FINAL TRACES Upgrade #2: file-store the cover, keep payload lean.
         if let coverData {
-            CoverStore.shared.store(coverData, forBookID: newBook.id)
+            CoverStore.active.store(coverData, forBookID: newBook.id)
         }
         return newBook
     }

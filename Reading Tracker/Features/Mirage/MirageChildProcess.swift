@@ -176,6 +176,11 @@ nonisolated struct MirageProcessLauncher: MirageChildLauncher {
         let process = Process()
         process.executableURL = executableURL
         process.arguments = arguments
+        // Never let the embedded Python write __pycache__ into the signed app
+        // bundle: it mutates sealed resources and invalidates the signature.
+        var environment = ProcessInfo.processInfo.environment
+        environment["PYTHONDONTWRITEBYTECODE"] = "1"
+        process.environment = environment
 
         let stdinPipe = Pipe()
         let stdoutPipe = Pipe()

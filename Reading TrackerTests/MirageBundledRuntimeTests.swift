@@ -54,6 +54,19 @@ struct MirageBundledRuntimeTests {
         #expect(MirageRuntimeManifest.decode(toData(nonStringBinding)) == nil)
     }
 
+    // ---- The actual app host must carry the runtime (G2B) -------------------
+
+    @Test func appHostContainsVerifiedBundledRuntime() throws {
+        let root = try #require(
+            MirageRuntimeLocator.bundledResourceRoot(bundle: .main),
+            "app host has no resource root")
+        let runtime = try #require(
+            MirageRuntimeLocator.bundledRuntime(at: root),
+            "app host does not carry a verified mirage-runtime")
+        #expect(runtime.channel == .bundled)
+        #expect(runtime.manifest?.engineCheckoutSHA.hasPrefix("81422613") == true)
+    }
+
     // ---- sha256Hex sanity ---------------------------------------------------
 
     @Test func sha256HexRoundTripsTheFileDigest() throws {

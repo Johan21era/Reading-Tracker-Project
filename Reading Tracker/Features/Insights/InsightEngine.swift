@@ -96,15 +96,15 @@ enum InsightEngine {
     static func generateAll(
         books: [Book],
         goalSet: ReadingGoalSet,
-        earnedAchievements: [EarnedAchievement] = []
+        earnedAchievements: [EarnedAchievement] = [],
+        epoch: UInt64 = 0
     ) -> [ReadingInsight] {
         var insights: [ReadingInsight] = []
 
         // Only generate meaningful insights if there's sufficient data.
         guard !books.isEmpty else { return [] }
 
-        // FINAL TRACES #5: epoch-keyed caching (0 = uncached fallback).
-        let epoch: UInt64 = 0
+        // G1: callers may pass the store epoch; 0 remains the uncached fallback.
         let profile = AnalyticsEngine.readerProfile(books: books, epoch: epoch)
         let streak = AnalyticsEngine.streak(books: books, epoch: epoch)
         let trend = AnalyticsEngine.trendAnalysis(books: books, epoch: epoch)

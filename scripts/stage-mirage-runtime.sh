@@ -70,6 +70,10 @@ echo "[4/5] copying the engine verbatim (pinned SHA $ENGINE_SHA)…"
 mkdir -p "$BUNDLE/src" "$BUNDLE/examples"
 cp -R "$MIRAGE_HOME/src/miragev10" "$BUNDLE/src/miragev10"
 cp "$MIRAGE_HOME/examples/mirage_sidecar.py" "$BUNDLE/examples/mirage_sidecar.py"
+# Never ship interpreter bytecode caches: they are build-host artifacts and
+# would mutate the signed bundle at first run.
+find "$BUNDLE" -type d -name "__pycache__" -prune -exec rm -rf {} + 2>/dev/null || true
+find "$BUNDLE" -type f -name "*.pyc" -delete 2>/dev/null || true
 
 echo "[5/5] manifest + checksums…"
 PY3_SHA="$(shasum -a 256 "$RT_PY" | awk '{print $1}')"
