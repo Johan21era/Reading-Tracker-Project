@@ -18,13 +18,10 @@
 //    PRESERVED: All B6, B7, Reader Profile, Chapter Prediction, Trend, Time-of-Day,
 //               Difficulty Normalization, Improvement, Confidence, and Genre systems.
 //
-//  ROADMAP 3.4 / NA-7 DOC TRUTH-FIX (RA-002): this header previously claimed a
-//  caching layer ("expensive full-library computations are memoized for the duration
-//  of a single RunLoop cycle via AnalyticsCache"). NO such type or mechanism exists
-//  anywhere in the codebase (verified by repo-wide search during RA-002) — every
-//  call recomputes from scratch. The false claim is removed rather than left to
-//  mislead performance work. If whole-library fan-out ever needs memoization, that
-//  is NEW work to design and pin, not an existing feature.
+//  G7 DOC TRUTH-FIX: this header previously said no AnalyticsCache existed.
+//  That became false when Core/AnalyticsCache.swift landed (FINAL TRACES #5).
+//  The cache is real, keyed by library signature + epoch + day bucket; it is
+//  only hit when callers pass a non-zero epoch.
 
 import Foundation
 

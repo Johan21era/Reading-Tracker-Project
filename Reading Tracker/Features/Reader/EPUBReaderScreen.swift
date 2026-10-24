@@ -9,7 +9,7 @@
 //
 //  External contract preserved exactly: init(book: Book, coordinator:
 //  SessionCoordinator) — unchanged, so both call sites (NewContentView,
-//  and the dead-in-practice LibraryView) keep compiling untouched.
+//  and the live Explorer) keep compiling untouched.
 //
 
 import os

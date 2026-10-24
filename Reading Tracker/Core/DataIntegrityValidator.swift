@@ -1,8 +1,9 @@
 //  DataIntegrityValidator.swift
 //  Reading Tracker
 //  PURPOSE
-//  Validates the structural integrity of the books array after every DataStore load
-//  and after every save, and performs non-destructive repairs where possible.
+//  Validates the structural integrity of the books array after DataStore load
+//  and during migration/import. Save-time validation is not wired; the
+//  validator is a pure function callers can invoke explicitly.
 //
 //  ROADMAP 3.4 (RA-002 / AUDIT F-11):
 //    • Rule S-3 previously logged "swapped" while actually CLAMPING

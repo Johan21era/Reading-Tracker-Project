@@ -278,7 +278,7 @@ struct PDFReaderView: NSViewRepresentable {
         /// explanation is a manual zoom — at that point autoScales is turned
         /// off so the chosen zoom level is preserved through future resizes.
         /// A newly opened book gets a fresh Coordinator (see makeCoordinator
-        /// and the NavigationLink call sites in NewContentView/LibraryView),
+        /// and the NavigationLink call sites in NewContentView),
         /// so this state never leaks from one book to the next.
         private func trackManualZoom(on view: PDFView) {
             let boundsSize = view.bounds.size

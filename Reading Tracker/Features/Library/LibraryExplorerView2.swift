@@ -23,9 +23,9 @@
 //  in this project: consistency with what's already there over introducing
 //  a second pattern for the same job.
 //
-//  Not yet wired into NewContentView.swift itself — that's still Phase K,
-//  same as the Environment Engine's background view and the Spatial
-//  Library before it. This view is self-contained and ready for it.
+//  WIRED: NewContentView presents this from the Explore toolbar item.
+//  Keeping the header truthful matters more than preserving the old phase
+//  narrative; the Phase-K note was stale.
 //
 
 import SwiftUI

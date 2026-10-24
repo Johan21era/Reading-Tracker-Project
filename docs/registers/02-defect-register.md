@@ -10,6 +10,8 @@ This is the project's master list of everything known to be broken, risky, or mi
 
 > **Refresh note (2026-10-19, post-merge):** this register's F/LT/O/D/NA/NEW-DE findings were untouched by the RT–Mirage merge campaign (that campaign ran under its own issue ledger in `docs/integration/`); every F-01…F-13 row below therefore still stands as written. The integration-era cross-references and disambiguation notes live at the bottom of this file.
 
+> **Bedrock supersession (2026-10-24):** the audit-era NEW-DE-1…NEW-DE-8 punch list is now fixed and pinned (achievements, writer ordering, crash window, cache day bucket, onboarding, spatial covers, RSVP cancellation, weather honesty). Several F-series rows were already fixed in the audit/phase-1/2 logs; this register's “Open defects” block is historical and should be read with `docs/plans/bedrock/gates/` and `03-fix-log.md`. Do not treat every F-row as still open.
+
 ---
 
 ## How to read the severity marks

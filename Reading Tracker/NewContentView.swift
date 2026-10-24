@@ -32,24 +32,6 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-// MARK: - HoverIntent (unchanged)
-
-private enum HoverIntent {
-    case ignore
-    case interested
-    case inspecting
-
-    init(seconds: Double) {
-        if seconds < 0.5 {
-            self = .ignore
-        } else if seconds < 1.5 {
-            self = .interested
-        } else {
-            self = .inspecting
-        }
-    }
-}
-
 // MARK: - Sheet dismissal affordance (LIVE-TEST LT-1/LT-2/LT-4 systemic fix)
 
 /// LIVE TESTING LT-1/LT-2/LT-4: several analytics sheets shipped with NO way to
