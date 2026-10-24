@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SRC="$HOME/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/ReadTracker"
+SRC="$HOME/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma"
 BEFORE="$(mktemp "${TMPDIR:-/tmp}/rt-isolation-before.XXXXXX")"
 AFTER="$(mktemp "${TMPDIR:-/tmp}/rt-isolation-after.XXXXXX")"
 

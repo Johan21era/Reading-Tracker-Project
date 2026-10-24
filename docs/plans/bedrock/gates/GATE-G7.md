@@ -10,7 +10,7 @@
 - [x] Deleted recommendation V1/V2 engines + models (~879 LOC); V3 is the only
   live engine and builds/tests still pass.
 - [x] Removed unused `HoverIntent` enum.
-- [x] Renamed `ReadingTrackerApp 2.swift` → `ReadingTrackerApp.swift`.
+- [x] Renamed `AsterismaApp 2.swift` → `AsterismaApp.swift`.
 - [x] Corrected stale headers: AnalyticsCache existence, DataIntegrityValidator
   save claim, LibraryExplorer wiring status, dead LibraryView comments.
 

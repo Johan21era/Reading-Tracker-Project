@@ -14,6 +14,7 @@
 | G6A — BCE V3 engine | PASSED | 2026-10-24 | — | `gates/GATE-G6.md` | pre-approved |
 | G6B — BCE V3 UI | PASSED | 2026-10-24 | — | `gates/GATE-G6.md` | pre-approved |
 | G7 — Debt & Swift 6 | NOT STARTED | — | — | — | — |
-| G8 — Acceptance | NOT STARTED | — | — | — | — |
+| G8 — Acceptance | RC PASSED | 2026-10-24 | — | `gates/GATE-G8.md` | pre-approved |
+| R1 — Asterisma rebrand | PASSED | 2026-10-24 | — | `../REBRAND-ASTERISMA.md` | pre-approved |
 
 **Standing rule:** no gate advances without an explicit owner APPROVE / CHANGES / STOP.

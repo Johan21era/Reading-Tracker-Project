@@ -1,6 +1,6 @@
 # Bedrock Baseline — 2026-10-24 (G0)
 
-**Worktree:** `/Users/johanrembeci/Desktop/Reading Tracker Bedrock`
+**Worktree:** `/Users/johanrembeci/Desktop/AsterismaV1.0 Bedrock`
 **Branch:** `bedrock/2026-10-24`
 **Base commit:** `bafb9e9` (`main`)
 **Xcode:** 27.1 (27A9275) · macOS 26.6.1 host · deployment target 26.5
@@ -15,7 +15,7 @@
 | Full test run | **TEST SUCCEEDED**, 46.4 s wall |
 | Unit census | **191 passed / 0 failed / 4 skipped** (195 cases) |
 | UI tests | 4 executed template cases, all pass |
-| Baseline `.xcresult` | `Test-Reading Tracker-2026.10.24_01-23-44--0400.xcresult` |
+| Baseline `.xcresult` | `Test-AsterismaV1.0-2026.10.24_01-23-44--0400.xcresult` |
 
 ## Source
 
@@ -49,7 +49,7 @@
 
 ## Data snapshot
 
-- Destination: `~/Desktop/ReadingTracker-Backups/2026-10-24-pre-bedrock/`
+- Destination: `~/Desktop/AsterismaV1.0-Backups/2026-10-24-pre-bedrock/`
 - Contents: `ReadTracker/` app-support tree, 61 files, 102 MB
 - Checksum manifest: `SHA256-MANIFEST.txt`
 - This snapshot is outside the repo and is the rollback source of record.

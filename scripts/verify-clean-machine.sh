@@ -26,8 +26,8 @@ echo "== [2/3] staged-bundle spawn smoke (self-hosted) =="
 echo "== [3/3] default census =="
 cd "$ROOT"
 xcodebuild test \
-  -project "Reading Tracker.xcodeproj" \
-  -scheme "Reading Tracker" \
+  -project "AsterismaV1.0.xcodeproj" \
+  -scheme "AsterismaV1.0" \
   -configuration Debug \
   -destination 'platform=macOS' 2>&1 | tee "$STAGE/census.log" | grep -E "TEST (SUCCEEDED|FAILED)"
 grep -q "TEST SUCCEEDED" "$STAGE/census.log"

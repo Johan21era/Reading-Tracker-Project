@@ -1,7 +1,7 @@
 #!/bin/bash
 # package-release.sh — ad-hoc local distribution build.
 #
-# Produces dist/ReadingTracker-<version>-arm64.zip with a signed .app inside.
+# Produces dist/AsterismaV1.0-<version>-arm64.zip with a signed .app inside.
 # This is NOT notarized: first launch requires right-click Open (or one xattr
 # command). See docs/plans/bedrock/DISTRIBUTION.md.
 set -euo pipefail
@@ -12,14 +12,14 @@ DIST="$ROOT/dist"
 mkdir -p "$DIST"
 
 xcodebuild build \
-  -project "Reading Tracker.xcodeproj" \
-  -scheme "Reading Tracker" \
+  -project "AsterismaV1.0.xcodeproj" \
+  -scheme "AsterismaV1.0" \
   -configuration Release \
   -destination 'platform=macOS' 2>&1 | tail -8
 
 SETTINGS="$(xcodebuild -showBuildSettings \
-  -project "Reading Tracker.xcodeproj" \
-  -scheme "Reading Tracker" \
+  -project "AsterismaV1.0.xcodeproj" \
+  -scheme "AsterismaV1.0" \
   -configuration Release 2>/dev/null)"
 TARGET_DIR="$(printf '%s\n' "$SETTINGS" | awk -F' = ' '/ TARGET_BUILD_DIR = /{print $2; exit}')"
 WRAPPER="$(printf '%s\n' "$SETTINGS" | awk -F' = ' '/ WRAPPER_NAME = /{print $2; exit}')"
@@ -31,13 +31,13 @@ VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP/
 # xattr stamp that codesign refuses. Stage and sign in the system temp dir;
 # only the finished zip comes back to dist/.
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/rt-release.XXXXXX")"
-STAGE="$WORK/ReadingTracker-$VERSION-arm64"
+STAGE="$WORK/AsterismaV1.0-$VERSION-arm64"
 mkdir -p "$STAGE"
-ditto "$APP" "$STAGE/Reading Tracker.app"
-xattr -cr "$STAGE/Reading Tracker.app" 2>/dev/null || true
+ditto "$APP" "$STAGE/AsterismaV1.0.app"
+xattr -cr "$STAGE/AsterismaV1.0.app" 2>/dev/null || true
 
 # Sign the embedded interpreter/dylibs first, then the app. Ad-hoc only.
-RUNTIME="$STAGE/Reading Tracker.app/Contents/Resources/mirage-runtime"
+RUNTIME="$STAGE/AsterismaV1.0.app/Contents/Resources/mirage-runtime"
 if [[ -d "$RUNTIME" ]]; then
   # Smoke a COPY: running Python inside the signed bundle writes __pycache__
   # and breaks the seal. Bytecode writes are also disabled inside the smoke.
@@ -51,18 +51,18 @@ if [[ -d "$RUNTIME" ]]; then
 fi
 
 # Ad-hoc sign the whole bundle. No Developer ID, no notarization.
-codesign --force --deep --sign - --timestamp=none "$STAGE/Reading Tracker.app"
-codesign --verify --deep --strict --verbose=2 "$STAGE/Reading Tracker.app"
+codesign --force --deep --sign - --timestamp=none "$STAGE/AsterismaV1.0.app"
+codesign --verify --deep --strict --verbose=2 "$STAGE/AsterismaV1.0.app"
 
 
 
-ZIP="$DIST/ReadingTracker-$VERSION-arm64.zip"
+ZIP="$DIST/AsterismaV1.0-$VERSION-arm64.zip"
 rm -f "$ZIP"
 ditto -c -k --sequesterRsrc --keepParent --norsrc --noextattr \
-  "$STAGE/Reading Tracker.app" "$ZIP"
+  "$STAGE/AsterismaV1.0.app" "$ZIP"
 shasum -a 256 "$ZIP" > "$ZIP.sha256"
 
 echo "---- package: $ZIP"
 cat "$ZIP.sha256"
 echo "---- Gatekeeper verdict (expected: rejected until right-click Open):"
-spctl -a -vv "$STAGE/Reading Tracker.app" 2>&1 || true
+spctl -a -vv "$STAGE/AsterismaV1.0.app" 2>&1 || true

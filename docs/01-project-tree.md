@@ -16,11 +16,11 @@ This is a map of every file and folder in the project, organized so you can find
 | `docs/` | All project documentation (registers, roadmap, audit, history, the Mirage integration campaign, etc.) |
 | `RT_Mirage_Codebase_Merge_Playbook.md` | Owner's kept snapshot of the merge playbook (tracked canon: `docs/integration/` — ignored here by `.gitignore`) |
 | `merge-log.md` | Owner's kept snapshot of the campaign log (tracked canon: `docs/integration/merge-log.md` — ignored here by `.gitignore`) |
-| `Reading Tracker/` | The actual app code — every Swift file that makes the app work |
-| `Reading TrackerTests/` | Automated tests that prove the app works correctly |
-| `Reading TrackerUITests/` | User-interface tests (mostly placeholder stubs) |
-| `Reading Tracker.xcodeproj/` | The Xcode project file (do not edit by hand) |
-| `Reading Tracker.entitlements` | Permissions the app asks macOS for (sandbox, WeatherKit, etc.) |
+| `AsterismaV1.0/` | The actual app code — every Swift file that makes the app work |
+| `AsterismaV1.0Tests/` | Automated tests that prove the app works correctly |
+| `AsterismaV1.0UITests/` | User-interface tests (mostly placeholder stubs) |
+| `AsterismaV1.0.xcodeproj/` | The Xcode project file (do not edit by hand) |
+| `AsterismaV1.0.entitlements` | Permissions the app asks macOS for (sandbox, WeatherKit, etc.) |
 | `Reading-Tracker-Info.plist` | App settings such as its name, icon, and location description |
 | `.gitignore` | Tells Git which files to ignore (build junk, user settings, etc.) |
 
@@ -64,7 +64,7 @@ Also in `docs/history/`:
 
 ---
 
-## The app code (`Reading Tracker/`)
+## The app code (`AsterismaV1.0/`)
 
 This folder contains every Swift file that makes the app run. They are grouped by what they do:
 
@@ -77,7 +77,7 @@ This folder contains every Swift file that makes the app run. They are grouped b
 
 ---
 
-## The tests (`Reading TrackerTests/` and `Reading TrackerUITests/`)
+## The tests (`AsterismaV1.0Tests/` and `AsterismaV1.0UITests/`)
 
 These are automated checks that run without you having to click anything. Each test is named after the specific bug or behavior it guards. If a test ever starts failing, that is an early warning that something broke.
 

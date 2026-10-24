@@ -42,7 +42,7 @@
 git checkout bedrock-g0
 ```
 or restore the pre-Bedrock snapshot at
-`~/Desktop/ReadingTracker-Backups/2026-10-24-pre-bedrock/`.
+`~/Desktop/AsterismaV1.0-Backups/2026-10-24-pre-bedrock/`.
 
 ## Decision requested
 

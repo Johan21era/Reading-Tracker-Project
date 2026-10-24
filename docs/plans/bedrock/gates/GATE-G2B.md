@@ -7,7 +7,7 @@
 ## Scope delivered
 
 - [x] `Embed Mirage Runtime` build phase copies the staged runtime into
-  `Reading Tracker.app/Contents/Resources/mirage-runtime`.
+  `AsterismaV1.0.app/Contents/Resources/mirage-runtime`.
 - [x] Pinned runtime staged locally: CPython 3.12.7 + engine SHA
   `81422613610701d81956394d9601bcb61e2938e9`.
 - [x] `RUNTIME-MANIFEST.json` verified by the locator; file SHA spot-checks pass.

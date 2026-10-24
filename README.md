@@ -1,6 +1,6 @@
-# 00 · Reading Tracker — Project Report
+# 00 · AsterismaV1.0 — Project Report
 
-> **TL;DR** — A macOS reading-tracker app written entirely in Swift/SwiftUI. You import your PDF and EPUB books, read them inside the app, and it quietly records everything: per-page reading speed, time of day, live weather, and the app you were using just before opening the book. As of the October 2026 merge campaign, it also carries **Mirage** — a separately-owned companion engine for EPUB analysis, integrated behind a typed one-way boundary.
+> **TL;DR** — AsterismaV1.0 is a macOS reading-tracker app written entirely in Swift/SwiftUI. You import your PDF and EPUB books, read them inside the app, and it quietly records everything: per-page reading speed, time of day, live weather, and the app you were using just before opening the book. As of the October 2026 merge campaign, it also carries **Mirage** — a separately-owned companion engine for EPUB analysis, integrated behind a typed one-way boundary.
 
 > **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. Standing census: **212 passed / 0 failed / 9 skipped**. The full gate record lives in `docs/plans/bedrock/`.
 
@@ -23,7 +23,7 @@
 
 ## §1 · What the app does
 
-**Reading Tracker** imports PDF and EPUB books and lets you read them in-app — including an RSVP (Rapid Serial Visual Presentation) speed-reading mode that streams a chapter or a whole PDF one word at a time. While you read, the app records:
+**AsterismaV1.0** imports PDF and EPUB books and lets you read them in-app — including an RSVP (Rapid Serial Visual Presentation) speed-reading mode that streams a chapter or a whole PDF one word at a time. While you read, the app records:
 
 - **Per-page timing** — turn speed captured for every single page, feeding analytics and estimates
 - **Temporal habits** — hour-of-day and day-of-week engagement patterns
@@ -46,11 +46,11 @@ There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for st
 | **Language** | Swift 5 mode, SwiftUI + AppKit only |
 | **Build config** | `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, `SWIFT_APPROACHABLE_CONCURRENCY = YES`, deployment target macOS 26.5, Xcode 27.1 |
 | **Dependencies** | Exactly one Swift dependency: ZIPFoundation 0.9.20 (SPM, pinned via `Package.resolved` — used for unzipping EPUBs). Mirage ships as a self-contained bundled runtime (its own Python interpreter), not a Swift dependency |
-| **App size** | 114 app files · 42,569 raw LOC (counted directly — not estimated) |
-| **Tests** | 34 test files · 192 `@Test` functions · **standing default census: 191 passed / 0 failed / 4 skipped** (the 4 skips are opt-in real-engine gates) |
+| **App size** | 119 app files · 43,543 raw LOC (counted directly — not estimated) |
+| **Tests** | 44 test files · 219 `@Test` functions · **standing default census: 212 passed / 0 failed / 9 skipped** (opt-in real-engine, benchmark, and SQLite/live-weather gates) |
 | **How it is tested** | Swift Testing (`@Suite` / `@Test` / `#expect`) — not XCTest |
 | **History** | ~30 working sessions (Jun–Oct 2026), 45+ commits, then the **RT–Mirage merge campaign** (Oct 2026): the 8-PR integration ladder PR-1…PR-8, closed with owner signatures |
-| **Where your data lives** | Sandbox container: `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/ReadTracker/` (see §3) — plus Mirage's own stratum (§3.5) |
+| **Where your data lives** | Sandbox container: `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` (see §3) — plus Mirage's own stratum (§3.5) |
 
 ---
 
@@ -78,7 +78,7 @@ The project's defining (and historically most destructive) build setting is `SWI
 All user data lives in one place (sandbox container):
 
 ```text
-~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/ReadTracker/
+~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/
 ├── library.json              Every book → session → individual page-turn timing (pretty-printed JSON monolith)
 ├── library-state.json        Goals, deadlines, earned achievements, collections
 ├── library.bak.json          Automatic same-name backup written before corruption resets
@@ -196,7 +196,7 @@ Campaign bookkeeping note: the root copies `merge-log.md` and `RT_Mirage_Codebas
 
 Requires a Mac with Xcode installed.
 
-1. **Open the project:** double-click `Reading Tracker.xcodeproj`
+1. **Open the project:** double-click `AsterismaV1.0.xcodeproj`
 2. **Run:** ⌘R (or the Play button)
 3. **Developer Console:** ⌘⇧D (Debug builds only)
 4. **Settings:** ⌘, — includes the **Mirage pane** (feature switch, engine availability)
@@ -204,13 +204,13 @@ Requires a Mac with Xcode installed.
 To verify from the command line:
 
 ```bash
-xcodebuild build -project "Reading Tracker.xcodeproj" \
-  -scheme "Reading Tracker" \
+xcodebuild build -project "AsterismaV1.0.xcodeproj" \
+  -scheme "AsterismaV1.0" \
   -configuration Debug \
   -destination 'platform=macOS'
 
-xcodebuild test -project "Reading Tracker.xcodeproj" \
-  -scheme "Reading Tracker" \
+xcodebuild test -project "AsterismaV1.0.xcodeproj" \
+  -scheme "AsterismaV1.0" \
   -configuration Debug \
   -destination 'platform=macOS'
 ```
@@ -221,10 +221,10 @@ Mirage real-engine development (opt-in only, never part of the default suite):
 
 ```bash
 TEST_RUNNER_MIRAGE_REAL_ENGINE_DIR=/path/to/MirageV1.0 \
-  xcodebuild test -project "Reading Tracker.xcodeproj" \
-  -scheme "Reading Tracker" -configuration Debug \
+  xcodebuild test -project "AsterismaV1.0.xcodeproj" \
+  -scheme "AsterismaV1.0" -configuration Debug \
   -destination 'platform=macOS' \
-  -only-testing:"Reading TrackerTests/MirageIdentityRealEngineImportTests"
+  -only-testing:"AsterismaV1.0Tests/MirageIdentityRealEngineImportTests"
 ```
 
 Builds under Desktop/iCloud paths must use the **default DerivedData** — a custom `-derivedDataPath` there breaks code signing (BUG-003's iCloud stamp root cause; see the defect register).

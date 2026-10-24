@@ -6,7 +6,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-LIVE="$HOME/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/ReadTracker"
+LIVE="$HOME/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma"
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/rt-bench.XXXXXX")"
 cp -R "$LIVE/." "$WORK/"
 OUT="${RT_BENCH_OUT:-$WORK/baseline.json}"
@@ -14,12 +14,12 @@ OUT="${RT_BENCH_OUT:-$WORK/baseline.json}"
 echo "benchmark copy: $WORK"
 TEST_RUNNER_RT_BENCH_LIBRARY="$WORK/library.json" \
 xcodebuild test \
-  -project "Reading Tracker.xcodeproj" \
-  -scheme "Reading Tracker" \
+  -project "AsterismaV1.0.xcodeproj" \
+  -scheme "AsterismaV1.0" \
   -configuration Debug \
   -destination 'platform=macOS' \
   -parallel-testing-enabled NO \
-  -only-testing:"Reading TrackerTests/BedrockBaselineTests" 2>&1 | tee "$WORK/bench.log" | tail -20
+  -only-testing:"AsterismaV1.0Tests/BedrockBaselineTests" 2>&1 | tee "$WORK/bench.log" | tail -20
 
 LINE="$(grep -E 'BEDROCK_BASELINE_JSON ' "$WORK/bench.log" | tail -1 | sed 's/^.*BEDROCK_BASELINE_JSON //')"
 if [[ -n "$LINE" ]]; then

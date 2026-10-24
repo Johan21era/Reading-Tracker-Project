@@ -6,7 +6,7 @@
 
 ## Scope delivered
 
-- [x] Production `ReadingTrackerApp` creates `DataStore(storageEngine: .sqlite)`.
+- [x] Production `AsterismaApp` creates `DataStore(storageEngine: .sqlite)`.
 - [x] On an empty DB, the app imports legacy JSON/state transactionally and
   keeps JSON as fallback if the import fails.
 - [x] Real library migrated and verified:
@@ -39,7 +39,7 @@
    state sidecar back to `library-state.json`.
 3. Check out `bedrock-g3a` or the pre-Bedrock snapshot.
 4. The pre-Bedrock snapshot at
-   `~/Desktop/ReadingTracker-Backups/2026-10-24-pre-bedrock/` is the last-resort
+   `~/Desktop/AsterismaV1.0-Backups/2026-10-24-pre-bedrock/` is the last-resort
    restore.
 
 ## Known deltas

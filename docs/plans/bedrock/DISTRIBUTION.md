@@ -2,20 +2,20 @@
 
 ## What we ship
 
-- `dist/ReadingTracker-1.0-arm64.zip`
-- Ad-hoc signed `Reading Tracker.app`
+- `dist/Asterisma-1.0-arm64.zip`
+- Ad-hoc signed `AsterismaV1.0.app`
 - SHA-256 checksum alongside the zip
 
 This is a **local/friend build**, not a notarized App Store build.
 
 ## Friend install (one-time Gatekeeper step)
 
-1. Download and unzip `ReadingTracker-1.0-arm64.zip`.
-2. Drag `Reading Tracker.app` to `/Applications` (or run it from Downloads).
+1. Download and unzip `Asterisma-1.0-arm64.zip`.
+2. Drag `AsterismaV1.0.app` to `/Applications` (or run it from Downloads).
 3. First launch: **right-click the app → Open → Open**.
    - Or run once:
      ```bash
-     xattr -d com.apple.quarantine "/Applications/Reading Tracker.app"
+     xattr -d com.apple.quarantine "/Applications/AsterismaV1.0.app"
      ```
 4. Subsequent launches are normal double-click.
 
@@ -28,8 +28,8 @@ rewrite.
 ## Verification
 
 ```bash
-codesign --verify --deep --strict --verbose=2 "Reading Tracker.app"
-shasum -a 256 -c ReadingTracker-1.0-arm64.zip.sha256
+codesign --verify --deep --strict --verbose=2 "AsterismaV1.0.app"
+shasum -a 256 -c Asterisma-1.0-arm64.zip.sha256
 ```
 
 ## Clean-account rehearsal

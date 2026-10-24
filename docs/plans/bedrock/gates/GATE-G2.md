@@ -14,7 +14,7 @@
 - [x] Shared `.xcscheme` committed; testables are non-parallel.
 - [x] Release build + ad-hoc signing + zip packaging script.
 - [x] Stripped FileProvider/Finder xattrs (BUG-003) and staged signing in system temp.
-- [x] `dist/ReadingTracker-1.0-arm64.zip` + SHA-256.
+- [x] `dist/Asterisma-1.0-arm64.zip` + SHA-256.
 
 ## Verification
 
@@ -22,7 +22,7 @@
 - Release build: **BUILD SUCCEEDED**
 - `codesign --verify --deep --strict`: **valid on disk / satisfies its Designated Requirement**
 - `spctl`: **rejected** as expected for ad-hoc, no-notarization build
-- Zip: `dist/ReadingTracker-1.0-arm64.zip` (25 MB)
+- Zip: `dist/Asterisma-1.0-arm64.zip` (25 MB)
 - SHA-256: `954b01906b9387b64230c6856f49b0b2f923d6277098a6b1253a05676c7dd34a`
 - App icon visible in built bundle; `CFBundleIconName = AppIcon`
 

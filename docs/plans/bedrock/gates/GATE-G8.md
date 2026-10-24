@@ -18,7 +18,7 @@
 - [x] EPUB metadata (genre/series/word count), Book Details, notes, collections.
 - [x] Behavior Context V3 report + Advanced Context window + evidence archive.
 - [x] Dead `LibraryView` and legacy recommendation engines removed (−1,157 lines).
-- [x] App entry file renamed to `ReadingTrackerApp.swift`.
+- [x] App entry file renamed to `AsterismaApp.swift`.
 - [x] README/defect register carry Bedrock status notes.
 - [x] Ad-hoc signed Release `.zip` produced; `codesign --verify --deep --strict` passes.
 - [x] Packaged-app launch smoke: **PASS**.
@@ -40,7 +40,7 @@
 
 ## Distribution
 
-- Package: `dist/ReadingTracker-1.0-arm64.zip`
+- Package: `dist/Asterisma-1.0-arm64.zip`
 - SHA-256: `10170b30f01b1e9cc8e3e3d5517d660fa6cb482c57d4783e01091df0858d1001`
 - Ad-hoc signed, not notarized.
 - First launch requires right-click → Open (documented in `DISTRIBUTION.md`).
