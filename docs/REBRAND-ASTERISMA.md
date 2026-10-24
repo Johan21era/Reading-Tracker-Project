@@ -58,7 +58,18 @@ The weather store migrates into the Asterisma root on next weather-service init.
 - Live migration run: `ReadTracker` removed, `Asterisma` created.
 - SQLite counts after migration: **7 books / 292 sessions / 138,459 timings**.
 - App launched successfully under `AsterismaV1.0.app`.
-- Full rebrand census: see final report / gate log.
+- Full rebrand census: **212 passed / 0 failed / 9 skipped** (221 cases), re-run
+  on the merged `main`.
+- Release package built, ad-hoc signed, and launch-smoked:
+  `dist/AsterismaV1.0-1.0-arm64.zip`.
+
+## Release receipt
+
+- `main` fast-forwarded from `bafb9e9` to `aba8aa4` and pushed to GitHub.
+- Release commit: `6da2d81`; tag: `asterisma-v1.0-mvp`.
+- Package SHA-256:
+  `06078dea3f21d81d6e9f2ca5a3dfa659f46ad8f2beccb7ceb17fa041df67b774`.
+- Canonical worktree: `/Users/johanrembeci/Desktop/AsterismaV1.0`.
 
 ## Rollback
 
@@ -68,4 +79,5 @@ The pre-rename snapshot is at:
 ~/Desktop/Asterisma-Backups/2026-10-24-pre-rename/
 ```
 
-Restore the folder as `ReadTracker` and check out the previous tag if needed.
+Restore the folder as `ReadTracker`, then check out `bedrock-g8` (the last
+pre-rebrand release candidate) if needed.

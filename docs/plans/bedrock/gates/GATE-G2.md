@@ -1,7 +1,7 @@
 # Gate G2 — Local distribution baseline
 
 **Date:** 2026-10-24
-**Status:** READY FOR REVIEW
+**Status:** PASSED
 **Branch:** `bedrock/2026-10-24`
 
 ## Scope delivered
@@ -24,6 +24,11 @@
 - `spctl`: **rejected** as expected for ad-hoc, no-notarization build
 - Zip: `dist/Asterisma-1.0-arm64.zip` (25 MB)
 - SHA-256: `954b01906b9387b64230c6856f49b0b2f923d6277098a6b1253a05676c7dd34a`
+
+> **Historical gate artifact.** The final AsterismaV1.0 package is
+> `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256
+> `06078dea3f21d81d6e9f2ca5a3dfa659f46ad8f2beccb7ceb17fa041df67b774`
+> (see `GATE-G8.md`).
 - App icon visible in built bundle; `CFBundleIconName = AppIcon`
 
 ## Known deltas
@@ -40,6 +45,6 @@ git checkout bedrock-g1
 
 ## Decision requested
 
-- [ ] APPROVE
+- [x] APPROVE
 - [ ] APPROVE WITH CHANGES
 - [ ] STOP

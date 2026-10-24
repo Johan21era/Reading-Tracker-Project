@@ -1,16 +1,20 @@
-# Local Distribution — Bedrock
+# Local Distribution — AsterismaV1.0
 
 ## What we ship
 
-- `dist/Asterisma-1.0-arm64.zip`
+- `dist/AsterismaV1.0-1.0-arm64.zip`
 - Ad-hoc signed `AsterismaV1.0.app`
 - SHA-256 checksum alongside the zip
 
 This is a **local/friend build**, not a notarized App Store build.
 
+**Release refs:** `main` at `aba8aa4`; release commit `6da2d81`, tag
+`asterisma-v1.0-mvp`. SHA-256:
+`06078dea3f21d81d6e9f2ca5a3dfa659f46ad8f2beccb7ceb17fa041df67b774`.
+
 ## Friend install (one-time Gatekeeper step)
 
-1. Download and unzip `Asterisma-1.0-arm64.zip`.
+1. Download and unzip `AsterismaV1.0-1.0-arm64.zip`.
 2. Drag `AsterismaV1.0.app` to `/Applications` (or run it from Downloads).
 3. First launch: **right-click the app → Open → Open**.
    - Or run once:
@@ -25,11 +29,18 @@ Developer account, Developer ID signing, and notarization. The code/bundle is
 kept App Store-compatible so that upgrade is a signing/pipeline change, not a
 rewrite.
 
+The sandbox bundle identifier remains `johan.Reading-Tracker` for this MVP so
+the existing container and library are preserved. A future Asterisma bundle ID
+requires a dedicated container-migration release.
+
 ## Verification
 
 ```bash
-codesign --verify --deep --strict --verbose=2 "AsterismaV1.0.app"
-shasum -a 256 -c Asterisma-1.0-arm64.zip.sha256
+cd dist
+shasum -a 256 -c AsterismaV1.0-1.0-arm64.zip.sha256
+
+# after unzipping / installing:
+codesign --verify --deep --strict --verbose=2 "/Applications/AsterismaV1.0.app"
 ```
 
 ## Clean-account rehearsal
@@ -41,3 +52,6 @@ At Gate G2 we test:
 - read and page-turn;
 - quit and relaunch;
 - verify the library persisted.
+
+The clean-account rehearsal remains pending; the packaged-app launch smoke on
+this Mac passed.

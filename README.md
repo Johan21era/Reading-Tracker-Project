@@ -4,6 +4,8 @@
 
 > **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. Standing census: **212 passed / 0 failed / 9 skipped**. The full gate record lives in `docs/plans/bedrock/`.
 
+> **Release status (2026-10-24):** `AsterismaV1.0` is merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`) and pushed to GitHub. Release package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `06078dea3f21d81d6e9f2ca5a3dfa659f46ad8f2beccb7ceb17fa041df67b774`. It is ad-hoc signed, not notarized; first launch requires right-click → Open.
+
 ---
 
 ## Contents
@@ -27,7 +29,7 @@
 
 - **Per-page timing** — turn speed captured for every single page, feeding analytics and estimates
 - **Temporal habits** — hour-of-day and day-of-week engagement patterns
-- **Environmental context** — live WeatherKit snapshots correlated with sessions
+- **Environmental context** — live Open-Meteo snapshots correlated with sessions
 - **Behavioral context** — foreground-app observation (via `NSWorkspace`) to reconstruct *where and why* you read
 - **Goals, streaks, and 25 achievements** — daily/weekly/annual targets with a toast system
 - **Annual Reports** — a yearly review rendered as slides
@@ -49,7 +51,7 @@ There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for st
 | **App size** | 119 app files · 43,543 raw LOC (counted directly — not estimated) |
 | **Tests** | 44 test files · 219 `@Test` functions · **standing default census: 212 passed / 0 failed / 9 skipped** (opt-in real-engine, benchmark, and SQLite/live-weather gates) |
 | **How it is tested** | Swift Testing (`@Suite` / `@Test` / `#expect`) — not XCTest |
-| **History** | ~30 working sessions (Jun–Oct 2026), 45+ commits, then the **RT–Mirage merge campaign** (Oct 2026): the 8-PR integration ladder PR-1…PR-8, closed with owner signatures |
+| **History** | ~30 working sessions (Jun–Oct 2026), 45+ commits, then the **RT–Mirage merge campaign** (Oct 2026): the 8-PR integration ladder PR-1…PR-8, closed with owner signatures; then the **Bedrock / AsterismaV1.0 release** (2026-10-24) |
 | **Where your data lives** | Sandbox container: `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` (see §3) — plus Mirage's own stratum (§3.5) |
 
 ---
@@ -124,29 +126,34 @@ The full campaign of record — playbook, ADR register (ADR-2…ADR-8, ADR-12), 
 
 ## §4 · Verified health status
 
-Checked directly against the working tree during the October 2026 sessions — not inherited from an old note:
+Checked directly against the merged `main` worktree on 2026-10-24 — not inherited from an old note:
 
-- ✅ `xcodebuild build` (Debug, default DerivedData) → **BUILD SUCCEEDED, exit 0**
-- ✅ `xcodebuild test` (full unit target) → **TEST SUCCEEDED** — standing default census **191 passed / 0 failed / 4 skipped** (the 4 skips are three opt-in real-engine suites whose gates are deliberately unset in ordinary runs)
-- ✅ The Mirage merge ladder closed green at every PR boundary (each PR's census receipt lives in `docs/integration/merge-log.md` M-014…M-028)
-- ✅ Real-engine receipts: the sidecar identity proof and the packaged-runtime spawn smoke (banner → version → inventory → clean teardown) both executed live, single-lifecycle
-- ✅ Working tree: the merge-era commits are all pushed to GitHub; the only working-tree edits at print time are this documentation refresh itself
+- ✅ `xcodebuild build` (Debug and Release, default DerivedData) → **BUILD SUCCEEDED**
+- ✅ Full census on merged `main` → **212 passed / 0 failed / 9 skipped** (221 cases). The 9 skips are deliberate opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo.
+- ✅ Rebrand verified live: app/product/display name **AsterismaV1.0**, Swift module `AsterismaV1_0`, and data root migrated to `Application Support/Asterisma/`.
+- ✅ Live library intact after the data-root migration: **7 books / 292 sessions / 138,459 page timings**.
+- ✅ Release package built, ad-hoc signed, `codesign --verify --deep --strict` passes, and the packaged-app launch smoke passes.
+- ✅ `main == origin/main` at `aba8aa4`; all release and Bedrock tags are pushed. The working tree is clean except the untracked `.obsidian/` vault config.
 
 ---
 
 ## §5 · Open work, in priority order
 
-IDs reference the defect register (`docs/registers/02-defect-register.md`) and the audit (`docs/audits/08-deep-audit.md` §7). Effort estimates assume a project-familiar working session.
+The audit-era **NEW-DE-1 … NEW-DE-8 punch list was fixed and pinned** during Bedrock (see the supersession note in `docs/registers/02-defect-register.md` and the G1/G4 gate receipts). What remains is:
 
 | # | Item | Why it matters | Estimate |
 |---|------|----------------|----------|
-| 1 | **Punch list: NEW-DE-1 … NEW-DE-5** (audit-era items, all still open — the merge campaign did not touch the legacy defect list) | Write-ordering so an older snapshot can never overwrite a newer one (NEW-DE-1); spatial Explore cards never show real covers (NEW-DE-2); crash-window time inflation (NEW-DE-3); midnight-stale analytics cache (NEW-DE-4); onboarding import bypass + goal-set clobber (NEW-DE-5) | ~2–4 h |
-| 2 | **App Store readiness** | Empty AppIcon set, missing WeatherKit entitlement, empty `CFBundleIdentifier` key, `ENABLE_USER_SELECTED_FILES=readonly` conflicting with the read-write entitlement | ~2–4 h + icon artwork |
-| 3 | **Weather honesty set** | Denied location silently defaults to NYC; per-correlation coverage still hardcodes 1.0 (NEW-DE-7/8) | ~2–3 h |
-| 4 | **Dead-code retirement** | Dead scaffolding — zero-caller code with zero behavior risk, verified call-site by call-site | ~3–5 h |
-| 5 | **Architectural tracks** (in blueprint order) | Split the `@Observable` store monolith (#3) → SQLite normalized core with dual-read migration (#1, blueprint + full post-mortem exist) → Swift 6 strict concurrency | Multi-session arc |
-| 6 | **Product decision needed** | Behavior Context Engine Phase-2: 81% of its file is dead scaffold — wire it (15–25 h, needs hardening) or delete it (1 session, 4.2k LOC). The audit recommends delete | Decision, then 1+ session |
-| 7 | **Mirage era — standing items** | TB-M0 observation cadence (7 consecutive ledger days → owner's exit gate → TB-M1; day-one receipt already green); Mirage app-embed exercise at the first CI run or an operator stage-into-app; a Mirage perf-budget report as deltas; the backup-surface wire gap named to the engine owner («docs/integration/final-acceptance-2026-10-18.md» ledgered deltas) | Process, not code |
+| 1 | **Distribution readiness** | The build is ad-hoc signed, not notarized, so first launch needs right-click → Open. Public/friend distribution needs Developer ID signing and notarization. The bundle ID is still `johan.Reading-Tracker` for MVP container compatibility; changing it needs a dedicated container migration. | Signing/account setup + migration session |
+| 2 | **Swift 6 strict concurrency** | Flipping to Swift 6 produced 148 actor-isolation errors; the project stays in Swift 5 mode until those surfaces are fixed. | Multi-session arc |
+| 3 | **Reader selection highlights/quotes** | Notes, tags, page anchors, and collections work; EPUB/PDF text-selection highlighting is not wired. | 1–2 sessions |
+| 4 | **Behavior evidence to SQLite** | Evidence currently persists in a JSON archive; the SQLite behavior tables exist but are not the live store. | 1 session |
+| 5 | **Collection rename UI** | Create/delete/membership work; rename has no UI. | Small |
+| 6 | **Legacy artifact cleanup** | Old P5-G `library.sqlite3`, `.migrated` files, and graphify bulk remain; none are live. | 1 short session |
+| 7 | **Remaining dead code** | Some zero-caller fragments remain after G7's −1,157-line sweep. | 3–5 h |
+| 8 | **Mirage era — standing items** | TB-M0 observation cadence; a perf-budget report; the engine-side backup-surface gap. The packaged app-embed exercise is now done (runtime embedded and signed). | Process, not code |
+| 9 | **CI runner mismatch** | Local census is authoritative until the CI runner matches the local Xcode/macOS pair. | Release-pipeline item |
+
+The full defect register remains the source of truth for the F-series items; the old NEW-DE block is historical and should not be read as still open.
 
 ---
 
@@ -168,7 +175,10 @@ docs/
 ├── method/
 │   └── 07-testing-strategy.md               How tests are written and why
 ├── audits/
-│   └── 08-deep-audit.md                     Full independent audit (Oct 2026) — file:line evidence for every claim
+│   ├── 08-deep-audit.md                     Full independent audit (Oct 2026) — file:line evidence for every claim
+│   └── 11-completion-and-health-report-2026-10-24.md  Bedrock-era completion and health snapshot
+├── plans/bedrock/                           G0–G8 gate record, master plan, baseline, distribution notes
+├── REBRAND-ASTERISMA.md                     Asterisma rename + data-root migration record
 ├── integration/                             THE RT–MIRAGE MERGE CAMPAIGN (Oct 2026)
 │   ├── RT_Mirage_Codebase_Merge_Playbook.md The governing playbook — still executes the §22/TiB era
 │   ├── merge-log.md                         The campaign log of record (M-014… M-034+)
@@ -227,6 +237,23 @@ TEST_RUNNER_MIRAGE_REAL_ENGINE_DIR=/path/to/MirageV1.0 \
   -only-testing:"AsterismaV1.0Tests/MirageIdentityRealEngineImportTests"
 ```
 
+Mirage runtime staging (required for a fresh clone; the packaged release already contains it):
+
+```bash
+./scripts/stage-mirage-runtime.sh "$PWD/.mirage-runtime"
+```
+
+This creates the gitignored `.mirage-runtime/mirage-runtime` stage (CPython + the pinned engine). Without it, the Xcode build prints a warning and builds without Mirage.
+
+Release package:
+
+```bash
+./scripts/package-release.sh
+# → dist/AsterismaV1.0-1.0-arm64.zip + .sha256
+```
+
+The package is ad-hoc signed, not notarized. First launch on another Mac requires right-click → Open. See `docs/plans/bedrock/DISTRIBUTION.md`.
+
 Builds under Desktop/iCloud paths must use the **default DerivedData** — a custom `-derivedDataPath` there breaks code signing (BUG-003's iCloud stamp root cause; see the defect register).
 
 ---
@@ -252,4 +279,4 @@ House rules:
 
 ## Status
 
-**Healthy, building, fully tested, integrated, and honest about what remains.** The merge campaign is closed and signed. The next session starts at `docs/registers/04-handoff.md` — either the TB-M0 observation cadence (Mirage era) or §5 item 1 (the NEW-DE punch list), baseline green first, commit at every boundary — exactly as every session before it did.
+**AsterismaV1.0 is accepted, merged, pushed, and honest about what remains.** It builds, the census is green, the live library survived the rename, and the release package has a launch receipt. The next session starts at `docs/registers/04-handoff.md` — distribution hardening, reader highlights, Swift 6, or the Mirage standing cadence — baseline green first, commit at every boundary, exactly as every session before it did.

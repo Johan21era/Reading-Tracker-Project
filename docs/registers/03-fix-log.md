@@ -264,3 +264,36 @@ A separate work program executed under its own playbook (`docs/integration/RT_Mi
 
 **Retirement receipted here (for traceability):** the BUG-001 repro `.xcresult` (104 MB, externalized during Stage 4-era bookkeeping) was retired by the owner on 2026-10-18 when the campaign folder was deleted; no unique information was lost (the receipt's metadata lives at `docs/integration/evidence/BUG-001-LogStoreManifest-2026-10-18.plist`).
 
+---
+
+## Stage B — Bedrock / Asterisma (2026-10-24)
+
+The Bedrock program closed the audit-era correctness punch list, moved the live
+store to SQLite, and finished with the Asterisma rebrand. Gate receipts live in
+`docs/plans/bedrock/`.
+
+| Gate | What landed | Receipt |
+|---|---|---|
+| G0 | Baseline, worktree, data snapshot, test isolation, benchmark | `BASELINE.md` |
+| G1 | NEW-DE-1…NEW-DE-5 fixed and pinned: writer ordering, crash-window clamp, cache day bucket, onboarding import/goal merge, spatial covers, RSVP cancellation | `gates/GATE-G1.md` |
+| G2 | App icon, entitlements, shared scheme, ad-hoc signed package | `gates/GATE-G2.md` |
+| G2B | Mirage runtime embedded, signed, manifest-verified, bundle-smoke green | `gates/GATE-G2B.md` |
+| G3A/B/C | GRDB schema, lazy summary store, real-library cutover, JSON retired to `.migrated` | `gates/GATE-G3A.md`, `GATE-G3B.md`, `GATE-G3C.md` |
+| G4 | Open-Meteo provider + live session→snapshot→SQLite pipeline; no WeatherKit entitlement | `gates/GATE-G4.md` |
+| G5 | EPUB genre/series/word count, Book Details, notes, tags, collections | `gates/GATE-G5.md` |
+| G6 | Behavior Context V3 report + Advanced Context window + JSON evidence archive | `gates/GATE-G6.md` |
+| G7 | −1,157 lines of dead code; Swift 6 deferred (148 actor-isolation errors) | `gates/GATE-G7.md` |
+| G8 | Release candidate accepted: census 212/0/9, package + launch smoke | `gates/GATE-G8.md` |
+| R1 | AsterismaV1.0 rebrand + `ReadTracker` → `Asterisma` data-root migration | `docs/REBRAND-ASTERISMA.md` |
+
+**Live-data receipt after migration:** 7 books / 292 sessions / 138,459 page
+timings. The app relaunched successfully from `Application Support/Asterisma/`.
+
+**Release receipt:** `main` at `aba8aa4` (release commit `6da2d81`, tag
+`asterisma-v1.0-mvp`), package `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256
+`06078dea3f21d81d6e9f2ca5a3dfa659f46ad8f2beccb7ceb17fa041df67b774`.
+
+**Still deferred:** Swift 6 strict mode, reader selection highlights/quotes,
+behavior evidence in SQLite, collection rename UI, legacy artifact cleanup,
+CI-runner alignment, and Developer ID signing/notarization.
+

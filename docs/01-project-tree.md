@@ -20,8 +20,11 @@ This is a map of every file and folder in the project, organized so you can find
 | `AsterismaV1.0Tests/` | Automated tests that prove the app works correctly |
 | `AsterismaV1.0UITests/` | User-interface tests (mostly placeholder stubs) |
 | `AsterismaV1.0.xcodeproj/` | The Xcode project file (do not edit by hand) |
-| `AsterismaV1.0.entitlements` | Permissions the app asks macOS for (sandbox, WeatherKit, etc.) |
+| `AsterismaV1.0.entitlements` | Permissions the app asks macOS for (sandbox, user-selected files, location) |
 | `AsterismaV1.0-Info.plist` | App settings such as its name, icon, and location description |
+| `scripts/` | Census, benchmark, test-isolation, runtime staging, icon, and release-package scripts |
+| `dist/` | Locally built release packages (gitignored) |
+| `graphify-out/` | Generated knowledge graph, report, and interactive HTML |
 | `.gitignore` | Tells Git which files to ignore (build junk, user settings, etc.) |
 
 ---
@@ -41,6 +44,9 @@ Every documentation file begins with a number so you can read them in order:
 | `docs/roadmap/06-rsvp-feature-plan.md` | 06 | Plan for the speed-reading feature | Anyone working on that feature |
 | `docs/method/07-testing-strategy.md` | 07 | How tests are written and why | Anyone writing tests |
 | `docs/audits/08-deep-audit.md` | 08 | The full independent audit from Oct 2026 | Anyone who wants the complete picture |
+| `docs/audits/11-completion-and-health-report-2026-10-24.md` | 11 | Bedrock-era completion and health snapshot | Anyone reviewing the release |
+| `docs/REBRAND-ASTERISMA.md` | — | Asterisma rename + data-root migration record | Anyone touching names, paths, or the bundle ID |
+| `docs/plans/bedrock/` | — | G0–G8 gate record, master plan, baseline, distribution notes | Anyone auditing the release |
 | `docs/history/09-final-traces.md` | 09 | Diary of the performance upgrade marathon | Anyone interested in performance history |
 | `docs/history/10-profiler-fix.md` | 10 | The story of how the big freeze was finally fixed | Anyone interested in the freeze mystery |
 
@@ -81,7 +87,7 @@ This folder contains every Swift file that makes the app run. They are grouped b
 
 These are automated checks that run without you having to click anything. Each test is named after the specific bug or behavior it guards. If a test ever starts failing, that is an early warning that something broke.
 
-As of the October 2026 merge campaign: 34 test files, 192 `@Test` functions, standing default census **191 passed / 0 failed / 4 skipped**. Three Mirage suites are opt-in (real-engine gates unset in ordinary runs — see `docs/method/07-testing-strategy.md` for how to engage them).
+As of the AsterismaV1.0 release (2026-10-24): 44 test files, 219 `@Test` functions, standing default census **212 passed / 0 failed / 9 skipped**. The 9 skips are deliberate opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo (see `docs/method/07-testing-strategy.md` for how to engage them).
 
 ---
 

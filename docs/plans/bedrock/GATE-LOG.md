@@ -13,8 +13,12 @@
 | G5 — Library intelligence | CORE PASS (reader highlights deferred) | 2026-10-24 | — | `gates/GATE-G5.md` | pre-approved |
 | G6A — BCE V3 engine | PASSED | 2026-10-24 | — | `gates/GATE-G6.md` | pre-approved |
 | G6B — BCE V3 UI | PASSED | 2026-10-24 | — | `gates/GATE-G6.md` | pre-approved |
-| G7 — Debt & Swift 6 | NOT STARTED | — | — | — | — |
-| G8 — Acceptance | RC PASSED | 2026-10-24 | — | `gates/GATE-G8.md` | pre-approved |
-| R1 — Asterisma rebrand | PASSED | 2026-10-24 | — | `../REBRAND-ASTERISMA.md` | pre-approved |
+| G7 — Debt & Swift 6 | DEBT PASS (Swift 6 deferred) | 2026-10-24 | — | `gates/GATE-G7.md` | pre-approved |
+| G8 — Acceptance | ACCEPTED / MERGED | 2026-10-24 | `6da2d81` / `asterisma-v1.0-mvp` | `gates/GATE-G8.md` | owner accepted |
+| R1 — Asterisma rebrand | PASSED / SHIPPED | 2026-10-24 | `6da2d81` / `asterisma-v1.0-mvp` | `../REBRAND-ASTERISMA.md` | owner accepted |
+
+**Final merge:** `main` fast-forwarded to `aba8aa4` and pushed to
+`origin/main`; all seven release/Bedrock tags pushed. The merged worktree
+re-ran the census at **212 passed / 0 failed / 9 skipped**.
 
 **Standing rule:** no gate advances without an explicit owner APPROVE / CHANGES / STOP.

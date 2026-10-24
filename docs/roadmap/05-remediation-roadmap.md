@@ -8,7 +8,7 @@ This is the project's long-term plan, organized by phase. Think of it as the "wh
 
 **Governing rule:** Every phase opens with a clean build and a full test suite (verified, not assumed) and closes the same way. Every fix gets its own "Finality" statement (why this is the right fix), one fix-log entry, and nothing more. One defect, one Finality, one log entry.
 
-> **Status note (2026-10-19, post-merge):** the RT–Mirage merge campaign (Oct 2026) ran as a *separate* work program under its own playbook and closed signed — none of the phases below was consumed by it, and its standing census (191/0/4) is this roadmap's baseline. Phase work below continues on `main`, opening and closing on that census. The Mirage integration added its own standing era (`docs/integration/` — see handoff item 1, the TB-M0 cadence), governed by `docs/integration/RT_Mirage_Codebase_Merge_Playbook.md` §22.
+> **Status note (2026-10-24, AsterismaV1.0 release):** the Bedrock program closed the audit-era correctness punch list, moved the live store to SQLite, and shipped the Asterisma rebrand. The standing census is now **212/0/9**, and the release is merged at `aba8aa4` (tag `asterisma-v1.0-mvp`). The phases below remain the long-term roadmap; the Mirage-era work is governed separately by `docs/integration/` and the TB-M0 cadence.
 
 ---
 
@@ -189,7 +189,7 @@ Capture a monotonically increasing `generationIndex` before the detached task; o
 2. **O-6** — weather session-key design question: revisit ONLY once real multi-season snapshot data exists to inform it (deliberately deferred; do not solve speculatively).
 3. **Profiling watch-item:** `SessionEventRouter.runPostSessionCascade` whole-library scan per `$books` emission — measure under Phase 2's async regime before optimizing; optimize only on evidence.
 4. **Cruft:** delete `Reading Tracker/default.profraw`; confirm `.gitignore` coverage holds.
-5. **Folder rename:** drop the trailing space in `Reading Tracker Main /` (pure filesystem op — do OUTSIDE any fix session; paths inside the project resolve relatively).
+5. ~~**Folder rename:** drop the trailing space in `Reading Tracker Main /`~~ — **DONE 2026-10-24**: the worktree is now `/Users/johanrembeci/Desktop/AsterismaV1.0`.
 
 **Phase exit:** final register pass — defect register superseded sections marked resolved with pointers to fix-log stages; handoff rewritten per Session Close-Out contract.
 
@@ -199,7 +199,7 @@ Capture a monotonically increasing `generationIndex` before the detached task; o
 
 Feature work continues independently of this roadmap and should interleave AFTER Phase 1:
 - ~~RSVP speed reading~~ — **SHIPPED** (P5-B2, commit `f5ec995`; the per-gesture workhorse now carries the production engine and a hare button; `06-rsvp-feature-plan.md` is its preserved design record)
-- ~~BCE V3 activation with its UI~~ — still PENDING (its product decision — wire or delete — remains open; see register)
+- ~~BCE V3 activation with its UI~~ — **SHIPPED** in Bedrock G6: V3 report, Advanced Context window, and evidence archive are live; remaining evidence-SQLite migration is tracked in README §5.
 - Achievements gallery (LT-10), star visual polish (LT-11), broader de-blocking pass (LT-12), symbol-color settings (rides Phase 1's shell) — all open
 - ~~"Integrate Mirage"~~ — executed as its own campaign outside this roadmap and CLOSED (`docs/integration/`); future Mirage-era work is governed by ADR-12/TB milestones, not by this document
 

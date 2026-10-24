@@ -18,6 +18,8 @@
 - [x] `library.json` and `library-state.json` renamed to
   `*.migrated-2026-10-24`; the app relaunched successfully from SQLite alone.
 - [x] Production DB: `ReadTracker/library.grdb.sqlite3` (~48 MB).
+  (The data root was later renamed to `Asterisma/` by R1; the live DB is
+  `Application Support/Asterisma/library.grdb.sqlite3`.)
 - [x] SQLite-safe backup: `Backups/library-2026-10-24_022606.sqlite3` (~48 MB);
   daily marker + newest-10 rotation.
 - [x] Archive export/import preserves page timings from SQLite.
@@ -39,7 +41,7 @@
    state sidecar back to `library-state.json`.
 3. Check out `bedrock-g3a` or the pre-Bedrock snapshot.
 4. The pre-Bedrock snapshot at
-   `~/Desktop/AsterismaV1.0-Backups/2026-10-24-pre-bedrock/` is the last-resort
+   `~/Desktop/ReadingTracker-Backups/2026-10-24-pre-bedrock/` is the last-resort
    restore.
 
 ## Known deltas

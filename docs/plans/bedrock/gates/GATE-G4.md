@@ -47,6 +47,6 @@ git checkout bedrock-g3a
 
 ## Decision requested
 
-- [ ] APPROVE
+- [x] APPROVE
 - [ ] APPROVE WITH CHANGES
 - [ ] STOP

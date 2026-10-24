@@ -1,7 +1,7 @@
 # Gate G1 — Correctness first
 
 **Date:** 2026-10-24
-**Status:** READY FOR REVIEW
+**Status:** PASSED
 **Branch:** `bedrock/2026-10-24`
 
 ## Scope delivered
@@ -42,10 +42,10 @@
 git checkout bedrock-g0
 ```
 or restore the pre-Bedrock snapshot at
-`~/Desktop/AsterismaV1.0-Backups/2026-10-24-pre-bedrock/`.
+`~/Desktop/ReadingTracker-Backups/2026-10-24-pre-bedrock/`.
 
 ## Decision requested
 
-- [ ] APPROVE
+- [x] APPROVE
 - [ ] APPROVE WITH CHANGES
 - [ ] STOP

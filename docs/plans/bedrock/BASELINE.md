@@ -1,11 +1,14 @@
 # Bedrock Baseline — 2026-10-24 (G0)
 
-**Worktree:** `/Users/johanrembeci/Desktop/AsterismaV1.0 Bedrock`
+**Worktree:** `/Users/johanrembeci/Desktop/Reading Tracker Bedrock`
 **Branch:** `bedrock/2026-10-24`
 **Base commit:** `bafb9e9` (`main`)
 **Xcode:** 27.1 (27A9275) · macOS 26.6.1 host · deployment target 26.5
 
 ---
+
+> **Historical baseline.** The numbers below are the starting point. The final
+> AsterismaV1.0 census is **212 passed / 0 failed / 9 skipped**; see `GATE-G8.md`.
 
 ## Build and census
 
@@ -49,7 +52,7 @@
 
 ## Data snapshot
 
-- Destination: `~/Desktop/AsterismaV1.0-Backups/2026-10-24-pre-bedrock/`
+- Destination: `~/Desktop/ReadingTracker-Backups/2026-10-24-pre-bedrock/`
 - Contents: `ReadTracker/` app-support tree, 61 files, 102 MB
 - Checksum manifest: `SHA256-MANIFEST.txt`
 - This snapshot is outside the repo and is the rollback source of record.

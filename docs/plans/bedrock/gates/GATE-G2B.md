@@ -1,7 +1,7 @@
 # Gate G2B — Mirage embedding and signing
 
 **Date:** 2026-10-24
-**Status:** READY FOR REVIEW
+**Status:** PASSED
 **Branch:** `bedrock/2026-10-24`
 
 ## Scope delivered
@@ -48,6 +48,6 @@ Remove `.mirage-runtime/` to return to a runtime-less build.
 
 ## Decision requested
 
-- [ ] APPROVE
+- [x] APPROVE
 - [ ] APPROVE WITH CHANGES
 - [ ] STOP

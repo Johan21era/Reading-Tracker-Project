@@ -1,7 +1,7 @@
 # Gate G3A — SQLite foundation (GRDB)
 
 **Date:** 2026-10-24
-**Status:** FOUNDATION READY; DataStore integration is G3B
+**Status:** FOUNDATION PASSED
 **Branch:** `bedrock/2026-10-24`
 
 ## Scope delivered
@@ -50,6 +50,6 @@ Remove `.mirage-runtime/` and `dist/` if reverting the packaging work.
 
 ## Decision requested
 
-- [ ] APPROVE FOUNDATION / PROCEED TO G3B
+- [x] APPROVE FOUNDATION / PROCEED TO G3B
 - [ ] APPROVE WITH CHANGES
 - [ ] STOP

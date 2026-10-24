@@ -1,13 +1,16 @@
 # Gate G8 — Final acceptance / release candidate
 
 **Date:** 2026-10-24
-**Status:** RELEASE CANDIDATE — OWNER REVIEW
-**Branch:** `bedrock/2026-10-24`
+**Status:** ACCEPTED — MERGED AND PUSHED
+**Branch:** `main`
+**Release commit:** `6da2d81`
+**Release tag:** `asterisma-v1.0-mvp`
+**Merged main:** `aba8aa4`
 
 ## Acceptance checklist
 
 - [x] Debug and Release build clean.
-- [x] Full census **212 passed / 0 failed / 9 skipped** (221 cases).
+- [x] Full census **212 passed / 0 failed / 9 skipped** (221 cases) — re-run on merged `main`.
 - [x] Real store cut over to `library.grdb.sqlite3`:
   7 books / 292 sessions / 138,459 page timings.
 - [x] Legacy JSON renamed `.migrated`; app relaunched successfully from SQLite.
@@ -22,7 +25,16 @@
 - [x] README/defect register carry Bedrock status notes.
 - [x] Ad-hoc signed Release `.zip` produced; `codesign --verify --deep --strict` passes.
 - [x] Packaged-app launch smoke: **PASS**.
-- [ ] Owner acceptance signature.
+- [x] Owner acceptance signature.
+
+## Release receipt
+
+- Owner accepted the release candidate on 2026-10-24.
+- `bedrock/2026-10-24` fast-forwarded `main` from `bafb9e9` to `aba8aa4`;
+  pushed as `origin/main`.
+- `asterisma-v1.0-mvp` and all six Bedrock tags pushed to GitHub.
+- Release package: `dist/AsterismaV1.0-1.0-arm64.zip`
+- SHA-256: `06078dea3f21d81d6e9f2ca5a3dfa659f46ad8f2beccb7ceb17fa041df67b774`
 
 ## Known deltas (must be read with acceptance)
 
@@ -40,21 +52,25 @@
 
 ## Distribution
 
-- Package: `dist/Asterisma-1.0-arm64.zip`
-- SHA-256: `10170b30f01b1e9cc8e3e3d5517d660fa6cb482c57d4783e01091df0858d1001`
+- Package: `dist/AsterismaV1.0-1.0-arm64.zip`
+- SHA-256: `06078dea3f21d81d6e9f2ca5a3dfa659f46ad8f2beccb7ceb17fa041df67b774`
 - Ad-hoc signed, not notarized.
 - First launch requires right-click → Open (documented in `DISTRIBUTION.md`).
+- Bundle ID remains `johan.Reading-Tracker` for MVP container compatibility;
+  changing it requires a dedicated sandbox-container migration.
 
 ## Rollback
 
 ```bash
-git checkout bedrock-g7
+git checkout asterisma-v1.0-mvp
 ```
-Data rollback: restore `library.json.migrated-2026-10-24` and
-`library-state.json.migrated-2026-10-24`, or the pre-Bedrock snapshot.
 
-## Decision requested
+Data rollback: restore
+`~/Desktop/Asterisma-Backups/2026-10-24-pre-rename/ReadTracker/` as the
+application-support root and check out the pre-rebrand tag if needed.
 
-- [ ] ACCEPT RELEASE CANDIDATE (with deltas)
+## Decision
+
+- [x] ACCEPT RELEASE CANDIDATE (with deltas)
 - [ ] CHANGES REQUIRED
 - [ ] STOP
