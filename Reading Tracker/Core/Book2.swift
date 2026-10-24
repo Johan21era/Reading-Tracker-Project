@@ -67,6 +67,11 @@ struct Book: Identifiable, Codable, Hashable {
     /// Used by InsightEngine and DifficultyAnalyzer for cross-validation.
     var wordCountEstimate: Int?
 
+    /// G3B: exact per-book reading speed cached from the page-timing corpus.
+    /// SQLite summary loads keep page timings lazy; analytics can still return
+    /// the same speed without re-reading 138k rows.
+    var cachedSecondsPerPage: Double?
+
     /// UPGRADE v4: Progressive Filtering support (Part 10 of the Environment
     /// Engine build spec). nil = not part of a series.
     var series: String?
@@ -166,6 +171,7 @@ struct Book: Identifiable, Codable, Hashable {
         notes: [BookNote] = [],
         deadlineID: UUID? = nil,
         wordCountEstimate: Int? = nil,
+        cachedSecondsPerPage: Double? = nil,
         series: String? = nil,
         isFavorite: Bool = false,
         collectionIDs: [UUID] = []
@@ -189,6 +195,7 @@ struct Book: Identifiable, Codable, Hashable {
         self.notes = notes
         self.deadlineID = deadlineID
         self.wordCountEstimate = wordCountEstimate
+        self.cachedSecondsPerPage = cachedSecondsPerPage
         self.series = series
         self.isFavorite = isFavorite
         self.collectionIDs = collectionIDs
@@ -200,7 +207,7 @@ struct Book: Identifiable, Codable, Hashable {
         case id, title, author, fileURL, fileType
         case totalPages, currentPage, chapters, sessions, activeSessionID
         case isCompleted, dateAdded, coverImageData, difficultyProfile, bookmarkData
-        case genre, notes, deadlineID, wordCountEstimate, series, isFavorite, collectionIDs
+        case genre, notes, deadlineID, wordCountEstimate, cachedSecondsPerPage, series, isFavorite, collectionIDs
     }
 
     /// Synthesized Decodable required every key ever added (genre, notes,
@@ -230,6 +237,7 @@ struct Book: Identifiable, Codable, Hashable {
         notes = try c.decodeIfPresent([BookNote].self, forKey: .notes) ?? []
         deadlineID = try c.decodeIfPresent(UUID.self, forKey: .deadlineID)
         wordCountEstimate = try c.decodeIfPresent(Int.self, forKey: .wordCountEstimate)
+        cachedSecondsPerPage = try c.decodeIfPresent(Double.self, forKey: .cachedSecondsPerPage)
         series = try c.decodeIfPresent(String.self, forKey: .series)
         isFavorite = try c.decodeIfPresent(Bool.self, forKey: .isFavorite) ?? false
         collectionIDs = try c.decodeIfPresent([UUID].self, forKey: .collectionIDs) ?? []
@@ -370,6 +378,11 @@ struct ReadingSession: Identifiable, Codable, Hashable {
     /// nil for sessions recorded before MusicalAnalysisEngine was introduced.
     var audioContextProfileID: UUID?
 
+    /// G3B: exact mean page duration, cached so a summary load does not need
+    /// the per-page rows. `averageSecondsPerPage` falls back to this when
+    /// `pageTimes` is intentionally lazy/empty.
+    var cachedAverageSecondsPerPage: Double?
+
     var duration: TimeInterval {
         guard let end = endTime else { return 0 }
         return end.timeIntervalSince(startTime)
@@ -386,8 +399,13 @@ struct ReadingSession: Identifiable, Codable, Hashable {
     var averageSecondsPerPage: Double {
         guard pagesRead > 0 else { return 0 }
         let timed = pageTimes.filter { $0.duration > 0 }
-        guard !timed.isEmpty else { return duration / Double(max(1, pagesRead)) }
-        return timed.reduce(0) { $0 + $1.duration } / Double(timed.count)
+        if !timed.isEmpty {
+            return timed.reduce(0) { $0 + $1.duration } / Double(timed.count)
+        }
+        if let cachedAverageSecondsPerPage, cachedAverageSecondsPerPage > 0 {
+            return cachedAverageSecondsPerPage
+        }
+        return duration / Double(max(1, pagesRead))
     }
 
     nonisolated init(
@@ -398,7 +416,8 @@ struct ReadingSession: Identifiable, Codable, Hashable {
         startPage: Int,
         endPage: Int,
         pageTimes: [PageTiming] = [],
-        audioContextProfileID: UUID? = nil
+        audioContextProfileID: UUID? = nil,
+        cachedAverageSecondsPerPage: Double? = nil
     ) {
         self.id = id
         self.bookID = bookID
@@ -408,6 +427,7 @@ struct ReadingSession: Identifiable, Codable, Hashable {
         self.endPage = endPage
         self.pageTimes = pageTimes
         self.audioContextProfileID = audioContextProfileID
+        self.cachedAverageSecondsPerPage = cachedAverageSecondsPerPage
     }
 }
 

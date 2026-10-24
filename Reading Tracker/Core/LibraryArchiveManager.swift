@@ -78,10 +78,14 @@ final class LibraryArchiveManager: ObservableObject {
     func exportLibrary(from store: DataStore) throws -> Data {
         guard !store.books.isEmpty else { throw LibraryArchiveError.emptyLibrary }
 
+        // G3C: SQLite summary mode does not hold page timings in memory.
+        // Rehydrate them for the archive so exports remain lossless.
+        let archiveBooks = store.booksForArchive()
+
         // Collect covers: prefer external files, fall back to any still-
         // embedded payloads (pre-migration libraries).
         var covers: [String: Data] = [:]
-        for book in store.books {
+        for book in archiveBooks {
             if let fileData = try? Data(contentsOf: CoverStore.active.url(forBookID: book.id)) {
                 covers[book.id.uuidString] = fileData
             } else if let embedded = book.coverImageData {
@@ -93,7 +97,7 @@ final class LibraryArchiveManager: ObservableObject {
             formatVersion: Self.formatVersion,
             exportedAt: Date(),
             appName: "Reading Tracker",
-            books: store.books,
+            books: archiveBooks,
             libraryState: store.libraryState,
             covers: covers.isEmpty ? nil : covers
         )

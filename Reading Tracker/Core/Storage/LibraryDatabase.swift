@@ -15,8 +15,10 @@ import GRDB
 
 nonisolated final class LibraryDatabase: @unchecked Sendable {
     let pool: DatabasePool
+    let dbURL: URL
 
     init(url: URL) throws {
+        dbURL = url
         let dir = url.deletingLastPathComponent()
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
 
@@ -199,6 +201,7 @@ nonisolated final class LibraryDatabase: @unchecked Sendable {
             try db.execute(sql: "DELETE FROM collections")
             try db.execute(sql: "DELETE FROM library_state")
 
+            let validCollectionIDs = Set(state.collections.map(\.id))
             // Collections must exist before book_collections references them.
             for collection in state.collections {
                 try db.execute(
@@ -210,7 +213,7 @@ nonisolated final class LibraryDatabase: @unchecked Sendable {
             }
 
             for book in books {
-                let payload = try enc.encode(book)
+                let payload = try enc.encode(Self.summary(of: book))
                 let payloadString = String(decoding: payload, as: UTF8.self)
                 try db.execute(
                     sql: """
@@ -225,7 +228,7 @@ nonisolated final class LibraryDatabase: @unchecked Sendable {
                     ])
 
                 for session in book.sessions {
-                    let sPayload = try enc.encode(session)
+                    let sPayload = try enc.encode(Self.summary(of: session))
                     try db.execute(
                         sql: """
                             INSERT INTO sessions
@@ -275,7 +278,8 @@ nonisolated final class LibraryDatabase: @unchecked Sendable {
                         ])
                 }
 
-                for collectionID in book.collectionIDs {
+                for collectionID in book.collectionIDs
+                    where validCollectionIDs.contains(collectionID) {
                     try db.execute(
                         sql: "INSERT OR IGNORE INTO book_collections (book_id, collection_id) VALUES (?, ?)",
                         arguments: [book.id.uuidString, collectionID.uuidString])
@@ -299,6 +303,204 @@ nonisolated final class LibraryDatabase: @unchecked Sendable {
             try db.execute(
                 sql: "INSERT INTO library_state (key, payload_json) VALUES (?, ?)",
                 arguments: ["root", String(decoding: stateData, as: UTF8.self)])
+        }
+    }
+
+    // MARK: - Summary helpers
+
+    private static func summary(of book: Book) -> Book {
+        var copy = book
+        if copy.cachedSecondsPerPage == nil {
+            copy.cachedSecondsPerPage = AnalyticsEngine.readingSpeed(for: book)
+        }
+        copy.sessions = book.sessions.map { summary(of: $0) }
+        return copy
+    }
+
+    private static func summary(of session: ReadingSession) -> ReadingSession {
+        var copy = session
+        if copy.cachedAverageSecondsPerPage == nil {
+            copy.cachedAverageSecondsPerPage = copy.averageSecondsPerPage
+        }
+        copy.pageTimes = []
+        return copy
+    }
+
+    // MARK: - Write-through summary mode (G3B)
+
+    /// Upsert all books/state without rewriting the 138k page-timing rows that
+    /// are already stored. Only sessions that currently carry pageTimes in
+    /// memory (the active/current session) replace their page_times rows.
+    func saveAll(books: [Book], state: LibraryState) throws {
+        let enc = Self.encoder()
+        try pool.write { db in
+            let liveIDs = Set(books.map(\.id.uuidString))
+            let existing = try String.fetchAll(db, sql: "SELECT id FROM books")
+            for id in existing where !liveIDs.contains(id) {
+                try db.execute(sql: "DELETE FROM books WHERE id = ?", arguments: [id])
+            }
+            // State first: collections must exist before book_collections.
+            try writeState(state, db: db, enc: enc)
+            let validCollectionIDs = Set(state.collections.map(\.id))
+            for book in books {
+                try writeBook(book, db: db, enc: enc,
+                              validCollectionIDs: validCollectionIDs)
+            }
+        }
+    }
+
+    private func writeBook(
+        _ book: Book,
+        db: Database,
+        enc: JSONEncoder,
+        validCollectionIDs: Set<UUID>
+    ) throws {
+        let payload = try enc.encode(Self.summary(of: book))
+        try db.execute(
+            sql: """
+                INSERT INTO books (id, title, author, date_added, payload_json, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET
+                  title=excluded.title, author=excluded.author,
+                  date_added=excluded.date_added, payload_json=excluded.payload_json,
+                  updated_at=excluded.updated_at
+                """,
+            arguments: [
+                book.id.uuidString, book.title, book.author,
+                book.dateAdded.timeIntervalSince1970,
+                String(decoding: payload, as: UTF8.self),
+                Date().timeIntervalSince1970,
+            ])
+
+        let newSessionIDs = Set(book.sessions.map(\.id.uuidString))
+        let oldSessionIDs = try String.fetchAll(
+            db, sql: "SELECT id FROM sessions WHERE book_id = ?",
+            arguments: [book.id.uuidString])
+        for old in oldSessionIDs where !newSessionIDs.contains(old) {
+            try db.execute(sql: "DELETE FROM sessions WHERE id = ?", arguments: [old])
+        }
+
+        for session in book.sessions {
+            let sPayload = try enc.encode(Self.summary(of: session))
+            try db.execute(
+                sql: """
+                    INSERT INTO sessions
+                    (id, book_id, start_time, end_time, start_page, end_page,
+                     audio_profile_id, payload_json)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(id) DO UPDATE SET
+                      start_time=excluded.start_time, end_time=excluded.end_time,
+                      start_page=excluded.start_page, end_page=excluded.end_page,
+                      audio_profile_id=excluded.audio_profile_id,
+                      payload_json=excluded.payload_json
+                    """,
+                arguments: [
+                    session.id.uuidString, book.id.uuidString,
+                    session.startTime.timeIntervalSince1970,
+                    session.endTime?.timeIntervalSince1970,
+                    session.startPage, session.endPage,
+                    session.audioContextProfileID?.uuidString,
+                    String(decoding: sPayload, as: UTF8.self),
+                ])
+
+            if !session.pageTimes.isEmpty {
+                try db.execute(
+                    sql: "DELETE FROM page_times WHERE session_id = ?",
+                    arguments: [session.id.uuidString])
+                for (idx, timing) in session.pageTimes.enumerated() {
+                    let tPayload = try enc.encode(timing)
+                    try db.execute(
+                        sql: """
+                            INSERT INTO page_times
+                            (id, session_id, idx, page_number, start_time, end_time, payload_json)
+                            VALUES (?, ?, ?, ?, ?, ?, ?)
+                            """,
+                        arguments: [
+                            timing.id.uuidString, session.id.uuidString, idx,
+                            timing.pageNumber,
+                            timing.startTime.timeIntervalSince1970,
+                            timing.endTime?.timeIntervalSince1970,
+                            String(decoding: tPayload, as: UTF8.self),
+                        ])
+                }
+            }
+        }
+
+        try db.execute(sql: "DELETE FROM notes WHERE book_id = ?", arguments: [book.id.uuidString])
+        for note in book.notes {
+            try db.execute(
+                sql: """
+                    INSERT INTO notes
+                    (id, book_id, page_number, text, tag, created_at, modified_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                arguments: [
+                    note.id.uuidString, book.id.uuidString, note.pageNumber,
+                    note.text, note.tag.rawValue,
+                    note.createdAt.timeIntervalSince1970,
+                    note.modifiedAt.timeIntervalSince1970,
+                ])
+        }
+
+        try db.execute(sql: "DELETE FROM book_collections WHERE book_id = ?",
+                       arguments: [book.id.uuidString])
+        for collectionID in book.collectionIDs
+            where validCollectionIDs.contains(collectionID) {
+            try db.execute(
+                sql: "INSERT OR IGNORE INTO book_collections (book_id, collection_id) VALUES (?, ?)",
+                arguments: [book.id.uuidString, collectionID.uuidString])
+        }
+    }
+
+    private func writeState(_ state: LibraryState, db: Database, enc: JSONEncoder) throws {
+        try db.execute(sql: "DELETE FROM collections")
+        for collection in state.collections {
+            try db.execute(
+                sql: "INSERT INTO collections (id, name, date_created) VALUES (?, ?, ?)",
+                arguments: [
+                    collection.id.uuidString, collection.name,
+                    collection.dateCreated.timeIntervalSince1970,
+                ])
+        }
+        try db.execute(sql: "DELETE FROM achievements")
+        for achievement in state.earnedAchievements {
+            try db.execute(
+                sql: """
+                    INSERT OR IGNORE INTO achievements (id, kind, earned_at, book_id)
+                    VALUES (?, ?, ?, ?)
+                    """,
+                arguments: [
+                    achievement.id.uuidString, achievement.kind.rawValue,
+                    achievement.earnedAt.timeIntervalSince1970,
+                    achievement.relatedBookID?.uuidString,
+                ])
+        }
+        let stateData = try enc.encode(state)
+        try db.execute(
+            sql: """
+                INSERT INTO library_state (key, payload_json) VALUES ('root', ?)
+                ON CONFLICT(key) DO UPDATE SET payload_json=excluded.payload_json
+                """,
+            arguments: [String(decoding: stateData, as: UTF8.self)])
+    }
+
+    func deleteBook(id: UUID) throws {
+        try pool.write { db in
+            try db.execute(sql: "DELETE FROM books WHERE id = ?", arguments: [id.uuidString])
+        }
+    }
+
+    func pageTimings(forSessionID id: UUID) throws -> [PageTiming] {
+        let dec = Self.decoder()
+        return try pool.read { db in
+            try Row.fetchAll(
+                db,
+                sql: "SELECT payload_json FROM page_times WHERE session_id = ? ORDER BY idx",
+                arguments: [id.uuidString])
+                .compactMap { row -> PageTiming? in
+                    let text: String = row["payload_json"]
+                    return try? dec.decode(PageTiming.self, from: Data(text.utf8))
+                }
         }
     }
 
@@ -329,6 +531,16 @@ nonisolated final class LibraryDatabase: @unchecked Sendable {
 
     func close() throws {
         try pool.close()
+    }
+
+    /// Consistent file snapshot for rotation. Checkpoints WAL first, then
+    /// copies the main database while no write transaction is open.
+    func backup(to destination: URL) throws {
+        try pool.writeWithoutTransaction { db in
+            try db.execute(sql: "PRAGMA wal_checkpoint(TRUNCATE)")
+        }
+        try? FileManager.default.removeItem(at: destination)
+        try FileManager.default.copyItem(at: dbURL, to: destination)
     }
 
     func counts() throws -> (books: Int, sessions: Int, pageTimes: Int) {

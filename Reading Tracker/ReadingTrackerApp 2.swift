@@ -58,7 +58,10 @@ struct ReadingTrackerApp: App {
     // the standard pattern when one StateObject depends on another.
 
     init() {
-        let store = DataStore()
+        // G3C: production uses the SQLite summary store. On first launch it
+        // bootstraps from legacy library.json and leaves the JSON in place as a
+        // fallback until the migration has been verified.
+        let store = DataStore(storageEngine: .sqlite)
         _dataStore = StateObject(wrappedValue: store)
         _coordinator = StateObject(wrappedValue: SessionCoordinator(dataStore: store))
     }

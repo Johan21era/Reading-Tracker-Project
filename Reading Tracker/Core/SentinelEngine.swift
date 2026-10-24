@@ -226,13 +226,15 @@ final class SentinelEngine: ObservableObject {
         if willRepair && allowsRepair {
             // S2: snapshot BEFORE any mutation. If we can't locate the data
             // folder, skip repairs entirely — no snapshot, no mutation.
-            if let base = context.applicationSupportURL?
-                .appendingPathComponent("ReadTracker", isDirectory: true) {
-                LibraryArchiveManager.performAutoBackupIfNeeded(
-                    booksURL: base.appendingPathComponent("library.json"),
-                    stateURL: base.appendingPathComponent("library-state.json")
-                )
-                dispatchRepairs(&findings, dataStore: dataStore)
+            if context.applicationSupportURL != nil {
+                // S2: snapshot the ACTIVE store (SQLite in G3C, JSON legacy).
+                if dataStore.createSafetySnapshot() {
+                    dispatchRepairs(&findings, dataStore: dataStore)
+                } else {
+                    for i in findings.indices where findings[i].outcome == .detected {
+                        findings[i].outcome = .stalled
+                    }
+                }
             } else {
                 for i in findings.indices where findings[i].outcome == .detected {
                     findings[i].outcome = .stalled

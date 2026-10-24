@@ -86,7 +86,10 @@ final class SQLiteFoundationTests {
         #expect(loaded.id == book.id)
         #expect(loaded.title == "SQLite Book")
         #expect(loaded.sessions.count == 1)
-        #expect(loaded.sessions.first?.pageTimes.count == 2)
+        // G3B: summary loads intentionally omit per-page rows.
+        #expect(loaded.sessions.first?.pageTimes.isEmpty == true)
+        let timings = try db.pageTimings(forSessionID: sessionID)
+        #expect(timings.count == 2)
         #expect(loaded.notes.count == 1)
         #expect(loaded.collectionIDs == [collectionID])
 

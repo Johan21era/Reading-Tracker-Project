@@ -49,6 +49,18 @@ final class DataStore: ObservableObject {
 
     @Published private(set) var persistenceHealth: PersistenceStatus = .healthy
 
+    /// G3B: JSON remains the default until the cutover gate. SQLite mode is
+    /// exercised by tests and will become the default at G3C.
+    enum StorageEngine: String {
+        case json
+        case sqlite
+    }
+
+    private(set) var storageEngine: StorageEngine = .json
+    private var database: LibraryDatabase?
+    private let dbWriteQueue = DispatchQueue(
+        label: "readingtracker.datastore.sqlite", qos: .utility)
+
     // MARK: - Private
 
     private let fileURL: URL
@@ -83,7 +95,9 @@ final class DataStore: ObservableObject {
 
     // MARK: - Init
 
-    init(fileURL: URL? = nil) {
+    init(fileURL: URL? = nil,
+         storageEngine requestedEngine: StorageEngine = .json,
+         databaseURL: URL? = nil) {
         // Test/UI-test isolation: a process-scoped store directory overrides
         // Application Support. XCTest hosts get one automatically.
         let testStoreDir = RuntimeEnvironment.isolatedStoreDirectory
@@ -167,17 +181,56 @@ final class DataStore: ObservableObject {
             persistenceHealth = .degraded(message)
         }
 
-        load()
+        if requestedEngine == .sqlite {
+            let dbURL = databaseURL
+                ?? self.fileURL.deletingLastPathComponent()
+                    .appendingPathComponent("library.grdb.sqlite3")
+            if let db = try? LibraryDatabase(url: dbURL) {
+                database = db
+                storageEngine = .sqlite
+            } else {
+                degradedDirectoryMessage = (degradedDirectoryMessage.map { $0 + " " } ?? "")
+                    + "SQLite store could not be opened; using JSON."
+                persistenceHealth = .degraded(degradedDirectoryMessage!)
+            }
+        }
 
-        // P5 Feature 1 + HOTFIX (stall report): auto-backup is file-copy I/O;
-        // it now runs on a background task instead of stalling launch on main.
-        let booksFile = self.fileURL   // qualify: init param shadows the property
-        let stateFile = self.stateURL
-        Task.detached(priority: .utility) {
-            LibraryArchiveManager.performAutoBackupIfNeeded(
-                booksURL: booksFile,
-                stateURL: stateFile
-            )
+        if storageEngine == .sqlite, let database {
+            let empty = (try? database.counts().books ?? 0) == 0
+            if empty, FileManager.default.fileExists(atPath: self.fileURL.path) {
+                if !Self.bootstrapSQLite(
+                    database: database,
+                    booksURL: self.fileURL,
+                    stateURL: self.stateURL) {
+                    // Never strand the app on an empty DB if the legacy file
+                    // cannot be imported. Fall back to the proven JSON path.
+                    self.database = nil
+                    storageEngine = .json
+                    persistenceHealth = .degraded(
+                        "SQLite migration failed; using the legacy JSON library. " +
+                            "No data was deleted.")
+                }
+            }
+            if storageEngine == .sqlite {
+                loadFromDatabase(database)
+            } else {
+                load()
+            }
+        } else {
+            load()
+        }
+
+        // JSON auto-backup is file-copy I/O; SQLite backups are introduced at
+        // the cutover gate (VACUUM INTO). Skip the JSON copy in SQLite mode.
+        if storageEngine == .json {
+            let booksFile = self.fileURL   // qualify: init param shadows the property
+            let stateFile = self.stateURL
+            Task.detached(priority: .utility) {
+                LibraryArchiveManager.performAutoBackupIfNeeded(
+                    booksURL: booksFile,
+                    stateURL: stateFile
+                )
+            }
         }
 
         #if DEBUG
@@ -246,6 +299,53 @@ final class DataStore: ObservableObject {
 
     func book(id: UUID) -> Book? {
         books.first { $0.id == id }
+    }
+
+    /// G3C: archive export needs the full page-timing rows even in SQLite
+    /// summary mode. Explicit archives are allowed to pay this cost.
+    /// Sentinel S2: a consistent pre-repair snapshot. Returns false if the
+    /// snapshot could not be made; callers must then skip mutation entirely.
+    func createSafetySnapshot() -> Bool {
+        guard storageEngine == .sqlite, let database else {
+            // JSON mode retains its existing rotation path.
+            LibraryArchiveManager.performAutoBackupIfNeeded(
+                booksURL: fileURL, stateURL: stateURL)
+            return true
+        }
+        let dir = fileURL.deletingLastPathComponent()
+            .appendingPathComponent("Backups", isDirectory: true)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd_HHmmss"
+        let dest = dir.appendingPathComponent(
+            "sentinel-pre-repair-\(formatter.string(from: Date())).sqlite3")
+        do {
+            try dbWriteQueue.sync { try database.backup(to: dest) }
+            return true
+        } catch {
+            print("[DataStore] Sentinel safety snapshot failed: \(error)")
+            return false
+        }
+    }
+
+    /// Test teardown only: close the SQLite pool before deleting its temp dir.
+    func closeStorageForTesting() {
+        guard storageEngine == .sqlite else { return }
+        dbWriteQueue.sync { try? database?.close() }
+        database = nil
+    }
+
+    func booksForArchive() -> [Book] {
+        guard storageEngine == .sqlite, let database else { return books }
+        return books.map { book in
+            var copy = book
+            copy.sessions = book.sessions.map { session in
+                var s = session
+                s.pageTimes = (try? database.pageTimings(forSessionID: s.id)) ?? []
+                return s
+            }
+            return copy
+        }
     }
 
     // MARK: - Public API — Library State
@@ -494,6 +594,99 @@ final class DataStore: ObservableObject {
         migrateEmbeddedCoversToFiles()
     }
 
+    /// G3C bootstrap: import legacy JSON/state into an empty SQLite DB.
+    /// The JSON files are intentionally left in place until the cutover is
+    /// verified; a later launch sees a non-empty DB and will not re-import.
+    private static func bootstrapSQLite(
+        database: LibraryDatabase,
+        booksURL: URL,
+        stateURL: URL
+    ) -> Bool {
+        do {
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            let booksData = try Data(contentsOf: booksURL)
+            let books = try decoder.decode([Book].self, from: booksData)
+            let state: LibraryState
+            if let stateData = try? Data(contentsOf: stateURL) {
+                state = (try? decoder.decode(LibraryState.self, from: stateData)) ?? LibraryState()
+            } else {
+                state = LibraryState()
+            }
+            try database.importLibrary(books: books, state: state)
+            print("[DataStore] Migrated \(books.count) legacy book(s) into SQLite.")
+            return true
+        } catch {
+            print("[DataStore] SQLite bootstrap failed: \(error)")
+            return false
+        }
+    }
+
+    /// G3B: SQLite summary load. Sessions arrive without per-page rows; the
+    /// cached speed fields keep analytics exact.
+    private func loadFromDatabase(_ db: LibraryDatabase) {
+        do {
+            books = try db.loadBooks()
+            libraryState = try db.loadState()
+
+            let deduped = AchievementEngine.deduplicated(libraryState.earnedAchievements)
+            if deduped.removed > 0 {
+                libraryState.earnedAchievements = deduped.kept
+                try? db.saveAll(books: books, state: libraryState)
+            }
+
+            migrateEmbeddedCoversToFiles()
+            scheduleSQLiteBackupIfNeeded(db)
+        } catch {
+            books = []
+            libraryState = LibraryState()
+            persistenceHealth = .degraded(
+                "SQLite library could not be read: \(error.localizedDescription). " +
+                    "No data was overwritten.")
+        }
+    }
+
+    /// One consistent SQLite snapshot per day, newest 10 kept. Runs off-main.
+    private func scheduleSQLiteBackupIfNeeded(_ db: LibraryDatabase) {
+        // Test hosts and UI tests use disposable stores; never spend I/O or
+        // race teardown with a backup there.
+        guard RuntimeEnvironment.isolatedStoreDirectory == nil else { return }
+        let dir = fileURL.deletingLastPathComponent()
+            .appendingPathComponent("Backups", isDirectory: true)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let marker = dir.appendingPathComponent(".last-sqlite-backup")
+        if let attrs = try? FileManager.default.attributesOfItem(atPath: marker.path),
+           let date = attrs[.modificationDate] as? Date,
+           Date().timeIntervalSince(date) < 86_400 {
+            return
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd_HHmmss"
+        let dest = dir.appendingPathComponent(
+            "library-\(formatter.string(from: Date())).sqlite3")
+        Task.detached(priority: .utility) {
+            do {
+                try db.backup(to: dest)
+                try? Data().write(to: marker, options: .atomic)
+                let files = (try? FileManager.default.contentsOfDirectory(
+                    at: dir, includingPropertiesForKeys: [.creationDateKey])) ?? []
+                let backups = files
+                    .filter { $0.pathExtension == "sqlite3" }
+                    .sorted { a, b in
+                        let da = (try? a.resourceValues(forKeys: [.creationDateKey]).creationDate) ?? .distantPast
+                        let db = (try? b.resourceValues(forKeys: [.creationDateKey]).creationDate) ?? .distantPast
+                        return da > db
+                    }
+                for stale in backups.dropFirst(10) {
+                    try? FileManager.default.removeItem(at: stale)
+                }
+            } catch {
+                print("[DataStore] SQLite backup failed: \(error)")
+            }
+        }
+    }
+
     /// FINAL TRACES Upgrade #2: one-time per-book extraction of embedded
     /// cover payloads to the external CoverStore, clearing the payload field
     /// so saves stop carrying image bytes. Idempotent.
@@ -603,6 +796,24 @@ final class DataStore: ObservableObject {
         saveTimer?.invalidate()
         saveTimer = nil
 
+        if storageEngine == .sqlite, let database {
+            let booksSnapshot = books
+            let stateSnapshot = libraryState
+            do {
+                try dbWriteQueue.sync {
+                    try database.saveAll(books: booksSnapshot, state: stateSnapshot)
+                }
+                persistenceHealth = .healthy
+            } catch {
+                persistenceHealth = .degraded(
+                    "Library could not be saved to SQLite: \(error.localizedDescription)")
+                #if DEBUG
+                consoleLastSaveError = error.localizedDescription
+                #endif
+            }
+            return
+        }
+
         // FINAL TRACES #4: owned serial queue makes draining a one-liner
         // barrier — no detached-hop semaphore dance.
         if pendingWrite != nil {
@@ -630,6 +841,21 @@ final class DataStore: ObservableObject {
     /// 1-3+ s on main. The encode now happens inside the same detached task as
     /// the write; ordering is still strictly chained.
     private func save() {
+        if storageEngine == .sqlite, let database {
+            let booksSnapshot = books
+            let stateSnapshot = libraryState
+            dbWriteQueue.async { [weak self] in
+                do {
+                    try database.saveAll(books: booksSnapshot, state: stateSnapshot)
+                } catch {
+                    Task { @MainActor [weak self] in
+                        self?.markWriteFailed("\(error)", context: "SQLite library")
+                    }
+                }
+            }
+            return
+        }
+
         let booksSnapshot = books   // value copy of the array (COW handles cost)
         let url = fileURL
         enqueueWrite(
@@ -640,6 +866,11 @@ final class DataStore: ObservableObject {
     }
 
     private func saveLibraryState() {
+        if storageEngine == .sqlite {
+            // SQLite writes books+state together; coalesce through the debounce.
+            scheduleSave()
+            return
+        }
         let stateSnapshot = libraryState
         let url = stateURL
         enqueueWrite(

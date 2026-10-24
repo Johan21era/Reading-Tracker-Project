@@ -40,6 +40,11 @@ enum AnalyticsEngine {
             .filter { $0 > 0.5 && $0 < 60 }
 
         guard !timings.isEmpty else {
+            // G3B: page timings are lazy in SQLite mode; use the exact cache
+            // captured when the book was written.
+            if let cached = book.cachedSecondsPerPage, cached > 0 {
+                return cached
+            }
             return AnalyticsConstants.defaultSecondsPerPage
         }
 
@@ -80,7 +85,12 @@ enum AnalyticsEngine {
         let allTimings = allBooks.flatMap(\.sessions).flatMap(\.pageTimes)
             .map(\.duration).filter { $0 > 0.5 && $0 < 60 }
 
-        guard !allTimings.isEmpty else { return AnalyticsConstants.defaultSecondsPerPage }
+        guard !allTimings.isEmpty else {
+            // G3B summary mode: no page timing rows were loaded.
+            let cached = allBooks.compactMap(\.cachedSecondsPerPage).filter { $0 > 0 }
+            guard !cached.isEmpty else { return AnalyticsConstants.defaultSecondsPerPage }
+            return cached.reduce(0, +) / Double(cached.count)
+        }
 
         let sorted = allTimings.sorted()
         let median = sorted[sorted.count / 2]
