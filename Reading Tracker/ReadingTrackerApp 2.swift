@@ -102,6 +102,10 @@ struct ReadingTrackerApp: App {
 
                     // Notification permission — idempotent after first call.
                     await NotificationScheduler.shared.requestAuthorization()
+
+                    // G6: analyze imported/history sessions once the app is up,
+                    // not only when a live session closes.
+                    eventRouter.analyzeHistory(books: dataStore.books)
                 }
                 // The New Year celebration modifier manages its own
                 // NewYearTransitionMonitor @StateObject internally.
@@ -155,6 +159,12 @@ struct ReadingTrackerApp: App {
             ReadingInsightsDashboard()
                 .environmentObject(dataStore)
                 .frame(minWidth: 760, minHeight: 540)
+        }
+
+        Window("Advanced Context", id: "reading-context-advanced") {
+            AdvancedContextView()
+                .environmentObject(contextEngine)
+                .frame(minWidth: 760, minHeight: 620)
         }
 
         // ROADMAP 1.2a/1.2b (NA-2): Settings window — the goal/deadline editor.

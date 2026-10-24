@@ -464,9 +464,78 @@ public final class BehaviorContextAccessKit: ObservableObject {
     /// unchanged from what was already coded, just actually enforced now.
     private let retentionPolicy = BehavioralRetentionPolicy()
 
+    // MARK: Persistence
+
+    /// G6: behavioral evidence survives relaunch. Kept local, capped by the
+    /// existing retention policy. This is deliberately a small JSON archive;
+    /// the unified SQLite behavior tables can replace it later without changing
+    /// the observation API.
+    private let archiveURL: URL?
+
+    struct BehaviorEvidenceArchive: Codable {
+        var version: Int = 1
+        var savedAt: Date = Date()
+        var events: [BehavioralEvent]
+        var applicationSessions: [ApplicationUsageSession]
+        var inactivityRecords: [InactivityRecord]
+        var deviceStateEvents: [DeviceStateEvent]
+    }
+
     // MARK: Initialization
 
-    public init() {}
+    public init(archiveURL: URL? = nil) {
+        self.archiveURL = archiveURL ?? Self.defaultArchiveURL()
+        loadArchive()
+    }
+
+    private static func defaultArchiveURL() -> URL? {
+        let dir: URL
+        if let testRoot = RuntimeEnvironment.isolatedStoreDirectory {
+            dir = testRoot
+        } else {
+            guard let base = FileManager.default.urls(
+                for: .applicationSupportDirectory, in: .userDomainMask).first
+            else { return nil }
+            dir = base.appendingPathComponent("ReadTracker", isDirectory: true)
+        }
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir.appendingPathComponent("behavior-evidence.json")
+    }
+
+    private func loadArchive() {
+        guard let archiveURL,
+              let data = try? Data(contentsOf: archiveURL) else { return }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        guard let archive = try? decoder.decode(
+            BehaviorEvidenceArchive.self, from: data) else { return }
+        events = archive.events
+        applicationSessions = archive.applicationSessions
+        inactivityRecords = archive.inactivityRecords
+        deviceStateEvents = archive.deviceStateEvents
+        BehavioralRetentionController.apply(policy: retentionPolicy, to: &events)
+        BehavioralRetentionController.apply(policy: retentionPolicy, to: &applicationSessions)
+        BehavioralRetentionController.apply(policy: retentionPolicy, to: &inactivityRecords)
+        BehavioralRetentionController.apply(policy: retentionPolicy, to: &deviceStateEvents)
+    }
+
+    /// Flush evidence to disk. Called on monitor stop (app background/quit).
+    public func saveArchive() {
+        guard let archiveURL else { return }
+        let archive = BehaviorEvidenceArchive(
+            events: events,
+            applicationSessions: applicationSessions,
+            inactivityRecords: inactivityRecords,
+            deviceStateEvents: deviceStateEvents)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.sortedKeys]
+        do {
+            try encoder.encode(archive).write(to: archiveURL, options: .atomic)
+        } catch {
+            print("[BehaviorContextAccessKit] evidence archive save failed: \(error)")
+        }
+    }
 
     /// CONTRACT (bug-fix session): callers MUST call stopMonitoring() before
     /// releasing this object. Both real paths do — ReadingTrackerApp on
@@ -529,6 +598,8 @@ public final class BehaviorContextAccessKit: ObservableObject {
         if let systemPowerObserver {
             NSWorkspace.shared.notificationCenter.removeObserver(systemPowerObserver)
         }
+
+        saveArchive()
     }
 
     // MARK: Application Monitoring

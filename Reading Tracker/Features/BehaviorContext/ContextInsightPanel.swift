@@ -19,6 +19,7 @@ import SwiftUI
 struct ContextInsightPanel: View {
     @EnvironmentObject private var contextEngine: BehaviorContextEngine
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         NavigationStack {
@@ -37,6 +38,13 @@ struct ContextInsightPanel: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
+                }
+                ToolbarItem(placement: .secondaryAction) {
+                    Button {
+                        openWindow(id: "reading-context-advanced")
+                    } label: {
+                        Label("Advanced Context", systemImage: "brain.head.profile")
+                    }
                 }
                 // Confidence badge in the toolbar
                 if let summary = contextEngine.summary {

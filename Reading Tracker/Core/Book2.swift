@@ -282,6 +282,37 @@ enum ReadingGenre: String, Codable, CaseIterable, Hashable, Sendable {
     var displayName: String {
         rawValue
     }
+
+    /// G5: map OPF `dc:subject` strings to the app's genre taxonomy.
+    static func mapped(from subjects: [String]) -> ReadingGenre {
+        let text = subjects.joined(separator: " ").lowercased()
+        guard !text.isEmpty else { return .unknown }
+
+        let rules: [(ReadingGenre, [String])] = [
+            (.youngAdult, ["young adult", "ya fiction", "teen"]),
+            (.children, ["children", "picture book", "middle grade", "juvenile"]),
+            (.scienceFiction, ["science fiction", "sci-fi", "space opera", "dystopian"]),
+            (.fantasy, ["fantasy", "magic", "epic fantasy"]),
+            (.mystery, ["mystery", "detective", "crime"]),
+            (.thriller, ["thriller", "suspense"]),
+            (.romance, ["romance", "love story"]),
+            (.historical, ["historical fiction", "historical"]),
+            (.biography, ["biography", "autobiography", "memoir"]),
+            (.selfHelp, ["self-help", "self help", "personal development"]),
+            (.education, ["education", "textbook", "study"]),
+            (.poetry, ["poetry", "poems"]),
+            (.philosophy, ["philosophy"]),
+            (.science, ["science", "physics", "biology", "chemistry"]),
+            (.technology, ["technology", "computers", "programming"]),
+            (.business, ["business", "economics", "finance"]),
+            (.nonFiction, ["non-fiction", "nonfiction", "essay"]),
+            (.fiction, ["fiction", "novel", "literary"]),
+        ]
+        for (genre, keywords) in rules where keywords.contains(where: { text.contains($0) }) {
+            return genre
+        }
+        return .unknown
+    }
 }
 
 // MARK: - BookCollection

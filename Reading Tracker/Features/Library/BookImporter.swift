@@ -238,7 +238,10 @@ enum BookImporter {
             totalPages: estimatedPages,
             chapters: chapters,
             difficultyProfile: difficulty,
-            bookmarkData: bookmarkData
+            bookmarkData: bookmarkData,
+            genre: ReadingGenre.mapped(from: metadata.subjects),
+            wordCountEstimate: wordCount,
+            series: metadata.series
         )
         // FINAL TRACES Upgrade #2: file-store the cover, keep payload lean.
         if let coverData {
@@ -255,6 +258,8 @@ enum BookImporter {
         var spineItems: [(id: String, href: URL)]
         var tocEntries: [(title: String, href: String)]
         var coverHref: String? // OPF-declared cover image path (relative to OPF dir)
+        var subjects: [String]
+        var series: String?
     }
 
     private static func findOPFURL(containerURL: URL, baseDir: URL) throws -> URL {
@@ -279,6 +284,15 @@ enum BookImporter {
         let opfDir = opfURL.deletingLastPathComponent()
         let title = (try? xml.nodes(forXPath: "//*[local-name()='title']").first?.stringValue) ?? "Unknown Title"
         let creator = (try? xml.nodes(forXPath: "//*[local-name()='creator']").first?.stringValue) ?? "Unknown Author"
+        let subjects = (try? xml.nodes(forXPath: "//*[local-name()='subject']"))?
+            .compactMap { $0.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty } ?? []
+        let series = (try? xml.nodes(
+            forXPath: "//*[local-name()='meta'][@property='belongs-to-collection']"
+        ).first?.stringValue)
+            ?? (try? xml.nodes(
+                forXPath: "//*[local-name()='meta'][@name='calibre:series']/@content"
+            ).first?.stringValue)
 
         var manifest: [String: URL] = [:]
         if let items = try? xml.nodes(forXPath: "//*[local-name()='item']") {
@@ -343,7 +357,9 @@ enum BookImporter {
 
         return OPFMetadata(title: title, author: creator,
                            spineItems: spineItems, tocEntries: tocEntries,
-                           coverHref: coverHref)
+                           coverHref: coverHref,
+                           subjects: subjects,
+                           series: series)
     }
 
     private static func parseTOCncx(ncxURL: URL) -> [(title: String, href: String)] {

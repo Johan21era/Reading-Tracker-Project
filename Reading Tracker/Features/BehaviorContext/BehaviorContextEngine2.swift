@@ -71,6 +71,9 @@ public final class BehaviorContextEngine: ObservableObject {
     }
 
     @Published public private(set) var summary: BehavioralContextSummary?
+    /// G6: the richer V3 report. The simple panel still reads `summary`;
+    /// Advanced Context reads this.
+    @Published public private(set) var intelligenceReport: FullContextIntelligenceReport?
 
     public let configuration: Configuration
 
@@ -5015,9 +5018,14 @@ struct NarrativePipeline {
             recoveryRecords: routineResult.recoveryRecords,
             evolutionSnapshots: contextResult.evolution,
             evidence: significance.evidenceChains.map { chain in
-                BehaviorEvidence(
+                // G6: never fabricate a sampling-time timestamp (NEW-DE-9).
+                // Use the actual reading session's start date, when known.
+                let sessionDate = contexts.first {
+                    $0.sessionID == chain.readingSessionID
+                }?.readingDate ?? contexts.first?.readingDate ?? Date()
+                return BehaviorEvidence(
                     id: chain.id,
-                    timestamp: Date(),
+                    timestamp: sessionDate,
                     name: chain.environment.rawValue,
                     category: .idle,
                     totalDuration: 0,
@@ -5133,7 +5141,7 @@ public extension BehaviorContextEngine {
         )
 
         // ── Step 7: Assemble FullContextIntelligenceReport ───────────────
-        return FullContextIntelligenceReport(
+        let report = FullContextIntelligenceReport(
             generatedAt: Date(),
             contextResult: contextResult,
             significanceResult: significanceResult,
@@ -5141,6 +5149,8 @@ public extension BehaviorContextEngine {
             narrativeResult: narrativeResult,
             legacyReport: legacyReport
         )
+        intelligenceReport = report
+        return report
     }
 }
 

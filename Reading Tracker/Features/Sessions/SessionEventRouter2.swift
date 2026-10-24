@@ -152,19 +152,28 @@ final class SessionEventRouter: ObservableObject {
         let readingRecords = BehaviorEvidenceBuilder.readingSessionRecords(
             from: allSessions
         )
-        let evidence = BehaviorEvidenceBuilder.evidence(
-            from: kit.applicationSessions,
-            readingSessions: allSessions
-        )
 
         // Only run the analysis when there is meaningful data.
         // The engine handles sparse input gracefully, but calling it with
         // zero records produces a low-confidence summary with no content.
-        guard !readingRecords.isEmpty, !evidence.isEmpty else { return }
+        guard !readingRecords.isEmpty else { return }
 
-        // analyze() is a synchronous method on a @MainActor class.
-        // We are already on MainActor so the call is safe here.
-        _ = engine.analyze(sessions: readingRecords, evidence: evidence)
+        // G6: run the full V3 pipeline, not just V1. V3 calls V1 internally,
+        // then adds significance, routine, and narrative stages.
+        let input = IntegrationInputBuilder.build(
+            from: allBooks,
+            kit: kit)
+        _ = engine.analyzeWithIntelligence(input: input)
+    }
+
+    /// G6: analyze existing history after launch/import, not only on a live
+    /// session close. Safe to call repeatedly; it rebuilds deterministically.
+    func analyzeHistory(books: [Book]) {
+        guard let kit = behaviorKit, let engine = contextEngine else { return }
+        let sessions = books.flatMap(\.sessions).filter { $0.endTime != nil }
+        guard !sessions.isEmpty else { return }
+        let input = IntegrationInputBuilder.build(from: books, kit: kit)
+        _ = engine.analyzeWithIntelligence(input: input)
     }
 }
 

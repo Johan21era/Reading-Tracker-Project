@@ -100,6 +100,7 @@ struct ContentView: View {
 
     // Estimation state (unchanged)
     @State private var inspectedBook: Book?
+    @State private var detailsBook: Book?
     @State private var currentEstimation: BookEstimationResult?
     @State private var hoverWorkItem: DispatchWorkItem?
     @State private var importError: String?
@@ -238,6 +239,14 @@ struct ContentView: View {
                             .onHover { hovering in
                                 handleHover(hovering: hovering, book: book)
                             }
+                    }
+                    .contextMenu {
+                        Button("Get Info…") { detailsBook = book }
+                        Button(book.isFavorite ? "Remove Favorite" : "Mark Favorite") {
+                            var updated = book
+                            updated.isFavorite.toggle()
+                            dataStore.updateBook(updated)
+                        }
                     }
                 }
                 .onDelete(perform: deleteItems)
@@ -501,6 +510,10 @@ struct ContentView: View {
             WeatherInsightPanel()
                 .environmentObject(dataStore)
                 .sheetDismissAffordance()
+        }
+        .sheet(item: $detailsBook) { book in
+            BookDetailsView(bookID: book.id)
+                .environmentObject(dataStore)
         }
 
         // ── Achievement toast ──────────────────────────────────────────────
