@@ -283,7 +283,7 @@ store to SQLite, and finished with the Asterisma rebrand. Gate receipts live in
 | G5 | EPUB genre/series/word count, Book Details, notes, tags, collections | `gates/GATE-G5.md` |
 | G6 | Behavior Context V3 report + Advanced Context window + JSON evidence archive | `gates/GATE-G6.md` |
 | G7 | −1,157 lines of dead code; Swift 6 deferred (148 actor-isolation errors) | `gates/GATE-G7.md` |
-| G8 | Release candidate accepted: census 212/0/9, package + launch smoke | `gates/GATE-G8.md` |
+| G8 | Release candidate accepted: census 213/0/9, package + launch smoke | `gates/GATE-G8.md` |
 | R1 | AsterismaV1.0 rebrand + `ReadTracker` → `Asterisma` data-root migration | `docs/REBRAND-ASTERISMA.md` |
 
 **Live-data receipt after migration:** 7 books / 292 sessions / 138,459 page
@@ -291,7 +291,7 @@ timings. The app relaunched successfully from `Application Support/Asterisma/`.
 
 **Release receipt:** `main` at `aba8aa4` (release commit `6da2d81`, tag
 `asterisma-v1.0-mvp`), package `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256
-`06078dea3f21d81d6e9f2ca5a3dfa659f46ad8f2beccb7ceb17fa041df67b774`.
+`31dc0abf35ea7cba4eeb9ab8580b6a60eeee6e10086bc7d3759f174dd33447cc`.
 
 **Still deferred:** Swift 6 strict mode, reader selection highlights/quotes,
 behavior evidence in SQLite, collection rename UI, legacy artifact cleanup,

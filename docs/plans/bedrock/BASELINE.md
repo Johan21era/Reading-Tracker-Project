@@ -8,7 +8,7 @@
 ---
 
 > **Historical baseline.** The numbers below are the starting point. The final
-> AsterismaV1.0 census is **212 passed / 0 failed / 9 skipped**; see `GATE-G8.md`.
+> AsterismaV1.0 census is **213 passed / 0 failed / 9 skipped**; see `GATE-G8.md`.
 
 ## Build and census
 

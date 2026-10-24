@@ -18,6 +18,7 @@ import UniformTypeIdentifiers
 
 struct OnboardingView: View {
     @EnvironmentObject private var dataStore: DataStore
+    @Environment(\.dismiss) private var dismiss
 
     /// Whether to show. Library empty AND never dismissed.
     static func shouldShow(books: [Book], dismissed: Bool) -> Bool {
@@ -191,14 +192,20 @@ struct OnboardingView: View {
 
     private func finish() {
         dismissed = true
+        // The sheet is owned by ContentView's @State. Setting the AppStorage
+        // flag alone left the sheet on screen forever — the last onboarding
+        // step was a dead end (owner-test F2).
+        dismiss()
     }
 
     private func importBook() {
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = false
-        panel.canChooseDirectories = false
+        // Folder-form EPUBs are directories/packages on macOS.
+        panel.canChooseDirectories = true
         panel.canChooseFiles = true
-        panel.allowedContentTypes = [.pdf, .epub]
+        panel.treatsFilePackagesAsDirectories = true
+        panel.allowedContentTypes = [.pdf, .epub, .directory]
 
         panel.begin { response in
             guard response == .OK, let url = panel.url else { return }

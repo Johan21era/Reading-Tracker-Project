@@ -164,19 +164,31 @@ final nonisolated class EPUBPackage: @unchecked Sendable {
                 try FileManager.default.createDirectory(
                     at: tempDir, withIntermediateDirectories: true
                 )
-                try unzip(at: resolvedURL, to: tempDir)
+
+                // Some EPUBs (notably iBooks exports) are unzipped package
+                // directories with a .epub extension. Parse those in place;
+                // only zip archives need the temporary extraction directory.
+                let isDirectory = (try? resolvedURL.resourceValues(
+                    forKeys: [.isDirectoryKey]))?.isDirectory ?? false
+                let contentRoot: URL
+                if isDirectory {
+                    contentRoot = resolvedURL
+                } else {
+                    try unzip(at: resolvedURL, to: tempDir)
+                    contentRoot = tempDir
+                }
                 try Task.checkCancellation()
 
-                let containerURL = tempDir.appendingPathComponent("META-INF/container.xml")
-                let opfURL = try findOPFURL(containerURL: containerURL, baseDir: tempDir)
-                let parsed = try parseOPF(opfURL: opfURL, baseDir: tempDir)
+                let containerURL = contentRoot.appendingPathComponent("META-INF/container.xml")
+                let opfURL = try findOPFURL(containerURL: containerURL, baseDir: contentRoot)
+                let parsed = try parseOPF(opfURL: opfURL, baseDir: contentRoot)
                 try Task.checkCancellation()
 
                 let package = EPUBPackage(
                     title: parsed.title,
                     author: parsed.author,
                     spineItems: parsed.spineItems,
-                    rootDirectory: tempDir,
+                    rootDirectory: contentRoot,
                     cleanup: cleanup
                 )
                 succeeded = true

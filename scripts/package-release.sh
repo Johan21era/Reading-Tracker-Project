@@ -51,8 +51,22 @@ if [[ -d "$RUNTIME" ]]; then
 fi
 
 # Ad-hoc sign the whole bundle. No Developer ID, no notarization.
-codesign --force --deep --sign - --timestamp=none "$STAGE/AsterismaV1.0.app"
+# The entitlements file is REQUIRED: without it the app launches unsandboxed,
+# reads/writes ~/Library/Application Support/Asterisma instead of the existing
+# sandbox container, and looks like a brand-new empty library.
+codesign --force --deep --sign - --timestamp=none \
+  --entitlements "$ROOT/AsterismaV1.0.entitlements" \
+  "$STAGE/AsterismaV1.0.app"
 codesign --verify --deep --strict --verbose=2 "$STAGE/AsterismaV1.0.app"
+
+# Fail the package if the sandbox entitlement did not survive signing.
+if ! codesign -d --entitlements - "$STAGE/AsterismaV1.0.app" 2>&1 \
+     | grep -q "com.apple.security.app-sandbox"; then
+  echo "ERROR: packaged app is missing com.apple.security.app-sandbox" >&2
+  echo "Refusing to publish a package that cannot see the real sandbox library." >&2
+  exit 4
+fi
+echo "---- entitlements: sandbox present"
 
 
 

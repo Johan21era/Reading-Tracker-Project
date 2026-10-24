@@ -31,7 +31,7 @@ State explicitly what was intentionally left alone, so the review cannot over-re
 | Check | Command | Result |
 |---|---|---|
 | Targeted pins | `...` | pass/fail |
-| Full census | `./scripts/census.sh` | 212/0/9 + new |
+| Full census | `./scripts/census.sh` | 213/0/9 + new |
 | UI smoke | `...` | pass/fail |
 | Test isolation | `./scripts/verify-test-isolation.sh` | pass/fail |
 

@@ -191,11 +191,23 @@ enum BookImporter {
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: tempDir) }
 
-        try unzipEPUB(at: url, to: tempDir)
+        // EPUBs are normally zip archives, but iBooks and some tools leave the
+        // package as an unzipped directory with a .epub extension. macOS then
+        // reports it as a package/directory, so the open panel must allow it
+        // and the importer must parse it in place instead of trying to unzip it.
+        let isDirectory = (try? url.resourceValues(
+            forKeys: [.isDirectoryKey]))?.isDirectory ?? false
+        let contentRoot: URL
+        if isDirectory {
+            contentRoot = url
+        } else {
+            try unzipEPUB(at: url, to: tempDir)
+            contentRoot = tempDir
+        }
 
-        let containerURL = tempDir.appendingPathComponent("META-INF/container.xml")
-        let opfURL = try findOPFURL(containerURL: containerURL, baseDir: tempDir)
-        let metadata = try parseOPF(opfURL: opfURL, baseDir: tempDir)
+        let containerURL = contentRoot.appendingPathComponent("META-INF/container.xml")
+        let opfURL = try findOPFURL(containerURL: containerURL, baseDir: contentRoot)
+        let metadata = try parseOPF(opfURL: opfURL, baseDir: contentRoot)
 
         let wordCount = await estimateTotalWords(spineItems: metadata.spineItems)
         let estimatedPages = max(1, wordCount / 250)

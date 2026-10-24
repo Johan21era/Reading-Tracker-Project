@@ -10,7 +10,7 @@
 ## Acceptance checklist
 
 - [x] Debug and Release build clean.
-- [x] Full census **212 passed / 0 failed / 9 skipped** (221 cases) — re-run on merged `main`.
+- [x] Full census **213 passed / 0 failed / 9 skipped** (222 cases) — re-run on merged `main`.
 - [x] Real store cut over to `library.grdb.sqlite3`:
   7 books / 292 sessions / 138,459 page timings.
 - [x] Legacy JSON renamed `.migrated`; app relaunched successfully from SQLite.
@@ -34,7 +34,7 @@
   pushed as `origin/main`.
 - `asterisma-v1.0-mvp` and all six Bedrock tags pushed to GitHub.
 - Release package: `dist/AsterismaV1.0-1.0-arm64.zip`
-- SHA-256: `06078dea3f21d81d6e9f2ca5a3dfa659f46ad8f2beccb7ceb17fa041df67b774`
+- SHA-256: `31dc0abf35ea7cba4eeb9ab8580b6a60eeee6e10086bc7d3759f174dd33447cc`
 
 **Post-acceptance authority:** the owner's personal test results are the
 absolute source of truth from 2026-10-24 onward and override this receipt and
@@ -57,7 +57,7 @@ every prior benchmark/census. See `docs/12-owner-test-authority.md`.
 ## Distribution
 
 - Package: `dist/AsterismaV1.0-1.0-arm64.zip`
-- SHA-256: `06078dea3f21d81d6e9f2ca5a3dfa659f46ad8f2beccb7ceb17fa041df67b774`
+- SHA-256: `31dc0abf35ea7cba4eeb9ab8580b6a60eeee6e10086bc7d3759f174dd33447cc`
 - Ad-hoc signed, not notarized.
 - First launch requires right-click → Open (documented in `DISTRIBUTION.md`).
 - Bundle ID remains `johan.Reading-Tracker` for MVP container compatibility;

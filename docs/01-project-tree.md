@@ -89,7 +89,7 @@ This folder contains every Swift file that makes the app run. They are grouped b
 
 These are automated checks that run without you having to click anything. Each test is named after the specific bug or behavior it guards. If a test ever starts failing, that is an early warning that something broke.
 
-As of the AsterismaV1.0 release (2026-10-24): 44 test files, 219 `@Test` functions, standing default census **212 passed / 0 failed / 9 skipped**. The 9 skips are deliberate opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo (see `docs/method/07-testing-strategy.md` for how to engage them).
+As of the AsterismaV1.0 release (2026-10-24): 45 test files, 220 `@Test` functions, standing default census **213 passed / 0 failed / 9 skipped**. The 9 skips are deliberate opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo (see `docs/method/07-testing-strategy.md` for how to engage them).
 
 ---
 
