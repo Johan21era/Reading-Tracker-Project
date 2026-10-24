@@ -21,7 +21,7 @@ This is a map of every file and folder in the project, organized so you can find
 | `AsterismaV1.0UITests/` | User-interface tests (mostly placeholder stubs) |
 | `AsterismaV1.0.xcodeproj/` | The Xcode project file (do not edit by hand) |
 | `AsterismaV1.0.entitlements` | Permissions the app asks macOS for (sandbox, WeatherKit, etc.) |
-| `Reading-Tracker-Info.plist` | App settings such as its name, icon, and location description |
+| `AsterismaV1.0-Info.plist` | App settings such as its name, icon, and location description |
 | `.gitignore` | Tells Git which files to ignore (build junk, user settings, etc.) |
 
 ---
