@@ -4,7 +4,7 @@
 
 > **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. Standing census: **213 passed / 0 failed / 9 skipped**. The full gate record lives in `docs/plans/bedrock/`.
 
-> **Release status (2026-10-24):** `AsterismaV1.0` was merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`) and pushed to GitHub. Owner-test fixes are on top at `0ec5127` (tag `asterisma-v1.0-owner-test-fixes`). Release package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `31dc0abf35ea7cba4eeb9ab8580b6a60eeee6e10086bc7d3759f174dd33447cc`. It is ad-hoc signed, not notarized; first launch requires right-click → Open.
+> **Release status (2026-10-24):** `AsterismaV1.0` was merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`) and pushed to GitHub. Owner-test fixes are on top at `0ec5127` (tag `asterisma-v1.0-owner-test-fixes`). Release package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `57a4113e3d135b573edc48b19ac127f4dc0200d48c68b34c49a8a5068745c422`. It is ad-hoc signed, not notarized; first launch requires right-click → Open.
 
 > **Owner-test authority (2026-10-24):** results from Johan's personal testing are the **absolute source of truth** and override all previous benchmarks, censuses, gate receipts, and documentation claims. See `docs/12-owner-test-authority.md`; sessions are recorded in `docs/owner-test-results/` and pinned by tag `owner-test-authority-2026-10-24`.
 

@@ -552,6 +552,10 @@ struct ContentView: View {
                 .padding(.horizontal, 40)
             }
         }
+        // Owner-test F4: the main window had no usable minimum; macOS restored
+        // a 900x450 frame and the toolbar buttons were inaccessible. This floor
+        // also gives the green zoom button something to zoom to.
+        .frame(minWidth: 1000, minHeight: 680)
     }
 
     // MARK: - Hover Handling (unchanged)

@@ -111,6 +111,11 @@ struct AsterismaApp: App {
                 // NewYearTransitionMonitor @StateObject internally.
                 .newYearTransitionAware()
         }
+        .defaultSize(width: 1200, height: 780)
+        // Owner-test F4: without a content minimum, macOS restored a 900x450
+        // window and the toolbar collapsed/hid. Keep a usable floor and let
+        // the green zoom button work normally.
+        .windowResizability(.contentMinSize)
         .commands {
             // ROADMAP 1.2a: standard macOS Settings affordance (⌘,) for the goal
             // editor window. The Developer menu below appends its own items in
@@ -138,10 +143,9 @@ struct AsterismaApp: App {
             }
             #endif
         }
-        // UI REVIEW §1 (HIGH): the gray title bar was the loudest surface in
-        // the app. Hiding it (scene-level modifier) lets the atmosphere extend
-        // to the window's top edge; traffic lights float over the starfield.
-        .windowStyle(.hiddenTitleBar)
+        // Owner-test F4: `.hiddenTitleBar` hid the toolbar in windowed mode
+        // (and left the green zoom button inert). Keep the standard title bar;
+        // the transparent toolbar background still lets the starfield show.
         // Safe teardown when the app moves to the background.
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .background {

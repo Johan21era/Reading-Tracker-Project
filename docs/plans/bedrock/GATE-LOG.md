@@ -29,7 +29,7 @@ censuses, benchmarks, and documentation claims above. See
 **Owner-test fixes:** the first owner run found three defects (packaged
 entitlements, onboarding dead end, folder-form EPUBs). Fixed on top of the
 accepted release at `0ec5127`, tag `asterisma-v1.0-owner-test-fixes`; candidate
-package SHA-256 `31dc0abf35ea7cba4eeb9ab8580b6a60eeee6e10086bc7d3759f174dd33447cc`.
+package SHA-256 `57a4113e3d135b573edc48b19ac127f4dc0200d48c68b34c49a8a5068745c422`.
 Owner retest is the acceptance gate.
 
 **Snapshot note:** the owner deleted all local backup snapshots on 2026-10-24.
