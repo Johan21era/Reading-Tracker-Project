@@ -26,9 +26,9 @@ results are the **absolute source of truth** and override all gate receipts,
 censuses, benchmarks, and documentation claims above. See
 `docs/12-owner-test-authority.md`; policy tag `owner-test-authority-2026-10-24`.
 
-**Owner-test fixes:** the first owner run found three defects (packaged
-entitlements, onboarding dead end, folder-form EPUBs). Fixed on top of the
-accepted release at `0ec5127`, tag `asterisma-v1.0-owner-test-fixes`; candidate
+**Owner-test fixes:** the first owner runs found four defects (packaged
+entitlements, onboarding dead end, folder-form EPUBs, windowed toolbar/zoom). Fixed on top of the
+accepted release at `a0035d1`, tag `asterisma-v1.0-owner-test-fixes-2`; candidate
 package SHA-256 `57a4113e3d135b573edc48b19ac127f4dc0200d48c68b34c49a8a5068745c422`.
 Owner retest is the acceptance gate.
 
