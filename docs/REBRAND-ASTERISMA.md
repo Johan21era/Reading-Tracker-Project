@@ -67,7 +67,7 @@ The weather store migrates into the Asterisma root on next weather-service init.
 
 - `main` fast-forwarded from `bafb9e9` to `aba8aa4` and pushed to GitHub.
 - Release commit: `6da2d81`; tag: `asterisma-v1.0-mvp`.
-- Owner-test/UI fixes: `3281450`; tag: `asterisma-v1.0-import-fix`.
+- Owner-test/UI fixes: `a058c49`; tag: `asterisma-v1.0-arrow-nav`.
 - Package SHA-256:
   `ade4a54e3cbe233e14b809c32988422f4ace4aed7e9c855a9bcb269d20f58a96`.
 - Canonical worktree: `/Users/johanrembeci/Desktop/AsterismaV1.0`.
