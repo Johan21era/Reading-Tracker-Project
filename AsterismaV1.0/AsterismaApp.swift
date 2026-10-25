@@ -116,6 +116,7 @@ struct AsterismaApp: App {
         // window and the toolbar collapsed/hid. Keep a usable floor and let
         // the green zoom button work normally.
         .windowResizability(.contentMinSize)
+        .windowToolbarStyle(.unifiedCompact)
         .commands {
             // ROADMAP 1.2a: standard macOS Settings affordance (⌘,) for the goal
             // editor window. The Developer menu below appends its own items in

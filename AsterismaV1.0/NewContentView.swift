@@ -109,32 +109,182 @@ struct ContentView: View {
     @State private var showOnboarding = false
     @State private var searchText = ""
     @State private var sortMode: LibrarySortMode = .dateAddedDesc
+    @State private var selectedBookID: Book.ID?
+    @State private var readerPath: [Book.ID] = []
+    @State private var sidebarWidth: CGFloat = 260
+    @State private var sidebarDragStart: CGFloat?
+    @FocusState private var searchFocused: Bool
 
     // P6: Sentinel
     @StateObject private var sentinel = SentinelEngine.shared
     @State private var sentinelReport: (fixed: Int, stalled: Int, headline: String)?
 
     /// Filtered+sorted sidebar source.
-    /// HOTFIX (stall report): this was a computed property — the Reading HUD's
-    /// once-per-second elapsed-time tick re-evaluated ContentView, which
-    /// re-filtered AND re-sorted the ENTIRE library every second on main.
-    /// Now memoized: recompute ONLY when books/search/sort actually change.
-    @State private var cachedVisibleBooks: [Book] = []
-    @State private var cacheSignature: String = ""
-
+    ///
+    /// Owner-test F5: the old memoization cache could hold an empty array
+    /// against a signature that already described the loaded library, so the
+    /// sidebar showed 0 while DataStore had 7 books. A direct computation is
+    /// cheap for this library and always reflects the live store.
     private var visibleBooks: [Book] {
-        let signature = "\(dataStore.books.count)|\(dataStore.books.reduce(0) { $0 &+ $1.id.hashValue })|\(searchText)|\(sortMode.rawValue)"
-        if signature != cacheSignature {
-            let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
-            let filtered = query.isEmpty ? dataStore.books : dataStore.books.filter {
-                $0.title.lowercased().contains(query) ||
-                    $0.author.lowercased().contains(query) ||
-                    ($0.series ?? "").lowercased().contains(query)
-            }
-            cachedVisibleBooks = filtered.sorted(by: sortMode.sort)
-            cacheSignature = signature
+        let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
+        let filtered = query.isEmpty ? dataStore.books : dataStore.books.filter {
+            $0.title.lowercased().contains(query) ||
+                $0.author.lowercased().contains(query) ||
+                ($0.series ?? "").lowercased().contains(query)
         }
-        return cachedVisibleBooks
+        return filtered.sorted(by: sortMode.sort)
+    }
+
+    // MARK: - Unified library surface
+
+    /// The sidebar is a plain navigation region on the same surface as the
+    /// canvas. No rounded container, no bordered panel, no second background.
+    private var librarySidebar: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Library")
+                    .font(.title3.weight(.semibold))
+                Spacer(minLength: 8)
+                Text("\(visibleBooks.count)")
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.leading, 18)
+            .padding(.trailing, 14)
+            .padding(.top, 14)
+            .padding(.bottom, 10)
+
+            librarySearchField
+                .padding(.horizontal, 12)
+                .padding(.bottom, 8)
+
+            List(selection: $selectedBookID) {
+                ForEach(visibleBooks) { book in
+                    ContentBookRowView(book: book)
+                        .tag(book.id)
+                        .contentShape(Rectangle())
+                        .listRowSeparator(.hidden)
+                        .contextMenu {
+                            Button("Get Info…") { detailsBook = book }
+                            Button(book.isFavorite ? "Remove Favorite" : "Mark Favorite") {
+                                var updated = book
+                                updated.isFavorite.toggle()
+                                dataStore.updateBook(updated)
+                            }
+                        }
+                }
+                .onDelete(perform: deleteVisibleBooks)
+            }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
+        }
+        .frame(width: sidebarWidth)
+        .frame(maxHeight: .infinity, alignment: .top)
+        .background(Color.clear)
+        .overlay(alignment: .trailing) { sidebarResizeHandle }
+    }
+
+    /// The detail column owns reading navigation. A real NavigationStack keeps
+    /// the readers' existing back button, title, and toolbar behavior.
+    private var libraryDetail: some View {
+        NavigationStack(path: $readerPath) {
+            ZStack {
+                if let book = inspectedBook, let estimation = currentEstimation {
+                    BookEstimationView(book: book, estimation: estimation)
+                } else {
+                    VStack(spacing: 12) {
+                        Image(systemName: "books.vertical")
+                            .font(.system(size: 48))
+                            .foregroundStyle(.secondary)
+                        Text("Hover over a book to see reading estimates")
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            .navigationDestination(for: UUID.self) { id in
+                if let book = dataStore.book(id: id) {
+                    if book.fileType == .pdf {
+                        PDFReaderScreen(book: book, coordinator: sessionCoordinator)
+                    } else {
+                        EPUBReaderScreen(book: book, coordinator: sessionCoordinator)
+                    }
+                } else {
+                    Text("This book is no longer in your library.")
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.clear)
+    }
+
+    /// Focus ring only when the field is actually focused. Inactive state is a
+    /// subtle field fill, not a permanent blue outline.
+    private var librarySearchField: some View {
+        HStack(spacing: 7) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(.secondary)
+
+            TextField("Search title, author, series", text: $searchText)
+                .textFieldStyle(.plain)
+                .font(.system(size: 12.5))
+                .focused($searchFocused)
+                .accessibilityLabel("Search library")
+
+            if !searchText.isEmpty {
+                Button {
+                    searchText = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
+                .accessibilityLabel("Clear search")
+            }
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(Color.white.opacity(searchFocused ? 0.10 : 0.06))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .strokeBorder(
+                    Color.accentColor.opacity(searchFocused ? 0.85 : 0),
+                    lineWidth: 1
+                )
+        )
+        .animation(.easeOut(duration: 0.12), value: searchFocused)
+    }
+
+    /// A transparent drag strip at the sidebar edge. The tonal gradient is the
+    /// only separation; there is deliberately no second border here.
+    private var sidebarResizeHandle: some View {
+        Rectangle()
+            .fill(Color.clear)
+            .frame(width: 7)
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 1)
+                    .onChanged { value in
+                        if sidebarDragStart == nil { sidebarDragStart = sidebarWidth }
+                        let proposed = (sidebarDragStart ?? sidebarWidth) + value.translation.width
+                        sidebarWidth = min(max(proposed, DesignGrid.sidebarMinWidth), 340)
+                    }
+                    .onEnded { _ in sidebarDragStart = nil }
+            )
+    }
+
+    private func deleteVisibleBooks(at offsets: IndexSet) {
+        let ids = offsets.map { visibleBooks[$0].id }
+        withAnimation {
+            ids.forEach { dataStore.removeBook(id: $0) }
+        }
     }
 
     // P5 Feature 1: durability
@@ -207,50 +357,41 @@ struct ContentView: View {
             EnvironmentBackgroundView(engine: environmentEngine)
                 .ignoresSafeArea()
 
-            NavigationSplitView {
-            List {
-                ForEach(visibleBooks) { book in
-                    NavigationLink {
-                        if book.fileType == .pdf {
-                            PDFReaderScreen(book: book, coordinator: sessionCoordinator)
-                        } else {
-                            EPUBReaderScreen(book: book, coordinator: sessionCoordinator)
-                        }
-                    } label: {
-                        ContentBookRowView(book: book)
-                            .onHover { hovering in
-                                handleHover(hovering: hovering, book: book)
-                            }
-                    }
-                    .contextMenu {
-                        Button("Get Info…") { detailsBook = book }
-                        Button(book.isFavorite ? "Remove Favorite" : "Mark Favorite") {
-                            var updated = book
-                            updated.isFavorite.toggle()
-                            dataStore.updateBook(updated)
-                        }
-                    }
-                }
-                .onDelete(perform: deleteItems)
+            // One continuous tonal surface. The leading gradient gives the
+            // sidebar legibility without a panel, card, border, or divider.
+            LinearGradient(
+                stops: [
+                    .init(color: .black.opacity(0.32), location: 0.0),
+                    .init(color: .black.opacity(0.16), location: 0.20),
+                    .init(color: .clear, location: 0.46),
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
+
+            HStack(spacing: 0) {
+                librarySidebar
+                libraryDetail
             }
-            .navigationSplitViewColumnWidth(min: DesignGrid.sidebarMinWidth, ideal: DesignGrid.sidebarIdealWidth)
-            .searchable(text: $searchText, placement: .sidebar, prompt: "Search title, author, series")
-            // UI REVIEW §1/§2/§8 (P7): one cohesive plane. The sidebar and
-            // toolbar stop painting their own opaque surfaces; the single
-            // atmospheric background behind everything becomes THE surface.
-            .scrollContentBackground(.hidden)
-            .toolbarBackground(.hidden, for: .windowToolbar) // Phase 2 wiring: let the ambient gradient show through
-            .toolbar {
-                // ── Existing: Add Book ─────────────────────────────────────
-                ToolbarItem(placement: .primaryAction) {
-                    Button(action: addItem) {
-                        Label("Add Book", systemImage: "plus")
-                    }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .background(WindowChromeConfigurator())
+        .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
+        .toolbar(removing: .title)
+        .toolbar {
+            // One grouped surface for the library actions instead of six
+            // independently framed toolbar capsules.
+            ToolbarItemGroup(placement: .primaryAction) {
+                Button(action: addItem) {
+                    Label("Add Book", systemImage: "plus")
                 }
 
-                // ── New: Analytics menu ────────────────────────────────────
-                ToolbarItem(placement: .primaryAction) {
-                    Menu {
+                // Secondary actions live behind one menu instead of five
+                // independently framed toolbar capsules.
+                Menu {
+                    Menu("Analytics") {
                         Button {
                             openWindow(id: "reading-insights")
                         } label: {
@@ -310,67 +451,41 @@ struct ContentView: View {
                         } label: {
                             Label("Import Library...", systemImage: "square.and.arrow.down")
                         }
-
-                    } label: {
-                        Label("Analytics", systemImage: "chart.line.uptrend.xyaxis")
                     }
-                }
 
-                // ── New: Discover Books ────────────────────────────────────
-                ToolbarItem(placement: .primaryAction) {
+                    Divider()
+
                     Button {
                         showDiscovery = true
                     } label: {
                         Label("Discover Books", systemImage: "books.vertical.fill")
                     }
-                }
 
-                // ── New: Annual Reports ────────────────────────────────────
-                ToolbarItem(placement: .primaryAction) {
                     Button {
                         showAnnualReports = true
                     } label: {
                         Label("Annual Reports", systemImage: "chart.bar.doc.horizontal")
                     }
-                }
 
-                // P5 Feature 5: sidebar sort
-                ToolbarItem(placement: .primaryAction) {
-                    Menu {
+                    Menu("Sort By") {
                         Picker("Sort By", selection: $sortMode) {
                             ForEach(LibrarySortMode.allCases, id: \.self) { mode in
                                 Text(mode.label).tag(mode)
                             }
                         }
                         .pickerStyle(.inline)
-                    } label: {
-                        Label("Sort", systemImage: "arrow.up.arrow.down")
                     }
-                }
 
-                // ── Phase 2: Library Explorer (progressive filtering + spatial) ──
-                ToolbarItem(placement: .primaryAction) {
                     Button {
                         showExplorer = true
                     } label: {
                         Label("Explore", systemImage: "square.grid.2x2")
                     }
-                }
-            }
-        } detail: {
-            if let book = inspectedBook, let estimation = currentEstimation {
-                BookEstimationView(book: book, estimation: estimation)
-            } else {
-                VStack(spacing: 12) {
-                    Image(systemName: "books.vertical")
-                        .font(.system(size: 48))
-                        .foregroundColor(.secondary)
-                    Text("Hover over a book to see reading estimates")
-                        .foregroundColor(.secondary)
+                } label: {
+                    Label("More", systemImage: "ellipsis.circle")
                 }
             }
         }
-        } // ZStack — ambient environment sits behind the split view
         .environmentObject(environmentEngine) // Phase 2: downstream consumers read the same instance
         // P5 Feature 5: first-run wizard when library is empty and never dismissed.
         .onChange(of: dataStore.books.isEmpty) { _, empty in
@@ -384,6 +499,25 @@ struct ContentView: View {
             sentinel.start()
             sentinel.runCycle()
             sentinelReport = sentinel.overnightReport()
+
+            // macOS makes the first text field the initial first responder.
+            // A library search field must not look permanently focused at
+            // launch; clear that automatic focus once the window settles.
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(250))
+                searchFocused = false
+            }
+        }
+        .onChange(of: selectedBookID) { _, id in
+            guard let id, let book = dataStore.book(id: id) else { return }
+            if readerPath != [book.id] {
+                readerPath = [book.id]
+            }
+        }
+        .onChange(of: readerPath) { _, path in
+            if path.isEmpty, selectedBookID != nil {
+                selectedBookID = nil
+            }
         }
         .sheet(isPresented: $showOnboarding, onDismiss: { onboardingDismissed = true }) {
             OnboardingView()
@@ -549,7 +683,8 @@ struct ContentView: View {
                     withAnimation { sentinelReport = nil }
                 }
                 .padding(.top, 8)
-                .padding(.horizontal, 40)
+                .padding(.leading, sidebarWidth + 20)
+                .padding(.trailing, 40)
             }
         }
         // Owner-test F4: the main window had no usable minimum; macOS restored

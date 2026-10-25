@@ -4,7 +4,7 @@
 
 > **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. Standing census: **213 passed / 0 failed / 9 skipped**. The full gate record lives in `docs/plans/bedrock/`.
 
-> **Release status (2026-10-24):** `AsterismaV1.0` was merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`) and pushed to GitHub. Owner-test fixes are on top at `a0035d1` (tag `asterisma-v1.0-owner-test-fixes-2`). Release package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `57a4113e3d135b573edc48b19ac127f4dc0200d48c68b34c49a8a5068745c422`. It is ad-hoc signed, not notarized; first launch requires right-click → Open.
+> **Release status (2026-10-24):** `AsterismaV1.0` was merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`) and pushed to GitHub. Owner-test fixes are on top at `a0035d1` (tag `asterisma-v1.0-owner-test-fixes-2`). Release package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `57068300cc548bd50995d5728bab610363bd1133a989962500f527d152bbd2ce`. It is ad-hoc signed, not notarized; first launch requires right-click → Open.
 
 > **Owner-test authority (2026-10-24):** results from Johan's personal testing are the **absolute source of truth** and override all previous benchmarks, censuses, gate receipts, and documentation claims. See `docs/12-owner-test-authority.md`; sessions are recorded in `docs/owner-test-results/` and pinned by tag `owner-test-authority-2026-10-24`.
 
@@ -181,6 +181,7 @@ docs/
 │   ├── 08-deep-audit.md                     Full independent audit (Oct 2026) — file:line evidence for every claim
 │   └── 11-completion-and-health-report-2026-10-24.md  Bedrock-era completion and health snapshot
 ├── plans/bedrock/                           G0–G8 gate record, master plan, baseline, distribution notes
+├── design/fullscreen-surface-audit.md       Fullscreen surface audit, border inventory, after capture
 ├── 12-owner-test-authority.md               Owner results are the absolute source of truth
 ├── owner-test-results/                      Personal test sessions + template
 ├── REBRAND-ASTERISMA.md                     Asterisma rename + data-root migration record
