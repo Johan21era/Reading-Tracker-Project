@@ -292,7 +292,7 @@ timings. The app relaunched successfully from `Application Support/Asterisma/`.
 
 **Release receipt:** `main` at `aba8aa4` (release commit `6da2d81`, tag
 `asterisma-v1.0-mvp`), package `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256
-`b889c800347c523d927a1a5d38556cf55953511fceb9b5e3424940239c336663`.
+`2e90d99603eee8dc50f39581c357101642586a64726a5a10f63cc9ad3066cc05`.
 
 **Still deferred:** Swift 6 strict mode, reader selection highlights/quotes,
 behavior evidence in SQLite, collection rename UI, legacy artifact cleanup,

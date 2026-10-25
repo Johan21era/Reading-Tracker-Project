@@ -169,7 +169,16 @@ struct EPUBReaderScreen: View {
     }
 
     private func chapterTitle(at index: Int) -> String {
-        book.chapters.indices.contains(index) ? book.chapters[index].title : "Chapter \(index + 1)"
+        // `book.chapters` comes from TOC entries at import time; the EPUB
+        // spine can have a different count. Never show a TOC title against a
+        // mismatched spine index — that produced the Chapter 25/12 conflict.
+        guard let package,
+              package.chapterCount == book.chapters.count,
+              book.chapters.indices.contains(index)
+        else {
+            return "Chapter \(index + 1)"
+        }
+        return book.chapters[index].title
     }
 
     private var globalPage: Int {
@@ -469,15 +478,16 @@ struct EPUBReaderScreen: View {
     }
 
     private var chapterListPopover: some View {
-        List(book.chapters) { chapter in
+        let count = package?.chapterCount ?? book.chapters.count
+        return List(0..<max(count, 1), id: \.self) { index in
             Button {
-                goToChapter(chapter.index)
+                goToChapter(index)
                 showingChapterList = false
             } label: {
                 HStack {
-                    Text(chapter.title)
+                    Text(chapterTitle(at: index))
                     Spacer()
-                    if chapter.index == currentChapterIndex {
+                    if index == currentChapterIndex {
                         Image(systemName: "checkmark")
                             .foregroundColor(.accentColor)
                     }
@@ -500,7 +510,7 @@ struct EPUBReaderScreen: View {
                 .foregroundColor(.secondary)
             HStack(spacing: 16) {
                 Label("\(book.totalPages) pages", systemImage: "doc.text")
-                Label("\(book.chapters.count) chapters", systemImage: "list.bullet")
+                Label("\(package?.chapterCount ?? book.chapters.count) chapters", systemImage: "list.bullet")
             }
             .font(.subheadline)
             .foregroundColor(.secondary)
@@ -719,7 +729,7 @@ private struct EPUBChapterWebView: NSViewRepresentable {
           var w = window.innerWidth;
           var h = window.innerHeight;
           var spread = w >= 1000 ? 2 : 1;
-          var col = Math.max(180, (w - pad * 2 - gap * (spread - 1)) / spread);
+          var col = Math.max(180, Math.min(620, (w - pad * 2 - gap * (spread - 1)) / spread));
           wrapper.style.columnWidth = col + 'px';
           wrapper.style.columnGap = gap + 'px';
           wrapper.style.height = h + 'px';

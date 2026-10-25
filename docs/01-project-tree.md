@@ -48,6 +48,7 @@ Every documentation file begins with a number so you can read them in order:
 | `docs/REBRAND-ASTERISMA.md` | — | Asterisma rename + data-root migration record | Anyone touching names, paths, or the bundle ID |
 | `docs/plans/bedrock/` | — | G0–G8 gate record, master plan, baseline, distribution notes | Anyone auditing the release |
 | `docs/design/fullscreen-surface-audit.md` | — | Fullscreen surface audit, border inventory, and after capture | Anyone reviewing the UI |
+| `docs/design/UX-BETA-AUDIT-2026-10-25.md` | — | Beta UX audit, finding register, and remediation phases | Design, engineering, QA, and product owners |
 | `docs/12-owner-test-authority.md` | 12 | The owner's personal test results are the absolute source of truth | Everyone — this overrides all other claims |
 | `docs/MILESTONES.md` | — | Pinned capability milestones with exact timestamps | Everyone — the wins matter too |
 | `docs/owner-test-results/` | — | Personal test sessions, template, and evidence | The owner, then anyone acting on the results |

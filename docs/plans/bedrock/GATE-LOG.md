@@ -29,7 +29,7 @@ censuses, benchmarks, and documentation claims above. See
 **Owner-test fixes:** the first owner runs found four defects (packaged
 entitlements, onboarding dead end, folder-form EPUBs, windowed toolbar/zoom). Fixed on top of the
 accepted release at `14035cd`, tag `asterisma-v1.0-paged-reader`; candidate
-package SHA-256 `b889c800347c523d927a1a5d38556cf55953511fceb9b5e3424940239c336663`.
+package SHA-256 `2e90d99603eee8dc50f39581c357101642586a64726a5a10f63cc9ad3066cc05`.
 Owner retest is the acceptance gate.
 
 **Snapshot note:** the owner deleted all local backup snapshots on 2026-10-24.

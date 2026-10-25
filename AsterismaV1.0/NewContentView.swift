@@ -336,18 +336,98 @@ struct ContentView: View {
 
     /// The detail column owns reading navigation. A real NavigationStack keeps
     /// the readers' existing back button, title, and toolbar behavior.
+    private var selectedBook: Book? {
+        selectedBookID.flatMap { dataStore.book(id: $0) }
+    }
+
+    private func selectedBookDetail(_ book: Book) -> some View {
+        VStack(spacing: 16) {
+            BookCoverThumbnail(book: book, width: 120, height: 170)
+            VStack(spacing: 4) {
+                Text(book.title)
+                    .font(.title2.weight(.semibold))
+                    .multilineTextAlignment(.center)
+                Text(book.author)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+            HStack(spacing: 14) {
+                Label(book.fileType.displayName, systemImage: "doc")
+                if book.totalPages > 0 {
+                    Label("\(book.totalPages) pages", systemImage: "book.pages")
+                }
+                if book.progressFraction > 0 {
+                    Label("\(Int(book.progressFraction * 100))% read", systemImage: "chart.bar")
+                }
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
+
+            Button {
+                openBook(book)
+            } label: {
+                Label("Open Book", systemImage: "book")
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+
+            Button {
+                let result = EstimationEngine.estimate(for: book, allBooks: dataStore.books)
+                inspectedBook = book
+                currentEstimation = EstimationEngine.validate(result: result)
+            } label: {
+                Label("Reading Estimate", systemImage: "chart.bar")
+            }
+            .buttonStyle(.bordered)
+
+            Button("Get Info…") { detailsBook = book }
+                .buttonStyle(.link)
+        }
+        .padding(32)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var libraryEmptyState: some View {
+        VStack(spacing: 14) {
+            Image(systemName: "books.vertical")
+                .font(.system(size: 52))
+                .foregroundStyle(.secondary)
+            Text("Your library is empty")
+                .font(.title2.weight(.semibold))
+            Text("Add a PDF or EPUB to start reading.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+            Button {
+                addItem()
+            } label: {
+                Label("Add Book", systemImage: "plus")
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
     private var libraryDetail: some View {
         NavigationStack(path: $readerPath) {
             ZStack {
                 if let book = inspectedBook, let estimation = currentEstimation {
                     BookEstimationView(book: book, estimation: estimation)
+                } else if let book = selectedBook {
+                    selectedBookDetail(book)
+                } else if dataStore.books.isEmpty {
+                    libraryEmptyState
                 } else {
                     VStack(spacing: 12) {
-                        Image(systemName: "books.vertical")
-                            .font(.system(size: 48))
+                        Image(systemName: "book.pages")
+                            .font(.system(size: 44))
                             .foregroundStyle(.secondary)
-                        Text("Hover over a book to see reading estimates")
+                        Text("Select a book to see details")
+                            .font(.headline)
                             .foregroundStyle(.secondary)
+                        Text("Use ↑ ↓ to move, Return to open, or click a book.")
+                            .font(.callout)
+                            .foregroundStyle(.tertiary)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -638,6 +718,11 @@ struct ContentView: View {
                 searchFocused = false
             }
         }
+        .onChange(of: selectedBookID) { _, _ in
+            // A different selection supersedes any hover estimate.
+            inspectedBook = nil
+            currentEstimation = nil
+        }
         .sheet(isPresented: $showOnboarding, onDismiss: { onboardingDismissed = true }) {
             OnboardingView()
                 .environmentObject(dataStore)
@@ -808,9 +893,11 @@ struct ContentView: View {
         }
         // P5 Feature 3 + UI REVIEW grid: HUD inset from shared constants.
         .overlay(alignment: .topLeading) {
-            ReadingHUD()
-                .padding(.leading, DesignGrid.hudLeadingInset)
-                .padding(.top, DesignGrid.hudTopInset)
+            if readerPath.isEmpty {
+                ReadingHUD()
+                    .padding(.leading, DesignGrid.hudLeadingInset)
+                    .padding(.top, DesignGrid.hudTopInset)
+            }
         }
 
         // P6: "While you were away" Sentinel card (top-center, above toasts).
