@@ -73,11 +73,11 @@ The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old �
 
 ## What should the next person know to start instantly?
 
-**Baseline:** `main` carries the original release merge at `aba8aa4` plus the owner-test/UI fixes at `8a68136` (tag `asterisma-v1.0-ux-audit-2`); census **218 passed / 0 failed / 9 skipped**; release tag `asterisma-v1.0-mvp`; package `dist/AsterismaV1.0-1.0-arm64.zip` with SHA-256 `936ba504337d6cb6663c66f736cee0bcb64491a6b0abf2588f0fd9bcc1a566ed`. Canonical census numbers come from `xcrun xcresulttool get test-results summary`.
+**Baseline:** `main` carries the original release merge at `aba8aa4` plus the owner-accepted reader build and auto-hide candidate at `cfeb677` (tag `asterisma-v1.0-ux-audit-3`); census **218 passed / 0 failed / 9 skipped**; release tag `asterisma-v1.0-mvp`; package `dist/AsterismaV1.0-1.0-arm64.zip` with SHA-256 `298cd18ca6a2f4acd152f2bb7145a3583d4216fd3765a89c10963d4dae233a70`. Canonical census numbers come from `xcrun xcresulttool get test-results summary`.
 
 > **Owner-test authority:** the owner's personal test results are the absolute source of truth and override every benchmark, census, gate receipt, and documentation claim. See `docs/12-owner-test-authority.md`; record sessions in `docs/owner-test-results/`.
 
-**Live data:** `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` — 7 books / 292 sessions / 138,459 page timings. The owner deleted the local backup snapshots on 2026-10-24, so the live library is currently the only copy; rely on Time Machine or an external backup before risky work.
+**Live data:** `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` — **1 book / 3 sessions / 20 page timings** after the owner’s deliberate erase/reset and acceptance test. The owner deleted the local backup snapshots on 2026-10-24, so the live library is currently the only copy; rely on Time Machine or an external backup before risky work.
 
 **Docs map:** start at `README.md` → this handoff → `docs/plans/bedrock/` for the release gates → `docs/integration/` for anything Mirage.
 

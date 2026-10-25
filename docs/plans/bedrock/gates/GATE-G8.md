@@ -42,18 +42,21 @@ every prior benchmark/census. See `docs/12-owner-test-authority.md`.
 
 ### Owner-test fixes (post-acceptance)
 
-The first owner run found three defects the green census missed. They are fixed
-on top of the accepted release:
+The first owner run found multiple defects the green census missed. They are
+fixed on top of the accepted release. The owner later accepted the full reader
+workflow and requested auto-hiding reader controls; this is the current
+candidate:
 
-- Commit `8a68136`; tag `asterisma-v1.0-ux-audit-2`.
+- Commit `cfeb677`; tag `asterisma-v1.0-ux-audit-3`.
 - Package: `dist/AsterismaV1.0-1.0-arm64.zip`
-- SHA-256: `936ba504337d6cb6663c66f736cee0bcb64491a6b0abf2588f0fd9bcc1a566ed`
+- SHA-256: `298cd18ca6a2f4acd152f2bb7145a3583d4216fd3765a89c10963d4dae233a70`
 - F1: packaged app now carries its sandbox/entitlements.
 - F2: onboarding Finish now dismisses the sheet.
 - F3: Add Book accepts iBooks-style unzipped `.epub` directories.
-- F4: windowed toolbar and green zoom repaired with a standard title bar and a 1000x680 minimum.
+- F4: windowed toolbar and green zoom repaired with a standard title bar; the supported floor is 900x640.
 - F5: seamless fullscreen surface — flat sidebar, unified canvas, focus-only search ring; library toolbar removed.
 - F6: Add Book picker rejects parent folders and admits PDF/EPUB files and iBooks EPUB packages.
+- F7: reader top-left controls auto-hide after 3 seconds and return on demand.
 - Regression pin: `FolderEPUBImportTests`.
 - Owner retest is the acceptance gate for this candidate.
 
@@ -74,7 +77,7 @@ on top of the accepted release:
 ## Distribution
 
 - Package: `dist/AsterismaV1.0-1.0-arm64.zip`
-- SHA-256: `936ba504337d6cb6663c66f736cee0bcb64491a6b0abf2588f0fd9bcc1a566ed`
+- SHA-256: `298cd18ca6a2f4acd152f2bb7145a3583d4216fd3765a89c10963d4dae233a70`
 - Ad-hoc signed, not notarized.
 - First launch requires right-click → Open (documented in `DISTRIBUTION.md`).
 - Bundle ID remains `johan.Reading-Tracker` for MVP container compatibility;

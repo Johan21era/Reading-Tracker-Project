@@ -28,9 +28,10 @@ censuses, benchmarks, and documentation claims above. See
 
 **Owner-test fixes:** the first owner runs found four defects (packaged
 entitlements, onboarding dead end, folder-form EPUBs, windowed toolbar/zoom). Fixed on top of the
-accepted release at `8a68136`, tag `asterisma-v1.0-ux-audit-2`; candidate
-package SHA-256 `936ba504337d6cb6663c66f736cee0bcb64491a6b0abf2588f0fd9bcc1a566ed`.
-Owner retest is the acceptance gate.
+accepted release. The owner then accepted the complete reader workflow on
+the `asterisma-v1.0-ux-audit-2` build. The current candidate is `cfeb677`
+(tag `asterisma-v1.0-ux-audit-3`), package SHA-256 `298cd18ca6a2f4acd152f2bb7145a3583d4216fd3765a89c10963d4dae233a70`; it adds auto-hiding reader controls.
+Owner retest of the refinement is the next gate.
 
 **Snapshot note:** the owner deleted all local backup snapshots on 2026-10-24.
 Rollback paths recorded in older gate receipts are historical; no local data

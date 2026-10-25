@@ -44,7 +44,7 @@ No P0 runtime defect is established by the screenshots alone.
 | ASTER-004 | P2 | OBSERVED + VERIFY | Search scope/live behavior/no-results state unclear | **Fixed in candidate** — explicit no-results state and Clear Search action; keyboard search audit remains |
 | ASTER-005 | P2 | OBSERVED + PRODUCT DECISION | Starfield may compete with text/controls | **Open** — reduce brightness/density near chrome only after contrast testing |
 | ASTER-006 | P1 | OBSERVED | Floating reading-status panel overlaps reader navigation/text | **Fixed in candidate** — ReadingHUD is hidden while a reader is open |
-| ASTER-007 | P1 | OBSERVED + STRONG CONCERN | Toolbar chapter label can disagree with document heading (25 vs 12) | **Mitigated** — labels now fall back to spine index when TOC count differs; deterministic retest required |
+| ASTER-007 | P1 | OBSERVED + STRONG CONCERN | Toolbar chapter label can disagree with document heading (25 vs 12) | **Fixed and owner-accepted** — labels derive from the spine index; the owner’s live retest found no mismatch |
 | ASTER-008 | P2 | OBSERVED + VERIFY | Back/forward arrow scope ambiguous | **Superseded** — native reader toolbar hidden; compact Back/chapter controls replace it; verify discoverability |
 | ASTER-009 | P2 | OBSERVED | Chapter navigation looks disconnected from document heading | **Partially fixed** — chapter list and title now derive from one spine-index source; visual hierarchy still needs design |
 | ASTER-010 | P1 | OBSERVED + VERIFY | Progress metadata ambiguous/crowded | **Partially fixed** — HUD shows chapter/page + book percentage and a progress bar; global book-page map remains a product decision |
@@ -125,7 +125,7 @@ Still product decisions / open verification:
 
 ---
 
-## Third refinement (owner-requested, candidate)
+## Third refinement (owner-requested, shipped in `asterisma-v1.0-ux-audit-3`)
 
 - Floating upper-left reader controls fade out after 3 seconds of inactivity.
 - Hovering the controls cancels the hide timer; leaving restarts it.
@@ -214,6 +214,11 @@ Second UX-audit candidate: 936ba504337d6cb6663c66f736cee0bcb64491a6b0abf2588f0fd
 Code:                   8a68136
 Tag:                    asterisma-v1.0-ux-audit-2
 Census:                 218 passed / 0 failed / 9 skipped
+
+Reader auto-hide candidate: 298cd18ca6a2f4acd152f2bb7145a3583d4216fd3765a89c10963d4dae233a70
+Code:                       cfeb677
+Tag:                        asterisma-v1.0-ux-audit-3
+Census:                     218 passed / 0 failed / 9 skipped
 ```
 
 The audit is a living register. A finding moves to **fixed** only after the

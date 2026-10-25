@@ -141,3 +141,18 @@ demand.
 
 This is owner-accepted behavior for the tested build. It does not convert every
 remaining product decision in the UX audit into a completed feature.
+
+### Follow-up — reader controls now yield the page
+
+The single refinement requested at acceptance is implemented in a new
+candidate:
+
+**Build:** `dist/AsterismaV1.0-1.0-arm64.zip`
+**SHA-256:** `298cd18ca6a2f4acd152f2bb7145a3583d4216fd3765a89c10963d4dae233a70`
+**Code:** `cfeb677` · tag `asterisma-v1.0-ux-audit-3`
+
+The floating upper-left reader capsule now fades out after three seconds. It
+stays visible while hovered or while a popover/sheet is open, and a small
+top-left reveal control restores it on demand. Chapter changes deliberately
+re-show the controls with the new label. Owner retest of the refinement is
+pending.

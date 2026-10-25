@@ -9,8 +9,9 @@
 This is a **local/friend build**, not a notarized App Store build.
 
 **Release refs:** `main` at `aba8aa4`; release commit `6da2d81`, tag
-`asterisma-v1.0-mvp`. SHA-256:
-`936ba504337d6cb6663c66f736cee0bcb64491a6b0abf2588f0fd9bcc1a566ed`.
+`asterisma-v1.0-mvp`. Current owner-tested candidate: `cfeb677`
+(tag `asterisma-v1.0-ux-audit-3`), SHA-256:
+`298cd18ca6a2f4acd152f2bb7145a3583d4216fd3765a89c10963d4dae233a70`.
 
 ## Friend install (one-time Gatekeeper step)
 

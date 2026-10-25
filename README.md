@@ -4,7 +4,7 @@
 
 > **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. Standing census: **218 passed / 0 failed / 9 skipped**. The full gate record lives in `docs/plans/bedrock/`.
 
-> **Release status (2026-10-24):** `AsterismaV1.0` was merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`) and pushed to GitHub. Owner-test and seamless-UI fixes are on top at `8a68136` (tag `asterisma-v1.0-ux-audit-2`). Release package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `936ba504337d6cb6663c66f736cee0bcb64491a6b0abf2588f0fd9bcc1a566ed`. It is ad-hoc signed, not notarized; first launch requires right-click → Open.
+> **Release status (2026-10-25):** `AsterismaV1.0` was merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`). The owner accepted the full reader workflow on the `asterisma-v1.0-ux-audit-2` build; the current candidate is `cfeb677` (tag `asterisma-v1.0-ux-audit-3`), which adds auto-hiding reader controls. Package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `298cd18ca6a2f4acd152f2bb7145a3583d4216fd3765a89c10963d4dae233a70`. It is ad-hoc signed, not notarized; first launch requires right-click → Open.
 
 > **Owner-test authority (2026-10-24):** results from Johan's personal testing are the **absolute source of truth** and override all previous benchmarks, censuses, gate receipts, and documentation claims. See `docs/12-owner-test-authority.md`; sessions are recorded in `docs/owner-test-results/` and pinned by tag `owner-test-authority-2026-10-24`.
 
@@ -128,14 +128,14 @@ The full campaign of record — playbook, ADR register (ADR-2…ADR-8, ADR-12), 
 
 ## §4 · Verified health status
 
-Checked directly against the merged `main` worktree on 2026-10-24 — not inherited from an old note:
+Checked directly against the merged `main` worktree on 2026-10-25 — not inherited from an old note:
 
 - ✅ `xcodebuild build` (Debug and Release, default DerivedData) → **BUILD SUCCEEDED**
 - ✅ Full census on merged `main` → **218 passed / 0 failed / 9 skipped** (227 cases). The 9 skips are deliberate opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo.
 - ✅ Rebrand verified live: app/product/display name **AsterismaV1.0**, Swift module `AsterismaV1_0`, and data root migrated to `Application Support/Asterisma/`.
-- ✅ Live library intact after the data-root migration: **7 books / 292 sessions / 138,459 page timings**.
+- ✅ Live library after the owner’s deliberate erase/reset and acceptance test: **1 book / 3 sessions / 20 page timings**.
 - ✅ Release package built, ad-hoc signed, `codesign --verify --deep --strict` passes, and the packaged-app launch smoke passes.
-- ✅ `main` contains the release merge at `aba8aa4` plus owner-test/UI fixes at `8a68136`; all release, owner-test, and Bedrock tags are pushed. The working tree is clean except the untracked `.obsidian/` vault config.
+- ✅ `main` contains the release merge at `aba8aa4` plus the owner-accepted reader build and auto-hide candidate at `cfeb677` (tag `asterisma-v1.0-ux-audit-3`); all release, owner-test, and Bedrock tags are pushed. The working tree is clean except the untracked `.obsidian/` vault config.
 - 👑 **Owner-test authority:** the owner's personal test results outrank every item above. See `docs/12-owner-test-authority.md`.
 
 ---
@@ -158,7 +158,7 @@ The audit-era **NEW-DE-1 … NEW-DE-8 punch list was fixed and pinned** during B
 
 The full defect register remains the source of truth for the F-series items; the old NEW-DE block is historical and should not be read as still open.
 
-**Reader pagination candidate:** the EPUB reader now uses CSS-column pagination with a two-page spread on wide windows, left/right page turns, exact chapter/page position persistence, and compact in-content controls instead of the native toolbar. Cover/titlepage-only spacer pages and typography/font polish remain open. Owner retest is pending.
+**Reader status:** the EPUB reader now uses CSS-column pagination with a two-page spread on wide windows, left/right page turns, exact chapter/page position persistence, cover/titlepage filtering, typography controls, and compact in-content controls instead of the native toolbar. The owner accepted this workflow on 2026-10-25; the current candidate adds auto-hiding top-left controls. A whole-book physical page map and honoring the EPUB’s own embedded font remain future work.
 
 ---
 
