@@ -163,6 +163,18 @@ struct ContentView: View {
                 .padding(.bottom, 8)
 
             ScrollViewReader { proxy in
+                if visibleBooks.isEmpty, !searchText.isEmpty {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("No books match “\(searchText)”")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                        Button("Clear Search") { searchText = "" }
+                            .buttonStyle(.link)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                } else {
                 List {
                     ForEach(visibleBooks) { book in
                         ContentBookRowView(book: book)
@@ -196,6 +208,7 @@ struct ContentView: View {
                         proxy.scrollTo(id, anchor: .center)
                     }
                 }
+                }
             }
         }
         .frame(width: sidebarWidth)
@@ -216,6 +229,7 @@ struct ContentView: View {
             }
             .buttonStyle(.plain)
             .help("Add Book")
+            .accessibilityLabel("Add Book")
 
             libraryActionsMenu
                 .frame(width: 28, height: 28)
@@ -332,6 +346,7 @@ struct ContentView: View {
         .menuStyle(.borderlessButton)
         .menuIndicator(.hidden)
         .help("More")
+        .accessibilityLabel("More library actions")
     }
 
     /// The detail column owns reading navigation. A real NavigationStack keeps
@@ -687,10 +702,14 @@ struct ContentView: View {
             .allowsHitTesting(false)
 
             HStack(spacing: 0) {
-                librarySidebar
+                if readerPath.isEmpty {
+                    librarySidebar
+                        .transition(.move(edge: .leading).combined(with: .opacity))
+                }
                 libraryDetail
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .animation(.easeInOut(duration: 0.2), value: readerPath.isEmpty)
         }
         .background(WindowChromeConfigurator())
         .background(WindowToolbarVisibility(visible: false))
@@ -918,7 +937,7 @@ struct ContentView: View {
         // Owner-test F4: the main window had no usable minimum; macOS restored
         // a 900x450 frame and the toolbar buttons were inaccessible. This floor
         // also gives the green zoom button something to zoom to.
-        .frame(minWidth: 1000, minHeight: 680)
+        .frame(minWidth: 900, minHeight: 640)
     }
 
     // MARK: - Hover Handling (unchanged)

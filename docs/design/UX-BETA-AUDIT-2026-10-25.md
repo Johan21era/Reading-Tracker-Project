@@ -39,24 +39,24 @@ No P0 runtime defect is established by the screenshots alone.
 | ID | Severity | Evidence | Finding | Current disposition |
 |---|---|---|---|---|
 | ASTER-001 | P1 | OBSERVED + STRONG CONCERN | Sparse library leaves a huge unexplained canvas | **Partially fixed** — explicit empty state and selected-book detail with Open action added |
-| ASTER-002 | P2 | OBSERVED | Count and icon actions have weak semantics | **Open** — add/more have tooltips; count still needs an explicit label/accessibility pass |
+| ASTER-002 | P2 | OBSERVED | Count and icon actions have weak semantics | **Partially fixed** — Add/More now have tooltips and accessibility labels; count semantics still open |
 | ASTER-003 | P2 | OBSERVED + STRONG CONCERN | One book card is tiny relative to the canvas | **Partially fixed** — selected-book detail gives a large cover/title/Open surface; shelf/list layout still a product decision |
-| ASTER-004 | P2 | OBSERVED + VERIFY | Search scope/live behavior/no-results state unclear | **Open** — live filter exists; no-results state and keyboard audit still needed |
+| ASTER-004 | P2 | OBSERVED + VERIFY | Search scope/live behavior/no-results state unclear | **Fixed in candidate** — explicit no-results state and Clear Search action; keyboard search audit remains |
 | ASTER-005 | P2 | OBSERVED + PRODUCT DECISION | Starfield may compete with text/controls | **Open** — reduce brightness/density near chrome only after contrast testing |
 | ASTER-006 | P1 | OBSERVED | Floating reading-status panel overlaps reader navigation/text | **Fixed in candidate** — ReadingHUD is hidden while a reader is open |
 | ASTER-007 | P1 | OBSERVED + STRONG CONCERN | Toolbar chapter label can disagree with document heading (25 vs 12) | **Mitigated** — labels now fall back to spine index when TOC count differs; deterministic retest required |
 | ASTER-008 | P2 | OBSERVED + VERIFY | Back/forward arrow scope ambiguous | **Superseded** — native reader toolbar hidden; compact Back/chapter controls replace it; verify discoverability |
 | ASTER-009 | P2 | OBSERVED | Chapter navigation looks disconnected from document heading | **Partially fixed** — chapter list and title now derive from one spine-index source; visual hierarchy still needs design |
-| ASTER-010 | P1 | OBSERVED + VERIFY | Progress metadata ambiguous/crowded | **Candidate** — HUD shows `Ch x/y · Page p/n`; exact EPUB position is persisted; global book-page map remains future work |
+| ASTER-010 | P1 | OBSERVED + VERIFY | Progress metadata ambiguous/crowded | **Partially fixed** — HUD shows chapter/page + book percentage and a progress bar; global book-page map remains a product decision |
 | ASTER-011 | P1 | OBSERVED | Reading estimates only via hover | **Fixed in candidate** — selecting a book shows a detail surface with a Reading Estimate action; hover is no longer the only path |
-| ASTER-012 | P2 | OBSERVED | Right-side icon controls lack visible context | **Verify** — tooltips/accessibility names audit required |
+| ASTER-012 | P2 | OBSERVED | Right-side icon controls lack visible context | **Partially fixed** — primary reader controls now have tooltips/accessibility labels; remaining icon audit open |
 | ASTER-013 | P1 | OBSERVED + VERIFY | Floating/persistent reader layers lack a formal model | **Partially fixed** — HUD removed from reader; compact floating controls; layering spec still needed |
-| ASTER-014 | P1 | OBSERVED + VERIFY | EPUB text column/typography may be too wide/small | **Partially fixed** — pagination caps columns at 620pt; font size/line spacing/alignment controls remain open |
-| ASTER-015 | P2 | OBSERVED + PRODUCT DECISION | Bright document inside dark shell is a stark transition | **Open product decision** — theme options (light/warm/dark/system) need design |
-| ASTER-016 | P2 | OBSERVED + VERIFY | Sidebar behavior in reading mode unclear | **Open** — sidebar remains persistent; collapse behavior and width preservation need design |
+| ASTER-014 | P1 | OBSERVED + VERIFY | EPUB text column/typography may be too wide/small | **Fixed in candidate** — 620pt column cap, font size, line spacing, alignment, and reading themes; full typography regression remains |
+| ASTER-015 | P2 | OBSERVED + PRODUCT DECISION | Bright document inside dark shell is a stark transition | **Fixed in candidate** — light, sepia, and dark reading themes |
+| ASTER-016 | P2 | OBSERVED + VERIFY | Sidebar behavior in reading mode unclear | **Fixed in candidate** — sidebar auto-hides while reading; Back restores it with selection intact |
 | ASTER-017 | P2 | OBSERVED | Selected-book metadata is compressed/duplicated | **Partially fixed** — large selected-book detail; card/detail metadata contract still needed |
 | ASTER-018 | P2 | VERIFY | Save-status model unclear | **Fixed in candidate** — exact chapter/page persists on page changes and immediately on close; regression test added |
-| ASTER-019 | P2 | OBSERVED + VERIFY | Narrow/split-screen/macOS scaling behavior untested | **Verify** — 1000×680 minimum; responsive matrix still required |
+| ASTER-019 | P2 | OBSERVED + VERIFY | Narrow/split-screen/macOS scaling behavior untested | **Partially fixed** — floor lowered to 900×640 and pagination switches to one column; full responsive matrix still required |
 | ASTER-020 | P2 | VERIFY | Hover/focus/selection/disabled states not established | **Open** — token and state audit required |
 
 ---
@@ -97,6 +97,30 @@ Estimate** action. The hover path remains, but is no longer the only path.
 **Partially fixed:** zero books now shows a deliberate empty state with Add Book,
 and one selected book gets a large detail/resume surface. Shelf/grid/list and
 resume-first layouts remain a product decision, not a settled design.
+
+---
+
+## Second remediation batch (candidate)
+
+- Search no-results state + Clear Search.
+- Tooltips/accessibility labels for Add, More, Back, chapter list, RSVP, info,
+  reading settings, and page navigation.
+- Reader typography popover: text size, line spacing, left/justified alignment.
+- Light / sepia / dark reading themes.
+- Cover/titlepage-only spine items filtered out of the reading flow.
+- Sidebar auto-hides while reading and returns with the selection intact.
+- Book-level progress percentage and progress bar alongside chapter/page.
+- Window floor lowered to 900×640; reader falls back to one page below 1000pt.
+- Accessibility labels on primary reader controls.
+
+Still product decisions / open verification:
+
+- Whole-book physical page map (chapter/page + percentage is the current model).
+- Starfield contrast/density specification.
+- Remaining icon and focus-state audit.
+- Full responsive and screen-reader matrix.
+- Shelf/grid/resume library layout beyond the selected-book detail.
+- Design-token migration across every legacy surface.
 
 ---
 
@@ -171,7 +195,7 @@ Minimum gates:
 ## Current candidate references
 
 ```text
-Paged-reader candidate: 2e90d99603eee8dc50f39581c357101642586a64726a5a10f63cc9ad3066cc05
+Paged-reader candidate: 936ba504337d6cb6663c66f736cee0bcb64491a6b0abf2588f0fd9bcc1a566ed
 Code:                   ec5e45e
 Tag:                    asterisma-v1.0-ux-audit-1
 Census:                 218 passed / 0 failed / 9 skipped

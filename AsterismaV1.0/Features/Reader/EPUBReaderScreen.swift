@@ -28,6 +28,7 @@ struct EPUBReaderScreen: View {
     @State private var currentChapterIndex: Int = 0
     @State private var pageInChapter: Int = 0
     @State private var pagesInChapter: Int = 1
+    @State private var readableChapterIndices: [Int] = []
     @State private var errorMessage: String?
     @State private var isLoading = true
     @State private var showingChapterList = false
@@ -39,6 +40,11 @@ struct EPUBReaderScreen: View {
 
     /// P5 Feature 3: RSVP speed-reading over the CURRENT chapter.
     @AppStorage("rsvp.enabled") private var rsvpEnabled = true
+    @AppStorage("reader.fontScale") private var fontScale: Double = 1.0
+    @AppStorage("reader.lineHeight") private var lineHeight: Double = 1.55
+    @AppStorage("reader.alignment") private var alignment: String = "left"
+    @AppStorage("reader.theme") private var readerTheme: String = "light"
+    @State private var showingTypography = false
     @State private var rsvpText: String?
 
     private let logger = Logger(
@@ -103,11 +109,17 @@ struct EPUBReaderScreen: View {
                 return
             }
 
+            let readable = opened.readableChapterIndices()
             let fallbackIndex = startingChapterIndex(in: opened, resumingFrom: book.currentPage)
-            let startIndex = min(
+            var startIndex = min(
                 max(0, book.epubChapterIndex ?? fallbackIndex),
                 max(0, opened.chapterCount - 1)
             )
+            if !readable.contains(startIndex) {
+                startIndex = readable.first(where: { $0 >= startIndex })
+                    ?? readable.first
+                    ?? 0
+            }
             let startPage = max(0, book.epubPageInChapter ?? 0)
 
             await MainActor.run {
@@ -116,6 +128,7 @@ struct EPUBReaderScreen: View {
                     return
                 }
                 self.package = opened
+                self.readableChapterIndices = readable
                 self.currentChapterIndex = startIndex
                 self.pageInChapter = startPage
                 self.isLoading = false
@@ -148,24 +161,44 @@ struct EPUBReaderScreen: View {
 
     // MARK: - Chapter navigation
 
+    private var readablePosition: Int? {
+        readableChapterIndices.firstIndex(of: currentChapterIndex)
+    }
+
     private var canGoToPreviousChapter: Bool {
-        currentChapterIndex > 0
+        (readablePosition ?? 0) > 0
     }
 
     private var canGoToNextChapter: Bool {
-        guard let package else { return false }
-        return currentChapterIndex < package.chapterCount - 1
+        guard let position = readablePosition else { return false }
+        return position + 1 < readableChapterIndices.count
     }
 
     private func goToChapter(_ index: Int) {
         guard let package, package.chapterCount > 0 else { return }
-        let clamped = max(0, min(index, package.chapterCount - 1))
+        let target = readableChapterIndices.contains(index)
+            ? index
+            : (readableChapterIndices.first(where: { $0 > index })
+                ?? readableChapterIndices.last
+                ?? 0)
+        let clamped = max(0, min(target, package.chapterCount - 1))
         currentChapterIndex = clamped
         pageInChapter = 0
         pagesInChapter = 1
         persistPosition()
         coordinator.turnToPage(globalPage)
         updatePositionLabel()
+    }
+
+    private func goToPreviousReadableChapter() {
+        guard let position = readablePosition, position > 0 else { return }
+        goToChapter(readableChapterIndices[position - 1])
+    }
+
+    private func goToNextReadableChapter() {
+        guard let position = readablePosition,
+              position + 1 < readableChapterIndices.count else { return }
+        goToChapter(readableChapterIndices[position + 1])
     }
 
     private func chapterTitle(at index: Int) -> String {
@@ -181,6 +214,13 @@ struct EPUBReaderScreen: View {
         return book.chapters[index].title
     }
 
+    private var bookProgress: Double {
+        let chapters = max(package?.chapterCount ?? book.chapters.count, 1)
+        let withinChapter = Double(pageInChapter + 1) / Double(max(pagesInChapter, 1))
+        let value = (Double(currentChapterIndex) + withinChapter) / Double(chapters)
+        return min(1.0, max(0.0, value))
+    }
+
     private var globalPage: Int {
         guard book.chapters.indices.contains(currentChapterIndex) else {
             return max(0, pageInChapter)
@@ -192,7 +232,7 @@ struct EPUBReaderScreen: View {
     private func updatePositionLabel() {
         let chapters = max(book.chapters.count, 1)
         coordinator.updatePositionLabel(
-            "Ch \(currentChapterIndex + 1)/\(chapters) · \(pageInChapter + 1)/\(max(pagesInChapter, 1))"
+            "Ch \(currentChapterIndex + 1)/\(chapters) · \(pageInChapter + 1)/\(max(pagesInChapter, 1)) · \(Int(bookProgress * 100))%"
         )
     }
 
@@ -225,7 +265,7 @@ struct EPUBReaderScreen: View {
             if pageInChapter > 0 {
                 pageInChapter -= 1
             } else if canGoToPreviousChapter {
-                goToChapter(currentChapterIndex - 1)
+                goToPreviousReadableChapter()
                 return
             } else {
                 return
@@ -234,7 +274,7 @@ struct EPUBReaderScreen: View {
             if pageInChapter + 1 < pagesInChapter {
                 pageInChapter += 1
             } else if canGoToNextChapter {
-                goToChapter(currentChapterIndex + 1)
+                goToNextReadableChapter()
                 return
             } else {
                 return
@@ -286,6 +326,7 @@ struct EPUBReaderScreen: View {
                 Image(systemName: "chevron.left")
             }
             .help("Back to Library")
+            .accessibilityLabel("Back to Library")
 
             Button {
                 showingChapterList = true
@@ -297,6 +338,7 @@ struct EPUBReaderScreen: View {
             .popover(isPresented: $showingChapterList) {
                 chapterListPopover
             }
+            .accessibilityLabel("Table of contents")
 
             if rsvpEnabled {
                 Button {
@@ -305,8 +347,20 @@ struct EPUBReaderScreen: View {
                     Image(systemName: "hare")
                 }
                 .help("Speed-read this chapter (RSVP)")
+                .accessibilityLabel("Speed read this chapter")
                 .disabled(package == nil)
             }
+
+            Button {
+                showingTypography = true
+            } label: {
+                Image(systemName: "textformat")
+            }
+            .popover(isPresented: $showingTypography) {
+                readerTypographyControls
+            }
+            .help("Reading settings")
+            .accessibilityLabel("Reading settings")
 
             Button {
                 showingInfo = true
@@ -318,6 +372,8 @@ struct EPUBReaderScreen: View {
                     .padding()
                     .frame(minWidth: 260)
             }
+            .help("Book information")
+            .accessibilityLabel("Book information")
         }
         .font(.system(size: 13, weight: .semibold))
         .foregroundStyle(.white.opacity(0.92))
@@ -328,6 +384,54 @@ struct EPUBReaderScreen: View {
         .padding(14)
     }
 
+    private var readerTypographyControls: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Reading")
+                .font(.headline)
+
+            Picker("Theme", selection: $readerTheme) {
+                Text("Light").tag("light")
+                Text("Sepia").tag("sepia")
+                Text("Dark").tag("dark")
+            }
+            .pickerStyle(.segmented)
+
+            HStack {
+                Text("Text size")
+                Slider(value: $fontScale, in: 0.8 ... 1.6, step: 0.05)
+                Text("\(Int(fontScale * 100))%")
+                    .monospacedDigit()
+                    .frame(width: 42, alignment: .trailing)
+            }
+            .font(.callout)
+
+            HStack {
+                Text("Line spacing")
+                Slider(value: $lineHeight, in: 1.2 ... 2.0, step: 0.05)
+                Text(String(format: "%.2f", lineHeight))
+                    .monospacedDigit()
+                    .frame(width: 42, alignment: .trailing)
+            }
+            .font(.callout)
+
+            Picker("Alignment", selection: $alignment) {
+                Text("Left").tag("left")
+                Text("Justified").tag("justify")
+            }
+            .pickerStyle(.segmented)
+
+            Button("Reset Reading Settings") {
+                fontScale = 1.0
+                lineHeight = 1.55
+                alignment = "left"
+                readerTheme = "light"
+            }
+            .buttonStyle(.link)
+        }
+        .padding()
+        .frame(width: 300)
+    }
+
     private var readerPageControls: some View {
         HStack(spacing: 14) {
             Button {
@@ -335,17 +439,24 @@ struct EPUBReaderScreen: View {
             } label: {
                 Image(systemName: "chevron.left")
             }
+            .accessibilityLabel("Previous page")
             .disabled(pageInChapter == 0 && !canGoToPreviousChapter)
 
             Text("\(pageInChapter + 1) / \(max(pagesInChapter, 1))")
                 .monospacedDigit()
                 .frame(minWidth: 62)
 
+            ProgressView(value: bookProgress)
+                .progressViewStyle(.linear)
+                .tint(.white.opacity(0.7))
+                .frame(width: 70)
+
             Button {
                 turnPage(1)
             } label: {
                 Image(systemName: "chevron.right")
             }
+            .accessibilityLabel("Next page")
             .disabled(pageInChapter + 1 >= pagesInChapter && !canGoToNextChapter)
         }
         .font(.system(size: 13, weight: .semibold))
@@ -357,6 +468,31 @@ struct EPUBReaderScreen: View {
         .padding(.bottom, 16)
     }
 
+    private var readerSettingsJSON: String {
+        let background: String
+        let foreground: String
+        switch readerTheme {
+        case "sepia":
+            background = "#f4ecd8"
+            foreground = "#3b2f2f"
+        case "dark":
+            background = "#151515"
+            foreground = "#e8e8e8"
+        default:
+            background = "#ffffff"
+            foreground = "#111111"
+        }
+        let settings: [String: Any] = [
+            "scale": fontScale,
+            "lineHeight": lineHeight,
+            "align": alignment,
+            "bg": background,
+            "fg": foreground,
+        ]
+        let data = (try? JSONSerialization.data(withJSONObject: settings)) ?? Data("{}".utf8)
+        return String(data: data, encoding: .utf8) ?? "{}"
+    }
+
     private var contentView: some View {
         Group {
             if let package, let url = package.fileURL(forChapterAt: currentChapterIndex) {
@@ -365,6 +501,7 @@ struct EPUBReaderScreen: View {
                     allowedReadRoot: package.allowedReadRoot,
                     startPage: pageInChapter,
                     targetPage: pageInChapter,
+                    settingsJSON: readerSettingsJSON,
                     onExternalLink: { url in
                         NSWorkspace.shared.open(url)
                     },
@@ -478,8 +615,10 @@ struct EPUBReaderScreen: View {
     }
 
     private var chapterListPopover: some View {
-        let count = package?.chapterCount ?? book.chapters.count
-        return List(0..<max(count, 1), id: \.self) { index in
+        let indices = readableChapterIndices.isEmpty
+            ? Array(0..<max(package?.chapterCount ?? book.chapters.count, 1))
+            : readableChapterIndices
+        return List(indices, id: \.self) { index in
             Button {
                 goToChapter(index)
                 showingChapterList = false
@@ -543,6 +682,7 @@ private struct EPUBChapterWebView: NSViewRepresentable {
     let allowedReadRoot: URL
     let startPage: Int
     let targetPage: Int
+    let settingsJSON: String
     let onExternalLink: (URL) -> Void
     let onLoadError: (String) -> Void
     let onPageCount: (Int) -> Void
@@ -563,6 +703,13 @@ private struct EPUBChapterWebView: NSViewRepresentable {
         )
         configuration.userContentController.addUserScript(
             WKUserScript(
+                source: "window.__epubReaderSettings = \(settingsJSON);",
+                injectionTime: .atDocumentStart,
+                forMainFrameOnly: true
+            )
+        )
+        configuration.userContentController.addUserScript(
+            WKUserScript(
                 source: Self.paginationScript,
                 injectionTime: .atDocumentEnd,
                 forMainFrameOnly: true
@@ -575,6 +722,7 @@ private struct EPUBChapterWebView: NSViewRepresentable {
 
         context.coordinator.webView = webView
         context.coordinator.targetPage = startPage
+        context.coordinator.settingsJSON = settingsJSON
         context.coordinator.currentlyLoadedURL = fileURL
         webView.loadFileURL(fileURL, allowingReadAccessTo: allowedReadRoot)
         return webView
@@ -595,6 +743,13 @@ private struct EPUBChapterWebView: NSViewRepresentable {
             return
         }
 
+        if context.coordinator.settingsJSON != settingsJSON {
+            context.coordinator.settingsJSON = settingsJSON
+            webView.evaluateJavaScript(
+                "window.__epubApplySettings && window.__epubApplySettings(\(settingsJSON))"
+            )
+        }
+
         if context.coordinator.targetPage != targetPage {
             context.coordinator.go(to: targetPage)
         }
@@ -608,6 +763,7 @@ private struct EPUBChapterWebView: NSViewRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(
             startPage: startPage,
+            settingsJSON: settingsJSON,
             onExternalLink: onExternalLink,
             onLoadError: onLoadError,
             onPageCount: onPageCount,
@@ -617,6 +773,7 @@ private struct EPUBChapterWebView: NSViewRepresentable {
 
     final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         var targetPage: Int
+        var settingsJSON: String
         var currentlyLoadedURL: URL?
         weak var webView: WKWebView?
         var ready = false
@@ -627,12 +784,14 @@ private struct EPUBChapterWebView: NSViewRepresentable {
 
         init(
             startPage: Int,
+            settingsJSON: String,
             onExternalLink: @escaping (URL) -> Void,
             onLoadError: @escaping (String) -> Void,
             onPageCount: @escaping (Int) -> Void,
             onPageChanged: @escaping (Int) -> Void
         ) {
             targetPage = startPage
+            self.settingsJSON = settingsJSON
             self.onExternalLink = onExternalLink
             self.onLoadError = onLoadError
             self.onPageCount = onPageCount
@@ -715,16 +874,14 @@ private struct EPUBChapterWebView: NSViewRepresentable {
         body.appendChild(wrapper);
 
         var style = document.createElement('style');
-        style.textContent = [
-          'html, body { margin:0 !important; padding:0 !important; height:100% !important; overflow:hidden !important; }',
-          '#__epub_paginator { height:100vh; box-sizing:border-box; padding:34px 46px; overflow-x:auto; overflow-y:hidden; column-fill:auto; }',
-          '#__epub_paginator::-webkit-scrollbar { display:none; }',
-          'img, svg { max-width:100%; height:auto; }'
-        ].join('\n');
+        style.id = '__epubReaderStyle';
         document.head.appendChild(style);
 
         var gap = 44;
         var pad = 46;
+        var currentPage = (window.__epubInitialPage || 0) | 0;
+        var settings = {scale: 1, lineHeight: 1.55, align: 'left', bg: '#ffffff', fg: '#111111'};
+
         function metrics() {
           var w = window.innerWidth;
           var h = window.innerHeight;
@@ -740,10 +897,33 @@ private struct EPUBChapterWebView: NSViewRepresentable {
         function go(page) {
           var m = metrics();
           page = Math.max(0, Math.min(page | 0, m.pages - 1));
+          currentPage = page;
           wrapper.scrollLeft = page * window.innerWidth;
           post(m.pages, page);
         }
-        var currentPage = (window.__epubInitialPage || 0) | 0;
+        function apply(s) {
+          settings = Object.assign(settings, s || {});
+          var scale = Number(settings.scale) || 1;
+          var lh = Number(settings.lineHeight) || 1.55;
+          var align = settings.align === 'justify' ? 'justify' : 'left';
+          var bg = settings.bg || '#ffffff';
+          var fg = settings.fg || '#111111';
+          style.textContent = [
+            'html, body { margin:0 !important; padding:0 !important; height:100% !important; overflow:hidden !important; background:' + bg + ' !important; color:' + fg + ' !important; }',
+            '#__epub_paginator { height:100vh; box-sizing:border-box; padding:34px 46px; overflow-x:auto; overflow-y:hidden; column-fill:auto; background:' + bg + ' !important; color:' + fg + ' !important; font-size:' + (16 * scale) + 'px !important; line-height:' + lh + ' !important; }',
+            '#__epub_paginator p, #__epub_paginator li, #__epub_paginator div { text-align:' + align + ' !important; }',
+            '#__epub_paginator a { color:' + fg + ' !important; }',
+            '#__epub_paginator::-webkit-scrollbar { display:none; }',
+            'img, svg { max-width:100%; height:auto; }'
+          ].join('\n');
+          var m = metrics();
+          currentPage = Math.max(0, Math.min(currentPage, m.pages - 1));
+          go(currentPage);
+        }
+
+        window.__epubApplySettings = apply;
+        apply(window.__epubReaderSettings || {});
+
         wrapper.addEventListener('scroll', function() {
           var m = metrics();
           var p = Math.round(wrapper.scrollLeft / window.innerWidth);

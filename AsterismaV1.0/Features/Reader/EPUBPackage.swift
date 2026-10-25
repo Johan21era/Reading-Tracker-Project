@@ -85,6 +85,36 @@ final nonisolated class EPUBPackage: @unchecked Sendable {
         spineItems.count
     }
 
+    /// Indices of spine items that contain actual reading text. Cover pages,
+    /// title-page images, and other image-only documents are omitted so they
+    /// do not appear as blank "logo" pages in the reader.
+    func readableChapterIndices(minimumTextCharacters: Int = 60) -> [Int] {
+        var result: [Int] = []
+        for (index, item) in spineItems.enumerated() {
+            guard let data = try? Data(contentsOf: item.fileURL),
+                  let html = String(data: data, encoding: .utf8)
+            else { continue }
+
+            let text = html
+                .replacingOccurrences(
+                    of: "<script[\\s\\S]*?</script>", with: " ",
+                    options: .regularExpression)
+                .replacingOccurrences(
+                    of: "<style[\\s\\S]*?</style>", with: " ",
+                    options: .regularExpression)
+                .replacingOccurrences(
+                    of: "<[^>]+>", with: " ",
+                    options: .regularExpression)
+                .replacingOccurrences(of: "&nbsp;", with: " ")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+
+            if text.count >= minimumTextCharacters {
+                result.append(index)
+            }
+        }
+        return result.isEmpty ? Array(spineItems.indices) : result
+    }
+
     /// The directory a WKWebView must be granted read access to, so a
     /// chapter's relative references (images, stylesheets) resolve.
     var allowedReadRoot: URL {

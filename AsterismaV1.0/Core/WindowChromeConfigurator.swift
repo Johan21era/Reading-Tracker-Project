@@ -34,7 +34,7 @@ struct WindowChromeConfigurator: NSViewRepresentable {
             window.toolbar?.showsBaselineSeparator = false
             window.toolbar?.isVisible = false
 
-            window.minSize = NSSize(width: 1000, height: 680)
+            window.minSize = NSSize(width: 900, height: 640)
 
             // No control should look pre-focused at launch. Clear the
             // automatic first-responder assignment after the window settles;
