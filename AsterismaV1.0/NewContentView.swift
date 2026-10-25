@@ -141,13 +141,14 @@ struct ContentView: View {
     /// canvas. No rounded container, no bordered panel, no second background.
     private var librarySidebar: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .firstTextBaseline) {
+            HStack(alignment: .center, spacing: 8) {
                 Text("Library")
                     .font(.title3.weight(.semibold))
-                Spacer(minLength: 8)
+                Spacer(minLength: 4)
                 Text("\(visibleBooks.count)")
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
+                libraryTopActions
             }
             .padding(.leading, 18)
             .padding(.trailing, 14)
@@ -183,6 +184,128 @@ struct ContentView: View {
         .frame(maxHeight: .infinity, alignment: .top)
         .background(Color.clear)
         .overlay(alignment: .trailing) { sidebarResizeHandle }
+    }
+
+    /// Library actions live on the content surface, not in a native toolbar.
+    /// This removes the gray fullscreen toolbar strip entirely.
+    private var libraryTopActions: some View {
+        HStack(spacing: 6) {
+            Button(action: addItem) {
+                Image(systemName: "plus")
+                    .font(.system(size: 15, weight: .semibold))
+                    .frame(width: 28, height: 28)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help("Add Book")
+
+            libraryActionsMenu
+                .frame(width: 28, height: 28)
+        }
+        .foregroundStyle(.primary.opacity(0.85))
+    }
+
+    private var libraryActionsMenu: some View {
+        Menu {
+            Menu("Analytics") {
+                Button {
+                    openWindow(id: "reading-insights")
+                } label: {
+                    Label("Insights", systemImage: "lightbulb")
+                }
+
+                Button {
+                    showRecommendations = true
+                } label: {
+                    Label("What to Read Next", systemImage: "star.leadinghalf.filled")
+                }
+
+                Divider()
+
+                Button {
+                    showGoals = true
+                } label: {
+                    Label("Goals", systemImage: "target")
+                }
+
+                Button {
+                    showAchievements = true
+                } label: {
+                    Label("Achievements", systemImage: "medal")
+                }
+
+                Divider()
+
+                Button {
+                    showSessionHistory = true
+                } label: {
+                    Label("Session History", systemImage: "clock.arrow.circlepath")
+                }
+
+                Button {
+                    showWeatherInsights = true
+                } label: {
+                    Label("Environment", systemImage: "cloud.sun")
+                }
+
+                Button {
+                    showContextInsights = true
+                } label: {
+                    Label("Your Context", systemImage: "brain")
+                }
+
+                Divider()
+
+                Button {
+                    exportLibrary()
+                } label: {
+                    Label("Export Library...", systemImage: "square.and.arrow.up")
+                }
+
+                Button {
+                    importLibrary()
+                } label: {
+                    Label("Import Library...", systemImage: "square.and.arrow.down")
+                }
+            }
+
+            Divider()
+
+            Button {
+                showDiscovery = true
+            } label: {
+                Label("Discover Books", systemImage: "books.vertical.fill")
+            }
+
+            Button {
+                showAnnualReports = true
+            } label: {
+                Label("Annual Reports", systemImage: "chart.bar.doc.horizontal")
+            }
+
+            Menu("Sort By") {
+                Picker("Sort By", selection: $sortMode) {
+                    ForEach(LibrarySortMode.allCases, id: \.self) { mode in
+                        Text(mode.label).tag(mode)
+                    }
+                }
+                .pickerStyle(.inline)
+            }
+
+            Button {
+                showExplorer = true
+            } label: {
+                Label("Explore", systemImage: "square.grid.2x2")
+            }
+        } label: {
+            Image(systemName: "ellipsis.circle")
+                .font(.system(size: 15, weight: .semibold))
+                .frame(width: 28, height: 28)
+                .contentShape(Rectangle())
+        }
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .help("More")
     }
 
     /// The detail column owns reading navigation. A real NavigationStack keeps
@@ -378,114 +501,8 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .background(WindowChromeConfigurator())
+        .background(WindowToolbarVisibility(visible: !readerPath.isEmpty))
         .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
-        .toolbar(removing: .title)
-        .toolbar {
-            // One grouped surface for the library actions instead of six
-            // independently framed toolbar capsules.
-            ToolbarItemGroup(placement: .primaryAction) {
-                Button(action: addItem) {
-                    Label("Add Book", systemImage: "plus")
-                }
-
-                // Secondary actions live behind one menu instead of five
-                // independently framed toolbar capsules.
-                Menu {
-                    Menu("Analytics") {
-                        Button {
-                            openWindow(id: "reading-insights")
-                        } label: {
-                            Label("Insights", systemImage: "lightbulb")
-                        }
-
-                        Button {
-                            showRecommendations = true
-                        } label: {
-                            Label("What to Read Next", systemImage: "star.leadinghalf.filled")
-                        }
-
-                        Divider()
-
-                        Button {
-                            showGoals = true
-                        } label: {
-                            Label("Goals", systemImage: "target")
-                        }
-
-                        Button {
-                            showAchievements = true
-                        } label: {
-                            Label("Achievements", systemImage: "medal")
-                        }
-
-                        Divider()
-
-                        Button {
-                            showSessionHistory = true
-                        } label: {
-                            Label("Session History", systemImage: "clock.arrow.circlepath")
-                        }
-
-                        Button {
-                            showWeatherInsights = true
-                        } label: {
-                            Label("Environment", systemImage: "cloud.sun")
-                        }
-
-                        Button {
-                            showContextInsights = true
-                        } label: {
-                            Label("Your Context", systemImage: "brain")
-                        }
-
-                        Divider()
-
-                        Button {
-                            exportLibrary()
-                        } label: {
-                            Label("Export Library...", systemImage: "square.and.arrow.up")
-                        }
-
-                        Button {
-                            importLibrary()
-                        } label: {
-                            Label("Import Library...", systemImage: "square.and.arrow.down")
-                        }
-                    }
-
-                    Divider()
-
-                    Button {
-                        showDiscovery = true
-                    } label: {
-                        Label("Discover Books", systemImage: "books.vertical.fill")
-                    }
-
-                    Button {
-                        showAnnualReports = true
-                    } label: {
-                        Label("Annual Reports", systemImage: "chart.bar.doc.horizontal")
-                    }
-
-                    Menu("Sort By") {
-                        Picker("Sort By", selection: $sortMode) {
-                            ForEach(LibrarySortMode.allCases, id: \.self) { mode in
-                                Text(mode.label).tag(mode)
-                            }
-                        }
-                        .pickerStyle(.inline)
-                    }
-
-                    Button {
-                        showExplorer = true
-                    } label: {
-                        Label("Explore", systemImage: "square.grid.2x2")
-                    }
-                } label: {
-                    Label("More", systemImage: "ellipsis.circle")
-                }
-            }
-        }
         .environmentObject(environmentEngine) // Phase 2: downstream consumers read the same instance
         // P5 Feature 5: first-run wizard when library is empty and never dismissed.
         .onChange(of: dataStore.books.isEmpty) { _, empty in

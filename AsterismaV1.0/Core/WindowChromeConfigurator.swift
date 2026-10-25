@@ -32,7 +32,7 @@ struct WindowChromeConfigurator: NSViewRepresentable {
             // baseline separator that otherwise draws a horizontal rule.
             window.toolbarStyle = .unifiedCompact
             window.toolbar?.showsBaselineSeparator = false
-            window.toolbar?.isVisible = true
+            window.toolbar?.isVisible = false
 
             window.minSize = NSSize(width: 1000, height: 680)
 
@@ -48,4 +48,26 @@ struct WindowChromeConfigurator: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {}
+}
+
+
+/// Controls the native toolbar only where it is genuinely needed: the reader.
+/// In the library surface the toolbar is hidden, so fullscreen has no gray
+/// system bar at the top.
+struct WindowToolbarVisibility: NSViewRepresentable {
+    let visible: Bool
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        DispatchQueue.main.async {
+            view.window?.toolbar?.isVisible = visible
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        DispatchQueue.main.async {
+            nsView.window?.toolbar?.isVisible = visible
+        }
+    }
 }

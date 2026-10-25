@@ -34,7 +34,7 @@
   pushed as `origin/main`.
 - `asterisma-v1.0-mvp` and all six Bedrock tags pushed to GitHub.
 - Release package: `dist/AsterismaV1.0-1.0-arm64.zip`
-- SHA-256: `57068300cc548bd50995d5728bab610363bd1133a989962500f527d152bbd2ce`
+- SHA-256: `4f157434a0c5e67e1051bd1e7507d5db95fbddc41ee6c0a7b3934c885e9e040c`
 
 **Post-acceptance authority:** the owner's personal test results are the
 absolute source of truth from 2026-10-24 onward and override this receipt and
@@ -47,7 +47,7 @@ on top of the accepted release:
 
 - Commit `df834b3`; tag `asterisma-v1.0-ui-seamless`.
 - Package: `dist/AsterismaV1.0-1.0-arm64.zip`
-- SHA-256: `57068300cc548bd50995d5728bab610363bd1133a989962500f527d152bbd2ce`
+- SHA-256: `4f157434a0c5e67e1051bd1e7507d5db95fbddc41ee6c0a7b3934c885e9e040c`
 - F1: packaged app now carries its sandbox/entitlements.
 - F2: onboarding Finish now dismisses the sheet.
 - F3: Add Book accepts iBooks-style unzipped `.epub` directories.
@@ -73,7 +73,7 @@ on top of the accepted release:
 ## Distribution
 
 - Package: `dist/AsterismaV1.0-1.0-arm64.zip`
-- SHA-256: `57068300cc548bd50995d5728bab610363bd1133a989962500f527d152bbd2ce`
+- SHA-256: `4f157434a0c5e67e1051bd1e7507d5db95fbddc41ee6c0a7b3934c885e9e040c`
 - Ad-hoc signed, not notarized.
 - First launch requires right-click → Open (documented in `DISTRIBUTION.md`).
 - Bundle ID remains `johan.Reading-Tracker` for MVP container compatibility;

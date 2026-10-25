@@ -4,7 +4,7 @@
 **Scope:** main window, sidebar, search, toolbar, detail canvas
 **Platform:** macOS 26.5, SwiftUI/AppKit (native — no WebView, HTML, or CSS)
 **Candidate:** `df834b3` / tag `asterisma-v1.0-ui-seamless`
-**Package:** SHA-256 `57068300cc548bd50995d5728bab610363bd1133a989962500f527d152bbd2ce`
+**Package:** SHA-256 `4f157434a0c5e67e1051bd1e7507d5db95fbddc41ee6c0a7b3934c885e9e040c`
 
 ---
 
@@ -40,7 +40,7 @@ not in CSS overrides.
 | Vertical sidebar/content divider | Split-view glass edge plus List surface | **Removed** — one tonal gradient only |
 | Sidebar List background | `List` sidebar material | **Removed** — `.listStyle(.plain)` + `.scrollContentBackground(.hidden)` |
 | Search field permanent blue outline | System search field focus/first responder | **Replaced** — custom field with focus-only ring |
-| Six toolbar item capsules | macOS 26 Liquid Glass toolbar items | **Consolidated** — one `ToolbarItemGroup` |
+| Library toolbar strip / item capsules | macOS 26 Liquid Glass toolbar | **Removed** — Add Book + More live in sidebar header |
 | Toolbar/titlebar baseline | System toolbar separator | **Removed** — `showsBaselineSeparator = false` |
 | Window titlebar background | Standard titlebar | **Made transparent/full-size**; traffic lights and zoom retained |
 | Main canvas frame | Implicit split-view detail inset | **Removed** — detail fills the remaining surface |
@@ -68,8 +68,9 @@ Window
 - **Search:** custom field; inactive state is a low-contrast fill, focus state
   is the only time an accent ring appears. Initial auto-focus is cleared after
   launch.
-- **Toolbar:** native controls kept, grouped into one `ToolbarItemGroup`;
-  transparent background; title and baseline separator removed.
+- **Toolbar:** removed from the library surface entirely; Add Book and More
+  live in the sidebar header with no chrome. The native toolbar appears only
+  while reading, where its controls are genuinely needed.
 - **Detail:** `NavigationStack` preserves the readers' native back button,
   title, and toolbar. The empty state is centered in the actual canvas, not in
   a nested panel.
@@ -94,10 +95,9 @@ Window
 The in-process capture shows the real 1000x732 window at 2x: flat sidebar with
 7 books, no rounded sidebar shell, no vertical rule, no search outline, and one
 continuous starfield behind both columns. The transient Sentinel banner is a
-dismissible alert owned by the app, not a structural panel. The toolbar icons
-are composited in separate system layers, so the capture shows their native
-glass backgrounds without the icon glyphs; the native toolbar remains grouped
-into Add Book + More.
+dismissible alert owned by the app, not a structural panel. The library
+toolbar is gone; Add Book and More sit in the sidebar header. The native
+toolbar appears only in reader mode.
 
 During this audit the old memoized `visibleBooks` cache was found serving an
 empty list while DataStore had 7 books. The cache was removed; the live view now
