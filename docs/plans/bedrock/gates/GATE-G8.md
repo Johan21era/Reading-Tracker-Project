@@ -45,7 +45,7 @@ every prior benchmark/census. See `docs/12-owner-test-authority.md`.
 The first owner run found three defects the green census missed. They are fixed
 on top of the accepted release:
 
-- Commit `df834b3`; tag `asterisma-v1.0-ui-seamless`.
+- Commit `bde2652`; tag `asterisma-v1.0-ui-seamless-2`.
 - Package: `dist/AsterismaV1.0-1.0-arm64.zip`
 - SHA-256: `4f157434a0c5e67e1051bd1e7507d5db95fbddc41ee6c0a7b3934c885e9e040c`
 - F1: packaged app now carries its sandbox/entitlements.

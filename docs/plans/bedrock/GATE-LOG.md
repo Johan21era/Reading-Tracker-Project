@@ -28,7 +28,7 @@ censuses, benchmarks, and documentation claims above. See
 
 **Owner-test fixes:** the first owner runs found four defects (packaged
 entitlements, onboarding dead end, folder-form EPUBs, windowed toolbar/zoom). Fixed on top of the
-accepted release at `df834b3`, tag `asterisma-v1.0-ui-seamless`; candidate
+accepted release at `bde2652`, tag `asterisma-v1.0-ui-seamless-2`; candidate
 package SHA-256 `4f157434a0c5e67e1051bd1e7507d5db95fbddc41ee6c0a7b3934c885e9e040c`.
 Owner retest is the acceptance gate.
 
