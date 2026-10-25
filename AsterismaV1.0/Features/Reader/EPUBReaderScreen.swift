@@ -43,8 +43,17 @@ struct EPUBReaderScreen: View {
     @AppStorage("reader.fontScale") private var fontScale: Double = 1.0
     @AppStorage("reader.lineHeight") private var lineHeight: Double = 1.55
     @AppStorage("reader.alignment") private var alignment: String = "left"
-    @AppStorage("reader.theme") private var readerTheme: String = "light"
-    @State private var showingTypography = false
+    @AppStorage("reader.theme") private var readerTheme: String = ReaderThemePreset.original.rawValue
+    @AppStorage("reader.fontFamily") private var readerFontFamily: String = ReaderFontFamily.original.rawValue
+    @AppStorage("reader.bold") private var readerBold = false
+    @AppStorage("reader.characterSpacing") private var readerCharacterSpacing: Double = 0
+    @AppStorage("reader.wordSpacing") private var readerWordSpacing: Double = 0
+    @AppStorage("reader.margin") private var readerMargin: Double = 46
+    @AppStorage("reader.columns") private var readerColumns: String = ReaderColumnLayout.automatic.rawValue
+    @AppStorage("reader.hyphenation") private var readerHyphenation = true
+    @AppStorage("reader.pageTurn") private var readerPageTurn: String = ReaderPageTurnStyle.slide.rawValue
+    @AppStorage("reader.showPageNumbers") private var readerShowPageNumbers = true
+    @State private var showingAppearance = false
     @State private var rsvpText: String?
     @State private var readerControlsVisible = true
     @State private var readerControlsHovered = false
@@ -344,7 +353,7 @@ struct EPUBReaderScreen: View {
                 if readerControlsHovered
                     || showingChapterList
                     || showingInfo
-                    || showingTypography
+                    || showingAppearance
                     || showingMirageAnalysis {
                     continue
                 }
@@ -393,15 +402,15 @@ struct EPUBReaderScreen: View {
             }
 
             Button {
-                showingTypography = true
+                showingAppearance = true
             } label: {
-                Image(systemName: "textformat")
+                Image(systemName: "textformat.size")
             }
-            .popover(isPresented: $showingTypography) {
-                readerTypographyControls
+            .popover(isPresented: $showingAppearance) {
+                readerAppearancePanel
             }
-            .help("Reading settings")
-            .accessibilityLabel("Reading settings")
+            .help("Appearance")
+            .accessibilityLabel("Appearance")
 
             Button {
                 showingInfo = true
@@ -417,60 +426,302 @@ struct EPUBReaderScreen: View {
             .accessibilityLabel("Book information")
         }
         .font(.system(size: 13, weight: .semibold))
-        .foregroundStyle(.white.opacity(0.92))
+        .foregroundStyle(activeAppearance.theme.chromeForeground)
         .buttonStyle(.plain)
         .padding(.horizontal, 14)
         .padding(.vertical, 9)
-        .background(Color.black.opacity(0.55), in: Capsule())
+        .background(activeAppearance.theme.chromeBackground, in: Capsule())
+        .overlay(
+            Capsule().strokeBorder(activeAppearance.theme.chromeStroke, lineWidth: 1)
+        )
         .padding(14)
     }
 
-    private var readerTypographyControls: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("Reading")
-                .font(.headline)
-
-            Picker("Theme", selection: $readerTheme) {
-                Text("Light").tag("light")
-                Text("Sepia").tag("sepia")
-                Text("Dark").tag("dark")
+    private var readerAppearancePanel: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Appearance")
+                        .font(.headline)
+                    Text("Themes set a starting point. Fine-tune anything below.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button("Done") { showingAppearance = false }
+                    .keyboardShortcut(.defaultAction)
             }
-            .pickerStyle(.segmented)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 14)
+
+            Divider()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    appearanceThemeSection
+                    Divider()
+                    appearanceTextSection
+                    Divider()
+                    appearanceSpacingSection
+                    Divider()
+                    appearanceLayoutSection
+                    Divider()
+                    appearancePageSection
+                }
+                .padding(18)
+            }
+
+            Divider()
 
             HStack {
-                Text("Text size")
-                Slider(value: $fontScale, in: 0.8 ... 1.6, step: 0.05)
+                Button("Reset Theme") { resetCurrentTheme() }
+                    .buttonStyle(.link)
+                    .help("Restore this theme's font, spacing, and layout defaults")
+                Spacer()
                 Text("\(Int(fontScale * 100))%")
-                    .monospacedDigit()
-                    .frame(width: 42, alignment: .trailing)
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
             }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 12)
+        }
+        .frame(width: 410, height: 600)
+    }
+
+    private func appearanceSection<Content: View>(
+        _ title: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title.uppercased())
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .tracking(0.8)
+            content()
+        }
+    }
+
+    private var appearanceThemeSection: some View {
+        appearanceSection("Theme") {
+            LazyVGrid(
+                columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3),
+                spacing: 10
+            ) {
+                ForEach(ReaderThemePreset.allCases) { preset in
+                    let selected = activeAppearance.theme == preset
+                    Button {
+                        applyTheme(preset)
+                    } label: {
+                        VStack(spacing: 5) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                                    .fill(preset.backgroundColor)
+                                Text("Aa")
+                                    .font(.system(
+                                        size: 19,
+                                        weight: preset.defaultBold ? .bold : .regular,
+                                        design: preset.previewDesign
+                                    ))
+                                    .foregroundStyle(preset.foregroundColor)
+                                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                                    .strokeBorder(
+                                        selected ? Color.accentColor : Color.primary.opacity(0.10),
+                                        lineWidth: selected ? 2 : 1
+                                    )
+                            }
+                            .frame(height: 50)
+                            Text(preset.displayName)
+                                .font(.caption2.weight(selected ? .semibold : .regular))
+                                .foregroundStyle(selected ? Color.primary : Color.secondary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("\(preset.displayName) theme")
+                    .accessibilityValue(selected ? "Selected" : "")
+                }
+            }
+        }
+    }
+
+    private var appearanceTextSection: some View {
+        appearanceSection("Text") {
+            HStack {
+                Text("Font")
+                    .font(.callout)
+                Spacer()
+                Picker("Font", selection: $readerFontFamily) {
+                    ForEach(ReaderFontFamily.allCases) { font in
+                        Text(font.displayName).tag(font.rawValue)
+                    }
+                }
+                .labelsHidden()
+                .frame(width: 190)
+            }
+
+            Toggle("Bold Text", isOn: $readerBold)
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .font(.callout)
+
+            HStack(spacing: 10) {
+                Text("Size")
+                    .font(.callout)
+
+                Button {
+                    fontScale = max(0.8, fontScale - 0.05)
+                } label: {
+                    Text("A")
+                        .font(.system(size: 11, weight: .semibold))
+                }
+                .buttonStyle(.borderless)
+                .help("Smaller text")
+                .accessibilityLabel("Smaller text")
+
+                Slider(value: $fontScale, in: 0.8 ... 2.0, step: 0.05)
+
+                Button {
+                    fontScale = min(2.0, fontScale + 0.05)
+                } label: {
+                    Text("A")
+                        .font(.system(size: 17, weight: .semibold))
+                }
+                .buttonStyle(.borderless)
+                .help("Larger text")
+                .accessibilityLabel("Larger text")
+
+                Text("\(Int(fontScale * 100))%")
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .frame(width: 40, alignment: .trailing)
+            }
+        }
+    }
+
+    private var appearanceSpacingSection: some View {
+        appearanceSection("Spacing") {
+            appearanceSlider(
+                "Line Spacing",
+                value: $lineHeight,
+                range: 1.2 ... 2.2,
+                step: 0.05,
+                display: String(format: "%.2f", lineHeight)
+            )
+            appearanceSlider(
+                "Character Spacing",
+                value: $readerCharacterSpacing,
+                range: -0.02 ... 0.12,
+                step: 0.005,
+                display: abs(readerCharacterSpacing) < 0.0001
+                    ? "Default"
+                    : String(format: "%+.3f em", readerCharacterSpacing)
+            )
+            appearanceSlider(
+                "Word Spacing",
+                value: $readerWordSpacing,
+                range: 0 ... 0.50,
+                step: 0.05,
+                display: readerWordSpacing < 0.001
+                    ? "Default"
+                    : String(format: "%.2f em", readerWordSpacing)
+            )
+            appearanceSlider(
+                "Margins",
+                value: $readerMargin,
+                range: 24 ... 90,
+                step: 2,
+                display: "\(Int(readerMargin)) pt"
+            )
+        }
+    }
+
+    private func appearanceSlider(
+        _ title: String,
+        value: Binding<Double>,
+        range: ClosedRange<Double>,
+        step: Double,
+        display: String
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(title)
+                    .font(.callout)
+                Spacer()
+                Text(display)
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
+            Slider(value: value, in: range, step: step)
+        }
+    }
+
+    private var appearanceLayoutSection: some View {
+        appearanceSection("Layout") {
+            Toggle(
+                "Justify Text",
+                isOn: Binding(
+                    get: { alignment == "justify" },
+                    set: { alignment = $0 ? "justify" : "left" }
+                )
+            )
+            .toggleStyle(.switch)
+            .controlSize(.small)
             .font(.callout)
 
             HStack {
-                Text("Line spacing")
-                Slider(value: $lineHeight, in: 1.2 ... 2.0, step: 0.05)
-                Text(String(format: "%.2f", lineHeight))
-                    .monospacedDigit()
-                    .frame(width: 42, alignment: .trailing)
+                Text("Columns")
+                    .font(.callout)
+                Spacer()
+                Picker("Columns", selection: $readerColumns) {
+                    ForEach(ReaderColumnLayout.allCases) { layout in
+                        Text(layout.displayName).tag(layout.rawValue)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                .frame(width: 180)
             }
-            .font(.callout)
+            .help(activeAppearance.columns.helpText)
 
-            Picker("Alignment", selection: $alignment) {
-                Text("Left").tag("left")
-                Text("Justified").tag("justify")
+            Toggle("Hyphenate", isOn: $readerHyphenation)
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .font(.callout)
+        }
+    }
+
+    private var appearancePageSection: some View {
+        appearanceSection("Page Turn") {
+            Picker("Page Turn", selection: $readerPageTurn) {
+                ForEach(ReaderPageTurnStyle.allCases) { style in
+                    Text(style.displayName).tag(style.rawValue)
+                }
             }
             .pickerStyle(.segmented)
+            .labelsHidden()
 
-            Button("Reset Reading Settings") {
-                fontScale = 1.0
-                lineHeight = 1.55
-                alignment = "left"
-                readerTheme = "light"
-            }
-            .buttonStyle(.link)
+            Toggle("Show Page Numbers", isOn: $readerShowPageNumbers)
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .font(.callout)
         }
-        .padding()
-        .frame(width: 300)
+    }
+
+    private func applyTheme(_ theme: ReaderThemePreset) {
+        let defaults = ReaderAppearance.defaults(for: theme)
+        readerTheme = theme.rawValue
+        readerFontFamily = defaults.font.rawValue
+        readerBold = defaults.isBold
+        lineHeight = defaults.lineHeight
+        readerCharacterSpacing = defaults.characterSpacing
+        readerWordSpacing = defaults.wordSpacing
+        readerMargin = defaults.margin
+        alignment = defaults.alignment
+        readerColumns = defaults.columns.rawValue
+        readerHyphenation = defaults.hyphenation
+    }
+
+    private func resetCurrentTheme() {
+        applyTheme(activeAppearance.theme)
     }
 
     private var readerPageControls: some View {
@@ -489,7 +740,7 @@ struct EPUBReaderScreen: View {
 
             ProgressView(value: bookProgress)
                 .progressViewStyle(.linear)
-                .tint(.white.opacity(0.7))
+                .tint(activeAppearance.theme.chromeForeground.opacity(0.65))
                 .frame(width: 70)
 
             Button {
@@ -501,37 +752,37 @@ struct EPUBReaderScreen: View {
             .disabled(pageInChapter + 1 >= pagesInChapter && !canGoToNextChapter)
         }
         .font(.system(size: 13, weight: .semibold))
-        .foregroundStyle(.white.opacity(0.92))
+        .foregroundStyle(activeAppearance.theme.chromeForeground)
         .buttonStyle(.plain)
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
-        .background(Color.black.opacity(0.55), in: Capsule())
+        .background(activeAppearance.theme.chromeBackground, in: Capsule())
+        .overlay(
+            Capsule().strokeBorder(activeAppearance.theme.chromeStroke, lineWidth: 1)
+        )
         .padding(.bottom, 16)
     }
 
+    private var activeAppearance: ReaderAppearance {
+        ReaderAppearance(
+            theme: ReaderThemePreset.resolve(readerTheme),
+            font: ReaderFontFamily(rawValue: readerFontFamily) ?? .original,
+            isBold: readerBold,
+            textScale: fontScale,
+            lineHeight: lineHeight,
+            characterSpacing: readerCharacterSpacing,
+            wordSpacing: readerWordSpacing,
+            margin: readerMargin,
+            alignment: alignment,
+            columns: ReaderColumnLayout(rawValue: readerColumns) ?? .automatic,
+            hyphenation: readerHyphenation,
+            pageTurn: ReaderPageTurnStyle(rawValue: readerPageTurn) ?? .slide,
+            showPageNumbers: readerShowPageNumbers
+        )
+    }
+
     private var readerSettingsJSON: String {
-        let background: String
-        let foreground: String
-        switch readerTheme {
-        case "sepia":
-            background = "#f4ecd8"
-            foreground = "#3b2f2f"
-        case "dark":
-            background = "#151515"
-            foreground = "#e8e8e8"
-        default:
-            background = "#ffffff"
-            foreground = "#111111"
-        }
-        let settings: [String: Any] = [
-            "scale": fontScale,
-            "lineHeight": lineHeight,
-            "align": alignment,
-            "bg": background,
-            "fg": foreground,
-        ]
-        let data = (try? JSONSerialization.data(withJSONObject: settings)) ?? Data("{}".utf8)
-        return String(data: data, encoding: .utf8) ?? "{}"
+        activeAppearance.settingsJSON
     }
 
     private var contentView: some View {
@@ -572,6 +823,7 @@ struct EPUBReaderScreen: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .background(activeAppearance.theme.backgroundColor)
         .navigationTitle(book.title)
         .toolbar {
             ToolbarItemGroup(placement: .navigation) {
@@ -658,9 +910,15 @@ struct EPUBReaderScreen: View {
                 } label: {
                     Image(systemName: "chevron.down.circle.fill")
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.white.opacity(0.65))
+                        .foregroundStyle(activeAppearance.theme.chromeForeground.opacity(0.75))
                         .padding(10)
-                        .background(Color.black.opacity(0.35), in: Circle())
+                        .background(activeAppearance.theme.chromeBackground, in: Circle())
+                        .overlay(
+                            Circle().strokeBorder(
+                                activeAppearance.theme.chromeStroke,
+                                lineWidth: 1
+                            )
+                        )
                 }
                 .buttonStyle(.plain)
                 .help("Show reading controls")
@@ -671,7 +929,13 @@ struct EPUBReaderScreen: View {
                 }
             }
         }
-        .overlay(alignment: .bottom) { readerPageControls }
+        .overlay(alignment: .bottom) {
+            if readerShowPageNumbers {
+                readerPageControls
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeOut(duration: 0.16), value: readerShowPageNumbers)
     }
 
     /// Extracts plain text from the current chapter for RSVP streaming.
@@ -948,29 +1212,102 @@ private struct EPUBChapterWebView: NSViewRepresentable {
         style.id = '__epubReaderStyle';
         document.head.appendChild(style);
 
-        var gap = 44;
-        var pad = 46;
         var currentPage = (window.__epubInitialPage || 0) | 0;
-        var settings = {scale: 1, lineHeight: 1.55, align: 'left', bg: '#ffffff', fg: '#111111'};
+        var settings = {
+          scale: 1,
+          lineHeight: 1.55,
+          align: 'left',
+          bold: false,
+          letterSpacing: 0,
+          wordSpacing: 0,
+          margin: 46,
+          columns: 'automatic',
+          hyphenation: true,
+          pageTurn: 'slide',
+          bg: '#ffffff',
+          fg: '#111111'
+        };
+        var suppressScroll = false;
+        var animationToken = 0;
 
         function metrics() {
           var w = window.innerWidth;
           var h = window.innerHeight;
-          var spread = w >= 1000 ? 2 : 1;
-          var col = Math.max(180, Math.min(620, (w - pad * 2 - gap * (spread - 1)) / spread));
+          var requested = settings.columns || 'automatic';
+          var spread = requested === 'single' ? 1
+            : requested === 'double' ? (w >= 760 ? 2 : 1)
+            : (w >= 1000 ? 2 : 1);
+          var preferredGap = 44;
+          var minMargin = Math.max(18, Number(settings.margin) || 46);
+          var maxColumn = 620;
+          var wantedWidth = maxColumn * spread + preferredGap * (spread - 1);
+          var margin = Math.max(minMargin, (w - wantedWidth) / 2);
+          margin = Math.min(margin, Math.max(18, (w - 240) / 2));
+          var gap = spread === 2 ? preferredGap : 0;
+          var available = Math.max(240, w - margin * 2 - gap * (spread - 1));
+          var col = Math.max(180, Math.min(maxColumn, available / spread));
           wrapper.style.columnWidth = col + 'px';
           wrapper.style.columnGap = gap + 'px';
           wrapper.style.height = h + 'px';
-          var cols = Math.max(1, Math.round((wrapper.scrollWidth - pad * 2 + gap) / (col + gap)));
+          wrapper.style.paddingLeft = margin + 'px';
+          wrapper.style.paddingRight = margin + 'px';
+          var cols = Math.max(1, Math.round((wrapper.scrollWidth - margin * 2 + gap) / (col + gap)));
           var pages = Math.max(1, Math.ceil(cols / spread));
-          return {pages: pages, spread: spread};
+          return {pages: pages, spread: spread, margin: margin, col: col, gap: gap};
         }
-        function go(page) {
+
+        function go(page, animate) {
           var m = metrics();
           page = Math.max(0, Math.min(page | 0, m.pages - 1));
           currentPage = page;
-          wrapper.scrollLeft = page * window.innerWidth;
-          post(m.pages, page);
+          var target = page * window.innerWidth;
+          animationToken++;
+          var token = animationToken;
+          var turnStyle = settings.pageTurn || 'slide';
+
+          if (!animate || turnStyle === 'instant') {
+            suppressScroll = false;
+            wrapper.scrollLeft = target;
+            post(m.pages, page);
+            return;
+          }
+
+          suppressScroll = true;
+
+          if (turnStyle === 'fade') {
+            wrapper.style.transition = 'opacity 110ms ease';
+            wrapper.style.opacity = '0.3';
+            setTimeout(function() {
+              if (token !== animationToken) return;
+              wrapper.scrollLeft = target;
+              wrapper.style.opacity = '1';
+              setTimeout(function() {
+                if (token !== animationToken) return;
+                suppressScroll = false;
+                post(m.pages, page);
+              }, 120);
+            }, 90);
+            return;
+          }
+
+          var start = wrapper.scrollLeft;
+          var distance = target - start;
+          var started = null;
+          function step(timestamp) {
+            if (token !== animationToken) return;
+            if (started === null) started = timestamp;
+            var t = Math.min(1, (timestamp - started) / 170);
+            var eased = 1 - Math.pow(1 - t, 3);
+            wrapper.scrollLeft = start + distance * eased;
+            if (t < 1) {
+              requestAnimationFrame(step);
+            } else {
+              wrapper.scrollLeft = target;
+              suppressScroll = false;
+              post(m.pages, page);
+            }
+          }
+          requestAnimationFrame(step);
         }
         function apply(s) {
           settings = Object.assign(settings, s || {});
@@ -979,23 +1316,34 @@ private struct EPUBChapterWebView: NSViewRepresentable {
           var align = settings.align === 'justify' ? 'justify' : 'left';
           var bg = settings.bg || '#ffffff';
           var fg = settings.fg || '#111111';
+          var weight = settings.bold ? '600' : 'normal';
+          var letter = Number(settings.letterSpacing) || 0;
+          var word = Number(settings.wordSpacing) || 0;
+          var hyphens = settings.hyphenation === false ? 'manual' : 'auto';
+          var family = settings.fontFamily || '';
+          var familyRule = family
+            ? '#__epub_paginator, #__epub_paginator p, #__epub_paginator li, #__epub_paginator div, #__epub_paginator span, #__epub_paginator h1, #__epub_paginator h2, #__epub_paginator h3, #__epub_paginator h4, #__epub_paginator h5, #__epub_paginator h6 { font-family:' + family + ' !important; }'
+            : '';
           style.textContent = [
             'html, body { margin:0 !important; padding:0 !important; height:100% !important; overflow:hidden !important; background:' + bg + ' !important; color:' + fg + ' !important; }',
-            '#__epub_paginator { height:100vh; box-sizing:border-box; padding:34px 46px; overflow-x:auto; overflow-y:hidden; column-fill:auto; background:' + bg + ' !important; color:' + fg + ' !important; font-size:' + (16 * scale) + 'px !important; line-height:' + lh + ' !important; }',
-            '#__epub_paginator p, #__epub_paginator li, #__epub_paginator div { text-align:' + align + ' !important; }',
+            '#__epub_paginator { height:100vh; box-sizing:border-box; padding:34px 0; overflow-x:auto; overflow-y:hidden; column-fill:auto; background:' + bg + ' !important; color:' + fg + ' !important; font-size:' + (16 * scale) + 'px !important; line-height:' + lh + ' !important; letter-spacing:' + letter + 'em !important; word-spacing:' + word + 'em !important; }',
+            '#__epub_paginator p, #__epub_paginator li, #__epub_paginator div { text-align:' + align + ' !important; line-height:' + lh + ' !important; letter-spacing:' + letter + 'em !important; word-spacing:' + word + 'em !important; color:' + fg + ' !important; hyphens:' + hyphens + '; -webkit-hyphens:' + hyphens + '; }',
+            '#__epub_paginator p, #__epub_paginator li, #__epub_paginator div, #__epub_paginator span { font-weight:' + weight + ' !important; }',
+            familyRule,
             '#__epub_paginator a { color:' + fg + ' !important; }',
             '#__epub_paginator::-webkit-scrollbar { display:none; }',
             'img, svg { max-width:100%; height:auto; }'
-          ].join('\n');
+          ].join(String.fromCharCode(10));
           var m = metrics();
           currentPage = Math.max(0, Math.min(currentPage, m.pages - 1));
-          go(currentPage);
+          go(currentPage, false);
         }
 
         window.__epubApplySettings = apply;
         apply(window.__epubReaderSettings || {});
 
         wrapper.addEventListener('scroll', function() {
+          if (suppressScroll) return;
           var m = metrics();
           var p = Math.round(wrapper.scrollLeft / window.innerWidth);
           if (p !== currentPage) {
@@ -1007,16 +1355,30 @@ private struct EPUBChapterWebView: NSViewRepresentable {
           setTimeout(function() {
             var m = metrics();
             currentPage = Math.min(currentPage, m.pages - 1);
-            go(currentPage);
+            go(currentPage, false);
           }, 60);
         });
-        window.__epubGoToPage = go;
+        window.__epubGoToPage = function(page) { go(page, true); };
+
+        // Apple Books-style edge clicks. This lives in the document rather than
+        // in a SwiftUI overlay, so trackpad scrolling and links still work.
+        document.addEventListener('click', function(event) {
+          if (event.defaultPrevented) return;
+          if (event.target && event.target.closest && event.target.closest('a')) return;
+          if (window.getSelection && String(window.getSelection()).length > 0) return;
+          var x = event.clientX;
+          if (x < 64) {
+            go(currentPage - 1, true);
+          } else if (x > window.innerWidth - 64) {
+            go(currentPage + 1, true);
+          }
+        }, true);
         setTimeout(function() {
           var m = metrics();
           currentPage = Math.min(currentPage, m.pages - 1);
-          go(currentPage);
+          go(currentPage, false);
         }, 120);
-        setTimeout(function() { go(currentPage); }, 600);
+        setTimeout(function() { go(currentPage, false); }, 600);
       }
       if (document.readyState === 'complete') build();
       else window.addEventListener('load', build);

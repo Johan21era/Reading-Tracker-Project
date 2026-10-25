@@ -356,50 +356,97 @@ struct ContentView: View {
     }
 
     private func selectedBookDetail(_ book: Book) -> some View {
-        VStack(spacing: 16) {
-            BookCoverThumbnail(book: book, width: 120, height: 170)
-            VStack(spacing: 4) {
-                Text(book.title)
-                    .font(.title2.weight(.semibold))
-                    .multilineTextAlignment(.center)
-                Text(book.author)
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .center, spacing: 42) {
+                selectedBookCover(book)
+                selectedBookInfo(book)
             }
-            HStack(spacing: 14) {
-                Label(book.fileType.displayName, systemImage: "doc")
+            VStack(spacing: 24) {
+                selectedBookCover(book)
+                selectedBookInfo(book)
+            }
+        }
+        .padding(48)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func selectedBookCover(_ book: Book) -> some View {
+        BookCoverThumbnail(book: book, width: 150, height: 212)
+            .shadow(color: .black.opacity(0.28), radius: 18, y: 10)
+            .accessibilityHidden(true)
+    }
+
+    private func selectedBookInfo(_ book: Book) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(book.title)
+                    .font(.system(size: 30, weight: .semibold, design: .serif))
+                    .lineLimit(3)
+                Text(book.author)
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
+                if let series = book.series, !series.isEmpty {
+                    Text(series)
+                        .font(.callout)
+                        .foregroundStyle(.tertiary)
+                }
+            }
+
+            HStack(spacing: 8) {
+                selectedBookPill(book.fileType.displayName)
                 if book.totalPages > 0 {
-                    Label("\(book.totalPages) pages", systemImage: "book.pages")
+                    selectedBookPill("\(book.totalPages) pages")
                 }
                 if book.progressFraction > 0 {
-                    Label("\(Int(book.progressFraction * 100))% read", systemImage: "chart.bar")
+                    selectedBookPill("\(Int(book.progressFraction * 100))% read")
                 }
             }
-            .font(.caption)
-            .foregroundStyle(.secondary)
 
-            Button {
-                openBook(book)
-            } label: {
-                Label("Open Book", systemImage: "book")
+            if book.progressFraction > 0 {
+                VStack(alignment: .leading, spacing: 6) {
+                    ProgressView(value: book.progressFraction)
+                        .tint(.accentColor)
+                    Text("\(Int(book.progressFraction * 100))% complete")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: 300)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
 
-            Button {
-                let result = EstimationEngine.estimate(for: book, allBooks: dataStore.books)
-                inspectedBook = book
-                currentEstimation = EstimationEngine.validate(result: result)
-            } label: {
-                Label("Reading Estimate", systemImage: "chart.bar")
+            HStack(spacing: 10) {
+                Button {
+                    openBook(book)
+                } label: {
+                    Label("Open Book", systemImage: "book")
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+
+                Button {
+                    let result = EstimationEngine.estimate(for: book, allBooks: dataStore.books)
+                    inspectedBook = book
+                    currentEstimation = EstimationEngine.validate(result: result)
+                } label: {
+                    Label("Reading Estimate", systemImage: "chart.bar")
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
             }
-            .buttonStyle(.bordered)
 
             Button("Get Info…") { detailsBook = book }
                 .buttonStyle(.link)
         }
-        .padding(32)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: 380, alignment: .leading)
+    }
+
+    private func selectedBookPill(_ text: String) -> some View {
+        Text(text)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(Color.white.opacity(0.07), in: Capsule())
+            .overlay(Capsule().strokeBorder(Color.white.opacity(0.08), lineWidth: 1))
     }
 
     private var libraryEmptyState: some View {
@@ -1051,29 +1098,33 @@ private struct ContentBookRowView: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            // P5 Feature 3: real cover when captured at import.
             BookCoverThumbnail(book: book)
 
             VStack(alignment: .leading, spacing: 4) {
-            Text(book.title)
-                .font(.headline)
-            Text(book.author)
-                .font(.caption)
-                .foregroundColor(.secondary)
-            HStack {
-                Text(book.fileType.displayName)
-                    .font(.caption2)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.2))
-                    .cornerRadius(4)
-                if book.totalReadingTime > 0 {
-                    Text(formatDuration(book.totalReadingTime))
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+                Text(book.title)
+                    .font(.subheadline.weight(.semibold))
+                    .lineLimit(1)
+
+                Text(book.author)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+
+                HStack(spacing: 5) {
+                    Text(book.fileType.displayName)
+                    if book.totalReadingTime > 0 {
+                        Text("·")
+                        Text(formatDuration(book.totalReadingTime))
+                    }
+                    Spacer(minLength: 0)
+                    if book.progressFraction > 0 {
+                        Text("\(Int(book.progressFraction * 100))%")
+                            .monospacedDigit()
+                    }
                 }
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
             }
-        }
         }
         .padding(.vertical, 4)
     }
