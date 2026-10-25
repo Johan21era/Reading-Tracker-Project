@@ -39,6 +39,10 @@ struct Book: Identifiable, Codable, Hashable {
     var fileType: BookFileType
     var totalPages: Int
     var currentPage: Int
+    /// Exact EPUB reading position. nil on books imported before this field
+    /// existed, or on PDFs. `currentPage` remains the analytics/PDF page.
+    var epubChapterIndex: Int?
+    var epubPageInChapter: Int?
     var chapters: [Chapter]
     var sessions: [ReadingSession]
     var activeSessionID: UUID?
@@ -159,6 +163,8 @@ struct Book: Identifiable, Codable, Hashable {
         fileType: BookFileType,
         totalPages: Int = 0,
         currentPage: Int = 0,
+        epubChapterIndex: Int? = nil,
+        epubPageInChapter: Int? = nil,
         chapters: [Chapter] = [],
         sessions: [ReadingSession] = [],
         activeSessionID: UUID? = nil,
@@ -183,6 +189,8 @@ struct Book: Identifiable, Codable, Hashable {
         self.fileType = fileType
         self.totalPages = totalPages
         self.currentPage = currentPage
+        self.epubChapterIndex = epubChapterIndex
+        self.epubPageInChapter = epubPageInChapter
         self.chapters = chapters
         self.sessions = sessions
         self.activeSessionID = activeSessionID
@@ -205,7 +213,8 @@ struct Book: Identifiable, Codable, Hashable {
 
     private enum CodingKeys: String, CodingKey {
         case id, title, author, fileURL, fileType
-        case totalPages, currentPage, chapters, sessions, activeSessionID
+        case totalPages, currentPage, epubChapterIndex, epubPageInChapter
+        case chapters, sessions, activeSessionID
         case isCompleted, dateAdded, coverImageData, difficultyProfile, bookmarkData
         case genre, notes, deadlineID, wordCountEstimate, cachedSecondsPerPage, series, isFavorite, collectionIDs
     }
@@ -225,6 +234,8 @@ struct Book: Identifiable, Codable, Hashable {
         fileType = try c.decode(BookFileType.self, forKey: .fileType)
         totalPages = try c.decodeIfPresent(Int.self, forKey: .totalPages) ?? 0
         currentPage = try c.decodeIfPresent(Int.self, forKey: .currentPage) ?? 0
+        epubChapterIndex = try c.decodeIfPresent(Int.self, forKey: .epubChapterIndex)
+        epubPageInChapter = try c.decodeIfPresent(Int.self, forKey: .epubPageInChapter)
         chapters = try c.decodeIfPresent([Chapter].self, forKey: .chapters) ?? []
         sessions = try c.decodeIfPresent([ReadingSession].self, forKey: .sessions) ?? []
         activeSessionID = try c.decodeIfPresent(UUID.self, forKey: .activeSessionID)

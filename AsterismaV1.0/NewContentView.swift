@@ -613,7 +613,7 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .background(WindowChromeConfigurator())
-        .background(WindowToolbarVisibility(visible: !readerPath.isEmpty))
+        .background(WindowToolbarVisibility(visible: false))
         .background(KeyNavigationConfigurator(isEnabled: readerPath.isEmpty, onCommand: handleKeyCommand))
         .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
         .environmentObject(environmentEngine) // Phase 2: downstream consumers read the same instance

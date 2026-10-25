@@ -21,9 +21,13 @@ import WebKit
 struct EPUBReaderScreen: View {
     let book: Book
     @ObservedObject var coordinator: SessionCoordinator
+    @EnvironmentObject private var dataStore: DataStore
+    @Environment(\.dismiss) private var dismiss
 
     @State private var package: EPUBPackage?
     @State private var currentChapterIndex: Int = 0
+    @State private var pageInChapter: Int = 0
+    @State private var pagesInChapter: Int = 1
     @State private var errorMessage: String?
     @State private var isLoading = true
     @State private var showingChapterList = false
@@ -69,11 +73,14 @@ struct EPUBReaderScreen: View {
                 // time on books that never opened.
                 guard !Task.isCancelled else { return }
                 if errorMessage == nil, package != nil {
-                    coordinator.startReading(bookID: book.id, page: coordinator.currentPage)
+                    coordinator.startReading(bookID: book.id, page: book.currentPage)
+                    updatePositionLabel()
                 }
             }
         }
         .onDisappear {
+            persistPosition()
+            dataStore.saveImmediately()
             openTask?.cancel()
             openTask = nil
             package?.close()
@@ -96,7 +103,12 @@ struct EPUBReaderScreen: View {
                 return
             }
 
-            let startIndex = startingChapterIndex(in: opened, resumingFrom: coordinator.currentPage)
+            let fallbackIndex = startingChapterIndex(in: opened, resumingFrom: book.currentPage)
+            let startIndex = min(
+                max(0, book.epubChapterIndex ?? fallbackIndex),
+                max(0, opened.chapterCount - 1)
+            )
+            let startPage = max(0, book.epubPageInChapter ?? 0)
 
             await MainActor.run {
                 guard !Task.isCancelled else {
@@ -105,6 +117,7 @@ struct EPUBReaderScreen: View {
                 }
                 self.package = opened
                 self.currentChapterIndex = startIndex
+                self.pageInChapter = startPage
                 self.isLoading = false
             }
             logger.info("EPUB package opened with \(opened.chapterCount, privacy: .public) chapters, resuming at chapter \(startIndex, privacy: .public)")
@@ -148,17 +161,80 @@ struct EPUBReaderScreen: View {
         guard let package, package.chapterCount > 0 else { return }
         let clamped = max(0, min(index, package.chapterCount - 1))
         currentChapterIndex = clamped
-
-        // book.chapters may not have an entry for every spine index (see
-        // startingChapterIndex above) — only update the tracked reading
-        // position when there's a real page number to report.
-        if book.chapters.indices.contains(clamped) {
-            coordinator.turnToPage(book.chapters[clamped].startPage)
-        }
+        pageInChapter = 0
+        pagesInChapter = 1
+        persistPosition()
+        coordinator.turnToPage(globalPage)
+        updatePositionLabel()
     }
 
     private func chapterTitle(at index: Int) -> String {
         book.chapters.indices.contains(index) ? book.chapters[index].title : "Chapter \(index + 1)"
+    }
+
+    private var globalPage: Int {
+        guard book.chapters.indices.contains(currentChapterIndex) else {
+            return max(0, pageInChapter)
+        }
+        let chapter = book.chapters[currentChapterIndex]
+        return min(max(chapter.startPage + pageInChapter, chapter.startPage), chapter.endPage)
+    }
+
+    private func updatePositionLabel() {
+        let chapters = max(book.chapters.count, 1)
+        coordinator.updatePositionLabel(
+            "Ch \(currentChapterIndex + 1)/\(chapters) · \(pageInChapter + 1)/\(max(pagesInChapter, 1))"
+        )
+    }
+
+    private func persistPosition() {
+        guard var current = dataStore.book(id: book.id) else { return }
+        current.epubChapterIndex = currentChapterIndex
+        current.epubPageInChapter = pageInChapter
+        current.currentPage = globalPage
+        dataStore.updateBook(current)
+    }
+
+    private func handleReaderKey(_ command: KeyNavigationCommand) -> Bool {
+        switch command {
+        case .left, .up:
+            turnPage(-1)
+            return true
+        case .right, .down:
+            turnPage(1)
+            return true
+        case .escape:
+            dismiss()
+            return true
+        case .returnKey:
+            return false
+        }
+    }
+
+    private func turnPage(_ delta: Int) {
+        if delta < 0 {
+            if pageInChapter > 0 {
+                pageInChapter -= 1
+            } else if canGoToPreviousChapter {
+                goToChapter(currentChapterIndex - 1)
+                return
+            } else {
+                return
+            }
+        } else {
+            if pageInChapter + 1 < pagesInChapter {
+                pageInChapter += 1
+            } else if canGoToNextChapter {
+                goToChapter(currentChapterIndex + 1)
+                return
+            } else {
+                return
+            }
+        }
+
+        persistPosition()
+        coordinator.turnToPage(globalPage)
+        updatePositionLabel()
     }
 
     // MARK: - Content Views
@@ -191,17 +267,116 @@ struct EPUBReaderScreen: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
+    /// Compact floating controls replace the native reader toolbar, so there
+    /// is no full-width gray strip in fullscreen.
+    private var readerTopControls: some View {
+        HStack(spacing: 12) {
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "chevron.left")
+            }
+            .help("Back to Library")
+
+            Button {
+                showingChapterList = true
+            } label: {
+                Text(chapterTitle(at: currentChapterIndex))
+                    .lineLimit(1)
+                    .frame(maxWidth: 260, alignment: .leading)
+            }
+            .popover(isPresented: $showingChapterList) {
+                chapterListPopover
+            }
+
+            if rsvpEnabled {
+                Button {
+                    loadRSVPText()
+                } label: {
+                    Image(systemName: "hare")
+                }
+                .help("Speed-read this chapter (RSVP)")
+                .disabled(package == nil)
+            }
+
+            Button {
+                showingInfo = true
+            } label: {
+                Image(systemName: "info.circle")
+            }
+            .popover(isPresented: $showingInfo) {
+                metadataSection
+                    .padding()
+                    .frame(minWidth: 260)
+            }
+        }
+        .font(.system(size: 13, weight: .semibold))
+        .foregroundStyle(.white.opacity(0.92))
+        .buttonStyle(.plain)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 9)
+        .background(Color.black.opacity(0.55), in: Capsule())
+        .padding(14)
+    }
+
+    private var readerPageControls: some View {
+        HStack(spacing: 14) {
+            Button {
+                turnPage(-1)
+            } label: {
+                Image(systemName: "chevron.left")
+            }
+            .disabled(pageInChapter == 0 && !canGoToPreviousChapter)
+
+            Text("\(pageInChapter + 1) / \(max(pagesInChapter, 1))")
+                .monospacedDigit()
+                .frame(minWidth: 62)
+
+            Button {
+                turnPage(1)
+            } label: {
+                Image(systemName: "chevron.right")
+            }
+            .disabled(pageInChapter + 1 >= pagesInChapter && !canGoToNextChapter)
+        }
+        .font(.system(size: 13, weight: .semibold))
+        .foregroundStyle(.white.opacity(0.92))
+        .buttonStyle(.plain)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(Color.black.opacity(0.55), in: Capsule())
+        .padding(.bottom, 16)
+    }
+
     private var contentView: some View {
         Group {
             if let package, let url = package.fileURL(forChapterAt: currentChapterIndex) {
                 EPUBChapterWebView(
                     fileURL: url,
                     allowedReadRoot: package.allowedReadRoot,
+                    startPage: pageInChapter,
+                    targetPage: pageInChapter,
                     onExternalLink: { url in
                         NSWorkspace.shared.open(url)
                     },
                     onLoadError: { message in
                         logger.error("Chapter failed to render: \(message)")
+                    },
+                    onPageCount: { pages in
+                        pagesInChapter = max(1, pages)
+                        if pageInChapter >= pagesInChapter {
+                            pageInChapter = pagesInChapter - 1
+                        }
+                        if book.chapters.indices.contains(currentChapterIndex) {
+                            coordinator.turnToPage(globalPage)
+                        }
+                        updatePositionLabel()
+                    },
+                    onPageChanged: { page in
+                        pageInChapter = max(0, page)
+                        persistPosition()
+                        coordinator.turnToPage(globalPage)
+                        updatePositionLabel()
                     }
                 )
             } else {
@@ -277,6 +452,9 @@ struct EPUBReaderScreen: View {
         .sheet(isPresented: $showingMirageAnalysis) {
             MirageAnalysisSheet(book: book)
         }
+        .background(KeyNavigationConfigurator(isEnabled: true, onCommand: handleReaderKey))
+        .overlay(alignment: .topLeading) { readerTopControls }
+        .overlay(alignment: .bottom) { readerPageControls }
     }
 
     /// Extracts plain text from the current chapter for RSVP streaming.
@@ -353,48 +531,128 @@ struct EPUBReaderScreen: View {
 private struct EPUBChapterWebView: NSViewRepresentable {
     let fileURL: URL
     let allowedReadRoot: URL
+    let startPage: Int
+    let targetPage: Int
     let onExternalLink: (URL) -> Void
     let onLoadError: (String) -> Void
+    let onPageCount: (Int) -> Void
+    let onPageChanged: (Int) -> Void
 
     func makeNSView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
-        // Chapter content is untrusted-ish book content, not app UI — it
-        // never needs to execute script.
-        configuration.defaultWebpagePreferences.allowsContentJavaScript = false
+        // Pagination requires a tiny amount of injected JavaScript. Book
+        // content itself still cannot be trusted with app privileges.
+        configuration.defaultWebpagePreferences.allowsContentJavaScript = true
+        configuration.userContentController.add(context.coordinator, name: "epubPage")
+        configuration.userContentController.addUserScript(
+            WKUserScript(
+                source: "window.__epubInitialPage = \(startPage);",
+                injectionTime: .atDocumentStart,
+                forMainFrameOnly: true
+            )
+        )
+        configuration.userContentController.addUserScript(
+            WKUserScript(
+                source: Self.paginationScript,
+                injectionTime: .atDocumentEnd,
+                forMainFrameOnly: true
+            )
+        )
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
+        webView.underPageBackgroundColor = .clear
 
-        webView.loadFileURL(fileURL, allowingReadAccessTo: allowedReadRoot)
+        context.coordinator.webView = webView
+        context.coordinator.targetPage = startPage
         context.coordinator.currentlyLoadedURL = fileURL
+        webView.loadFileURL(fileURL, allowingReadAccessTo: allowedReadRoot)
         return webView
     }
 
     func updateNSView(_ webView: WKWebView, context: Context) {
-        guard context.coordinator.currentlyLoadedURL != fileURL else { return }
-        context.coordinator.currentlyLoadedURL = fileURL
-        webView.loadFileURL(fileURL, allowingReadAccessTo: allowedReadRoot)
+        context.coordinator.webView = webView
+        context.coordinator.onExternalLink = onExternalLink
+        context.coordinator.onLoadError = onLoadError
+        context.coordinator.onPageCount = onPageCount
+        context.coordinator.onPageChanged = onPageChanged
+
+        if context.coordinator.currentlyLoadedURL != fileURL {
+            context.coordinator.currentlyLoadedURL = fileURL
+            context.coordinator.targetPage = startPage
+            context.coordinator.ready = false
+            webView.loadFileURL(fileURL, allowingReadAccessTo: allowedReadRoot)
+            return
+        }
+
+        if context.coordinator.targetPage != targetPage {
+            context.coordinator.go(to: targetPage)
+        }
+    }
+
+    static func dismantleNSView(_ nsView: WKWebView, coordinator: Coordinator) {
+        nsView.configuration.userContentController.removeScriptMessageHandler(
+            forName: "epubPage")
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(onExternalLink: onExternalLink, onLoadError: onLoadError)
+        Coordinator(
+            startPage: startPage,
+            onExternalLink: onExternalLink,
+            onLoadError: onLoadError,
+            onPageCount: onPageCount,
+            onPageChanged: onPageChanged
+        )
     }
 
-    final class Coordinator: NSObject, WKNavigationDelegate {
+    final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
+        var targetPage: Int
         var currentlyLoadedURL: URL?
-        let onExternalLink: (URL) -> Void
-        let onLoadError: (String) -> Void
+        weak var webView: WKWebView?
+        var ready = false
+        var onExternalLink: (URL) -> Void
+        var onLoadError: (String) -> Void
+        var onPageCount: (Int) -> Void
+        var onPageChanged: (Int) -> Void
 
-        init(onExternalLink: @escaping (URL) -> Void, onLoadError: @escaping (String) -> Void) {
+        init(
+            startPage: Int,
+            onExternalLink: @escaping (URL) -> Void,
+            onLoadError: @escaping (String) -> Void,
+            onPageCount: @escaping (Int) -> Void,
+            onPageChanged: @escaping (Int) -> Void
+        ) {
+            targetPage = startPage
             self.onExternalLink = onExternalLink
             self.onLoadError = onLoadError
+            self.onPageCount = onPageCount
+            self.onPageChanged = onPageChanged
         }
 
-        /// Local file loads (the chapter itself, and its relative
-        /// resources) are always allowed. A user clicking an actual link
-        /// inside the chapter (e.g. a footnote pointing at a web URL) is
-        /// handed to the system browser instead of navigating the reader
-        /// away from the book.
+        func go(to page: Int) {
+            targetPage = page
+            guard ready, let webView else { return }
+            // The script clamps to the real page count after layout.
+            webView.evaluateJavaScript(
+                "window.__epubGoToPage && window.__epubGoToPage(\(page))"
+            )
+        }
+
+        func userContentController(
+            _ userContentController: WKUserContentController,
+            didReceive message: WKScriptMessage
+        ) {
+            guard message.name == "epubPage",
+                  let body = message.body as? [String: Any],
+                  let pages = body["pages"] as? Int,
+                  let page = body["page"] as? Int
+            else { return }
+            DispatchQueue.main.async {
+                self.onPageCount(max(1, pages))
+                self.onPageChanged(max(0, page))
+            }
+        }
+
         func webView(
             _: WKWebView,
             decidePolicyFor navigationAction: WKNavigationAction,
@@ -410,6 +668,15 @@ private struct EPUBChapterWebView: NSViewRepresentable {
             decisionHandler(.allow)
         }
 
+        func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
+            ready = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                webView.evaluateJavaScript(
+                    "window.__epubGoToPage && window.__epubGoToPage(\(self.targetPage))"
+                )
+            }
+        }
+
         func webView(_: WKWebView, didFailProvisionalNavigation _: WKNavigation!, withError error: Error) {
             onLoadError(error.localizedDescription)
         }
@@ -418,4 +685,80 @@ private struct EPUBChapterWebView: NSViewRepresentable {
             onLoadError(error.localizedDescription)
         }
     }
+
+    private static let paginationScript = """
+    (function() {
+      function post(pages, page) {
+        if (window.webkit && window.webkit.messageHandlers.epubPage) {
+          window.webkit.messageHandlers.epubPage.postMessage({pages: pages, page: page});
+        }
+      }
+      function build() {
+        if (window.__epubPaginationReady) return;
+        window.__epubPaginationReady = true;
+
+        var body = document.body;
+        if (!body) return;
+        var wrapper = document.createElement('div');
+        wrapper.id = '__epub_paginator';
+        while (body.firstChild) wrapper.appendChild(body.firstChild);
+        body.appendChild(wrapper);
+
+        var style = document.createElement('style');
+        style.textContent = [
+          'html, body { margin:0 !important; padding:0 !important; height:100% !important; overflow:hidden !important; }',
+          '#__epub_paginator { height:100vh; box-sizing:border-box; padding:34px 46px; overflow-x:auto; overflow-y:hidden; column-fill:auto; }',
+          '#__epub_paginator::-webkit-scrollbar { display:none; }',
+          'img, svg { max-width:100%; height:auto; }'
+        ].join('\n');
+        document.head.appendChild(style);
+
+        var gap = 44;
+        var pad = 46;
+        function metrics() {
+          var w = window.innerWidth;
+          var h = window.innerHeight;
+          var spread = w >= 1000 ? 2 : 1;
+          var col = Math.max(180, (w - pad * 2 - gap * (spread - 1)) / spread);
+          wrapper.style.columnWidth = col + 'px';
+          wrapper.style.columnGap = gap + 'px';
+          wrapper.style.height = h + 'px';
+          var cols = Math.max(1, Math.round((wrapper.scrollWidth - pad * 2 + gap) / (col + gap)));
+          var pages = Math.max(1, Math.ceil(cols / spread));
+          return {pages: pages, spread: spread};
+        }
+        function go(page) {
+          var m = metrics();
+          page = Math.max(0, Math.min(page | 0, m.pages - 1));
+          wrapper.scrollLeft = page * window.innerWidth;
+          post(m.pages, page);
+        }
+        var currentPage = (window.__epubInitialPage || 0) | 0;
+        wrapper.addEventListener('scroll', function() {
+          var m = metrics();
+          var p = Math.round(wrapper.scrollLeft / window.innerWidth);
+          if (p !== currentPage) {
+            currentPage = p;
+            post(m.pages, p);
+          }
+        });
+        window.addEventListener('resize', function() {
+          setTimeout(function() {
+            var m = metrics();
+            currentPage = Math.min(currentPage, m.pages - 1);
+            go(currentPage);
+          }, 60);
+        });
+        window.__epubGoToPage = go;
+        setTimeout(function() {
+          var m = metrics();
+          currentPage = Math.min(currentPage, m.pages - 1);
+          go(currentPage);
+        }, 120);
+        setTimeout(function() { go(currentPage); }, 600);
+      }
+      if (document.readyState === 'complete') build();
+      else window.addEventListener('load', build);
+    })();
+    """
 }

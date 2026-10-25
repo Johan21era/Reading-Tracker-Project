@@ -26,6 +26,10 @@ final class SessionCoordinator: ObservableObject {
     /// and restoreSession — all inside this coordinator.
     @Published private(set) var currentPage: Int = 0
 
+    /// Human-readable position for the HUD. EPUB sets chapter/page-in-chapter;
+    /// PDF leaves it empty and the HUD falls back to its page counter.
+    @Published private(set) var positionLabel: String = ""
+
     @Published private(set) var elapsedTime: TimeInterval = 0
 
     // MARK: - Private
@@ -84,6 +88,7 @@ final class SessionCoordinator: ObservableObject {
         dataStore?.startSession(bookID: bookID, onPage: page)
         activeBookID = bookID
         currentPage = page
+        positionLabel = ""
         sessionStartDate = Date()
 
         if let book = dataStore?.book(id: bookID),
@@ -103,6 +108,10 @@ final class SessionCoordinator: ObservableObject {
         guard let bookID = activeBookID, page != currentPage else { return }
         dataStore?.recordPageTurn(bookID: bookID, newPage: page)
         currentPage = page
+    }
+
+    func updatePositionLabel(_ label: String) {
+        positionLabel = label
     }
 
     func endCurrentSession() {
@@ -127,6 +136,8 @@ final class SessionCoordinator: ObservableObject {
         if activeBookID == bookID {
             activeBookID = nil
             activeSessionID = nil
+            currentPage = 0
+            positionLabel = ""
             stopElapsedTimer()
         }
     }

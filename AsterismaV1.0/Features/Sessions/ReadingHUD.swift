@@ -40,7 +40,11 @@ struct ReadingHUD: View {
                     HStack(spacing: 6) {
                         Label(formatElapsed(coordinator.elapsedTime), systemImage: "clock")
                         Text("·")
-                        Label("\(coordinator.currentPage + 1)/\(max(book.totalPages, 1))", systemImage: "book.pages")
+                        if coordinator.positionLabel.isEmpty {
+                            Label("\(coordinator.currentPage + 1)/\(max(book.totalPages, 1))", systemImage: "book.pages")
+                        } else {
+                            Label(coordinator.positionLabel, systemImage: "book.pages")
+                        }
                     }
                     .font(.caption2)
                     .foregroundStyle(.secondary)

@@ -4,7 +4,7 @@
 **Scope:** main window, sidebar, search, toolbar, detail canvas
 **Platform:** macOS 26.5, SwiftUI/AppKit (native — no WebView, HTML, or CSS)
 **Candidate:** `a058c49` / tag `asterisma-v1.0-arrow-nav`
-**Package:** SHA-256 `ade4a54e3cbe233e14b809c32988422f4ace4aed7e9c855a9bcb269d20f58a96`
+**Package:** SHA-256 `b889c800347c523d927a1a5d38556cf55953511fceb9b5e3424940239c336663`
 
 ---
 
