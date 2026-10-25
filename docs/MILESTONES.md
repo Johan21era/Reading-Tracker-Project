@@ -58,3 +58,42 @@ and repeatable.
 Keep reading. Use **More (…) → Erase Library & Data…** between test sessions
 when a clean slate is useful, and keep recording owner results as the truth of
 record.
+
+---
+
+## 002 — RSVP speed reader survived deliberate abuse
+
+**Date and time:** 2026-10-25 00:17:54 EDT (−0400)
+**Recorded by:** the engineering session, immediately after the owner’s report
+**Build:** `dist/AsterismaV1.0-1.0-arm64.zip`
+**SHA-256:** `c77b61af98a6b193f17882bc4abd72119b67b6a232473aa67490e149dcdad649`
+
+### What happened
+
+The owner deliberately tried to break the RSVP speed-reader feature:
+
+- violently dragged its sliders,
+- pushed its buttons in rapid succession,
+- changed settings mid-flow.
+
+It stayed responsive. No crash, freeze, “beachball,” or visual crack. The owner
+described it as “unusually crisp.”
+
+The live store after the session: **1 book / 4 sessions / 50 page timings**.
+
+### Why it matters
+
+The RSVP surface is a high-frequency interaction surface: rapid slider changes
+and button presses can expose re-entrancy, timer, layout, or cancellation bugs
+that ordinary reading never touches. It held up under deliberate abuse.
+
+### Future polish (not a defect in this milestone)
+
+- Make the RSVP typography designable.
+- Consider honoring the EPUB’s chosen font rather than using a fixed reader
+  font.
+
+### Scope note
+
+This milestone covers RSVP stability only. It does not claim that the EPUB
+pagination/page-count issues reported in the same session are resolved.

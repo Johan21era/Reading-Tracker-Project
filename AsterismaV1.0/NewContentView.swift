@@ -162,26 +162,41 @@ struct ContentView: View {
                 .padding(.horizontal, 12)
                 .padding(.bottom, 8)
 
-            List(selection: $selectedBookID) {
-                ForEach(visibleBooks) { book in
-                    ContentBookRowView(book: book)
-                        .tag(book.id)
-                        .contentShape(Rectangle())
-                        .listRowSeparator(.hidden)
-                        .contextMenu {
-                            Button("Get Info…") { detailsBook = book }
-                            Button(book.isFavorite ? "Remove Favorite" : "Mark Favorite") {
-                                var updated = book
-                                updated.isFavorite.toggle()
-                                dataStore.updateBook(updated)
+            ScrollViewReader { proxy in
+                List {
+                    ForEach(visibleBooks) { book in
+                        ContentBookRowView(book: book)
+                            .id(book.id)
+                            .contentShape(Rectangle())
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(
+                                selectedBookID == book.id
+                                    ? Color.white.opacity(0.10)
+                                    : Color.clear
+                            )
+                            .onTapGesture { openBook(book) }
+                            .accessibilityAddTraits(.isButton)
+                            .contextMenu {
+                                Button("Get Info…") { detailsBook = book }
+                                Button(book.isFavorite ? "Remove Favorite" : "Mark Favorite") {
+                                    var updated = book
+                                    updated.isFavorite.toggle()
+                                    dataStore.updateBook(updated)
+                                }
                             }
-                        }
+                    }
+                    .onDelete(perform: deleteVisibleBooks)
                 }
-                .onDelete(perform: deleteVisibleBooks)
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
+                .onChange(of: selectedBookID) { _, id in
+                    guard let id else { return }
+                    withAnimation(.easeOut(duration: 0.12)) {
+                        proxy.scrollTo(id, anchor: .center)
+                    }
+                }
             }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .background(Color.clear)
         }
         .frame(width: sidebarWidth)
         .frame(maxHeight: .infinity, alignment: .top)
@@ -353,6 +368,9 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.clear)
+        .onExitCommand {
+            if !readerPath.isEmpty { readerPath = [] }
+        }
     }
 
     /// Focus ring only when the field is actually focused. Inactive state is a
@@ -412,6 +430,54 @@ struct ContentView: View {
                     }
                     .onEnded { _ in sidebarDragStart = nil }
             )
+    }
+
+    private func openBook(_ book: Book) {
+        selectedBookID = book.id
+        readerPath = [book.id]
+    }
+
+    /// Arrow keys move the sidebar selection; Return opens it. Typing in the
+    /// search field is passed through untouched by KeyNavigationConfigurator.
+    private func handleKeyCommand(_ command: KeyNavigationCommand) -> Bool {
+        guard readerPath.isEmpty else { return false }
+
+        switch command {
+        case .up, .left:
+            moveSelection(-1)
+            return true
+        case .down, .right:
+            moveSelection(1)
+            return true
+        case .returnKey:
+            guard let id = selectedBookID, let book = dataStore.book(id: id) else {
+                return false
+            }
+            openBook(book)
+            return true
+        case .escape:
+            if !searchText.isEmpty {
+                searchText = ""
+                return true
+            }
+            return false
+        }
+    }
+
+    private func moveSelection(_ delta: Int) {
+        let books = visibleBooks
+        guard !books.isEmpty else { return }
+
+        let current = selectedBookID.flatMap { id in
+            books.firstIndex(where: { $0.id == id })
+        }
+        let next: Int
+        if let current {
+            next = min(max(current + delta, 0), books.count - 1)
+        } else {
+            next = delta >= 0 ? 0 : books.count - 1
+        }
+        selectedBookID = books[next].id
     }
 
     private func deleteVisibleBooks(at offsets: IndexSet) {
@@ -548,6 +614,7 @@ struct ContentView: View {
         }
         .background(WindowChromeConfigurator())
         .background(WindowToolbarVisibility(visible: !readerPath.isEmpty))
+        .background(KeyNavigationConfigurator(isEnabled: readerPath.isEmpty, onCommand: handleKeyCommand))
         .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
         .environmentObject(environmentEngine) // Phase 2: downstream consumers read the same instance
         // P5 Feature 5: first-run wizard when library is empty and never dismissed.
@@ -569,17 +636,6 @@ struct ContentView: View {
             Task { @MainActor in
                 try? await Task.sleep(for: .milliseconds(250))
                 searchFocused = false
-            }
-        }
-        .onChange(of: selectedBookID) { _, id in
-            guard let id, let book = dataStore.book(id: id) else { return }
-            if readerPath != [book.id] {
-                readerPath = [book.id]
-            }
-        }
-        .onChange(of: readerPath) { _, path in
-            if path.isEmpty, selectedBookID != nil {
-                selectedBookID = nil
             }
         }
         .sheet(isPresented: $showOnboarding, onDismiss: { onboardingDismissed = true }) {

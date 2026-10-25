@@ -71,3 +71,86 @@ struct WindowToolbarVisibility: NSViewRepresentable {
         }
     }
 }
+
+// MARK: - Arrow-key navigation
+
+enum KeyNavigationCommand {
+    case up, down, left, right, returnKey, escape
+}
+
+/// Local key monitor for the library surface. It intentionally does nothing
+/// while a text field is first responder or a sheet is open, so typing and
+/// modal dialogs keep their native behavior.
+struct KeyNavigationConfigurator: NSViewRepresentable {
+    let isEnabled: Bool
+    let onCommand: (KeyNavigationCommand) -> Bool
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        context.coordinator.view = view
+        context.coordinator.isEnabled = isEnabled
+        context.coordinator.onCommand = onCommand
+        context.coordinator.install()
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        context.coordinator.view = nsView
+        context.coordinator.isEnabled = isEnabled
+        context.coordinator.onCommand = onCommand
+    }
+
+    static func dismantleNSView(_ nsView: NSView, coordinator: Coordinator) {
+        coordinator.remove()
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    final class Coordinator {
+        weak var view: NSView?
+        var isEnabled = true
+        var onCommand: ((KeyNavigationCommand) -> Bool)?
+        private var monitor: Any?
+
+        func install() {
+            guard monitor == nil else { return }
+            monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+                guard let self,
+                      self.isEnabled,
+                      let window = self.view?.window,
+                      window.isKeyWindow,
+                      window.attachedSheet == nil
+                else { return event }
+
+                // Let the search field and any other text editor win.
+                if window.firstResponder is NSTextView { return event }
+
+                let disallowed: NSEvent.ModifierFlags = [.command, .control, .option]
+                guard event.modifierFlags.intersection(disallowed).isEmpty else { return event }
+
+                let command: KeyNavigationCommand?
+                switch event.keyCode {
+                case 126: command = .up
+                case 125: command = .down
+                case 123: command = .left
+                case 124: command = .right
+                case 36, 76: command = .returnKey
+                case 53: command = .escape
+                default: command = nil
+                }
+
+                guard let command, self.onCommand?(command) == true else { return event }
+                return nil
+            }
+        }
+
+        func remove() {
+            if let monitor {
+                NSEvent.removeMonitor(monitor)
+                self.monitor = nil
+            }
+        }
+
+        deinit { remove() }
+    }
+}
