@@ -292,8 +292,8 @@ timings. The app relaunched successfully from `Application Support/Asterisma/`.
 
 **Release receipt:** `main` at `aba8aa4` (release commit `6da2d81`, tag
 `asterisma-v1.0-mvp`). The owner accepted the reader workflow on the
-`asterisma-v1.0-ux-audit-2` build; the current candidate is `cfeb677` (tag `asterisma-v1.0-ux-audit-3`),
-package `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `298cd18ca6a2f4acd152f2bb7145a3583d4216fd3765a89c10963d4dae233a70`.
+`asterisma-v1.0-ux-audit-2` build; the current candidate is `3bff002` (tag `asterisma-v1.0-polish-1`),
+package `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`.
 
 **Still deferred:** Swift 6 strict mode, reader selection highlights/quotes,
 behavior evidence in SQLite, collection rename UI, legacy artifact cleanup,

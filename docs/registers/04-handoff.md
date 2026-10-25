@@ -73,7 +73,7 @@ The audit-era NEW-DE-1â€¦NEW-DE-8 punch list is **fixed and pinned**; the old â€
 
 ## What should the next person know to start instantly?
 
-**Baseline:** `main` carries the original release merge at `aba8aa4` plus the owner-accepted reader build and auto-hide candidate at `cfeb677` (tag `asterisma-v1.0-ux-audit-3`); census **218 passed / 0 failed / 9 skipped**; release tag `asterisma-v1.0-mvp`; package `dist/AsterismaV1.0-1.0-arm64.zip` with SHA-256 `298cd18ca6a2f4acd152f2bb7145a3583d4216fd3765a89c10963d4dae233a70`. Canonical census numbers come from `xcrun xcresulttool get test-results summary`.
+**Baseline:** `main` carries the original release merge at `aba8aa4` plus the owner-accepted reader build and polish candidate at `3bff002` (tag `asterisma-v1.0-polish-1`); prior census **218 passed / 0 failed / 9 skipped**; new `ReaderAppearanceTests` **5/5**; full rerun blocked by macOS UI-test automation bootstrap; release tag `asterisma-v1.0-mvp`; package `dist/AsterismaV1.0-1.0-arm64.zip` with SHA-256 `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`. Canonical census numbers come from `xcrun xcresulttool get test-results summary`.
 
 > **Owner-test authority:** the owner's personal test results are the absolute source of truth and override every benchmark, census, gate receipt, and documentation claim. See `docs/12-owner-test-authority.md`; record sessions in `docs/owner-test-results/`.
 

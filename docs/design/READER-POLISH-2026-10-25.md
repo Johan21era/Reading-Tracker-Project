@@ -1,7 +1,8 @@
 # Reader & Library Polish — 2026-10-25
 
 **Status:** Phase 1 implemented; owner retest pending
-**Build:** current working tree after the reader appearance batch
+**Build:** `3bff002` · tag `asterisma-v1.0-polish-1`
+**Package:** `dist/AsterismaV1.0-1.0-arm64.zip` · SHA-256 `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`
 **Benchmark:** Apple Books on macOS, plus Apple's public Books user guide
 
 ## What Apple Books exposes
