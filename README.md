@@ -4,7 +4,7 @@
 
 > **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. Standing census: **215 passed / 0 failed / 9 skipped**. The full gate record lives in `docs/plans/bedrock/`.
 
-> **Release status (2026-10-24):** `AsterismaV1.0` was merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`) and pushed to GitHub. Owner-test and seamless-UI fixes are on top at `bde2652` (tag `asterisma-v1.0-ui-seamless-2`). Release package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `05e66283bffafea70844c4537406f7a2e1c348ad4e5ce4206387fbdc4588135d`. It is ad-hoc signed, not notarized; first launch requires right-click → Open.
+> **Release status (2026-10-24):** `AsterismaV1.0` was merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`) and pushed to GitHub. Owner-test and seamless-UI fixes are on top at `9a0cc76` (tag `asterisma-v1.0-test-reset`). Release package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `05e66283bffafea70844c4537406f7a2e1c348ad4e5ce4206387fbdc4588135d`. It is ad-hoc signed, not notarized; first launch requires right-click → Open.
 
 > **Owner-test authority (2026-10-24):** results from Johan's personal testing are the **absolute source of truth** and override all previous benchmarks, censuses, gate receipts, and documentation claims. See `docs/12-owner-test-authority.md`; sessions are recorded in `docs/owner-test-results/` and pinned by tag `owner-test-authority-2026-10-24`.
 
@@ -135,7 +135,7 @@ Checked directly against the merged `main` worktree on 2026-10-24 — not inheri
 - ✅ Rebrand verified live: app/product/display name **AsterismaV1.0**, Swift module `AsterismaV1_0`, and data root migrated to `Application Support/Asterisma/`.
 - ✅ Live library intact after the data-root migration: **7 books / 292 sessions / 138,459 page timings**.
 - ✅ Release package built, ad-hoc signed, `codesign --verify --deep --strict` passes, and the packaged-app launch smoke passes.
-- ✅ `main` contains the release merge at `aba8aa4` plus owner-test/UI fixes at `bde2652`; all release, owner-test, and Bedrock tags are pushed. The working tree is clean except the untracked `.obsidian/` vault config.
+- ✅ `main` contains the release merge at `aba8aa4` plus owner-test/UI fixes at `9a0cc76`; all release, owner-test, and Bedrock tags are pushed. The working tree is clean except the untracked `.obsidian/` vault config.
 - 👑 **Owner-test authority:** the owner's personal test results outrank every item above. See `docs/12-owner-test-authority.md`.
 
 ---
