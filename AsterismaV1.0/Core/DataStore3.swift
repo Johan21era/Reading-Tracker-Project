@@ -336,6 +336,63 @@ final class DataStore: ObservableObject {
         database = nil
     }
 
+    /// Owner testing: erase the complete app-owned data root and start with a
+    /// fresh, empty store. App preferences and window layout are not touched.
+    ///
+    /// The root contains the SQLite library, JSON artifacts, covers, backups,
+    /// weather/audio/behavior records, Sentinel journals, and Mirage's stratum.
+    /// Deleting it is the cleanest possible reset; all in-memory caches and
+    /// publishers are reset here so the UI cannot show stale objects.
+    func eraseAllUserData() throws {
+        saveTimer?.invalidate()
+        saveTimer = nil
+        pendingWrite = nil
+
+        if storageEngine == .sqlite, let database {
+            // Drain queued writes before closing the pool.
+            dbWriteQueue.sync { try? database.close() }
+            self.database = nil
+        } else {
+            PersistenceWriter.shared.drainSync()
+        }
+
+        let root = fileURL.deletingLastPathComponent()
+        let fm = FileManager.default
+        if fm.fileExists(atPath: root.path) {
+            try fm.removeItem(at: root)
+        }
+        try fm.createDirectory(at: root, withIntermediateDirectories: true)
+
+        books = []
+        libraryState = LibraryState()
+        newlyEarnedAchievements = []
+        persistenceHealth = .healthy
+        bumpEpoch()
+        AnalyticsCache.shared.invalidate()
+        URLCache.shared.removeAllCachedResponses()
+
+        if storageEngine == .sqlite {
+            let dbURL = root.appendingPathComponent("library.grdb.sqlite3")
+            do {
+                let fresh = try LibraryDatabase(url: dbURL)
+                database = fresh
+                try fresh.saveAll(books: [], state: LibraryState())
+            } catch {
+                database = nil
+                storageEngine = .json
+                persistenceHealth = .degraded(
+                    "Data was erased, but the fresh SQLite store could not be created: \(error.localizedDescription)")
+            }
+        }
+
+        if storageEngine == .json {
+            saveImmediately()
+        }
+
+        CoverStore.active.removeAll()
+        audioProfileStore.removeAll()
+    }
+
     func booksForArchive() -> [Book] {
         guard storageEngine == .sqlite, let database else { return books }
         return books.map { book in

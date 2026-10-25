@@ -87,6 +87,13 @@ public final class BehaviorContextEngine: ObservableObject {
 
     // MARK: Public API
 
+    /// Full erase support: drop the published reports when the underlying
+    /// evidence/session store is intentionally wiped.
+    public func reset() {
+        summary = nil
+        intelligenceReport = nil
+    }
+
     public func analyze(
         sessions: [ReadingSessionRecord],
         evidence: [BehaviorEvidence],

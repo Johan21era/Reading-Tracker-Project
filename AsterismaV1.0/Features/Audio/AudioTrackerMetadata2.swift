@@ -118,6 +118,12 @@ public final class AudioProfileStore {
             print("[AudioProfileStore] Save error at \(fileURL.path): \(error)")
         }
     }
+
+    /// Full erase: drops the in-memory cache and the on-disk profile file.
+    func removeAll() {
+        cache = []
+        try? FileManager.default.removeItem(at: fileURL)
+    }
 }
 
 // MARK: - AudioMonitorService

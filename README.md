@@ -2,9 +2,9 @@
 
 > **TL;DR** — AsterismaV1.0 is a macOS reading-tracker app written entirely in Swift/SwiftUI. You import your PDF and EPUB books, read them inside the app, and it quietly records everything: per-page reading speed, time of day, live weather, and the app you were using just before opening the book. As of the October 2026 merge campaign, it also carries **Mirage** — a separately-owned companion engine for EPUB analysis, integrated behind a typed one-way boundary.
 
-> **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. Standing census: **213 passed / 0 failed / 9 skipped**. The full gate record lives in `docs/plans/bedrock/`.
+> **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. Standing census: **215 passed / 0 failed / 9 skipped**. The full gate record lives in `docs/plans/bedrock/`.
 
-> **Release status (2026-10-24):** `AsterismaV1.0` was merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`) and pushed to GitHub. Owner-test and seamless-UI fixes are on top at `bde2652` (tag `asterisma-v1.0-ui-seamless-2`). Release package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `4f157434a0c5e67e1051bd1e7507d5db95fbddc41ee6c0a7b3934c885e9e040c`. It is ad-hoc signed, not notarized; first launch requires right-click → Open.
+> **Release status (2026-10-24):** `AsterismaV1.0` was merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`) and pushed to GitHub. Owner-test and seamless-UI fixes are on top at `bde2652` (tag `asterisma-v1.0-ui-seamless-2`). Release package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `05e66283bffafea70844c4537406f7a2e1c348ad4e5ce4206387fbdc4588135d`. It is ad-hoc signed, not notarized; first launch requires right-click → Open.
 
 > **Owner-test authority (2026-10-24):** results from Johan's personal testing are the **absolute source of truth** and override all previous benchmarks, censuses, gate receipts, and documentation claims. See `docs/12-owner-test-authority.md`; sessions are recorded in `docs/owner-test-results/` and pinned by tag `owner-test-authority-2026-10-24`.
 
@@ -51,7 +51,7 @@ There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for st
 | **Build config** | `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, `SWIFT_APPROACHABLE_CONCURRENCY = YES`, deployment target macOS 26.5, Xcode 27.1 |
 | **Dependencies** | Exactly one Swift dependency: ZIPFoundation 0.9.20 (SPM, pinned via `Package.resolved` — used for unzipping EPUBs). Mirage ships as a self-contained bundled runtime (its own Python interpreter), not a Swift dependency |
 | **App size** | 119 app files · 43,543 raw LOC (counted directly — not estimated) |
-| **Tests** | 45 test files · 220 `@Test` functions · **standing default census: 213 passed / 0 failed / 9 skipped** (opt-in real-engine, benchmark, and SQLite/live-weather gates) |
+| **Tests** | 46 test files · 222 `@Test` functions · **standing default census: 215 passed / 0 failed / 9 skipped** (opt-in real-engine, benchmark, and SQLite/live-weather gates) |
 | **How it is tested** | Swift Testing (`@Suite` / `@Test` / `#expect`) — not XCTest |
 | **History** | ~30 working sessions (Jun–Oct 2026), 45+ commits, then the **RT–Mirage merge campaign** (Oct 2026): the 8-PR integration ladder PR-1…PR-8, closed with owner signatures; then the **Bedrock / AsterismaV1.0 release** (2026-10-24) |
 | **Where your data lives** | Sandbox container: `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` (see §3) — plus Mirage's own stratum (§3.5) |
@@ -131,7 +131,7 @@ The full campaign of record — playbook, ADR register (ADR-2…ADR-8, ADR-12), 
 Checked directly against the merged `main` worktree on 2026-10-24 — not inherited from an old note:
 
 - ✅ `xcodebuild build` (Debug and Release, default DerivedData) → **BUILD SUCCEEDED**
-- ✅ Full census on merged `main` → **213 passed / 0 failed / 9 skipped** (222 cases). The 9 skips are deliberate opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo.
+- ✅ Full census on merged `main` → **215 passed / 0 failed / 9 skipped** (224 cases). The 9 skips are deliberate opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo.
 - ✅ Rebrand verified live: app/product/display name **AsterismaV1.0**, Swift module `AsterismaV1_0`, and data root migrated to `Application Support/Asterisma/`.
 - ✅ Live library intact after the data-root migration: **7 books / 292 sessions / 138,459 page timings**.
 - ✅ Release package built, ad-hoc signed, `codesign --verify --deep --strict` passes, and the packaged-app launch smoke passes.
@@ -259,6 +259,14 @@ Release package:
 ```
 
 The package is ad-hoc signed, not notarized. First launch on another Mac requires right-click → Open. See `docs/plans/bedrock/DISTRIBUTION.md`.
+
+### Testing reset
+
+For clean test sessions, open the sidebar **More (…)** menu and choose
+**Erase Library & Data…**. It requires an explicit destructive confirmation and
+wipes the library, reading history, page timings, goals, achievements, notes,
+collections, covers, weather/audio/behavior records, backups, caches, and
+Mirage data. App preferences and window layout are kept.
 
 Builds under Desktop/iCloud paths must use the **default DerivedData** — a custom `-derivedDataPath` there breaks code signing (BUG-003's iCloud stamp root cause; see the defect register).
 

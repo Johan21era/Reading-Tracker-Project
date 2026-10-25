@@ -31,6 +31,7 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import WebKit
 
 // MARK: - Sheet dismissal affordance (LIVE-TEST LT-1/LT-2/LT-4 systemic fix)
 
@@ -111,6 +112,8 @@ struct ContentView: View {
     @State private var sortMode: LibrarySortMode = .dateAddedDesc
     @State private var selectedBookID: Book.ID?
     @State private var readerPath: [Book.ID] = []
+    @State private var showEraseConfirmation = false
+    @State private var eraseNotice: String?
     @State private var sidebarWidth: CGFloat = 260
     @State private var sidebarDragStart: CGFloat?
     @FocusState private var searchFocused: Bool
@@ -297,6 +300,14 @@ struct ContentView: View {
             } label: {
                 Label("Explore", systemImage: "square.grid.2x2")
             }
+
+            Divider()
+
+            Button(role: .destructive) {
+                showEraseConfirmation = true
+            } label: {
+                Label("Erase Library & Data…", systemImage: "trash")
+            }
         } label: {
             Image(systemName: "ellipsis.circle")
                 .font(.system(size: 15, weight: .semibold))
@@ -407,6 +418,41 @@ struct ContentView: View {
         let ids = offsets.map { visibleBooks[$0].id }
         withAnimation {
             ids.forEach { dataStore.removeBook(id: $0) }
+        }
+    }
+
+    /// Destructive test reset. Closes active sessions, erases the whole
+    /// app-owned data root, and resets every in-memory surface that could
+    /// otherwise retain the previous library.
+    private func eraseAllUserData() {
+        sessionCoordinator.endAllActiveSessions()
+        sentinel.stop()
+
+        do {
+            try dataStore.eraseAllUserData()
+            contextEngine.reset()
+            inspectedBook = nil
+            currentEstimation = nil
+            selectedBookID = nil
+            readerPath = []
+            searchText = ""
+            importWarnings = nil
+            importNotice = nil
+            showOnboarding = false
+            sentinelReport = nil
+
+            WKWebsiteDataStore.default().removeData(
+                ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(),
+                modifiedSince: .distantPast,
+                completionHandler: {}
+            )
+            WeatherKitService.shared.resetStore()
+
+            sentinel.start()
+            eraseNotice = "The library and all app-owned data were erased. You are starting from a clean slate."
+        } catch {
+            sentinel.start()
+            importError = "Could not erase all data: \(error.localizedDescription)"
         }
     }
 
@@ -647,6 +693,28 @@ struct ContentView: View {
         .sheet(item: $detailsBook) { book in
             BookDetailsView(bookID: book.id)
                 .environmentObject(dataStore)
+        }
+
+        // ── Destructive testing reset ──────────────────────────────────────
+        .confirmationDialog(
+            "Erase all library data?",
+            isPresented: $showEraseConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Erase Everything", role: .destructive) {
+                eraseAllUserData()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This deletes the library, reading history, page timings, goals, achievements, notes, collections, covers, weather/audio/behavior records, backups, caches, and Mirage data. App preferences and window layout are kept. This cannot be undone.")
+        }
+        .alert("Library Erased", isPresented: Binding(
+            get: { eraseNotice != nil },
+            set: { if !$0 { eraseNotice = nil } }
+        )) {
+            Button("OK") { eraseNotice = nil }
+        } message: {
+            Text(eraseNotice ?? "")
         }
 
         // ── Achievement toast ──────────────────────────────────────────────

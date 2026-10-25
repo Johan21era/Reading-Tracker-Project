@@ -40,7 +40,7 @@ private let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.sel
 public final class WeatherKitService: ObservableObject {
     public static let shared = WeatherKitService()
 
-    private let store: WeatherSnapshotStore
+    private var store: WeatherSnapshotStore
     private let normaliser = WeatherSnapshotNormaliser()
     private let locationProvider: LocationProvider
     private let provider: WeatherProviding
@@ -59,6 +59,13 @@ public final class WeatherKitService: ObservableObject {
         #if DEBUG
         DeveloperConsoleRegistry.shared.register(self)
         #endif
+    }
+
+    /// Testing reset: close the old weather DB handle and reopen a fresh one
+    /// after the app-owned data root has been erased.
+    func resetStore() {
+        store.close()
+        store = WeatherSnapshotStore()
     }
 
     /// Honest availability surface for the weather panel.
@@ -360,7 +367,13 @@ final class WeatherSnapshotStore {
     }
 
     deinit {
+        close()
+    }
+
+    func close() {
+        guard let db else { return }
         sqlite3_close(db)
+        self.db = nil
     }
 
     // MARK: - Write

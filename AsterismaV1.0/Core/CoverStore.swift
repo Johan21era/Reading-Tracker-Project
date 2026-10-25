@@ -137,6 +137,17 @@ final class CoverStore {
         }
     }
 
+    /// Full erase: drops the decoded-image cache and every cover file, then
+    /// leaves an empty covers directory ready for the next library.
+    func removeAll() {
+        queue.sync {
+            cache.removeAllObjects()
+            try? FileManager.default.removeItem(at: directory)
+            try? FileManager.default.createDirectory(
+                at: directory, withIntermediateDirectories: true)
+        }
+    }
+
     /// One-time migration helper: moves embedded payload to disk.
     /// Returns true if a file was written.
     @discardableResult
