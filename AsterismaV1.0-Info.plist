@@ -15,5 +15,19 @@
 	<string>AsterismaV1.0 checks Music and Spotify to remember what you were listening to while you read, so your reading analytics can include your audio environment.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>AsterismaV1.0 uses your approximate location to record the weather conditions during your reading sessions.</string>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>com.apple.ibooks.epub</string>
+			<key>UTTypeDescription</key>
+			<string>iBooks EPUB package</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>com.apple.package</string>
+				<string>public.directory</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

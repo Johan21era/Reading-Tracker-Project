@@ -809,10 +809,7 @@ struct ContentView: View {
         // Folder-form EPUBs are directories/packages on macOS. Allow selecting
         // them; BookImporter validates that the directory actually contains an
         // EPUB container.xml before importing.
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = true
-        panel.treatsFilePackagesAsDirectories = true
-        panel.allowedContentTypes = [.pdf, .epub, .directory]
+        BookImportPanel.configure(panel)
 
         panel.begin { response in
             guard response == .OK, let url = panel.url else { return }

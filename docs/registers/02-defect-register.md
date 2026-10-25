@@ -12,7 +12,7 @@ This is the project's master list of everything known to be broken, risky, or mi
 
 > **Bedrock supersession (2026-10-24):** the audit-era NEW-DE-1…NEW-DE-8 punch list is now fixed and pinned (achievements, writer ordering, crash window, cache day bucket, onboarding, spatial covers, RSVP cancellation, weather honesty). Several F-series rows were already fixed in the audit/phase-1/2 logs; this register's “Open defects” block is historical and should be read with `docs/plans/bedrock/gates/` and `03-fix-log.md`. Do not treat every F-row as still open.
 
-> **AsterismaV1.0 release (2026-10-24):** the release candidate was accepted, merged to `main` at `aba8aa4`, tagged `asterisma-v1.0-mvp`, and pushed. The merged worktree census is **215/0/9**. Remaining open work is tracked in `README.md` §5 and `docs/registers/04-handoff.md`.
+> **AsterismaV1.0 release (2026-10-24):** the release candidate was accepted, merged to `main` at `aba8aa4`, tagged `asterisma-v1.0-mvp`, and pushed. The merged worktree census is **217/0/9**. Remaining open work is tracked in `README.md` §5 and `docs/registers/04-handoff.md`.
 
 > **Owner-test findings (2026-10-24):** the owner's release-package test found three real defects the green census missed: (F1) the package was signed without entitlements, so it launched unsandboxed with an empty store; (F2) the onboarding Finish button never dismissed the sheet, a dead end at the goal step; (F3) the Add Book panel rejected iBooks-style unzipped `.epub` package directories. F1–F3 are fixed and pinned in `docs/owner-test-results/2026-10-24-session-1.md`; the folder-EPUB importer has a regression test. Owner retest is the acceptance gate.
 
@@ -218,7 +218,7 @@ Verified as unreachable from the running app today:
 **Mirage-era standing constraints that touch this register's future work** (from the merge playbook, unchanged):
 - Never unify Mirage's store with RT's; the `Features/Mirage/` band is Mirage-owned outside RT's defect ledger.
 - One sidecar lifecycle per gesture; the census receipts (M-014…M-028) are the enforcement evidence.
-- The old rectify table row "test header says 16/16" is historical — the AsterismaV1.0 standing census is **215/0/9** (see `07-testing-strategy.md`).
+- The old rectify table row "test header says 16/16" is historical — the AsterismaV1.0 standing census is **217/0/9** (see `07-testing-strategy.md`).
 
 ---
 

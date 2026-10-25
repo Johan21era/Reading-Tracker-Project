@@ -34,7 +34,7 @@
   pushed as `origin/main`.
 - `asterisma-v1.0-mvp` and all six Bedrock tags pushed to GitHub.
 - Release package: `dist/AsterismaV1.0-1.0-arm64.zip`
-- SHA-256: `05e66283bffafea70844c4537406f7a2e1c348ad4e5ce4206387fbdc4588135d`
+- SHA-256: `c77b61af98a6b193f17882bc4abd72119b67b6a232473aa67490e149dcdad649`
 
 **Post-acceptance authority:** the owner's personal test results are the
 absolute source of truth from 2026-10-24 onward and override this receipt and
@@ -47,12 +47,13 @@ on top of the accepted release:
 
 - Commit `9a0cc76`; tag `asterisma-v1.0-test-reset`.
 - Package: `dist/AsterismaV1.0-1.0-arm64.zip`
-- SHA-256: `05e66283bffafea70844c4537406f7a2e1c348ad4e5ce4206387fbdc4588135d`
+- SHA-256: `c77b61af98a6b193f17882bc4abd72119b67b6a232473aa67490e149dcdad649`
 - F1: packaged app now carries its sandbox/entitlements.
 - F2: onboarding Finish now dismisses the sheet.
 - F3: Add Book accepts iBooks-style unzipped `.epub` directories.
 - F4: windowed toolbar and green zoom repaired with a standard title bar and a 1000x680 minimum.
-- F5: seamless fullscreen surface — flat sidebar, unified canvas, focus-only search ring, grouped toolbar.
+- F5: seamless fullscreen surface — flat sidebar, unified canvas, focus-only search ring; library toolbar removed.
+- F6: Add Book picker rejects parent folders and admits PDF/EPUB files and iBooks EPUB packages.
 - Regression pin: `FolderEPUBImportTests`.
 - Owner retest is the acceptance gate for this candidate.
 
@@ -73,7 +74,7 @@ on top of the accepted release:
 ## Distribution
 
 - Package: `dist/AsterismaV1.0-1.0-arm64.zip`
-- SHA-256: `05e66283bffafea70844c4537406f7a2e1c348ad4e5ce4206387fbdc4588135d`
+- SHA-256: `c77b61af98a6b193f17882bc4abd72119b67b6a232473aa67490e149dcdad649`
 - Ad-hoc signed, not notarized.
 - First launch requires right-click → Open (documented in `DISTRIBUTION.md`).
 - Bundle ID remains `johan.Reading-Tracker` for MVP container compatibility;

@@ -6,8 +6,10 @@
 //  reports them as packages/directories, so the old open panel grayed them out
 //  and the importer tried to unzip a directory. Both paths now support them.
 
+import AppKit
 import Foundation
 import Testing
+import UniformTypeIdentifiers
 
 @testable import AsterismaV1_0
 
@@ -78,5 +80,33 @@ struct FolderEPUBImportTests {
         let opened = try await EPUBPackage.open(book: book)
         #expect(opened.chapterCount == 1)
         opened.close()
+    }
+
+    @Test("Ordinary folders are rejected with a clear package error")
+    func ordinaryFolderRejected() async throws {
+        let folder = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
+
+        do {
+            _ = try await BookImporter.importBook(from: folder)
+            Issue.record("An ordinary folder must not import")
+        } catch let error as ImportError {
+            #expect(error.errorDescription?.contains("not an EPUB package") == true)
+        }
+    }
+
+    @Test("Picker admits books and EPUB packages, not ordinary folders")
+    @MainActor
+    func pickerDoesNotAdmitOrdinaryFolders() {
+        let panel = NSOpenPanel()
+        BookImportPanel.configure(panel)
+        #expect(panel.canChooseDirectories == false)
+        #expect(panel.canChooseFiles == true)
+        #expect(panel.treatsFilePackagesAsDirectories == false)
+        #expect(panel.allowedContentTypes.contains { $0.identifier == "com.apple.ibooks.epub" })
+        #expect(panel.allowedContentTypes.contains(.pdf))
+        #expect(panel.allowedContentTypes.contains(.epub))
     }
 }

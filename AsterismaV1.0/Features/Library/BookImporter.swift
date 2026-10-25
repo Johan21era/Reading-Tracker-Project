@@ -17,8 +17,10 @@
 // correctly everywhere). SharedTextUtilities' header listing BookImporter as a
 // caller is now true.
 
+import AppKit
 import Foundation
 import PDFKit
+import UniformTypeIdentifiers
 #if canImport(ZIPFoundation)
     import ZIPFoundation
 #endif
@@ -31,6 +33,7 @@ import PDFKit
 enum ImportError: LocalizedError {
     case unsupportedFileType(String)
     case fileNotReadable(URL)
+    case notAnEPUBPackage(URL)
     case epubMissingOPF
     case epubParseFailure(String)
     case epubUnzipFailure(String)
@@ -38,13 +41,36 @@ enum ImportError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case let .unsupportedFileType(ext): return "Unsupported file type: \(ext)"
+        case let .unsupportedFileType(ext):
+            return ext.isEmpty
+                ? "That item has no file extension. Choose a .pdf or .epub file."
+                : "Unsupported file type: .\(ext)"
         case let .fileNotReadable(url): return "Cannot read file at \(url.path)"
+        case let .notAnEPUBPackage(url):
+            return "“\(url.lastPathComponent)” is a folder, not an EPUB package. Open it and select the .epub file or package inside."
         case .epubMissingOPF: return "EPUB is missing OPF package document"
         case let .epubParseFailure(msg): return "EPUB parse error: \(msg)"
         case let .epubUnzipFailure(msg): return "Failed to unzip EPUB: \(msg)"
         case .pdfOpenFailure: return "Could not open PDF document"
         }
+    }
+}
+
+// MARK: - Open panel contract
+
+/// Restrict the file picker to actual books and iBooks-style EPUB packages.
+/// In particular, do not make ordinary folders selectable: choosing
+/// `library tests` used to produce "Unsupported file type" instead of opening
+/// the folder and letting the user pick an EPUB inside it.
+enum BookImportPanel {
+    static let iBooksEPUB = UTType(importedAs: "com.apple.ibooks.epub")
+    static let allowedTypes: [UTType] = [.pdf, .epub, iBooksEPUB]
+
+    static func configure(_ panel: NSOpenPanel) {
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.treatsFilePackagesAsDirectories = false
+        panel.allowedContentTypes = allowedTypes
     }
 }
 
@@ -56,10 +82,22 @@ enum BookImporter {
     /// defer fires only after `await importEPUB(url:)` completes — holding the scope
     /// for the full duration of both synchronous (PDF) and asynchronous (EPUB) imports.
     static func importBook(from url: URL) async throws -> Book {
-        guard url.startAccessingSecurityScopedResource() else {
-            throw ImportError.fileNotReadable(url)
+        // A URL chosen through NSOpenPanel is security-scoped. A URL supplied
+        // by a test or drag/drop may not be, but is still readable in-process;
+        // do not reject it before the real read/parse has a chance to report.
+        let accessingScope = url.startAccessingSecurityScopedResource()
+        defer {
+            if accessingScope { url.stopAccessingSecurityScopedResource() }
         }
-        defer { url.stopAccessingSecurityScopedResource() }
+
+        let isDirectory = (try? url.resourceValues(
+            forKeys: [.isDirectoryKey]))?.isDirectory ?? false
+        if isDirectory {
+            let container = url.appendingPathComponent("META-INF/container.xml")
+            guard FileManager.default.fileExists(atPath: container.path) else {
+                throw ImportError.notAnEPUBPackage(url)
+            }
+        }
 
         switch url.pathExtension.lowercased() {
         case "epub": return try await importEPUB(url: url)
