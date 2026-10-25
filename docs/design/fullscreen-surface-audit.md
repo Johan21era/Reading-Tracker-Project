@@ -3,7 +3,7 @@
 **Date:** 2026-10-24
 **Scope:** main window, sidebar, search, toolbar, detail canvas
 **Platform:** macOS 26.5, SwiftUI/AppKit (native — no WebView, HTML, or CSS)
-**Candidate:** `14035cd` / tag `asterisma-v1.0-paged-reader`
+**Candidate:** `ec5e45e` / tag `asterisma-v1.0-ux-audit-1`
 **Package:** SHA-256 `2e90d99603eee8dc50f39581c357101642586a64726a5a10f63cc9ad3066cc05`
 
 ---

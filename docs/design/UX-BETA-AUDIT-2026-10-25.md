@@ -8,7 +8,7 @@ floating controls, persistence, accessibility, macOS integration
 **Status:** handoff document — not a claim that every finding is fixed
 
 > **Important:** the screenshots predate the paged-reader candidate
-> (`asterisma-v1.0-paged-reader`). Several findings below are already addressed
+> (`asterisma-v1.0-ux-audit-1`). Several findings below are already addressed
 > in that build; each row carries its current disposition. Any "fixed" claim
 > still requires owner visual acceptance.
 
@@ -172,8 +172,8 @@ Minimum gates:
 
 ```text
 Paged-reader candidate: 2e90d99603eee8dc50f39581c357101642586a64726a5a10f63cc9ad3066cc05
-Code:                   14035cd
-Tag:                    asterisma-v1.0-paged-reader
+Code:                   ec5e45e
+Tag:                    asterisma-v1.0-ux-audit-1
 Census:                 218 passed / 0 failed / 9 skipped
 ```
 

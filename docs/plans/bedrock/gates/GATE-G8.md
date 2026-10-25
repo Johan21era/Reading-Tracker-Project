@@ -45,7 +45,7 @@ every prior benchmark/census. See `docs/12-owner-test-authority.md`.
 The first owner run found three defects the green census missed. They are fixed
 on top of the accepted release:
 
-- Commit `14035cd`; tag `asterisma-v1.0-paged-reader`.
+- Commit `ec5e45e`; tag `asterisma-v1.0-ux-audit-1`.
 - Package: `dist/AsterismaV1.0-1.0-arm64.zip`
 - SHA-256: `2e90d99603eee8dc50f39581c357101642586a64726a5a10f63cc9ad3066cc05`
 - F1: packaged app now carries its sandbox/entitlements.
