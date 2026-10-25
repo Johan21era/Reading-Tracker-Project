@@ -49,6 +49,7 @@ Every documentation file begins with a number so you can read them in order:
 | `docs/plans/bedrock/` | — | G0–G8 gate record, master plan, baseline, distribution notes | Anyone auditing the release |
 | `docs/design/fullscreen-surface-audit.md` | — | Fullscreen surface audit, border inventory, and after capture | Anyone reviewing the UI |
 | `docs/12-owner-test-authority.md` | 12 | The owner's personal test results are the absolute source of truth | Everyone — this overrides all other claims |
+| `docs/MILESTONES.md` | — | Pinned capability milestones with exact timestamps | Everyone — the wins matter too |
 | `docs/owner-test-results/` | — | Personal test sessions, template, and evidence | The owner, then anyone acting on the results |
 | `docs/history/09-final-traces.md` | 09 | Diary of the performance upgrade marathon | Anyone interested in performance history |
 | `docs/history/10-profiler-fix.md` | 10 | The story of how the big freeze was finally fixed | Anyone interested in the freeze mystery |

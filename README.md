@@ -183,6 +183,7 @@ docs/
 ├── plans/bedrock/                           G0–G8 gate record, master plan, baseline, distribution notes
 ├── design/fullscreen-surface-audit.md       Fullscreen surface audit, border inventory, after capture
 ├── 12-owner-test-authority.md               Owner results are the absolute source of truth
+├── MILESTONES.md                            Pinned capability milestones, with exact timestamps
 ├── owner-test-results/                      Personal test sessions + template
 ├── REBRAND-ASTERISMA.md                     Asterisma rename + data-root migration record
 ├── integration/                             THE RT–MIRAGE MERGE CAMPAIGN (Oct 2026)
