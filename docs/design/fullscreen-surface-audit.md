@@ -3,6 +3,8 @@
 **Date:** 2026-10-24
 **Scope:** main window, sidebar, search, toolbar, detail canvas
 **Platform:** macOS 26.5, SwiftUI/AppKit (native — no WebView, HTML, or CSS)
+**Candidate:** `df834b3` / tag `asterisma-v1.0-ui-seamless`
+**Package:** SHA-256 `57068300cc548bd50995d5728bab610363bd1133a989962500f527d152bbd2ce`
 
 ---
 

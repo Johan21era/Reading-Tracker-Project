@@ -45,13 +45,14 @@ every prior benchmark/census. See `docs/12-owner-test-authority.md`.
 The first owner run found three defects the green census missed. They are fixed
 on top of the accepted release:
 
-- Commit `a0035d1`; tag `asterisma-v1.0-owner-test-fixes-2`.
+- Commit `df834b3`; tag `asterisma-v1.0-ui-seamless`.
 - Package: `dist/AsterismaV1.0-1.0-arm64.zip`
 - SHA-256: `57068300cc548bd50995d5728bab610363bd1133a989962500f527d152bbd2ce`
 - F1: packaged app now carries its sandbox/entitlements.
 - F2: onboarding Finish now dismisses the sheet.
 - F3: Add Book accepts iBooks-style unzipped `.epub` directories.
 - F4: windowed toolbar and green zoom repaired with a standard title bar and a 1000x680 minimum.
+- F5: seamless fullscreen surface — flat sidebar, unified canvas, focus-only search ring, grouped toolbar.
 - Regression pin: `FolderEPUBImportTests`.
 - Owner retest is the acceptance gate for this candidate.
 
