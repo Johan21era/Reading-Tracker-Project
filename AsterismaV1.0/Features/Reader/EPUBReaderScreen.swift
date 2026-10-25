@@ -46,6 +46,9 @@ struct EPUBReaderScreen: View {
     @AppStorage("reader.theme") private var readerTheme: String = "light"
     @State private var showingTypography = false
     @State private var rsvpText: String?
+    @State private var readerControlsVisible = true
+    @State private var readerControlsHovered = false
+    @State private var readerControlsHideTask: Task<Void, Never>?
 
     private let logger = Logger(
         subsystem: Bundle.main.bundleIdentifier ?? "Asterisma",
@@ -81,10 +84,12 @@ struct EPUBReaderScreen: View {
                 if errorMessage == nil, package != nil {
                     coordinator.startReading(bookID: book.id, page: book.currentPage)
                     updatePositionLabel()
+                    showReaderControls()
                 }
             }
         }
         .onDisappear {
+            readerControlsHideTask?.cancel()
             persistPosition()
             dataStore.saveImmediately()
             openTask?.cancel()
@@ -188,6 +193,7 @@ struct EPUBReaderScreen: View {
         persistPosition()
         coordinator.turnToPage(globalPage)
         updatePositionLabel()
+        showReaderControls()
     }
 
     private func goToPreviousReadableChapter() {
@@ -314,6 +320,41 @@ struct EPUBReaderScreen: View {
                 .padding(.horizontal)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func showReaderControls() {
+        readerControlsHideTask?.cancel()
+        withAnimation(.easeOut(duration: 0.2)) {
+            readerControlsVisible = true
+        }
+        scheduleReaderControlsHide()
+    }
+
+    private func cancelReaderControlsHide() {
+        readerControlsHideTask?.cancel()
+        readerControlsHideTask = nil
+    }
+
+    private func scheduleReaderControlsHide() {
+        readerControlsHideTask?.cancel()
+        readerControlsHideTask = Task { @MainActor in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(3))
+                guard !Task.isCancelled else { return }
+                if readerControlsHovered
+                    || showingChapterList
+                    || showingInfo
+                    || showingTypography
+                    || showingMirageAnalysis {
+                    continue
+                }
+                guard readerControlsVisible else { return }
+                withAnimation(.easeOut(duration: 0.4)) {
+                    readerControlsVisible = false
+                }
+                return
+            }
+        }
     }
 
     /// Compact floating controls replace the native reader toolbar, so there
@@ -599,7 +640,37 @@ struct EPUBReaderScreen: View {
             MirageAnalysisSheet(book: book)
         }
         .background(KeyNavigationConfigurator(isEnabled: true, onCommand: handleReaderKey))
-        .overlay(alignment: .topLeading) { readerTopControls }
+        .overlay(alignment: .topLeading) {
+            if readerControlsVisible {
+                readerTopControls
+                    .transition(.opacity)
+                    .onHover { hovering in
+                        readerControlsHovered = hovering
+                        if hovering {
+                            cancelReaderControlsHide()
+                        } else {
+                            scheduleReaderControlsHide()
+                        }
+                    }
+            } else {
+                Button {
+                    showReaderControls()
+                } label: {
+                    Image(systemName: "chevron.down.circle.fill")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.65))
+                        .padding(10)
+                        .background(Color.black.opacity(0.35), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .help("Show reading controls")
+                .accessibilityLabel("Show reading controls")
+                .padding(14)
+                .onHover { hovering in
+                    if hovering { showReaderControls() }
+                }
+            }
+        }
         .overlay(alignment: .bottom) { readerPageControls }
     }
 

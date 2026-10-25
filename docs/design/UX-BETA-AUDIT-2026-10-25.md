@@ -50,14 +50,15 @@ No P0 runtime defect is established by the screenshots alone.
 | ASTER-010 | P1 | OBSERVED + VERIFY | Progress metadata ambiguous/crowded | **Partially fixed** — HUD shows chapter/page + book percentage and a progress bar; global book-page map remains a product decision |
 | ASTER-011 | P1 | OBSERVED | Reading estimates only via hover | **Fixed in candidate** — selecting a book shows a detail surface with a Reading Estimate action; hover is no longer the only path |
 | ASTER-012 | P2 | OBSERVED | Right-side icon controls lack visible context | **Partially fixed** — primary reader controls now have tooltips/accessibility labels; remaining icon audit open |
-| ASTER-013 | P1 | OBSERVED + VERIFY | Floating/persistent reader layers lack a formal model | **Partially fixed** — HUD removed from reader; compact floating controls; layering spec still needed |
+| ASTER-013 | P1 | OBSERVED + VERIFY | Floating/persistent reader layers lack a formal model | **Partially fixed** — HUD removed; top-left controls auto-hide after 3s, pause while hovered/popover-open, and return via a reveal control; layering spec still needed |
 | ASTER-014 | P1 | OBSERVED + VERIFY | EPUB text column/typography may be too wide/small | **Fixed in candidate** — 620pt column cap, font size, line spacing, alignment, and reading themes; full typography regression remains |
 | ASTER-015 | P2 | OBSERVED + PRODUCT DECISION | Bright document inside dark shell is a stark transition | **Fixed in candidate** — light, sepia, and dark reading themes |
 | ASTER-016 | P2 | OBSERVED + VERIFY | Sidebar behavior in reading mode unclear | **Fixed in candidate** — sidebar auto-hides while reading; Back restores it with selection intact |
 | ASTER-017 | P2 | OBSERVED | Selected-book metadata is compressed/duplicated | **Partially fixed** — large selected-book detail; card/detail metadata contract still needed |
 | ASTER-018 | P2 | VERIFY | Save-status model unclear | **Fixed in candidate** — exact chapter/page persists on page changes and immediately on close; regression test added |
 | ASTER-019 | P2 | OBSERVED + VERIFY | Narrow/split-screen/macOS scaling behavior untested | **Partially fixed** — floor lowered to 900×640 and pagination switches to one column; full responsive matrix still required |
-| ASTER-020 | P2 | VERIFY | Hover/focus/selection/disabled states not established | **Open** — token and state audit required |
+| ASTER-020 | P2 | VERIFY | Hover/focus/selection/disabled states not established | **Partially fixed** — reader controls now have an explicit visible/hidden/hovered model; global token and state audit required |
+| ASTER-021 | P2 | OBSERVED | Persistent top-left reader controls never yield the page | **Fixed in candidate** — controls fade after 3s, pause while hovered or while a popover/sheet is open, and return via a small reveal control |
 
 ---
 
@@ -121,6 +122,20 @@ Still product decisions / open verification:
 - Full responsive and screen-reader matrix.
 - Shelf/grid/resume library layout beyond the selected-book detail.
 - Design-token migration across every legacy surface.
+
+---
+
+## Third refinement (owner-requested, candidate)
+
+- Floating upper-left reader controls fade out after 3 seconds of inactivity.
+- Hovering the controls cancels the hide timer; leaving restarts it.
+- The controls stay visible while a popover or sheet is open.
+- When hidden, a small top-left reveal control restores them; hovering the
+  reveal control also restores them.
+- Chapter changes deliberately re-show the controls with the new label.
+
+This is a reading-focus refinement, not a replacement for the remaining
+layering specification below.
 
 ---
 

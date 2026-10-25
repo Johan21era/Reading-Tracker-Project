@@ -97,3 +97,47 @@ that ordinary reading never touches. It held up under deliberate abuse.
 
 This milestone covers RSVP stability only. It does not claim that the EPUB
 pagination/page-count issues reported in the same session are resolved.
+
+---
+
+## 003 — Beta audit remediation accepted: the core reader works end to end
+
+**Date and time:** 2026-10-25 01:46:44 EDT (−0400)
+**Recorded by:** the engineering session, immediately after the owner’s report
+**Build:** `dist/AsterismaV1.0-1.0-arm64.zip`
+**SHA-256:** `936ba504337d6cb6663c66f736cee0bcb64491a6b0abf2588f0fd9bcc1a566ed`
+**Code:** `8a68136` · tag `asterisma-v1.0-ux-audit-2`
+
+### What happened
+
+The owner resumed live testing after the second UX-audit remediation batch and
+reported that **everything worked perfectly**:
+
+- EPUB import and open.
+- Reading and page turns.
+- Typography/theme controls.
+- Sidebar hiding in reading mode.
+- Search and selected-book detail.
+- Reading-progress restoration.
+- The paged reader and its controls.
+
+Live store at the report: **1 book / 3 sessions / 20 page timings**.
+
+### Why it matters
+
+This is the first time the complete product loop has passed the owner’s real
+testing after the beta-audit remediation work:
+
+```text
+import → open → read → navigate → change reading settings
+→ leave → reopen at the saved position
+```
+
+The remaining request is a refinement, not a broken workflow: auto-hide the
+floating upper-left reader controls after a few seconds and reveal them on
+demand.
+
+### Scope note
+
+This is owner-accepted behavior for the tested build. It does not convert every
+remaining product decision in the UX audit into a completed feature.
