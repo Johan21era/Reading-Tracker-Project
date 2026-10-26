@@ -292,12 +292,14 @@ timings. The app relaunched successfully from `Application Support/Asterisma/`.
 
 **Release receipt:** `main` at `aba8aa4` (release commit `6da2d81`, tag
 `asterisma-v1.0-mvp`). The owner accepted the reader workflow on the
-`asterisma-v1.0-ux-audit-2` build; the current candidate is `3bff002` (tag `asterisma-v1.0-polish-1`),
-package `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`.
+`asterisma-v1.0-ux-audit-2` build. The ready tree carries app code `1c88ae5`
+(tag `asterisma-v1.0-ready-2026-10-26`), package
+`dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256
+`786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`.
 
 **Still deferred:** Swift 6 strict mode, reader selection highlights/quotes,
 behavior evidence in SQLite, collection rename UI, legacy artifact cleanup,
-CI-runner alignment, and Developer ID signing/notarization.
+and Developer ID signing/notarization.
 
 
 ### Polish batch — reader appearance and library surface (2026-10-25)
@@ -312,8 +314,38 @@ CI-runner alignment, and Developer ID signing/notarization.
 
 **Verification:** Debug and Release builds green; package signed with sandbox
 entitlements and bundle smoke green; `ReaderAppearanceTests` 5/5 with WCAG AA
-contrast checks. Full UI-inclusive census rerun was blocked by macOS
-`testmanagerd` automation bootstrap, not by an app assertion.
+contrast checks. At the time, the full UI-inclusive census rerun was blocked by
+macOS `testmanagerd` automation bootstrap, not by an app assertion. The
+2026-10-26 close-out later turned the deterministic unit gate green; the
+UI-inclusive gate remains unclaimed.
 
 **Candidate:** `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`
 (code `3bff002`, tag `asterisma-v1.0-polish-1`).
+
+---
+
+## Stage R — Repository reorganization and CI hardening (2026-10-26)
+
+| Item | What changed | Verification |
+|---|---|---|
+| R-001 | App shell moved from the flat app root to `AsterismaV1.0/App/` | 2 `git mv` operations; before/after SHA-256 equal |
+| R-002 | 48 flat test files grouped into `App`, `Behavior`, `Core`, `DeveloperConsole`, `Environment`, `Library`, `Mirage`, and `Reader` | 48 `git mv` operations; 100% renames, 0 content edits |
+| R-003 | 280-file baseline reconciled; path-dependent, signing, user-data, release, and historical files left in place | 0 missing, 0 mismatched, 0 unapproved changes; report in `docs/reorganization/` |
+| R-004 | GitHub `census` moved from `macos-14` / Xcode 15.4 to `macos-26` / Xcode 26.6 | Xcode 15.4 cannot open project format 77; Xcode 26.6 opens and builds it |
+| R-005 | `OpenMeteoProvider` safe-array subscript marked `nonisolated` | Xcode 26.6 correctly enforced the project's `MainActor` default; behavior unchanged |
+| R-006 | Bundled-runtime app-host assertion self-gates on `.mirage-runtime` | Clean CI builds without the ignored 47 MB runtime; synthetic runtime-contract tests still run |
+
+**Final verification:** Debug build green; local unit census **220 passed /
+0 failed / 9 skipped**; GitHub run `40266848038` green with **229 tests,
+10 deliberate skips, 0 failures**; reorganized tree reconciles every baseline
+file with no content change.
+
+**Ready package:** rebuilt from app code `1c88ae5` —
+`dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256
+`786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`.
+The package signature, sandbox entitlements, embedded Mirage smoke, and
+Gatekeeper-rejection expectation were re-verified by `scripts/package-release.sh`.
+
+**Supersession:** this ready package supersedes the `a8ebf2ec…` polish
+candidate for owner retesting. Reader behavior is unchanged; the only app-code
+change is the `nonisolated` concurrency annotation.

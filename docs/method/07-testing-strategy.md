@@ -17,9 +17,10 @@ This describes **what to build so the same classes of bug get caught automatical
 | | |
 |---|---|
 | **Framework** | Swift Testing — `@Suite` / `@Test` / `#expect` (the project standardized after converting the original XCTest suites) |
-| **Scale** | 48 test files · 230 `@Test` functions |
-| **Standing census** | Last complete run **218 passed / 0 failed / 9 skipped**; the new `ReaderAppearanceTests` suite passes **5/5**. A full UI-inclusive rerun on 2026-10-25 was blocked by the macOS UI-test automation bootstrap, not by an app assertion. |
-| **The 9 skips** | 4 Mirage real-engine cases (identity import, handshake/health, and the two lifecycle steps), 1 benchmark, 2 real-library SQLite parity cases, and 2 live Open-Meteo cases |
+| **Scale** | 48 Swift files in the unit target (47 containing tests) · 229 `@Test` functions · eight responsibility-based groups |
+| **Standing census** | GitHub `census` on `macos-26` / Xcode 26.6: **229 tests in 61 suites, 10 deliberate environment/opt-in skips, 0 failures**. Local unit census (with the staged runtime) is **220 passed / 0 failed / 9 skipped**. |
+| **CI scope** | The deterministic unit target is the merge-presence receipt. UI tests are placeholder launch stubs and depend on interactive automation, so they are not part of CI. The bundled-runtime assertion self-gates on `.mirage-runtime` being staged. |
+| **The 9 local skips** | 4 Mirage real-engine cases (identity import, handshake/health, and the two lifecycle steps), 1 benchmark, 2 real-library SQLite parity cases, and 2 live Open-Meteo cases. CI adds a 10th skip: the bundled-runtime presence assertion, because a clean checkout has no staged 47 MB runtime. |
 | **Census discipline** | Every fixing session opens and closes on a green census; canonical numbers come from `xcrun xcresulttool get test-results summary --path <.xcresult>` — never from eyeballing the console |
 
 ---

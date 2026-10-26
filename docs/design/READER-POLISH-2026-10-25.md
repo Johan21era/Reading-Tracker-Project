@@ -1,8 +1,9 @@
 # Reader & Library Polish — 2026-10-25
 
-**Status:** Phase 1 implemented; owner retest pending
-**Build:** `3bff002` · tag `asterisma-v1.0-polish-1`
-**Package:** `dist/AsterismaV1.0-1.0-arm64.zip` · SHA-256 `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`
+**Status:** Phase 1 implemented; owner retest pending on the ready package
+**Ready build:** app code `1c88ae5` · tag `asterisma-v1.0-ready-2026-10-26`
+**Ready package:** `dist/AsterismaV1.0-1.0-arm64.zip` · SHA-256 `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`
+**Historical candidate:** `3bff002` · tag `asterisma-v1.0-polish-1` · SHA-256 `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009` (superseded for retest; reader behavior unchanged)
 **Benchmark:** Apple Books on macOS, plus Apple's public Books user guide
 
 ## What Apple Books exposes
@@ -106,11 +107,13 @@ Primary references:
 - `ReaderAppearanceTests`: **5/5 passed** — WCAG AA contrast for all six
   themes, legacy theme migration, theme defaults, full settings injection, and
   Original-font preservation.
-- Prior accepted baseline: **218 passed / 0 failed / 9 skipped**.
-- Full census rerun on 2026-10-25 was blocked before test discovery by the
-  macOS UI-test runner (`testmanagerd` automation bootstrap). This is an
-  environment failure, not an app assertion; the new suite and build were
-  verified independently.
+- Local unit census: **220 passed / 0 failed / 9 skipped**.
+- GitHub unit census: **229 tests / 10 deliberate skips / 0 failures**
+  (run `40266848038`, green on macOS 26 / Xcode 26.6).
+- The earlier full UI-inclusive rerun was blocked before test discovery by the
+  macOS UI-test runner (`testmanagerd` automation bootstrap). That remains an
+  unclaimed gate, not an app assertion; the deterministic unit gate and this
+  suite are green.
 - Owner visual acceptance is still required for theme fit, spacing, page-turn
   feel, and the redesigned book plate.
 
@@ -119,5 +122,17 @@ Primary references:
 Committed as `3bff002` (docs `6bcea96`) and tagged
 `asterisma-v1.0-polish-1`. The final signed package was preserved; generated
 Xcode/test residue was removed. Graphify was rebuilt against the new source
-(5,265 nodes / 11,862 edges); `graph.html` was regenerated as the aggregated
-community view because the graph exceeds the default 5,000-node limit.
+(5,305 nodes / 11,901 edges / 595 communities); `graph.html` was regenerated as
+the aggregated community view because the graph exceeds the default 5,000-node
+limit. The 2026-10-26 close-out refreshed the graph again during the final
+clean-up; the final run reports the same 5,305-node shape.
+
+### Ready close-out — 2026-10-26
+
+The signed package was rebuilt from app code `1c88ae5` after the CI concurrency
+fix and the repository reorganization. The ready package SHA-256 is
+`786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`.
+Reader behavior is unchanged from the `3bff002` candidate; the owner retest
+checklist above still applies. GitHub unit census `40266848038` is green
+(**229 tests / 10 deliberate skips / 0 failures**), and graphify was refreshed
+against the ready tree.

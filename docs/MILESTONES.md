@@ -183,3 +183,71 @@ acceptance is pending, so this is a candidate milestone rather than an
 owner-accepted one.
 
 Live store at session close: **1 book / 3 sessions / 77 page timings**.
+
+### Supersession note
+
+The `a8ebf2ec…` candidate package above remains the historical artifact for the
+Appearance implementation. It was superseded for owner testing by the ready
+package in milestone 005; the reader behavior is unchanged. Visual acceptance
+of the panel and book plate is still pending.
+
+---
+
+## 005 — Repository reorganization, green remote CI, and a ready package
+
+**Date and time:** 2026-10-26 00:20:11 EDT (−0400)
+**Recorded by:** the engineering session, after the remote census turned green
+**Build:** `dist/AsterismaV1.0-1.0-arm64.zip`
+**SHA-256:** `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`
+**Code:** `1c88ae5` · ready tag `asterisma-v1.0-ready-2026-10-26`
+
+### What happened
+
+1. The repository was reorganized without changing file contents, ownership,
+   history, or behavior:
+   - app shell moved to `AsterismaV1.0/App/`;
+   - 48 flat test files grouped into `App`, `Behavior`, `Core`,
+     `DeveloperConsole`, `Environment`, `Library`, `Mirage`, and `Reader`;
+   - 50 `git mv` operations, 100% renames, 0 insertions/deletions;
+   - all 280 baseline tracked files reconciled with 0 missing, 0 mismatched,
+     and 0 unapproved changes.
+2. GitHub CI was repaired:
+   - the workflow moved from `macos-14` / Xcode 15.4 to `macos-26` /
+     Xcode 26.6, because Xcode 15.4 cannot open project format 77;
+   - Xcode 26.6 exposed a real `MainActor` concurrency diagnostic in the
+     Open-Meteo safe-subscript helper; the subscript is now `nonisolated`.
+3. The signed package was rebuilt from the corrected app code.
+4. The remote unit census turned green: GitHub run `40266848038`,
+   **229 tests / 10 deliberate skips / 0 failures**.
+
+### Why it matters
+
+The repository is now navigable without sacrificing a single byte of history,
+and the remote green check finally means what it claims: the project opens,
+compiles, and passes the deterministic unit suite on the current macOS/Xcode
+pair. The local and remote receipts now agree.
+
+### What this does not mean
+
+- Owner visual acceptance of the Appearance panel and book plate is still
+  pending; this milestone does not promote milestone 004.
+- The UI-inclusive census is still not claimed. UI tests remain placeholder
+  launch stubs that depend on interactive macOS automation.
+- The package is ad-hoc signed, not notarized; first launch still needs
+  right-click → Open.
+- Reader pagination remains per-chapter/spread, not a global physical page map.
+
+### Evidence
+
+- `docs/reorganization/AV1-ROR-EXECUTION-2026-10-26.md`
+- GitHub run `40266848038` (green)
+- Local unit census: **220 passed / 0 failed / 9 skipped**
+- Baseline reconciliation: 280/280 tracked files
+- Package: checksum above; signature, sandbox entitlements, embedded-Mirage
+  smoke, and Gatekeeper verdict re-verified by `scripts/package-release.sh`
+- Live store: **1 book / 3 sessions / 77 page timings**
+
+### Next
+
+Owner retest on the ready package. If accepted, record acceptance and promote
+milestone 004.

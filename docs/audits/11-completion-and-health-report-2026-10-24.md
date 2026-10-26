@@ -1,5 +1,7 @@
 # 11 · Completion & Health Report (2026-10-24)
 
+> **Historical snapshot.** Several release-readiness findings below were fixed after this report, including the CI runner, shared scheme, package entitlements, and Mirage embedding. For current state see `README.md` §4 and `docs/registers/04-handoff.md`; the GitHub unit census is green on macOS 26 / Xcode 26.6.
+
 **Scope:** the entire `Reading Tracker Main` folder — all 114 app Swift files, 34 test files, all docs, the graphify output, a live Debug build, a live full test run, the built `.app` bundle, and the real sandbox data store on this Mac.
 
 **Bottom line:** this is a real, working app with an unusually strong core, test culture, and documentation estate. It is **not finished**, but it is much closer to “polish and ship” than “rewrite.” Our byte-weighted estimate is that **~67% of the app’s source bytes (comments included) are doing their intended job today**, **~19% of lines are dead or dormant**, and **~14% is partial work held back by release/feature blockers**. Three areas account for most of the remaining gap: **Behavior Context**, **Weather**, and **Mirage runtime packaging**. There is also one genuine live data bug — duplicate achievements — plus a persistence-ordering defect and several “looks wired but isn’t” features.

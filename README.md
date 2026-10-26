@@ -2,9 +2,9 @@
 
 > **TL;DR** — AsterismaV1.0 is a macOS reading-tracker app written entirely in Swift/SwiftUI. You import your PDF and EPUB books, read them inside the app, and it quietly records everything: per-page reading speed, time of day, live weather, and the app you were using just before opening the book. As of the October 2026 merge campaign, it also carries **Mirage** — a separately-owned companion engine for EPUB analysis, integrated behind a typed one-way boundary.
 
-> **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. Standing census: **218 passed / 0 failed / 9 skipped**. The full gate record lives in `docs/plans/bedrock/`.
+> **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. Current CI: **229 tests, 10 deliberate skips, 0 failures** on macOS 26 / Xcode 26.6. The full gate record lives in `docs/plans/bedrock/`.
 
-> **Release status (2026-10-25):** `AsterismaV1.0` was merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`). The owner accepted the full reader workflow on the `asterisma-v1.0-ux-audit-2` build; the current candidate is `3bff002` (tag `asterisma-v1.0-polish-1`), which adds the Apple Books-style appearance panel and library polish. Package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`. It is ad-hoc signed, not notarized; first launch requires right-click → Open.
+> **Release status (2026-10-26):** `AsterismaV1.0` remains merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`). The owner accepted the full reader workflow on the `asterisma-v1.0-ux-audit-2` build. The ready tree adds the Apple Books-style Appearance panel, the preservation-first repository reorganization, and green CI hardening; app code is `1c88ae5`, tagged `asterisma-v1.0-ready-2026-10-26`. Package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`. It is ad-hoc signed, not notarized; first launch requires right-click → Open. Owner visual retest of the Appearance panel and book plate remains the next acceptance gate.
 
 > **Owner-test authority (2026-10-24):** results from Johan's personal testing are the **absolute source of truth** and override all previous benchmarks, censuses, gate receipts, and documentation claims. See `docs/12-owner-test-authority.md`; sessions are recorded in `docs/owner-test-results/` and pinned by tag `owner-test-authority-2026-10-24`.
 
@@ -51,7 +51,7 @@ There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for st
 | **Build config** | `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, `SWIFT_APPROACHABLE_CONCURRENCY = YES`, deployment target macOS 26.5, Xcode 27.1 |
 | **Dependencies** | Exactly one Swift dependency: ZIPFoundation 0.9.20 (SPM, pinned via `Package.resolved` — used for unzipping EPUBs). Mirage ships as a self-contained bundled runtime (its own Python interpreter), not a Swift dependency |
 | **App size** | 119 app files · 43,543 raw LOC (counted directly — not estimated) |
-| **Tests** | 48 test files · 230 `@Test` functions · last complete census **218 passed / 0 failed / 9 skipped**; new `ReaderAppearanceTests` **5/5**; full UI-inclusive rerun currently blocked by macOS automation bootstrap (opt-in real-engine, benchmark, and SQLite/live-weather gates) |
+| **Tests** | 48 Swift test files (47 containing tests) · 229 `@Test` functions in eight responsibility-based suites · GitHub unit census **229 tests / 10 deliberate skips / 0 failures**, green on macOS 26 / Xcode 26.6 |
 | **How it is tested** | Swift Testing (`@Suite` / `@Test` / `#expect`) — not XCTest |
 | **History** | ~30 working sessions (Jun–Oct 2026), 45+ commits, then the **RT–Mirage merge campaign** (Oct 2026): the 8-PR integration ladder PR-1…PR-8, closed with owner signatures; then the **Bedrock / AsterismaV1.0 release** (2026-10-24) |
 | **Where your data lives** | Sandbox container: `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` (see §3) — plus Mirage's own stratum (§3.5) |
@@ -128,14 +128,14 @@ The full campaign of record — playbook, ADR register (ADR-2…ADR-8, ADR-12), 
 
 ## §4 · Verified health status
 
-Checked directly against the merged `main` worktree on 2026-10-25 — not inherited from an old note:
+Checked directly against the merged `main` worktree on 2026-10-26 — not inherited from an old note:
 
 - ✅ `xcodebuild build` (Debug and Release, default DerivedData) → **BUILD SUCCEEDED**
-- ✅ Last complete census before the polish batch → **218 passed / 0 failed / 9 skipped** (227 cases). The new `ReaderAppearanceTests` suite passes **5/5**; a full UI-inclusive rerun is currently blocked by the macOS UI-test automation bootstrap, not by an app assertion. The 9 skips are deliberate opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo.
+- ✅ GitHub `census` is green on `macos-26` / Xcode 26.6 → **229 tests in 61 suites, 10 deliberate skips, 0 failures** (run `40266848038`). Local unit census with the staged runtime: **220 passed / 0 failed / 9 skipped**. The 10 CI skips are 4 Mirage real-engine, 1 bundled-runtime (clean CI has no staged runtime), 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo. UI tests remain placeholder launch stubs and are excluded from the deterministic CI unit receipt.
 - ✅ Rebrand verified live: app/product/display name **AsterismaV1.0**, Swift module `AsterismaV1_0`, and data root migrated to `Application Support/Asterisma/`.
 - ✅ Live library after the owner’s erase/reset and reading sessions: **1 book / 3 sessions / 77 page timings**.
-- ✅ Release package built, ad-hoc signed, `codesign --verify --deep --strict` passes, and the packaged-app launch smoke passes.
-- ✅ `main` contains the release merge at `aba8aa4` plus the owner-accepted reader build and polish candidate at `3bff002` (tag `asterisma-v1.0-polish-1`); all release, owner-test, and Bedrock tags are pushed. The working tree is clean; the local Obsidian vault configuration is now ignored.
+- ✅ Ready package rebuilt from `1c88ae5`: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `786832c8…f4643`, ad-hoc signed; `codesign --verify --deep --strict` and the packaged-app bundle smoke pass.
+- ✅ `main` contains the release merge at `aba8aa4` plus the owner-accepted reader build and preservation-first repository reorganization; app code `1c88ae5`, ready tag `asterisma-v1.0-ready-2026-10-26`; all release, owner-test, and Bedrock tags are pushed. The working tree is clean; local `.obsidian/` configuration is ignored.
 - 👑 **Owner-test authority:** the owner's personal test results outrank every item above. See `docs/12-owner-test-authority.md`.
 
 ---
@@ -154,11 +154,12 @@ The audit-era **NEW-DE-1 … NEW-DE-8 punch list was fixed and pinned** during B
 | 6 | **Legacy artifact cleanup** | Old P5-G `library.sqlite3`, `.migrated` files, and graphify bulk remain; none are live. | 1 short session |
 | 7 | **Remaining dead code** | Some zero-caller fragments remain after G7's −1,157-line sweep. | 3–5 h |
 | 8 | **Mirage era — standing items** | TB-M0 observation cadence; a perf-budget report; the engine-side backup-surface gap. The packaged app-embed exercise is now done (runtime embedded and signed). | Process, not code |
-| 9 | **CI runner mismatch** | Local census is authoritative until the CI runner matches the local Xcode/macOS pair. | Release-pipeline item |
+
+CI runner alignment is complete (2026-10-26): the workflow runs on `macos-26` / Xcode 26.6 and the latest `census` run is green.
 
 The full defect register remains the source of truth for the F-series items; the old NEW-DE block is historical and should not be read as still open.
 
-**Reader status:** the EPUB reader uses CSS-column pagination with one/two-page layouts, left/right page turns, exact chapter/page position persistence, cover/titlepage filtering, and compact in-content controls instead of the native toolbar. The 2026-10-25 polish candidate adds the Apple Books-style Appearance panel: six themes, font family, bold, text size, line/character/word spacing, margins, justification, hyphenation, page-turn style, and optional page numbers. The owner accepted the underlying reader workflow; visual acceptance of the new panel is pending. A whole-book physical page map remains future work.
+**Reader status:** the EPUB reader uses CSS-column pagination with one/two-page layouts, left/right page turns, exact chapter/page position persistence, cover/titlepage filtering, and compact in-content controls instead of the native toolbar. The ready build adds the Apple Books-style Appearance panel: six themes, font family, bold, text size, line/character/word spacing, margins, justification, hyphenation, page-turn style, and optional page numbers. The owner accepted the underlying reader workflow; visual acceptance of the new panel is pending. A whole-book physical page map remains future work.
 
 ---
 
@@ -183,8 +184,10 @@ docs/
 │   ├── 08-deep-audit.md                     Full independent audit (Oct 2026) — file:line evidence for every claim
 │   └── 11-completion-and-health-report-2026-10-24.md  Bedrock-era completion and health snapshot
 ├── plans/bedrock/                           G0–G8 gate record, master plan, baseline, distribution notes
+├── reorganization/                          AV1-ROR baseline, relocation ledger, and execution report
 ├── design/fullscreen-surface-audit.md       Fullscreen surface audit, border inventory, after capture
 ├── design/UX-BETA-AUDIT-2026-10-25.md       Beta UX audit, finding register, remediation phases
+├── design/READER-POLISH-2026-10-25.md       Apple Books benchmark + Phase 1 reader/library polish record
 ├── 12-owner-test-authority.md               Owner results are the absolute source of truth
 ├── MILESTONES.md                            Pinned capability milestones, with exact timestamps
 ├── owner-test-results/                      Personal test sessions + template

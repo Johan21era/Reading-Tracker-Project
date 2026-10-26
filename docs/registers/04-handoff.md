@@ -4,7 +4,7 @@
 
 This document answers the seven questions every close-out should answer, in plain language. It is written so that anyone — whether or not they have ever written code — can pick up the project and know exactly where things stand.
 
-**Refreshed 2026-10-24: AsterismaV1.0 is released, merged, and pushed.** The app is usable now. The remaining work is hardening for wider distribution and a short list of clearly documented feature gaps.
+**Refreshed 2026-10-26: AsterismaV1.0 is released, merged, reorganized, and CI-green.** The app is usable now. The remaining work is distribution hardening, a short list of clearly documented feature gaps, and owner visual acceptance of the reader polish.
 
 ---
 
@@ -16,7 +16,9 @@ Then the **RT–Mirage merge campaign** (October 2026): integrating a separately
 
 Then the **Bedrock program** (2026-10-24): fixing the audit-era correctness punch list, moving the live library to SQLite, adding Open-Meteo weather, wiring Behavior Context V3, and producing a signed local release candidate.
 
-Finally, the **Asterisma rebrand** (2026-10-24): renaming the product, project, targets, module, source folders, package, and user-facing copy to **AsterismaV1.0**, and moving the data root from `ReadTracker` to `Asterisma` without losing the library.
+Next, the **Asterisma rebrand** (2026-10-24): renaming the product, project, targets, module, source folders, package, and user-facing copy to **AsterismaV1.0**, and moving the data root from `ReadTracker` to `Asterisma` without losing the library.
+
+Then, the **ready close-out** (2026-10-26): the preservation-first repository reorganization, the GitHub CI runner correction, a green 229-test remote census, and a rebuilt signed package.
 
 ---
 
@@ -44,6 +46,8 @@ Finally, the **Asterisma rebrand** (2026-10-24): renaming the product, project, 
 | 9 | **G8 — release candidate:** full census, package, checksum, launch smoke, owner acceptance | `gates/GATE-G8.md` |
 | 10 | **R1 — Asterisma rebrand + data migration:** live library moved in place, counts preserved | `docs/REBRAND-ASTERISMA.md` |
 | 11 | **Merge + push:** fast-forwarded `main`, pushed `main` and all tags to GitHub | `main` at `aba8aa4`; tag `asterisma-v1.0-mvp` |
+| 12 | **R2 — repository reorganization:** app shell under `App/`, 48 flat tests into eight responsibility groups, 280-file baseline reconciled with zero content changes | `docs/reorganization/AV1-ROR-EXECUTION-2026-10-26.md` |
+| 13 | **CI hardening + ready package:** `macos-26` / Xcode 26.6 census, Xcode 26.6 concurrency fix, rebuilt signed package, green remote receipt | GitHub run `40266848038`; `dist/AsterismaV1.0-1.0-arm64.zip` |
 
 ---
 
@@ -65,21 +69,20 @@ An app that can be trusted with years of reading history, with a change process 
 | 6 | **Collection rename UI** | Small | Create/delete/membership work; rename has no UI. |
 | 7 | **Legacy cleanup + remaining dead code** | 1 short session | Old P5-G `library.sqlite3`, `.migrated` files, graphify bulk, and zero-caller fragments remain; none are live. |
 | 8 | **Mirage standing items** | Process, not code | TB-M0 observation cadence, a perf-budget report, and the engine-side backup-surface gap. The packaged app-embed exercise is done. |
-| 9 | **CI runner alignment** | Release-pipeline item | Local census is authoritative until the CI runner matches the local Xcode/macOS pair. |
 
-The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old “open” block in the defect register is historical.
+CI runner alignment is complete (2026-10-26): `census` runs on `macos-26` / Xcode 26.6, and run `40266848038` is green with 229 tests, 10 deliberate skips, and 0 failures. The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old “open” block in the defect register is historical.
 
 ---
 
 ## What should the next person know to start instantly?
 
-**Baseline:** `main` carries the original release merge at `aba8aa4` plus the owner-accepted reader build and polish candidate at `3bff002` (tag `asterisma-v1.0-polish-1`); prior census **218 passed / 0 failed / 9 skipped**; new `ReaderAppearanceTests` **5/5**; full rerun blocked by macOS UI-test automation bootstrap; release tag `asterisma-v1.0-mvp`; package `dist/AsterismaV1.0-1.0-arm64.zip` with SHA-256 `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`. Canonical census numbers come from `xcrun xcresulttool get test-results summary`.
+**Baseline:** `main` carries the original release merge at `aba8aa4` plus the owner-accepted reader build, the preservation-first repository reorganization, and CI hardening; app code `1c88ae5`, ready tag `asterisma-v1.0-ready-2026-10-26`, release tag `asterisma-v1.0-mvp`. Latest GitHub unit census: **229 tests / 10 deliberate skips / 0 failures** (run `40266848038`); latest local unit census: **220 passed / 0 failed / 9 skipped**. Package `dist/AsterismaV1.0-1.0-arm64.zip` SHA-256 `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`. Canonical census numbers come from `xcrun xcresulttool get test-results summary`.
 
 > **Owner-test authority:** the owner's personal test results are the absolute source of truth and override every benchmark, census, gate receipt, and documentation claim. See `docs/12-owner-test-authority.md`; record sessions in `docs/owner-test-results/`.
 
 **Live data:** `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` — **1 book / 3 sessions / 77 page timings** after the owner’s deliberate erase/reset and acceptance test. The owner deleted the local backup snapshots on 2026-10-24, so the live library is currently the only copy; rely on Time Machine or an external backup before risky work.
 
-**Docs map:** start at `README.md` → this handoff → `docs/plans/bedrock/` for the release gates → `docs/integration/` for anything Mirage.
+**Docs map:** start at `README.md` → this handoff → `docs/reorganization/` for the final structure audit → `docs/plans/bedrock/` for the release gates → `docs/design/READER-POLISH-2026-10-25.md` for the current reader polish → `docs/integration/` for anything Mirage.
 
 **Standing constraints:**
 - Whole-file rewrites only for `BehaviorContextEngine2` and `BehavioralCategory`.
@@ -99,8 +102,10 @@ The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old �
 ## Related documents
 
 - `docs/registers/02-defect-register.md` — everything known to be broken or risky (the NEW-DE block is historical; F-series items remain the source of truth)
-- `docs/registers/03-fix-log.md` — everything fixed, with proof (Stage B covers Bedrock/Asterisma)
+- `docs/registers/03-fix-log.md` — everything fixed, with proof (Stages B/R cover Bedrock/Asterisma and the ready close-out)
 - `docs/plans/bedrock/` — G0–G8 gate record, baseline, plan, distribution notes
+- `docs/reorganization/` — preservation-first structure audit, baseline manifest, relocation ledger, and execution report
+- `docs/design/READER-POLISH-2026-10-25.md` — Apple Books benchmark and Phase 1 reader/library polish record
 - `docs/REBRAND-ASTERISMA.md` — rename and data-root migration record
 - `docs/integration/RT_Mirage_Codebase_Merge_Playbook.md` — the merge-era constitution (§22 still executes the TiB era)
 - `docs/audits/08-deep-audit.md` — the full independent audit (October 2026)
@@ -125,3 +130,31 @@ the signed release zip, the staged Mirage runtime, and graphify deliverables.
 **Next:** owner visual retest of the Appearance panel and book plate. The next
 polish batch is in-book search/bookmarks/highlights, vertical scroll, and
 per-theme custom settings.
+
+---
+
+## Session close — 2026-10-26
+
+**Delivered:** preservation-first repository reorganization (app shell under
+`App/`, 48 flat tests into eight responsibility groups), GitHub CI correction
+to `macos-26` / Xcode 26.6, the Xcode 26.6 `nonisolated` subscript fix, and a
+rebuilt signed ready package.
+
+**Verification:** Debug build green; repository baseline reconciliation
+280/280 with zero content changes; local unit census **220 passed / 0 failed /
+9 skipped**; GitHub unit census **229 tests / 10 deliberate skips / 0 failures**
+(run `40266848038`); package signature, sandbox entitlements, embedded-Mirage
+smoke, and Gatekeeper-rejection expectation re-verified.
+
+**Ready package:** `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`
+(app code `1c88ae5`, tag `asterisma-v1.0-ready-2026-10-26`).
+
+**Cleanup:** graphify refreshed at the ready tree; generated `.DS_Store` and
+temporary build/test residue removed. The signed zip, staged Mirage runtime,
+and historical graphify outputs were preserved.
+
+**Next:** owner visual retest of the Appearance panel and book plate on the
+ready package. If accepted, record owner acceptance and promote milestone 004
+from candidate to accepted. Then resume the polish backlog: in-book search,
+bookmarks/highlights, vertical scroll, per-theme settings, library shelf/grid,
+and the accessibility/responsive matrix.

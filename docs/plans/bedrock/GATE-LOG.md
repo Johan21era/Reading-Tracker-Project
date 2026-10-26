@@ -29,9 +29,19 @@ censuses, benchmarks, and documentation claims above. See
 **Owner-test fixes:** the first owner runs found four defects (packaged
 entitlements, onboarding dead end, folder-form EPUBs, windowed toolbar/zoom). Fixed on top of the
 accepted release. The owner then accepted the complete reader workflow on
-the `asterisma-v1.0-ux-audit-2` build. The current candidate is `3bff002`
-(tag `asterisma-v1.0-polish-1`), package SHA-256 `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`; it adds the Apple Books-style appearance panel and library polish.
-Owner retest of the refinement is the next gate.
+the `asterisma-v1.0-ux-audit-2` build. The ready build is app code `1c88ae5`
+(tag `asterisma-v1.0-ready-2026-10-26`), package SHA-256
+`786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`;
+it adds the Apple Books-style appearance panel, library polish, the
+preservation-first repository reorganization, and a green `macos-26` CI
+receipt. Owner visual retest of the appearance panel and book plate is the
+next gate.
+
+**Ready close-out (2026-10-26):** GitHub run `40266848038` is green —
+**229 tests / 10 deliberate skips / 0 failures** on macOS 26 / Xcode 26.6.
+Local unit census is **220 passed / 0 failed / 9 skipped**. The full
+UI-inclusive census remains unclaimed because UI tests are placeholder launch
+stubs that depend on interactive macOS automation.
 
 **Snapshot note:** the owner deleted all local backup snapshots on 2026-10-24.
 Rollback paths recorded in older gate receipts are historical; no local data

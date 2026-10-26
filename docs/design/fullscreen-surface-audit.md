@@ -5,6 +5,7 @@
 **Platform:** macOS 26.5, SwiftUI/AppKit (native — no WebView, HTML, or CSS)
 **Candidate:** `3bff002` / tag `asterisma-v1.0-polish-1`
 **Package:** SHA-256 `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`
+**Ready rebuild (2026-10-26):** app code `1c88ae5` / tag `asterisma-v1.0-ready-2026-10-26`; package SHA-256 `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`
 
 ---
 

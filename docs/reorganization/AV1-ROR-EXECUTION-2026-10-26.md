@@ -2,7 +2,7 @@
 
 **Document ID:** AV1-ROR-EXECUTION-001
 **Date:** 2026-10-26
-**Status:** EXECUTED — build and unit census verified; UI-inclusive census not claimed
+**Status:** EXECUTED — build, local unit census, and GitHub unit census verified; UI-inclusive census not claimed
 **Governing specification:** owner-supplied `engineering team tasks oct 26th .md` (AV1-ROR-MASTER-001)
 **Baseline commit:** `c1e1c968fa03257d6926c55d1fa7ed7f531149d2`
 **Repository:** `/Users/johanrembeci/Desktop/AsterismaV1.0`
@@ -203,8 +203,9 @@ synchronized-group evidence above resolves that dependency.
 | Source hashes | All 50 before/after hashes identical |
 | Baseline reconciliation | 280 baseline tracked files; 0 missing, 0 mismatched, 0 unapproved additions, 0 unapproved deletions |
 | Xcode Debug build | **BUILD SUCCEEDED** (`xcodebuild build`, Debug, macOS) |
-| Unit-test discovery and census | **220 passed / 0 failed / 9 skipped** (229 cases) via `./scripts/census.sh --unit-only` |
-| Full UI-inclusive census | Not claimed; macOS automation bootstrap may block it |
+| Local unit-test discovery and census | **220 passed / 0 failed / 9 skipped** (229 cases) via `./scripts/census.sh --unit-only` |
+| GitHub CI unit census | **229 tests / 10 deliberate skips / 0 failures** — run `40266848038`, green on macOS 26 / Xcode 26.6 |
+| Full UI-inclusive census | Not claimed; UI placeholders depend on interactive macOS automation |
 | User data | Not touched |
 | Mirage runtime / ownership | Not touched |
 | Package signing | Not touched by the reorganization |
@@ -242,8 +243,36 @@ into a fabricated pass.
 9. Built the app: **BUILD SUCCEEDED**.
 10. Ran `./scripts/census.sh --unit-only`: **220 passed / 0 failed / 9 skipped** (229 cases).
 11. Reconciled all 280 baseline tracked files: no missing, mismatched, added, or deleted files.
+12. Fixed the GitHub runner (`macos-26` / Xcode 26.6) and Xcode 26.6 concurrency diagnostic.
+13. Verified GitHub run `40266848038`: 229 tests, 10 deliberate skips, 0 failures.
 
-## 9. Definition of success
+## 9. Post-reorganization CI remediation
+
+The first GitHub run exposed two independent infrastructure defects:
+
+1. The workflow ran on `macos-14` / Xcode 15.4, which cannot open project format 77.
+   The runner is now `macos-26` / Xcode 26.6.
+2. Xcode 26.6 correctly enforced the project's `MainActor` default on the private
+   safe-array subscript used by `OpenMeteoProvider`; the subscript is now marked
+   `nonisolated`.
+
+The bundled-runtime app-host assertion is self-gated on `.mirage-runtime` being
+staged, because clean CI intentionally builds without that ignored 47 MB bundle.
+The synthetic runtime-contract tests still run. CI runs the deterministic unit
+target; UI placeholder stubs remain outside the merge-presence receipt.
+
+Verification: GitHub run `40266848038` — **TEST SUCCEEDED**, 229 tests, 10
+deliberate skips, 0 failures.
+
+The signed ready package was rebuilt from app code `1c88ae5` after the CI fix:
+`dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256
+`786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`
+(tag `asterisma-v1.0-ready-2026-10-26`). Signature, sandbox entitlements,
+embedded-Mirage smoke, and the expected Gatekeeper rejection were re-verified
+by `scripts/package-release.sh`; the reorganization itself did not touch
+packaging inputs.
+
+## 10. Definition of success
 
 The repository is clearer without becoming a different program:
 

@@ -23,9 +23,9 @@ This is a map of every file and folder in the project, organized so you can find
 | `AsterismaV1.0.entitlements` | Permissions the app asks macOS for (sandbox, user-selected files, location) |
 | `AsterismaV1.0-Info.plist` | App settings such as its name, icon, and location description |
 | `scripts/` | Census, benchmark, test-isolation, runtime staging, icon, and release-package scripts |
-| `dist/` | Locally built release packages (gitignored); the final signed polish zip is kept here |
+| `dist/` | Locally built release packages (gitignored); the final signed ready zip is kept here |
 | `.mirage-runtime/` | Local staged Mirage runtime (gitignored; required for a fresh build) |
-| `graphify-out/` | Generated knowledge graph, report, and interactive HTML (5,265-node code graph as of 2026-10-25) |
+| `graphify-out/` | Generated knowledge graph, report, and interactive HTML (refreshed 2026-10-26; current counts in `GRAPH_REPORT.md`) |
 | `.gitignore` | Tells Git which files to ignore (build junk, user settings, etc.) |
 
 ---
@@ -51,6 +51,7 @@ Every documentation file begins with a number so you can read them in order:
 | `docs/design/fullscreen-surface-audit.md` | — | Fullscreen surface audit, border inventory, and after capture | Anyone reviewing the UI |
 | `docs/design/UX-BETA-AUDIT-2026-10-25.md` | — | Beta UX audit, finding register, and remediation phases | Design, engineering, QA, and product owners |
 | `docs/design/READER-POLISH-2026-10-25.md` | — | Apple Books benchmark, Appearance panel, chrome, and library polish record | Design, engineering, and anyone continuing the polish program |
+| `docs/reorganization/` | — | AV1-ROR baseline, relocation ledger, exception register, and execution report | Anyone auditing repository structure |
 | `docs/12-owner-test-authority.md` | 12 | The owner's personal test results are the absolute source of truth | Everyone — this overrides all other claims |
 | `docs/MILESTONES.md` | — | Pinned capability milestones with exact timestamps | Everyone — the wins matter too |
 | `docs/owner-test-results/` | — | Personal test sessions, template, and evidence | The owner, then anyone acting on the results |
@@ -83,6 +84,7 @@ This folder contains every Swift file that makes the app run. They are grouped b
 
 | Group | Contains |
 |---|---|
+| `App/` | App composition: the `@main` entry point and the unified library/window shell |
 | `Core/` | The heart of the app: the data store, book models, validators, persistence, Sentinel watchdog |
 | `Engines/` | The "accountants": analytics, estimation, data maturity, insights |
 | `Features/` | Everything the user sees and touches: books, reader, goals, weather, audio, achievements, onboarding, reports, RSVP speed-reading, developer console — and `Mirage/` (14 typed files: the RT-side of the Mirage integration — wire types, client, sidecar supervisor, runtime locator, cursor gate, status surface, settings, identity map, import flow, sheet, mount, transport, child-process, protocol constants) |
@@ -94,7 +96,7 @@ This folder contains every Swift file that makes the app run. They are grouped b
 
 These are automated checks that run without you having to click anything. Each test is named after the specific bug or behavior it guards. If a test ever starts failing, that is an early warning that something broke.
 
-As of the 2026-10-25 polish candidate: 48 test files and 230 `@Test` functions. The last complete census before the polish batch was **218 passed / 0 failed / 9 skipped**; the new `ReaderAppearanceTests` suite passes **5/5**. A full rerun of the UI-inclusive census is currently blocked by the macOS UI-test automation bootstrap, not by an app assertion. The 9 skips are deliberate opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo (see `docs/method/07-testing-strategy.md` for how to engage them).
+As of 2026-10-26: 48 Swift files in the unit-test target. Forty-seven contain **229 `@Test` functions**, grouped into eight responsibility-based groups: `App`, `Behavior`, `Core`, `DeveloperConsole`, `Environment`, `Library`, `Mirage`, and `Reader`; the 48th is shared support code. The GitHub `census` workflow is green on `macos-26` / Xcode 26.6: **229 tests in 61 suites, 10 deliberate environment/opt-in skips, 0 failures**. Local unit census with the staged Mirage runtime is **220 passed / 0 failed / 9 skipped**. UI tests remain placeholder launch stubs and are not part of the deterministic CI merge receipt. The skips are opt-in gates: 4 Mirage real-engine, 1 bundled-runtime (CI only), 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo. See `docs/method/07-testing-strategy.md` for how to engage them.
 
 ---
 

@@ -228,7 +228,7 @@ Minimum gates:
 
 ---
 
-## Current candidate references
+## Candidate and ready-build references
 
 ```text
 Second UX-audit candidate: 936ba504337d6cb6663c66f736cee0bcb64491a6b0abf2588f0fd9bcc1a566ed
@@ -245,6 +245,11 @@ Reader polish candidate: a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906
 Code:                    3bff002
 Tag:                     asterisma-v1.0-polish-1
 Census:                  new appearance suite 5/5; full UI-runner census blocked by macOS automation bootstrap
+
+Ready build:             786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643
+Code:                    1c88ae5
+Tag:                     asterisma-v1.0-ready-2026-10-26
+Census:                  229 tests / 10 deliberate skips / 0 failures (CI run 40266848038)
 ```
 
 The audit is a living register. A finding moves to **fixed** only after the
@@ -262,3 +267,13 @@ redesigned selected-book plate. Owner visual acceptance is pending.
 The remaining polish backlog is unchanged: in-book search, bookmarks,
 highlights/notes, vertical scroll, per-theme custom settings, library
 shelf/grid, and the full accessibility/responsive matrix.
+
+### Ready close-out — 2026-10-26
+
+The reader polish and recent library work now ship in the ready package
+(`786832c8…f4643`, app code `1c88ae5`, tag
+`asterisma-v1.0-ready-2026-10-26`). The repository reorganization and CI
+correction do not change reader behavior. GitHub unit census
+`40266848038` is green: **229 tests / 10 deliberate skips / 0 failures**.
+Owner visual acceptance of the Appearance panel and book plate remains the
+gate that moves the relevant ASTER findings from candidate to accepted.
