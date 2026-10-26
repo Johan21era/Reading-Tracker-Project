@@ -1,7 +1,7 @@
 {
   "README.md": {
-    "mtime": 1792958930.5388901,
-    "ast_hash": "a38a5f51d00bc7d61bb2e4a55a86cb87",
+    "mtime": 1792976319.477472,
+    "ast_hash": "0e4f0bba66a86cb4035a1ace7770d05b",
     "semantic_hash": ""
   },
   "docs/history/LAST_DEFEAT_demo_profiles.txt": {
@@ -45,8 +45,8 @@
     "semantic_hash": "2b68e3f5b67138ca4617686b9919ba08"
   },
   "docs/01-project-tree.md": {
-    "mtime": 1792905489.2600951,
-    "ast_hash": "b831b644d975344b13175d2c05c5ba6a",
+    "mtime": 1792976261.7221646,
+    "ast_hash": "5549f492c350696be1fa474fff6dc739",
     "semantic_hash": ""
   },
   "docs/audits/08-deep-audit.md": {
@@ -190,23 +190,23 @@
     "semantic_hash": "5649bcfa5bdf18d842374e96d6113a76"
   },
   "docs/method/07-testing-strategy.md": {
-    "mtime": 1792903178.025154,
-    "ast_hash": "d7401637b3922ab684e94fee0f92d63d",
+    "mtime": 1792976331.754399,
+    "ast_hash": "dc5f02f48c5536b11560a20d85fd9222",
     "semantic_hash": ""
   },
   "docs/registers/02-defect-register.md": {
-    "mtime": 1792903178.0265484,
-    "ast_hash": "07791afd60268b45ab6f63b5e9c62a6f",
+    "mtime": 1792976335.8222802,
+    "ast_hash": "d92fc849de9498d42cc288f833174639",
     "semantic_hash": ""
   },
   "docs/registers/03-fix-log.md": {
-    "mtime": 1792958928.3758564,
-    "ast_hash": "3a1a1572381b4f9d4b247959803cc481",
+    "mtime": 1792976288.00641,
+    "ast_hash": "7db3bb02e6b2c24a1af09bdda8987592",
     "semantic_hash": ""
   },
   "docs/registers/04-handoff.md": {
-    "mtime": 1792958942.923498,
-    "ast_hash": "0b26f083109c9c8a0f548d2eed4ba450",
+    "mtime": 1792976292.329646,
+    "ast_hash": "eb1bb4b0f264ee3970d08fb7493a20a8",
     "semantic_hash": ""
   },
   "docs/roadmap/05-remediation-roadmap.md": {
@@ -258,11 +258,6 @@
     "mtime": 1792825179.874012,
     "ast_hash": "9deb2ada1cc834bbebf8bbad9c8978a1",
     "semantic_hash": "9deb2ada1cc834bbebf8bbad9c8978a1"
-  },
-  "AsterismaV1.0/AsterismaApp.swift": {
-    "mtime": 1792898258.9513037,
-    "ast_hash": "2c00f4ee3a093d1690033dbc7ad5168a",
-    "semantic_hash": ""
   },
   "AsterismaV1.0/Core/AnalyticsCache.swift": {
     "mtime": 1792825179.874452,
@@ -849,231 +844,6 @@
     "ast_hash": "acbe09cb70b7a651825b75204615f6ed",
     "semantic_hash": "acbe09cb70b7a651825b75204615f6ed"
   },
-  "AsterismaV1.0/NewContentView.swift": {
-    "mtime": 1792920989.4085085,
-    "ast_hash": "70fa5319e64de061d638d6e485e40ac6",
-    "semantic_hash": ""
-  },
-  "AsterismaV1.0Tests/AnalyticsCachePinsTests.swift": {
-    "mtime": 1792825179.8970802,
-    "ast_hash": "453865f52d9070fb22cf009f09bb0574",
-    "semantic_hash": "453865f52d9070fb22cf009f09bb0574"
-  },
-  "AsterismaV1.0Tests/BedrockBaselineTests.swift": {
-    "mtime": 1792825179.8971922,
-    "ast_hash": "41bdedf265ee67ecd6a6ffbfacc68097",
-    "semantic_hash": "41bdedf265ee67ecd6a6ffbfacc68097"
-  },
-  "AsterismaV1.0Tests/CelebrationTimelineTests.swift": {
-    "mtime": 1792825179.8973134,
-    "ast_hash": "36e448b9d9bf9a6a6460296c328edbc4",
-    "semantic_hash": "36e448b9d9bf9a6a6460296c328edbc4"
-  },
-  "AsterismaV1.0Tests/CoverStorePinsTests.swift": {
-    "mtime": 1792825179.8974204,
-    "ast_hash": "182744675049b265b620787573e7ed12",
-    "semantic_hash": "182744675049b265b620787573e7ed12"
-  },
-  "AsterismaV1.0Tests/DemoProfileServiceTests.swift": {
-    "mtime": 1792825179.8975325,
-    "ast_hash": "87602e7a437470cfbfe7641071341893",
-    "semantic_hash": "87602e7a437470cfbfe7641071341893"
-  },
-  "AsterismaV1.0Tests/DurabilityPinsTests.swift": {
-    "mtime": 1792825179.8976429,
-    "ast_hash": "1217d8f0e73f63ec62c806635acb7cb6",
-    "semantic_hash": "1217d8f0e73f63ec62c806635acb7cb6"
-  },
-  "AsterismaV1.0Tests/EnvironmentEngineTests.swift": {
-    "mtime": 1792825179.897751,
-    "ast_hash": "51f86c4ba01328b01ad603d0ef3d1c7f",
-    "semantic_hash": "51f86c4ba01328b01ad603d0ef3d1c7f"
-  },
-  "AsterismaV1.0Tests/FatigueAnalyzerTests.swift": {
-    "mtime": 1792825179.8978722,
-    "ast_hash": "30aa860d953208e79c671b5bbb789b0c",
-    "semantic_hash": "30aa860d953208e79c671b5bbb789b0c"
-  },
-  "AsterismaV1.0Tests/G1CorrectnessPinsTests.swift": {
-    "mtime": 1792825179.8979957,
-    "ast_hash": "a4c4c35d2e0c450d7a7aa48a98f8dd03",
-    "semantic_hash": "a4c4c35d2e0c450d7a7aa48a98f8dd03"
-  },
-  "AsterismaV1.0Tests/G6ContextPinsTests.swift": {
-    "mtime": 1792825179.8981078,
-    "ast_hash": "ae774dc692b3da345352cdd3f5beed27",
-    "semantic_hash": "ae774dc692b3da345352cdd3f5beed27"
-  },
-  "AsterismaV1.0Tests/G6EvidencePersistenceTests.swift": {
-    "mtime": 1792825179.898215,
-    "ast_hash": "d20c374d925d11172d8ae8d1363719d1",
-    "semantic_hash": "d20c374d925d11172d8ae8d1363719d1"
-  },
-  "AsterismaV1.0Tests/LibraryCollectionTests.swift": {
-    "mtime": 1792825179.8983395,
-    "ast_hash": "daf9b5088e745cbc1a9ef733d228609c",
-    "semantic_hash": "daf9b5088e745cbc1a9ef733d228609c"
-  },
-  "AsterismaV1.0Tests/LibraryMetadataPinsTests.swift": {
-    "mtime": 1792825179.8984468,
-    "ast_hash": "f9b1a2c7338ebb6b6ca4787868bf9ba0",
-    "semantic_hash": "f9b1a2c7338ebb6b6ca4787868bf9ba0"
-  },
-  "AsterismaV1.0Tests/MirageAppImportMountTests.swift": {
-    "mtime": 1792825179.898568,
-    "ast_hash": "bd00ff3fdc65d4366e8daf84c03af6e5",
-    "semantic_hash": "bd00ff3fdc65d4366e8daf84c03af6e5"
-  },
-  "AsterismaV1.0Tests/MirageBundledRuntimeTests.swift": {
-    "mtime": 1792825179.8986762,
-    "ast_hash": "ac569d5b76661bba013f385e837efce7",
-    "semantic_hash": "ac569d5b76661bba013f385e837efce7"
-  },
-  "AsterismaV1.0Tests/MirageCursorContractTests.swift": {
-    "mtime": 1792825179.8987753,
-    "ast_hash": "f09394c982e7947e45b194980c88914a",
-    "semantic_hash": "f09394c982e7947e45b194980c88914a"
-  },
-  "AsterismaV1.0Tests/MirageFeatureLifecycleTests.swift": {
-    "mtime": 1792825179.8988996,
-    "ast_hash": "10581c7bb90cf5873c185b6b5638fb40",
-    "semantic_hash": "10581c7bb90cf5873c185b6b5638fb40"
-  },
-  "AsterismaV1.0Tests/MirageHandshakePinTests.swift": {
-    "mtime": 1792825179.8990188,
-    "ast_hash": "1dfc85e062f225b282cc8defb9d1f094",
-    "semantic_hash": "1dfc85e062f225b282cc8defb9d1f094"
-  },
-  "AsterismaV1.0Tests/MirageIdentityDriftTests.swift": {
-    "mtime": 1792825179.8991473,
-    "ast_hash": "2b2822544b3ad20eeb8bb1a3b0e5d2f8",
-    "semantic_hash": "2b2822544b3ad20eeb8bb1a3b0e5d2f8"
-  },
-  "AsterismaV1.0Tests/MirageIdentityMapContractTests.swift": {
-    "mtime": 1792825179.899283,
-    "ast_hash": "e13c1af8e85e1dfa2d948ed248622728",
-    "semantic_hash": "e13c1af8e85e1dfa2d948ed248622728"
-  },
-  "AsterismaV1.0Tests/MirageIdentityRealEngineImportTests.swift": {
-    "mtime": 1792825179.8994527,
-    "ast_hash": "813e2d11928faaa45cd8d4f95eae21f3",
-    "semantic_hash": "813e2d11928faaa45cd8d4f95eae21f3"
-  },
-  "AsterismaV1.0Tests/MiragePageTurnNonTriggerTests.swift": {
-    "mtime": 1792825179.8995755,
-    "ast_hash": "21d40a072eaf2a48030ec811a8a2064b",
-    "semantic_hash": "21d40a072eaf2a48030ec811a8a2064b"
-  },
-  "AsterismaV1.0Tests/MirageProtocolConformanceTests.swift": {
-    "mtime": 1792825179.8996942,
-    "ast_hash": "178700ca9c66d504b6986913c7149e76",
-    "semantic_hash": "178700ca9c66d504b6986913c7149e76"
-  },
-  "AsterismaV1.0Tests/MirageRealEngineSmokeTests.swift": {
-    "mtime": 1792825179.8998103,
-    "ast_hash": "e3be1ab01d8ff411b45aef5270cada3a",
-    "semantic_hash": "e3be1ab01d8ff411b45aef5270cada3a"
-  },
-  "AsterismaV1.0Tests/MirageSidecarLifecycleTests.swift": {
-    "mtime": 1792825179.8999286,
-    "ast_hash": "a3c3bf987a01a076c46912ded0e47094",
-    "semantic_hash": "a3c3bf987a01a076c46912ded0e47094"
-  },
-  "AsterismaV1.0Tests/MirageSpoilerProbeTests.swift": {
-    "mtime": 1792825179.9000404,
-    "ast_hash": "ef2b55a2f0679dbc16f14cb2b760b1a2",
-    "semantic_hash": "ef2b55a2f0679dbc16f14cb2b760b1a2"
-  },
-  "AsterismaV1.0Tests/MirageStatusSurfaceTests.swift": {
-    "mtime": 1792825179.9003506,
-    "ast_hash": "705be5a820501a224dc4606d1ba6ef5a",
-    "semantic_hash": "705be5a820501a224dc4606d1ba6ef5a"
-  },
-  "AsterismaV1.0Tests/MirageStubSidecarSupport.swift": {
-    "mtime": 1792825179.900507,
-    "ast_hash": "dc1c341520ddd7dd4c8038cdefcc5af9",
-    "semantic_hash": "dc1c341520ddd7dd4c8038cdefcc5af9"
-  },
-  "AsterismaV1.0Tests/MirageZBootDiagnosticTests.swift": {
-    "mtime": 1792825179.900659,
-    "ast_hash": "5b1542ee6ce4ad6290744763a14509ed",
-    "semantic_hash": "5b1542ee6ce4ad6290744763a14509ed"
-  },
-  "AsterismaV1.0Tests/NonGregorianCalendarTests.swift": {
-    "mtime": 1792825179.9007826,
-    "ast_hash": "92aa34f4ab7dcb13f3a207a8e20bc70b",
-    "semantic_hash": "92aa34f4ab7dcb13f3a207a8e20bc70b"
-  },
-  "AsterismaV1.0Tests/OpenMeteoLiveSmokeTests.swift": {
-    "mtime": 1792825179.9009202,
-    "ast_hash": "d446f4e5477148c89b524db9efe139ac",
-    "semantic_hash": "d446f4e5477148c89b524db9efe139ac"
-  },
-  "AsterismaV1.0Tests/OpenMeteoProviderTests.swift": {
-    "mtime": 1792825179.9014046,
-    "ast_hash": "fd82f6f2fed8b93e68d5bb81fac8f66c",
-    "semantic_hash": "fd82f6f2fed8b93e68d5bb81fac8f66c"
-  },
-  "AsterismaV1.0Tests/RSVPLogicTests.swift": {
-    "mtime": 1792825179.9017127,
-    "ast_hash": "918689be0b973929b1b8c26259270e2b",
-    "semantic_hash": "918689be0b973929b1b8c26259270e2b"
-  },
-  "AsterismaV1.0Tests/Reading_TrackerTests.swift": {
-    "mtime": 1792825179.9022653,
-    "ast_hash": "2eeb6ddf987e7ab4196f5f43948c62e3",
-    "semantic_hash": "2eeb6ddf987e7ab4196f5f43948c62e3"
-  },
-  "AsterismaV1.0Tests/ReliabilityTests.swift": {
-    "mtime": 1792825179.9023912,
-    "ast_hash": "3c4c7f224f9a05bc896dfe7b2c0b160c",
-    "semantic_hash": "3c4c7f224f9a05bc896dfe7b2c0b160c"
-  },
-  "AsterismaV1.0Tests/RemediationPinsTests.swift": {
-    "mtime": 1792825179.9025166,
-    "ast_hash": "54514bb6f6516a2f4c9bb819a07cfaec",
-    "semantic_hash": "54514bb6f6516a2f4c9bb819a07cfaec"
-  },
-  "AsterismaV1.0Tests/SQLiteDataStoreTests.swift": {
-    "mtime": 1792825179.9026444,
-    "ast_hash": "33bb186f21ed45354dd0030d272962a4",
-    "semantic_hash": "33bb186f21ed45354dd0030d272962a4"
-  },
-  "AsterismaV1.0Tests/SQLiteFoundationTests.swift": {
-    "mtime": 1792825179.9027717,
-    "ast_hash": "8938ca53b7bd7ca07b3cd0c7d37051b0",
-    "semantic_hash": "8938ca53b7bd7ca07b3cd0c7d37051b0"
-  },
-  "AsterismaV1.0Tests/SchemaEvolutionTests.swift": {
-    "mtime": 1792825179.902895,
-    "ast_hash": "6fb3bd1e92e703457b106c01498816b0",
-    "semantic_hash": "6fb3bd1e92e703457b106c01498816b0"
-  },
-  "AsterismaV1.0Tests/SentinelPinsTests.swift": {
-    "mtime": 1792825179.9031208,
-    "ast_hash": "715d600c6086cf2112dc4059ac86bcd1",
-    "semantic_hash": "715d600c6086cf2112dc4059ac86bcd1"
-  },
-  "AsterismaV1.0Tests/TextExtractionTests.swift": {
-    "mtime": 1792825179.9032304,
-    "ast_hash": "cc40d3497149bef9e859c6b7abb0411c",
-    "semantic_hash": "cc40d3497149bef9e859c6b7abb0411c"
-  },
-  "AsterismaV1.0Tests/WeatherConfidencePinsTests.swift": {
-    "mtime": 1792825179.903357,
-    "ast_hash": "0eba595f39f2b4d9a869dd45dbe9da3c",
-    "semantic_hash": "0eba595f39f2b4d9a869dd45dbe9da3c"
-  },
-  "AsterismaV1.0Tests/WeatherLivePipelineTests.swift": {
-    "mtime": 1792825179.9034607,
-    "ast_hash": "24954d7df2d61ede5b3748ff6424a4bb",
-    "semantic_hash": "24954d7df2d61ede5b3748ff6424a4bb"
-  },
-  "AsterismaV1.0Tests/WeatherTests.swift": {
-    "mtime": 1792825179.9036992,
-    "ast_hash": "040697d02154633d3392207eedfccf75",
-    "semantic_hash": "040697d02154633d3392207eedfccf75"
-  },
   "AsterismaV1.0UITests/Reading_TrackerUITests.swift": {
     "mtime": 1792827760.9995372,
     "ast_hash": "3f461ba528292dd1cb8376a671aa7667",
@@ -1115,8 +885,8 @@
     "semantic_hash": "0a6903d840ca9aa12097aa0e195f2c15"
   },
   "docs/REBRAND-ASTERISMA.md": {
-    "mtime": 1792958930.5404415,
-    "ast_hash": "eacfd850536cbeb27a1bbb91f6d16d39",
+    "mtime": 1792976350.2143676,
+    "ast_hash": "940c74a25aced07d4c4928fc7b86100a",
     "semantic_hash": ""
   },
   "docs/audits/11-completion-and-health-report-2026-10-24.md": {
@@ -1135,8 +905,8 @@
     "semantic_hash": "fb315835bc19735af5287f9c0a6955d2"
   },
   "docs/plans/bedrock/DISTRIBUTION.md": {
-    "mtime": 1792958928.3765817,
-    "ast_hash": "83172c71fb3c0a37206bd5a51f16efc3",
+    "mtime": 1792976338.9767168,
+    "ast_hash": "c8826df3295f5465950df6415a4598a7",
     "semantic_hash": ""
   },
   "docs/plans/bedrock/GATE-LOG.md": {
@@ -1150,8 +920,8 @@
     "semantic_hash": ""
   },
   "docs/plans/bedrock/SESSION-2026-10-24.md": {
-    "mtime": 1792907493.1081283,
-    "ast_hash": "3ef371411d3d53470aa2d4c3f28cfe72",
+    "mtime": 1792976314.3248467,
+    "ast_hash": "d195d1ce039aad851bef8029a271c993",
     "semantic_hash": ""
   },
   "docs/plans/bedrock/gates/GATE-G1.md": {
@@ -1205,8 +975,8 @@
     "semantic_hash": "e9de094827c877fddf3984040462538d"
   },
   "docs/plans/bedrock/gates/GATE-G8.md": {
-    "mtime": 1792907506.978184,
-    "ast_hash": "3cae255752590f30ce395b23bb977ff4",
+    "mtime": 1792976321.5882647,
+    "ast_hash": "ca78956ead4355682f1269116a2e007d",
     "semantic_hash": ""
   },
   "AsterismaV1.0/Assets.xcassets/AppIcon.appiconset/icon_128x128.png": {
@@ -1269,54 +1039,34 @@
     "ast_hash": "31c05727140e93fd454e14661224c3b4",
     "semantic_hash": ""
   },
-  "AsterismaV1.0Tests/DataEraseTests.swift": {
-    "mtime": 1792899696.9115458,
-    "ast_hash": "c80b355595f613b5a0fdfd96e82357ed",
-    "semantic_hash": ""
-  },
-  "AsterismaV1.0Tests/EPUBReadingPositionTests.swift": {
-    "mtime": 1792903070.5680933,
-    "ast_hash": "ed7b4644b772b4e4e4de7570e1b9a8b4",
-    "semantic_hash": ""
-  },
-  "AsterismaV1.0Tests/FolderEPUBImportTests.swift": {
-    "mtime": 1792900815.198976,
-    "ast_hash": "d4b19c345d319f4772fbdda5f0d346ba",
-    "semantic_hash": ""
-  },
-  "AsterismaV1.0Tests/ReaderAppearanceTests.swift": {
-    "mtime": 1792908754.738173,
-    "ast_hash": "e4bafd5bc18ce479bb5b7fa726f996fe",
-    "semantic_hash": ""
-  },
   "docs/12-owner-test-authority.md": {
     "mtime": 1792827959.459403,
     "ast_hash": "4a948215f1910f0e2c259b8fe4bd08b3",
     "semantic_hash": ""
   },
   "docs/MILESTONES.md": {
-    "mtime": 1792907498.9136064,
-    "ast_hash": "21b41edda6e21ab25ff6eea3ca7cfb7e",
+    "mtime": 1792976325.9076335,
+    "ast_hash": "b78d054453ad47408ea13bfa3d73709a",
     "semantic_hash": ""
   },
   "docs/design/READER-POLISH-2026-10-25.md": {
-    "mtime": 1792958934.5630386,
-    "ast_hash": "c10a906467b619ef3bbe49d2c3f0ddb5",
+    "mtime": 1792976305.2928164,
+    "ast_hash": "2e94ce25fce5d4c0485281d5eb39a043",
     "semantic_hash": ""
   },
   "docs/design/UX-BETA-AUDIT-2026-10-25.md": {
-    "mtime": 1792958936.905409,
-    "ast_hash": "dfe4010896d4c0c1f1ad71377db4818e",
+    "mtime": 1792976300.7791045,
+    "ast_hash": "a3dcdcd9eafe142af47ffaeb129bd58b",
     "semantic_hash": ""
   },
   "docs/design/fullscreen-surface-audit.md": {
-    "mtime": 1792907493.1094537,
-    "ast_hash": "283c52b4f0162b3734979225080ef92f",
+    "mtime": 1792976323.0814285,
+    "ast_hash": "ea9385de16bdfd6dfa05390e6e06919c",
     "semantic_hash": ""
   },
   "docs/owner-test-results/2026-10-24-session-1.md": {
-    "mtime": 1792958938.416187,
-    "ast_hash": "340d17e50edff7ea068abafafa4365fe",
+    "mtime": 1792976298.4680977,
+    "ast_hash": "4e02e821dc46cb31ec536ef405402d2d",
     "semantic_hash": ""
   },
   "docs/owner-test-results/README.md": {
@@ -1332,6 +1082,276 @@
   "docs/design/fullscreen-surface-after.png": {
     "mtime": 1792898397.4604135,
     "ast_hash": "5194674078588ae83b2133283f184c8d",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/App/AsterismaApp.swift": {
+    "mtime": 1792898258.9513037,
+    "ast_hash": "2c00f4ee3a093d1690033dbc7ad5168a",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/App/NewContentView.swift": {
+    "mtime": 1792920989.4085085,
+    "ast_hash": "70fa5319e64de061d638d6e485e40ac6",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/App/BedrockBaselineTests.swift": {
+    "mtime": 1792825179.8971922,
+    "ast_hash": "41bdedf265ee67ecd6a6ffbfacc68097",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/App/CelebrationTimelineTests.swift": {
+    "mtime": 1792825179.8973134,
+    "ast_hash": "36e448b9d9bf9a6a6460296c328edbc4",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/App/NonGregorianCalendarTests.swift": {
+    "mtime": 1792825179.9007826,
+    "ast_hash": "92aa34f4ab7dcb13f3a207a8e20bc70b",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/App/Reading_TrackerTests.swift": {
+    "mtime": 1792825179.9022653,
+    "ast_hash": "2eeb6ddf987e7ab4196f5f43948c62e3",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/App/RemediationPinsTests.swift": {
+    "mtime": 1792825179.9025166,
+    "ast_hash": "54514bb6f6516a2f4c9bb819a07cfaec",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Behavior/FatigueAnalyzerTests.swift": {
+    "mtime": 1792825179.8978722,
+    "ast_hash": "30aa860d953208e79c671b5bbb789b0c",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Behavior/G6ContextPinsTests.swift": {
+    "mtime": 1792825179.8981078,
+    "ast_hash": "ae774dc692b3da345352cdd3f5beed27",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Behavior/G6EvidencePersistenceTests.swift": {
+    "mtime": 1792825179.898215,
+    "ast_hash": "d20c374d925d11172d8ae8d1363719d1",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/AnalyticsCachePinsTests.swift": {
+    "mtime": 1792825179.8970802,
+    "ast_hash": "453865f52d9070fb22cf009f09bb0574",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/CoverStorePinsTests.swift": {
+    "mtime": 1792825179.8974204,
+    "ast_hash": "182744675049b265b620787573e7ed12",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/DataEraseTests.swift": {
+    "mtime": 1792899696.9115458,
+    "ast_hash": "c80b355595f613b5a0fdfd96e82357ed",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/DurabilityPinsTests.swift": {
+    "mtime": 1792825179.8976429,
+    "ast_hash": "1217d8f0e73f63ec62c806635acb7cb6",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/G1CorrectnessPinsTests.swift": {
+    "mtime": 1792825179.8979957,
+    "ast_hash": "a4c4c35d2e0c450d7a7aa48a98f8dd03",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/ReliabilityTests.swift": {
+    "mtime": 1792825179.9023912,
+    "ast_hash": "3c4c7f224f9a05bc896dfe7b2c0b160c",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SQLiteDataStoreTests.swift": {
+    "mtime": 1792825179.9026444,
+    "ast_hash": "33bb186f21ed45354dd0030d272962a4",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SQLiteFoundationTests.swift": {
+    "mtime": 1792825179.9027717,
+    "ast_hash": "8938ca53b7bd7ca07b3cd0c7d37051b0",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SchemaEvolutionTests.swift": {
+    "mtime": 1792825179.902895,
+    "ast_hash": "6fb3bd1e92e703457b106c01498816b0",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SentinelPinsTests.swift": {
+    "mtime": 1792825179.9031208,
+    "ast_hash": "715d600c6086cf2112dc4059ac86bcd1",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/DeveloperConsole/DemoProfileServiceTests.swift": {
+    "mtime": 1792825179.8975325,
+    "ast_hash": "87602e7a437470cfbfe7641071341893",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Environment/EnvironmentEngineTests.swift": {
+    "mtime": 1792825179.897751,
+    "ast_hash": "51f86c4ba01328b01ad603d0ef3d1c7f",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Environment/OpenMeteoLiveSmokeTests.swift": {
+    "mtime": 1792825179.9009202,
+    "ast_hash": "d446f4e5477148c89b524db9efe139ac",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Environment/OpenMeteoProviderTests.swift": {
+    "mtime": 1792825179.9014046,
+    "ast_hash": "fd82f6f2fed8b93e68d5bb81fac8f66c",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Environment/WeatherConfidencePinsTests.swift": {
+    "mtime": 1792825179.903357,
+    "ast_hash": "0eba595f39f2b4d9a869dd45dbe9da3c",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Environment/WeatherLivePipelineTests.swift": {
+    "mtime": 1792825179.9034607,
+    "ast_hash": "24954d7df2d61ede5b3748ff6424a4bb",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Environment/WeatherTests.swift": {
+    "mtime": 1792825179.9036992,
+    "ast_hash": "040697d02154633d3392207eedfccf75",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Library/LibraryCollectionTests.swift": {
+    "mtime": 1792825179.8983395,
+    "ast_hash": "daf9b5088e745cbc1a9ef733d228609c",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Library/LibraryMetadataPinsTests.swift": {
+    "mtime": 1792825179.8984468,
+    "ast_hash": "f9b1a2c7338ebb6b6ca4787868bf9ba0",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageAppImportMountTests.swift": {
+    "mtime": 1792825179.898568,
+    "ast_hash": "bd00ff3fdc65d4366e8daf84c03af6e5",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageBundledRuntimeTests.swift": {
+    "mtime": 1792825179.8986762,
+    "ast_hash": "ac569d5b76661bba013f385e837efce7",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageCursorContractTests.swift": {
+    "mtime": 1792825179.8987753,
+    "ast_hash": "f09394c982e7947e45b194980c88914a",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageFeatureLifecycleTests.swift": {
+    "mtime": 1792825179.8988996,
+    "ast_hash": "10581c7bb90cf5873c185b6b5638fb40",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageHandshakePinTests.swift": {
+    "mtime": 1792825179.8990188,
+    "ast_hash": "1dfc85e062f225b282cc8defb9d1f094",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageIdentityDriftTests.swift": {
+    "mtime": 1792825179.8991473,
+    "ast_hash": "2b2822544b3ad20eeb8bb1a3b0e5d2f8",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageIdentityMapContractTests.swift": {
+    "mtime": 1792825179.899283,
+    "ast_hash": "e13c1af8e85e1dfa2d948ed248622728",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageIdentityRealEngineImportTests.swift": {
+    "mtime": 1792825179.8994527,
+    "ast_hash": "813e2d11928faaa45cd8d4f95eae21f3",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MiragePageTurnNonTriggerTests.swift": {
+    "mtime": 1792825179.8995755,
+    "ast_hash": "21d40a072eaf2a48030ec811a8a2064b",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageProtocolConformanceTests.swift": {
+    "mtime": 1792825179.8996942,
+    "ast_hash": "178700ca9c66d504b6986913c7149e76",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageRealEngineSmokeTests.swift": {
+    "mtime": 1792825179.8998103,
+    "ast_hash": "e3be1ab01d8ff411b45aef5270cada3a",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageSidecarLifecycleTests.swift": {
+    "mtime": 1792825179.8999286,
+    "ast_hash": "a3c3bf987a01a076c46912ded0e47094",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageSpoilerProbeTests.swift": {
+    "mtime": 1792825179.9000404,
+    "ast_hash": "ef2b55a2f0679dbc16f14cb2b760b1a2",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageStatusSurfaceTests.swift": {
+    "mtime": 1792825179.9003506,
+    "ast_hash": "705be5a820501a224dc4606d1ba6ef5a",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageStubSidecarSupport.swift": {
+    "mtime": 1792825179.900507,
+    "ast_hash": "dc1c341520ddd7dd4c8038cdefcc5af9",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Mirage/MirageZBootDiagnosticTests.swift": {
+    "mtime": 1792825179.900659,
+    "ast_hash": "5b1542ee6ce4ad6290744763a14509ed",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Reader/EPUBReadingPositionTests.swift": {
+    "mtime": 1792903070.5680933,
+    "ast_hash": "ed7b4644b772b4e4e4de7570e1b9a8b4",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Reader/FolderEPUBImportTests.swift": {
+    "mtime": 1792900815.198976,
+    "ast_hash": "d4b19c345d319f4772fbdda5f0d346ba",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Reader/RSVPLogicTests.swift": {
+    "mtime": 1792825179.9017127,
+    "ast_hash": "918689be0b973929b1b8c26259270e2b",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Reader/ReaderAppearanceTests.swift": {
+    "mtime": 1792908754.738173,
+    "ast_hash": "e4bafd5bc18ce479bb5b7fa726f996fe",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Reader/TextExtractionTests.swift": {
+    "mtime": 1792825179.9032304,
+    "ast_hash": "cc40d3497149bef9e859c6b7abb0411c",
+    "semantic_hash": ""
+  },
+  "docs/reorganization/baseline-tracked-2026-10-26.json": {
+    "mtime": 1792979186.7088993,
+    "ast_hash": "a83a751bf5878bcf17d377f0844961e2",
+    "semantic_hash": ""
+  },
+  "docs/reorganization/relocation-ledger-2026-10-26.json": {
+    "mtime": 1792979186.7091696,
+    "ast_hash": "03434517b3a13681331e811f4d3e55ea",
+    "semantic_hash": ""
+  },
+  "docs/owner-test-results/2026-10-25-session-2.md": {
+    "mtime": 1792976242.2405143,
+    "ast_hash": "bb7ae9881970a3f40091f0ec9ce919f4",
+    "semantic_hash": ""
+  },
+  "docs/reorganization/AV1-ROR-EXECUTION-2026-10-26.md": {
+    "mtime": 1792979189.6678216,
+    "ast_hash": "68af74278f921dd7b2e11e8dfc974991",
     "semantic_hash": ""
   }
 }

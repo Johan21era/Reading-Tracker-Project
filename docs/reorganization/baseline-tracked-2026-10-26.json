@@ -1,0 +1,2249 @@
+{
+ "repository": "AsterismaV1.0",
+ "commit": "c1e1c968fa03257d6926c55d1fa7ed7f531149d2",
+ "branch": "main",
+ "captured_at": "2026-10-25T21:44:14-0400",
+ "tracked_count": 280,
+ "files": [
+  {
+   "path": ".github/workflows/census.yml",
+   "size": 1030,
+   "sha256": "c5b0e6750edd57305a30d2819510371a602c12ce986ea4551e843ebc41067922",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": ".gitignore",
+   "size": 711,
+   "sha256": "1b8f41618f9b9943b5ba7bf2a2f334f7157182d13b3a43cab4d5f6a224bd03d2",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0-Info.plist",
+   "size": 1574,
+   "sha256": "081fcc1a3be6c8250acb1579c58479ac3627d3eb371128551f55722f2181f59d",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0.entitlements",
+   "size": 1450,
+   "sha256": "80f9e412945abfbbfd4734823f756bb36c127b49bbc9203a17712290f598e52f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0.xcodeproj/project.pbxproj",
+   "size": 24461,
+   "sha256": "37779bbecb4c45d3d447ac6afa38e149afa0f9b0703c82524696f8fe54c3b5dd",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
+   "size": 135,
+   "sha256": "7f3b00b5c3fdb45242d7b87e1e5c4e25d1fa8129a16c94295ecc4e8ea2235c5f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved",
+   "size": 655,
+   "sha256": "c989ddb1179d2a836bf1548490360c5b2da202bcc885db2e97042bfa23726092",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0.xcodeproj/xcshareddata/xcschemes/AsterismaV1.0.xcscheme",
+   "size": 5068,
+   "sha256": "8a76702438c1d0b7bdc20085caeebd4916763c40dac971af4b8208f205562390",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0.xcodeproj/xcuserdata/johanrembeci.xcuserdatad/xcschemes/xcschememanagement.plist",
+   "size": 350,
+   "sha256": "97dc616e3acb40a59ba7d3d52a4ecb502a45431e5ea0eb1c0ccc184859e624b2",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Assets.xcassets/AccentColor.colorset/Contents.json",
+   "size": 123,
+   "sha256": "9af65086fa30b49252fae1a1225731691de794f7775af74d71befeb507d12b7c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Assets.xcassets/AppIcon.appiconset/Contents.json",
+   "size": 1257,
+   "sha256": "aeddc969e824d2e61265fd6c8320e21e3fc98677d11acf3c57692f1a5626c100",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Assets.xcassets/AppIcon.appiconset/icon_128x128.png",
+   "size": 16978,
+   "sha256": "6c8d43ad09cfd45975682f9a96eb805129f3772904b0a6767a28d4f95a8e9c1e",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png",
+   "size": 38756,
+   "sha256": "77de72c64a246756fb33184972b4af9e1c0aa4a37e337b9710f6de468ccf3fb8",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Assets.xcassets/AppIcon.appiconset/icon_16x16.png",
+   "size": 745,
+   "sha256": "ec1c994ffadb3e2cf0cb15ea3839304ebc638310122b823d3739b25d9757831a",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Assets.xcassets/AppIcon.appiconset/icon_16x16@2x.png",
+   "size": 2107,
+   "sha256": "fe73f036407a5fba3348139d513fc658269266c0e331b5c73130ea6e90a1d9bf",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Assets.xcassets/AppIcon.appiconset/icon_256x256.png",
+   "size": 38756,
+   "sha256": "77de72c64a246756fb33184972b4af9e1c0aa4a37e337b9710f6de468ccf3fb8",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png",
+   "size": 87558,
+   "sha256": "c314747a878abc8d5f13350a18541075c66db54a09d12e0ea6fc3b01231048a9",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Assets.xcassets/AppIcon.appiconset/icon_32x32.png",
+   "size": 2107,
+   "sha256": "fe73f036407a5fba3348139d513fc658269266c0e331b5c73130ea6e90a1d9bf",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Assets.xcassets/AppIcon.appiconset/icon_32x32@2x.png",
+   "size": 6321,
+   "sha256": "6937ea83f15b8dd4ff6bd933ee8ee15cef7ad31e7d2f690ff3362c1ae0762cb3",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Assets.xcassets/AppIcon.appiconset/icon_512x512.png",
+   "size": 87558,
+   "sha256": "c314747a878abc8d5f13350a18541075c66db54a09d12e0ea6fc3b01231048a9",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png",
+   "size": 180097,
+   "sha256": "1ffe948a317d457d648630d8e13465ffa1f5408bcf5f8b492764352092ae365b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Assets.xcassets/Contents.json",
+   "size": 63,
+   "sha256": "0fd49ba3c3585c709678e0046a821c3c60685ec7063720d30d3a3448be3a208b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/AsterismaApp.swift",
+   "size": 9534,
+   "sha256": "fdfc51398b9ac0cbdf0e7fd5bb9985da6a5cecf50089ac04e613e09154d1cd9c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/AnalyticsCache.swift",
+   "size": 4788,
+   "sha256": "9306b78caa56f370cba4bae0b9c38d9d72b801a225447b47f19602ee635829a2",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/AppIdentity.swift",
+   "size": 3288,
+   "sha256": "606f8f773e462d50633ee5486c60b250f398235a6e93694dd4a3cef1828ca1d3",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/Book2.swift",
+   "size": 25651,
+   "sha256": "e605dc9485129f656e82993a7d77eb3d3285484763fbdc582eb924ee39736e64",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/BookCoverSupport.swift",
+   "size": 2733,
+   "sha256": "24009a8809b605f77b6e1218d158caadacfcf1954419d5bc54a5407c40693d3b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/CoverStore.swift",
+   "size": 5839,
+   "sha256": "2053a13128ff2e6255a09ef0f8a636fc7ce69556770b57d747bc85cf4a26514b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/DataIntegrityValidator.swift",
+   "size": 15971,
+   "sha256": "aadc9b537d7151b0c9d3080267250dad8017c11599b06bc0ec1775d697361d5b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/DataStore3.swift",
+   "size": 42780,
+   "sha256": "53969230a62673cca1805ce4fcceeebf0e41f260881f64a0e98411c885b74c18",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/DesignGrid.swift",
+   "size": 1608,
+   "sha256": "ae442fcdb4ea5b9d2d65d2a370b6eafd6794cd0add2a1b7eef48de3fcd959b00",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/LibraryArchiveManager.swift",
+   "size": 10437,
+   "sha256": "295f02771b08c12e3610183890994ee58cc3629ac6b35cf8a46812d3764a15e5",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/PersistenceWriter.swift",
+   "size": 3118,
+   "sha256": "35950d947c626e970274056c2b33922e85bcb48623ebd0398bce2bc3ffce763a",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/RuntimeEnvironment.swift",
+   "size": 1682,
+   "sha256": "f9be0375a9928844f651bee8a38df44d4459f160dee7165d9a4b5076616fb062",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/SentinelDataBridge.swift",
+   "size": 1356,
+   "sha256": "a70b970b0a88bcb253c2b087749d32ad2ede872cd99aaf5e2498357031a90b8b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/SentinelEngine.swift",
+   "size": 26949,
+   "sha256": "24503c516367a57476e7f0a35af33cd660a2d043dffb6c7d7b3adcb3550929b6",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/SharedTextUtilities.swift",
+   "size": 11706,
+   "sha256": "f0de09049bf6f1f1aa02ba8071eebf1a5b738c8661f69f9a55281622665f65b0",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/Storage/LibraryDatabase.swift",
+   "size": 24455,
+   "sha256": "b7231c6c80a09e8eed698492114f78880e6d9e2eb3c6fea6cbe9ac663a29dda7",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Core/WindowChromeConfigurator.swift",
+   "size": 5469,
+   "sha256": "92ae5655c083e04a768ce59d7a1785b7891d666f800482fc3ccc7be35a65bd66",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Engines/AnalyticsEngine.swift",
+   "size": 35883,
+   "sha256": "5eadaf4d830173ccfbe0d2e0b238c4eead6d06fb340da06ab02ca78ad193ab21",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Engines/DataMaturityEngine.swift",
+   "size": 53204,
+   "sha256": "eed3e28dcb7adcd16d979d84228e9fcddfe860b5aa33774ca0a8533f642406c2",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Engines/DataMaturityEngineAdapters.swift",
+   "size": 49188,
+   "sha256": "4f6dee2af6f935445157c044bc1bdce4e69c0ba8a8782572cbea049a08da9081",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Engines/EstimationEngine.swift",
+   "size": 16379,
+   "sha256": "7ca70d213e9d073b4aa861855d20b30c07ac49cebf468270c9bd3714e32ff9e5",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Achievements/AchievementEngine2.swift",
+   "size": 23108,
+   "sha256": "189382f76ade46d72747971b3ab0294f1c1177faf2851803f55162c3b616501f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Achievements/AchievementPanel.swift",
+   "size": 10159,
+   "sha256": "9c55a68ac770729f5be83ffd06ad0150ad0335ad170e7b50dbeef0aaaf3c2979",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Audio/AudioSnapshot.swift",
+   "size": 16026,
+   "sha256": "ca30e0645117bad7ec79a28a871d9072b8829f6b8352fc27500b74c54f091faf",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Audio/AudioTrackerMetadata2.swift",
+   "size": 27348,
+   "sha256": "b4a4455d61611d9f6a52e6a7c19e6b95d221b308445a71bbd3c2c0c2c3b6456d",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Audio/MusicalAnalysisEngine.swift",
+   "size": 61445,
+   "sha256": "ea9d99440563583e66560ff4870752f6527b35d6480056a70facf1d4f91151e1",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/BehaviorContext/AdvancedContextView.swift",
+   "size": 7247,
+   "sha256": "15b87759c1071d1d39b2c217aad2948fa5546ac626ea6f33d4fe7815e7c5a1f6",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/BehaviorContext/BehaviorContextEngine2.swift",
+   "size": 159120,
+   "sha256": "6259d755e2581b4dfca0d6cf8ca56957dbda1ac36435757b58d35681f872b0ad",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/BehaviorContext/BehaviorEvidenceBuilder.swift",
+   "size": 4702,
+   "sha256": "34ba10cf67b79ab22aed56c57f2fd32b8324a08335846b2b18513ae82bb945b4",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/BehaviorContext/BehavioralCategory.swift",
+   "size": 87026,
+   "sha256": "5726e2254ae4de3fc74b215d1511c297eccfda10a164663145e94bb313652d5e",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/BehaviorContext/ContextInsightPanel.swift",
+   "size": 11984,
+   "sha256": "59862b63177680fd9305e98b7507e1e3541833a75af0b86c456035b83f0dc4b2",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/DeveloperConsole/DemoProfileLabView.swift",
+   "size": 16123,
+   "sha256": "31b5aecd432b728a2236cac6ed98be400f4e214e3a984aa7fc5d66dd23923e0d",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/DeveloperConsole/DeveloperConsoleDashboardView.swift",
+   "size": 15695,
+   "sha256": "b0f23958c20bf483cc9cb44f28c86abeacb6ac0f2de77dc12f2126bbc4559c60",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/DeveloperConsole/DeveloperConsoleObservable.swift",
+   "size": 4389,
+   "sha256": "22fbfbc55e24fef90a195ace1992013803db63467e35ccaae13ee71f201e4549",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/DeveloperConsole/DeveloperConsoleRegistry.swift",
+   "size": 5800,
+   "sha256": "a00500a6e8d1aee4f0cd92260da81968e84982ebbfb30f2b24bb955fff45836a",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/DeveloperConsole/DeveloperConsoleRootView.swift",
+   "size": 9906,
+   "sha256": "431ae25db965660edb8197ccd9422ae77778bd2902284760badbec41c4c5df36",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/DeveloperConsole/DeveloperConsoleSystemMetrics.swift",
+   "size": 7246,
+   "sha256": "a41709b99882669beb2270cec5474470791d53361a9bcb4d18654d949cbf0dcf",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/DeveloperConsole/DeveloperConsoleTypes.swift",
+   "size": 8721,
+   "sha256": "6fc2e94041d3ccd3c8617e5e7df4ad05be48b42bb76faadb566a8798fefd2445",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/DeveloperConsole/SentinelPaneView.swift",
+   "size": 11845,
+   "sha256": "74bcbd6a8f0029cd75b1405446f4cf9ce6511428e5b33bf5e306e708bba2bfb8",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/DeveloperConsole/SentinelReportCardView.swift",
+   "size": 1772,
+   "sha256": "29f08c518eca7cc6d7e6d949a3fb6be77e2ac21aef2aefe23ef78f3546c70c3e",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Discovery/BookDiscoveryView.swift",
+   "size": 5723,
+   "sha256": "bf19e76874df12f9e95d8eb5ab76cf18f494b7f713300aac0234633072f41b9b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Discovery/DemoDataService.swift",
+   "size": 26167,
+   "sha256": "a1ca4daf6f74e431d83d34a157595a88075aaa5f3b0a55f58794e7d271a7d712",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Discovery/OnlineBook.swift",
+   "size": 1127,
+   "sha256": "acda4fafe8337a7d4ceeee40567240dc05b227026a243ebaf57a30a1866603fa",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Discovery/OnlineBookDetailView.swift",
+   "size": 2903,
+   "sha256": "a9d5bf2f86cb83f6c9b09b5d3acae6e336d069da04cf0bdb6b108c750837cdbc",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Discovery/OnlineBookDiscoveryService.swift",
+   "size": 4669,
+   "sha256": "24fc711b16298c3612993e289577ebac1642dadbacc724e75778ba6716e4fd61",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Discovery/OnlineBookDiscoveryViewModel.swift",
+   "size": 3747,
+   "sha256": "2d0fb192159dcfc9784ad677eadcf5c2b56eefdce9e07625d0120ce9611bb016",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Discovery/OnlineBookProvider.swift",
+   "size": 296,
+   "sha256": "2854aeff79d616fa579379d40cf3f45d5d6ef2169a83e7048b4d126102be0c94",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Discovery/OnlineBookRow.swift",
+   "size": 2980,
+   "sha256": "1b371eb96551c0c21c541ec7aa1672ee252a80b89b1e6c356d8e64aa2089bb9d",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Discovery/Providers/GutenbergProvider.swift",
+   "size": 2825,
+   "sha256": "9d6659e69b24195a59216a103c00b317bfd12036035e5f655792597d8adc612a",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Discovery/Providers/OpenLibraryProvider.swift",
+   "size": 3108,
+   "sha256": "8f450ecf5821a96f92189a1d468e8fdb40354c6d517ddabd7a8d5785f0364e2e",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Engine/EnvironmentAnchorPeriod.swift",
+   "size": 1808,
+   "sha256": "8edd5ae883849a564ff3225832a3afeab0855d516a35c6c62416ee2ec03b3ac8",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Engine/EnvironmentColor.swift",
+   "size": 3822,
+   "sha256": "d9411d2acf57d8318c87bea77a02d11bba82077dcdc51ab4309bfbdc11a81425",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Engine/EnvironmentEngine2.swift",
+   "size": 10351,
+   "sha256": "70748f81cb178a5e802c0c7c24945f6f6921d34454f420b55f0fc63a9c968113",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Engine/EnvironmentMath.swift",
+   "size": 2138,
+   "sha256": "7fc720bbeb80b47056e6e1d8a881d5ff0d07e69e9014c3cecd392f33a34cdf38",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Engine/EnvironmentPalette.swift",
+   "size": 10415,
+   "sha256": "593600e2afe581a9b00dc434eeaf82e6226250594a7ed0199e143bd21b0296ba",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Engine/EnvironmentState.swift",
+   "size": 3744,
+   "sha256": "2a23641eddc975b37b6e289d8d72e66e694d6e1d65220d1dab36f4e81185ff71",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/EnvironmentBackgroundView2.swift",
+   "size": 7389,
+   "sha256": "2ce30776765e6e8efe2ff7b8588ee4bd18d33e26828f26ab9ce166c6b2d66b4e",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Stars/ShootingStar.swift",
+   "size": 3120,
+   "sha256": "a22976e0f117ac9be6d557083aae89432cc3ab5d2701afc2c86908b84eb40180",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Stars/ShootingStarManager.swift",
+   "size": 3627,
+   "sha256": "1e52c6eaef9de706648a361904c96d3b02a92468a11b4461a0482362d2671433",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Stars/ShootingStarView.swift",
+   "size": 3220,
+   "sha256": "4b90bb67f0aa12d255bc3a6e7073df9851a2081891e55661cb794e8c864ecffd",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Stars/Star.swift",
+   "size": 1639,
+   "sha256": "00f81abf130f55a84204886a95638090b40b83d4ec5395aa4a5b732d319d340f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Stars/StarField.swift",
+   "size": 2984,
+   "sha256": "042b77fd1b5fadb1d682a00eaf9a42f25ba8726de64975a9416f4cf20b821a06",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Stars/StarFieldView.swift",
+   "size": 2397,
+   "sha256": "6655dee02b29bc776079ef1a73943d9308306597ad7f1555f5bd5916600f941c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Weather/OpenMeteoProvider.swift",
+   "size": 11095,
+   "sha256": "c6b4e3b190dbf4a1f4504105d8056c2d639c660b03809aae7a25a8b33d8c52cc",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Weather/WeatherAnalysisEngine.swift",
+   "size": 45824,
+   "sha256": "2cce19611d18e5ff9e0fd29fe810a6f629f916dcb7af5cc85721c9e36dd08743",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Weather/WeatherEnvironmentModifier.swift",
+   "size": 4169,
+   "sha256": "3d85de39b06eb4f396ad5be7b06253c0555e9ab89a1f3ad1a372c650597cb0f9",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Weather/WeatherInsightPanel2.swift",
+   "size": 19476,
+   "sha256": "e5cd8801cdb89de004f982c415df77d3a5a724ca9f0e2513f8d03290041d70ab",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Environment/Weather/WeatherKitService2.swift",
+   "size": 37347,
+   "sha256": "8bf912e73c0f1db888f733d689cb6b733066307c18742dcdef139ece86b13ea4",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Goals/GoalsDashboard.swift",
+   "size": 8610,
+   "sha256": "cf8028b47646f647c60e2a3e7957dedd85c39189c83ff00c8e364ea699424a89",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Goals/ReadingGoalManager2.swift",
+   "size": 18815,
+   "sha256": "3c07da8380e159ea8ad376e25f68fde7e470a73294d37a1558ad38bc1adbaef6",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Goals/SettingsRootView.swift",
+   "size": 18035,
+   "sha256": "8bddd06462c319ba4d8062d78c1ada8126f0b694cd378da39a11146635a7005c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Insights/InsightEngine.swift",
+   "size": 18251,
+   "sha256": "d4a3bfe970cf8c1d03bfeace983f869d536632c19c225e19dca71acd60def5d4",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Insights/ReadingInsightsDashboard.swift",
+   "size": 14278,
+   "sha256": "80a5477277b45a25cd17a804342cd8302aa80f34aa34cf80f995904b8a0396c5",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Library/BookDetailsView.swift",
+   "size": 10357,
+   "sha256": "e744c121fa3bc021242bab3429a4a33d9adb3f419557abcdf119169105e71786",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Library/BookImporter.swift",
+   "size": 32701,
+   "sha256": "b4e0a860f7edb589bf573e99bbc93c79bb776f8c2efe73f39a52c48361d23f50",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Library/LibraryExplorerView2.swift",
+   "size": 2701,
+   "sha256": "fa696fb727de69509d7e3a7548b1246124aba724235bcb4677a802c2eb81f621",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Library/LibraryFilterSidebarView.swift",
+   "size": 4848,
+   "sha256": "7dbbca7a524a6caac461213a557176f34aa53e9f451e809e695aec0daec7c19d",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Library/LibraryFilterState.swift",
+   "size": 3112,
+   "sha256": "c54d9a09b3a9250c7781d53445fa2c700b967bcf3eae1d563b1e7a2a3632419f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Library/Spatial/AdaptiveLayoutTier.swift",
+   "size": 974,
+   "sha256": "a7493ff69b5328d07dc6ece8257c25e584b44c19c02c9cc0d39f54700005ec0e",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Library/Spatial/BookCoverCardView.swift",
+   "size": 2995,
+   "sha256": "eed1699a0e4a57b08f2d9be43154b82715206744113674389c601917f484fa11",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Library/Spatial/BookVisualState.swift",
+   "size": 2430,
+   "sha256": "77dbea999e68546469e5d1f71d319732998974c222a03b5b7ce19e837683f4bb",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Library/Spatial/FloatingClusterView2.swift",
+   "size": 3072,
+   "sha256": "a9f52d7fb8fd518ba23d5e8ce308e23448aeca3efc00d2fae0c8a6210ff34848",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Library/Spatial/ShallowPerspectiveView2.swift",
+   "size": 3007,
+   "sha256": "c9b11bbebb6303b47811880776a6dd74b95446aecdd9d47038079fc287a9fd6f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Library/Spatial/SpatialLibraryView2.swift",
+   "size": 3026,
+   "sha256": "c4f6a5516ec01f3f1758f60e8cbcfa3067f96e2b864090cfaf1a05ba0626681f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Library/Spatial/SpatialNavigatorCard2.swift",
+   "size": 3800,
+   "sha256": "204afd524a2b0aaa1ae91e2cd902c6966d7005bde55c398791dbcb9f9c40a22f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Library/Spatial/SpatialNavigatorView2.swift",
+   "size": 3420,
+   "sha256": "979115b410530530c44d4ce6891a17cc4f9b0e101a83b7c7e45a074d1b1fac4a",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageAnalysisSheetView.swift",
+   "size": 11443,
+   "sha256": "0462aeb029c5944541d62a4a59c3507c8a94282a84a7ef465818208ff4149bca",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageAppImportMount.swift",
+   "size": 10833,
+   "sha256": "4a374863a704cc7637d1c4172332d1c5489dd467374f8300587ef6d88be097cd",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageChildProcess.swift",
+   "size": 21224,
+   "sha256": "be0d75d4613d4e4a43abd0aaf14a6e54638c3c61852b338f23e272162ea95393",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageClient.swift",
+   "size": 3267,
+   "sha256": "72b4e32d39a3c6b970e19b31a08f0c24b46d8090d0f12c01bdab41e356290c45",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageCursor.swift",
+   "size": 5647,
+   "sha256": "293a8e0e081b9098bb96c41be84a20a7d19d5ae7cd00a4b53e195c102ebf58b1",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageIdentityMap.swift",
+   "size": 9490,
+   "sha256": "f8c17ec46e339021762b03c8b3a7d38232da31a4da96d38d225b3a2b2bfd10fa",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageImportFlow.swift",
+   "size": 15562,
+   "sha256": "8453c294acd5a6ee21dce63f10f29f79c710785d915f68bfa75d5438e355c8e8",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageProtocolConstants.swift",
+   "size": 2209,
+   "sha256": "655004c065b54b16f3e467d40054c729f71dffbeb699cf4963c0e9c53cb636bf",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageRuntimeLocator.swift",
+   "size": 6963,
+   "sha256": "04f201187b04f45427df526ee72d3d90e6e7de3394b2115d484d12211c74c539",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageSettings.swift",
+   "size": 1849,
+   "sha256": "2fb8ef53163ee845e2e86990db90462180da98fe03e65224f97ef3c00a57bf5f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageSidecarSupervisor.swift",
+   "size": 10989,
+   "sha256": "951ce6ca91b76f66697d137bbc3f52bbcd3325a27220560c07fe7cc742501225",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageStatusSurface.swift",
+   "size": 13514,
+   "sha256": "b0fed1e0939fc1bb05932e0b53aadfc944f3c86d0dcb2c1d6359f5dcdda6fd9f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageTransport.swift",
+   "size": 1156,
+   "sha256": "89ad949c1f1038b921c5fbfc124120ef6b61a082fdc3952c515db7c85d8dc6c2",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Mirage/MirageWireTypes.swift",
+   "size": 5557,
+   "sha256": "beb9293184d873a5fe6658ca0a04ce2635a7ba4d1edeb65ad22ba23ba90ee919",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Notifications/IntelligentNotificationEngine.swift",
+   "size": 32123,
+   "sha256": "0381d2fb15ddd9326ecb5d54e3082556c8136ed9e918d1d968e3f0acd0b3a39b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Notifications/NotificationScheduler2.swift",
+   "size": 5693,
+   "sha256": "acb16565ff379d44ba695bb05b6a56d2dc4d012561a2d51b56599b9d4977a9f6",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Onboarding/OnboardingView.swift",
+   "size": 9095,
+   "sha256": "abf7b4d1dd3ff204448772c229af654c963c09fc62a6f14aa850eb9ea9d96bd9",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/RSVP/RSVPPlaybackEngine.swift",
+   "size": 3606,
+   "sha256": "704a0c1287011742d1797d57c4f9cd767b9b6175348294c6f94bcfae49b2ea69",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/RSVP/RSVPReaderView.swift",
+   "size": 5777,
+   "sha256": "42b793ac5814cadb839f916b98dcbdb96c3a67756d996710639fd8392dbeeb50",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/RSVP/RSVPTokenizer.swift",
+   "size": 1222,
+   "sha256": "13c60c026b6b7e41305cb0df19ae8857c2a4c1d6e7a803a88a6b05628582f1b8",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Reader/EPUBPackage.swift",
+   "size": 13298,
+   "sha256": "ef69068ff49adfa8950c2af76f4c2474c42217846bf3794d294ddd3378d1a124",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Reader/EPUBReaderScreen.swift",
+   "size": 53094,
+   "sha256": "01dbdf953efb343483bfb16ebdad51656bb8a23b143455cb5b52d70d256940de",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Reader/PDFReaderView2.swift",
+   "size": 19470,
+   "sha256": "5d11f3cc0e48cc878c0577322fc03ba47b48cffde0a99c1367ed71697005843c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Reader/ReaderAppearance.swift",
+   "size": 9822,
+   "sha256": "dc5043cba044cd4f0f998d1978079030160baf309a1166a9379d87232e0aaa56",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Recommendations/PredictiveRecommendationEngine.swift",
+   "size": 11334,
+   "sha256": "69565a929a94a85099740dd2581a9e0e33d4da4e8b7b75a93077939246b642fc",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Recommendations/RecommendationPanel2.swift",
+   "size": 9729,
+   "sha256": "8be8e92cf1e4158ab8606712db3d26adf0cb9d188f48d98e0f7b8855c457fe90",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Reports/AnnualReportArchiveView2.swift",
+   "size": 6942,
+   "sha256": "50378b07f77c25abc1703f7e388ce7122ed418961fdea1d38b3f5c18a33dbe99",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Reports/AnnualReportData2.swift",
+   "size": 35495,
+   "sha256": "a83a6b3a08e0505dcc9966626533a4fb921824faf6a204167b60d2663ec14068",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Reports/AnnualReportView.swift",
+   "size": 44614,
+   "sha256": "682482d808de522cf97458c801208799d098ebda45ab9f40b1283b9ee177ad62",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Reports/NewYearTransitionMonitor.swift",
+   "size": 18250,
+   "sha256": "87f78b59f13da83171b668a5ce4afa52f30ab1b89acfb04c564f2241124734b7",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Sessions/ReadingHUD.swift",
+   "size": 3435,
+   "sha256": "7d3dad2a9c27981597830fb6fb53da8a357755b632e58db1fda1b2411c44dcf7",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Sessions/SessionCoordinator2.swift",
+   "size": 9209,
+   "sha256": "745225920bdfcbfe697d0cb8a228a7056293891eac049f7f5b5cc616c861d8dc",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Sessions/SessionEventRouter2.swift",
+   "size": 8736,
+   "sha256": "78723c9838afa343488ca916728e9a9797e79f4bc22c78090344fda1a3d5bf0b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/Features/Sessions/SessionHistoryView.swift",
+   "size": 11591,
+   "sha256": "7ee249038e560feaf546e38f3c6d40ee7ee9643fb8ced127e15d9cae6b23bacf",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/NewContentView.swift",
+   "size": 56563,
+   "sha256": "078064699a16c5bbba1bc73329ff0d62d26d51370545d15a6cfd003cf997724a",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0/PrivacyInfo.xcprivacy",
+   "size": 2040,
+   "sha256": "72f72b390af20a64be86398b0628d36010ce400742247a81f0cd17af7be136a4",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/AnalyticsCachePinsTests.swift",
+   "size": 3488,
+   "sha256": "33ea280cd20a0f0cef89f1609a44a6b34b5b3f57bb1b3ff38e435803b5221ccb",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/BedrockBaselineTests.swift",
+   "size": 3132,
+   "sha256": "656722dd92a8578ca9b4a5d668485df501d5dbc651856455be1b29d045d55b3f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/CelebrationTimelineTests.swift",
+   "size": 4104,
+   "sha256": "e1dc0ae6ee7ea62465eb21b6486d3a8bbcdc9934bb3611531b2508f2b74ad351",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/CoverStorePinsTests.swift",
+   "size": 3786,
+   "sha256": "9e538621af2b1d4105be2f0b7cf78931c087b13d2e7787ac8ab65113b00b7d1c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/DataEraseTests.swift",
+   "size": 3760,
+   "sha256": "2edac17dec39b519a1acb8c00596efbe1cb50dd7df93bda64229176737b56365",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/DemoProfileServiceTests.swift",
+   "size": 4503,
+   "sha256": "93356d30323346752efe08018ca66a21848746fae43f3da66da753eac2bf7e1d",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/DurabilityPinsTests.swift",
+   "size": 6706,
+   "sha256": "f907dc83ef2eea5b7e9f31240516d8826c9b0e6d3eefcf0d48c8d29b9aa27a01",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/EPUBReadingPositionTests.swift",
+   "size": 1565,
+   "sha256": "f0bd40650ade9f2008ea06d17de58bd03e3965ad02455e648dcaa3b70077c82f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/EnvironmentEngineTests.swift",
+   "size": 4095,
+   "sha256": "2ce80b1017c51c777f850c3b4cf5f1cfc34a9522d49eca218daf2f9933b20a6e",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/FatigueAnalyzerTests.swift",
+   "size": 5082,
+   "sha256": "a9fbb214cf958999dfc05603d28e4824af164eea30640fcb1fb9f1f680d85426",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/FolderEPUBImportTests.swift",
+   "size": 4701,
+   "sha256": "ee0e283e3e92587163b0cbde79ecac60bfdc15ab931575b6ea62c32c3aa32f2d",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/G1CorrectnessPinsTests.swift",
+   "size": 7341,
+   "sha256": "43a922e99388dbd3138d143497d0127a0b77424f6e0d79625b843ff8a069eac0",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/G6ContextPinsTests.swift",
+   "size": 1799,
+   "sha256": "26a56124e60456958b4b5a2f5478c9dcd133a72c4a882e74e3d8d03ac43d19bf",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/G6EvidencePersistenceTests.swift",
+   "size": 1580,
+   "sha256": "bbbb918ec44c23d4778afa822221adc682ef0e6183da3d11d96d16a8a3727d85",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/LibraryCollectionTests.swift",
+   "size": 5017,
+   "sha256": "1827d003914aa80907304cc5c62002f4c159d24d6f9ef3ff327d3b82988a20a1",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/LibraryMetadataPinsTests.swift",
+   "size": 2996,
+   "sha256": "eadfbf19cbdfb76f79cd09f0a57c5514e727a62c7e96309fcde9aaf5c794239d",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageAppImportMountTests.swift",
+   "size": 2265,
+   "sha256": "846419b7dcbec659ad2fbb25807fc91aaf00c25b981686e892dce77cac95746c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageBundledRuntimeTests.swift",
+   "size": 10189,
+   "sha256": "651723ff21426321fdc85cc866cb84321615358e32b2af35196c3b9a97667a05",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageCursorContractTests.swift",
+   "size": 3111,
+   "sha256": "946d4756ab044ceeb6c20f9c361c9489c0636449b038d09a82741e9788717d20",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageFeatureLifecycleTests.swift",
+   "size": 5729,
+   "sha256": "2b753157d454765302ef4faec5c2b7057000fb1dd1012d512695b3a1c03ee712",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageHandshakePinTests.swift",
+   "size": 6127,
+   "sha256": "fc41bbaa597b1dc51da479aabec01d820ca8cd40c2f5e8dc69354e4b1b18ba0c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageIdentityDriftTests.swift",
+   "size": 16901,
+   "sha256": "d8daaba42552f6d76584e4d72f925a513ecebedfa8a2c808e2cfe269cdcc255a",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageIdentityMapContractTests.swift",
+   "size": 8418,
+   "sha256": "1f4fc44a9b3032484fdd881d7729b464f2656a204a0f673b97597edc22f542cd",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageIdentityRealEngineImportTests.swift",
+   "size": 12516,
+   "sha256": "76a28e3946a5f232f17860939f40d426ccd10f72a4c1799de1a02e610d031c31",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MiragePageTurnNonTriggerTests.swift",
+   "size": 6069,
+   "sha256": "71b64de69eceb1d96d0cf5a412d25a17e90a8d4e0d2f0d1551ce26b0581f5a43",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageProtocolConformanceTests.swift",
+   "size": 8416,
+   "sha256": "fb180932554b02041d671823889f44c3e02cabed0be3cd8dd91ab194b8aaf7a4",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageRealEngineSmokeTests.swift",
+   "size": 3333,
+   "sha256": "11ca43eaffd76444ffcde09f13a615ec9f227f6b7a4888b3ec40b050017a1558",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageSidecarLifecycleTests.swift",
+   "size": 8393,
+   "sha256": "36e3d0a83945adde907bc281d682d67c694a07fda0299f831833665f53698030",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageSpoilerProbeTests.swift",
+   "size": 3534,
+   "sha256": "d92f736d43859f0cacc7b9414384abbaf8cb38b8f57f95a5b46068a796beb339",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageStatusSurfaceTests.swift",
+   "size": 13023,
+   "sha256": "ebb61e015600aa6d264c706116c500e9083498eb98c2310e43f5d53f7c6e3b43",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageStubSidecarSupport.swift",
+   "size": 5502,
+   "sha256": "1b0473cc1ef92c491b9dcc772ae12f70075728e12147aee6a5aac0944712e813",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/MirageZBootDiagnosticTests.swift",
+   "size": 5721,
+   "sha256": "79a076bf71a11a8e01bb83a5442833619723b885c0d23ad45413bf6771105139",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/NonGregorianCalendarTests.swift",
+   "size": 4701,
+   "sha256": "af16dfab10abd08c6180617705b6cb111770b567550abf92192c90d63472f234",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/OpenMeteoLiveSmokeTests.swift",
+   "size": 1076,
+   "sha256": "9add1ff4f78f55f916912fedb299e5160d07ae51af21cac343c6d0a50f06a757",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/OpenMeteoProviderTests.swift",
+   "size": 5877,
+   "sha256": "92e9f98c64beaf9a2abc34c76ae20d0276967f54e4192b761ebd40206828cb08",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/RSVPLogicTests.swift",
+   "size": 3211,
+   "sha256": "8e122a9a82523b088ce13db621e44868d12611a9ea27f82ceb1f3a2b9f80a1b4",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/ReaderAppearanceTests.swift",
+   "size": 5234,
+   "sha256": "3e2733542e048d5603532b810fabedaa8ca51d02d72e3086c3b62c90b3a1b94b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/Reading_TrackerTests.swift",
+   "size": 408,
+   "sha256": "54489bacc91cacd6264a9d08ba1c8c116aa905c322511211e8de1ca1fc6cad3e",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/ReliabilityTests.swift",
+   "size": 11054,
+   "sha256": "28abd4c58dbf82e5b45b8a9d6ccf6a59a478dbf0b5118d7cc603fdd8b42561cc",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/RemediationPinsTests.swift",
+   "size": 10668,
+   "sha256": "791c8d86a8f59073edf4e2035e386dce3ae3e98efa1e1688f50323c356738184",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/SQLiteDataStoreTests.swift",
+   "size": 12063,
+   "sha256": "8e7cf298bec55bd01ec0a15d2ed3074fef82be6fbcc343f6206a26f3718070f0",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/SQLiteFoundationTests.swift",
+   "size": 5207,
+   "sha256": "1f6b4db3abbcb9e3e1138526b3ce7c7ed8b306f4440fb8fb31f9e526333bac3e",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/SchemaEvolutionTests.swift",
+   "size": 5008,
+   "sha256": "b464cfaea609eac4a0fd2a7c32e08ff55d1d9813db3fc6540d8db73af82e05cb",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/SentinelPinsTests.swift",
+   "size": 10978,
+   "sha256": "1dc0b20f5948893ba12684f0d300d8a0b4cbba93deb1b64c378b0021352e8da1",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/TextExtractionTests.swift",
+   "size": 3167,
+   "sha256": "a4274a3de92c621e216e40559e2d4d9e481986fad42e97ed738fab95ffa7277c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/WeatherConfidencePinsTests.swift",
+   "size": 11365,
+   "sha256": "c36ad2afc60cf3fc5b4bee30e46fca919f5c4777b4ce8688dc0e25dcb90c8e9c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/WeatherLivePipelineTests.swift",
+   "size": 1500,
+   "sha256": "1a7dd32818caf7a62312a49eb7ce17117463de5fbcb15455a8bda4cf20383a03",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0Tests/WeatherTests.swift",
+   "size": 15012,
+   "sha256": "ebe9a64e4c02df7ed6fe86f16629634a11f3ae99fe948ca97c6155b0ba3bb3e9",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0UITests/Reading_TrackerUITests.swift",
+   "size": 1343,
+   "sha256": "0cf4f9c40e1678df1b1446f5c321fd04dba06915c5dd01c4a6f09f7650d1a679",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0UITests/Reading_TrackerUITestsLaunchTests.swift",
+   "size": 936,
+   "sha256": "61897a6f028fc91c102ab944ce3813d07614345bdd6489622e9f1ad127ad258b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "AsterismaV1.0UITests/UITestSupport.swift",
+   "size": 360,
+   "sha256": "cc96671dd0124e95b435d1e21001c17484776b5edf35dbabcff0fadd6f3ad12c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "README.md",
+   "size": 23079,
+   "sha256": "6f42fecbf010574601618409a84b718fbb4b56832b50e1738cf005e62c672576",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/01-project-tree.md",
+   "size": 8412,
+   "sha256": "dcec2679e076e96079816b243f9530eac2b0d14fa62f54444e7a8a28f7dc1582",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/12-owner-test-authority.md",
+   "size": 4901,
+   "sha256": "0d39943e89f452b95a67e4d124c35d86518ba339e71fa00b9cd419f479b9a4ae",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/MILESTONES.md",
+   "size": 6322,
+   "sha256": "943dfd4496666132a58a57339a390ff65f687aaac5a59e732bbdfed09c1e3550",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/REBRAND-ASTERISMA.md",
+   "size": 2980,
+   "sha256": "853749745829a357104bd165beb20065f622159039f218abda40f2970c61ad79",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/audits/08-deep-audit.md",
+   "size": 38470,
+   "sha256": "a108afce4d89621adc3cdc32583eba59b64ea52022b4c72a85b17d428e81e4da",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/audits/11-completion-and-health-report-2026-10-24.md",
+   "size": 38237,
+   "sha256": "702db41f4c4a6a30db3bf7e3ab53473053c47a6d6b30d3706bc898100951ad99",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/design/READER-POLISH-2026-10-25.md",
+   "size": 5355,
+   "sha256": "2e8525b4cfc24ac88f4c1c7cb116799f31e4f3f6fd3fe8b678a0651225250d3b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/design/UX-BETA-AUDIT-2026-10-25.md",
+   "size": 13804,
+   "sha256": "a51649ec3f26d233cc521fef669e8e039aaf83c66d57624a384a125deaa4a946",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/design/fullscreen-surface-after.png",
+   "size": 1563231,
+   "sha256": "2ba691309051bfc07a6dfc824c123ca64ebdce204fd62cd712970f1758657e5a",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/design/fullscreen-surface-audit.md",
+   "size": 5532,
+   "sha256": "48fef80224c93da503c99167a1ac336fba65d973012f2d2a2c25e71461ad5abb",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/history/09-final-traces.md",
+   "size": 6350,
+   "sha256": "e1d40261ec9b59ddf54b407ebba521b6e49e77e0a0e5e5e9f0aa4db3b8d2fa47",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/history/10-profiler-fix.md",
+   "size": 13058,
+   "sha256": "0852d1dfb15d306aff0c72a71dd2755113aea8f645c23bc8a0457249a66b6ee9",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/history/LAST_DEFEAT_demo_profiles.txt",
+   "size": 30453,
+   "sha256": "06062faf0cfe50c5578faceb02c9fdf030d0397f2b9962309796d4f96b0ee47b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/history/diagnostics-2026-08-26.txt",
+   "size": 42614,
+   "sha256": "34d95b5817249e180b666385669c3e6c3113f2fdf9a343f17c133b2427a71562",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/history/freeze.txt",
+   "size": 221755,
+   "sha256": "89b4d6ab44f7a0f8b95b705d53eb5add8f0333a5c2457599d16d4c5d76cc4739",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/PR4-defect-analysis-2026-10-18.md",
+   "size": 69181,
+   "sha256": "3495cfa7623db96180a70a11c3594ba7f9fe10f36eefb709d9eb0eb6aef56f92",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/PR5-execution-plan-2026-10-18.md",
+   "size": 7785,
+   "sha256": "b3be24f3b98a6467443b2abd2708b50b4faba8b16170f2361db2273f62987d2c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/RT_Mirage_Codebase_Merge_Playbook.md",
+   "size": 295520,
+   "sha256": "684edebb263de7335e3231ce85ceec268dbe936746448af5ecfeeab9d6685b57",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/Twin-READMES-2026-10-18.md",
+   "size": 23573,
+   "sha256": "1dc9be08e964f01b059bbc72755c1c7e017bf606f85a6a02c3d5295c54c5b002",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/adr/ADR-12-titanium-bridge-charter.md",
+   "size": 4192,
+   "sha256": "68e3420b0289f61d93a6ebf3af8da3f99091dd52957d81c745ae8b59d9e5a1d3",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/adr/ADR-2-transport-and-protocol.md",
+   "size": 9285,
+   "sha256": "3ac14c8e867bc2cf6318b844d4bd0216136ce2de79df9986ef8e45184f1f9d53",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/adr/ADR-3-packaged-runtime-distribution.md",
+   "size": 6236,
+   "sha256": "3b6fa5f444043d5d699a0d6e5921ff9a5e8b382dc5c8c316ec2d0f0c8687325f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/adr/ADR-4-ledger-placement-and-backup-ownership.md",
+   "size": 7545,
+   "sha256": "12d704829c1ea42841584159c2ca0208c4c7419d7675e363779c15a9ab91ed66",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/adr/ADR-5-identity-mapping.md",
+   "size": 7682,
+   "sha256": "fd81e68bd8df7a0e2527c96570a123b0f2271c79a5860e5a7ad751e80a24789a",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/adr/ADR-6-mirage-feature-lifecycle.md",
+   "size": 4732,
+   "sha256": "88d8960183344522e9a638f82e4c2ce79d6f4603c3164c94515dc3c7b88993b5",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/adr/ADR-6a-mirage-import-independence-newde5.md",
+   "size": 5375,
+   "sha256": "676ff3840538cdb9eff422c11339035a392d76bead14001ade0680cf5773d805",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/adr/ADR-7-spoiler-cursor-contract.md",
+   "size": 13735,
+   "sha256": "ff46e67682a9b070ca922464e4dc3c1cd36078b0e48fe0b7fa8653fb39450cdd",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/adr/ADR-8-repository-strategy.md",
+   "size": 4005,
+   "sha256": "47ada237c25e64850e39f2a7a8b0db7e9e2659e981c18154d2360a0fe14eb778",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/evidence/BUG-001-LogStoreManifest-2026-10-18.plist",
+   "size": 1764,
+   "sha256": "cd056c97c187a98a6c0e241565c617caf00fc706bab08771e3ccc2f97fc1a41f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/evidence/OPE-001-deleted-stub-list-2026-10-18.txt",
+   "size": 1558,
+   "sha256": "2e4216caa6a3e626fc9a808df7d9a66493b21ccfa1559d41ed054786db72f85b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/evidence/README.md",
+   "size": 2775,
+   "sha256": "e8ef1800b691bb7bba9c48f8c43c2a3a71adc22ec9abdc5c06adeee32734aae0",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/evidence/handoff-bundle-2026-10-18.md",
+   "size": 3441,
+   "sha256": "f3c867d85739c2b99d08239326085e54296804df31b836a667581ae357ad6aed",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/final-acceptance-2026-10-18.md",
+   "size": 7534,
+   "sha256": "d966af9bfcd5e085c71125ecff723c4aa2dca6db28c95c72c7603eb686305bc0",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/merge-log.md",
+   "size": 64892,
+   "sha256": "2487a34b56328089305a8b18801367b6edd8b153a520e6b0c856cc59fbb3878e",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/phase1/mirage-protocol-extraction.md",
+   "size": 10582,
+   "sha256": "80e745784a9c3b5ad05783c402d8a877f234d66384c717df2dfd340d583a72aa",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/phase1/rt-baseline-test.log",
+   "size": 150,
+   "sha256": "d270d34dbdd0bd51c1d8ff3d2743d9a1533ce1d179a18e295f4a0f950fa1578f",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/phase1/rt-baseline.log",
+   "size": 666,
+   "sha256": "11b2d0d285ca42da48da6aca4d05cf54c618d443aff1a8a7cfbeef6600f25c2a",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/phase1/rt-normative-docs-extraction.md",
+   "size": 6790,
+   "sha256": "b7390e9d21a54f8cd55193466e257b3368aea83faee9e3ca61d30a56ea08e227",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/phase1/touchpoint-inventory.md",
+   "size": 15244,
+   "sha256": "eeb324e178aff88b0e53c1135501014f222b353a1fca8d6c4dc5f87b61a38032",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/rehearsals/rehearsal-log-2026-10-18.md",
+   "size": 8306,
+   "sha256": "3edbf8cdaa282cca3f9ac1214a6839084432dde5bdd573009145d84b88f3fc52",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/tib/TB-M0-gate-plan.md",
+   "size": 3013,
+   "sha256": "510a71b423005d1b0ac544d97fafe19cd176d357d4aa2f80aba088c2b8e89766",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/tib/observe-ledger.md",
+   "size": 1055,
+   "sha256": "176011616f98e58a51db23babcaa0f8fcc92124924ebb16677558b92aed80463",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/integration/tib/subset-manifest.gen-0001.json",
+   "size": 619,
+   "sha256": "b9b842fd61cab8c645b713de64909985805b08d58e295936c9042cf1d6348a77",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/method/07-testing-strategy.md",
+   "size": 7937,
+   "sha256": "9934e238841b8c6d12182863e722c867cc08107f76ab0319b9a16490b27a196e",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/owner-test-results/2026-10-24-session-1.md",
+   "size": 10085,
+   "sha256": "bba71640cb60ec42000e458df4a722fcf8700862fd8fcb3e310bd14ad1e3cff4",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/owner-test-results/2026-10-25-session-2.md",
+   "size": 2541,
+   "sha256": "b406e647ca1af42e23476d775d791ef0c174b4727b394ac208d1b831034e78b3",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/owner-test-results/README.md",
+   "size": 1050,
+   "sha256": "d835dd4c771b55abec8cbf171a73a020e969206a30be5ecc89e839b0f0f5def2",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/owner-test-results/TEMPLATE.md",
+   "size": 1402,
+   "sha256": "fe4885294682a5ba3b587f55fb4a6c1ff3bae57073139602c481d45d30828f88",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/BASELINE.md",
+   "size": 3324,
+   "sha256": "b52ee5aa6fb8d41d4c4092ca0a66a19c82a14b6c96bfb7631ecf20ad9e8574e3",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/BEDROCK-MASTER-PLAN-2026-10-24.md",
+   "size": 39021,
+   "sha256": "ed03541feff0a10b96becc1f32059c40f0e61b3a9c16ef414cd4dc68abad7b3c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/DISTRIBUTION.md",
+   "size": 1901,
+   "sha256": "8514405510b33bb0729f6c1fa5c3bc32dcd144cda35fafa6a0f2a07e221cc3d9",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/GATE-LOG.md",
+   "size": 2970,
+   "sha256": "d84117de2bdd6316500cdd32dbf7f4073dde1c2a62ac21cf36e1961644eefdd6",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/GATE-TEMPLATE.md",
+   "size": 2013,
+   "sha256": "2b6a66f7a01a4777cf91d4addfd86073121e218651f92fd512439f843ceb3a4e",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/SESSION-2026-10-24.md",
+   "size": 7760,
+   "sha256": "1fa396db139dd29b9a0c036c199b6f5d478482b60e5be5b7945d697661412499",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/gates/GATE-G1.md",
+   "size": 2341,
+   "sha256": "d324f12fd04e22149895434f9952904acbe3cd2d4f9645124ce8e65d4fc42c70",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/gates/GATE-G2.md",
+   "size": 1960,
+   "sha256": "12679fe04822e351c9ad95d351242fe01f6d9dd326939ce1c665f90cf9fff136",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/gates/GATE-G2B.md",
+   "size": 1808,
+   "sha256": "638c2ca1ad0402b4265e18a4f1bedcdec36176af004f75144f70975d0d592256",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/gates/GATE-G3A.md",
+   "size": 1896,
+   "sha256": "5be705446b17fc79bab74419c60b4ad6b2a4d33015efd5fd41805ffc936c4f78",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/gates/GATE-G3B.md",
+   "size": 2099,
+   "sha256": "9c08fd8e47e745a493a87734b356f91170308ceb5c5ccc897cdabe605594edbd",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/gates/GATE-G3C.md",
+   "size": 2032,
+   "sha256": "8e9419f838eb0b16f6a3537669bfb06053603743a524a56bebadf6993acf8c55",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/gates/GATE-G4.md",
+   "size": 2157,
+   "sha256": "42dbf7581f645d730407dca8de62bdc3f869e92ba88e4e07a2819c5b35febac0",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/gates/GATE-G5.md",
+   "size": 1366,
+   "sha256": "9014fc06e4400aa80e6cd7a4fe7aeca7dc581a57afb2edc358e00f3d8aa78570",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/gates/GATE-G6.md",
+   "size": 1480,
+   "sha256": "a9c5eb1f69690178c7502e8cd86357271d65c7b6802506490a018c602b29b455",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/gates/GATE-G7.md",
+   "size": 1543,
+   "sha256": "838ffdf2aa002da0c4948fe3e75b75f38644dde73ff9bf155412a160d87c36e5",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/plans/bedrock/gates/GATE-G8.md",
+   "size": 4827,
+   "sha256": "13791cf600deb7faf3241b4439d3915ccfba180d64b10de10ee0bd7a70a227f9",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/registers/02-defect-register.md",
+   "size": 16401,
+   "sha256": "46a791ee9d43668aeb5cc25cd927868881a9c3b4adc108f687772ffeb2ab5634",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/registers/03-fix-log.md",
+   "size": 25805,
+   "sha256": "e704052983f97b8a93ab301fb7e1aa91393f6e69e5c2707fbfd4bfef0d7f1a0b",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/registers/04-handoff.md",
+   "size": 9755,
+   "sha256": "f1a6bdc51a54f320635b9d6a5c8a610dca50de2e2bc197e22f60ceb40ea7b839",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/roadmap/05-remediation-roadmap.md",
+   "size": 16680,
+   "sha256": "888edfc5aec3ee1cc66e3a86fed4051d5a42a2f60255692fe4eca922b0f8d507",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "docs/roadmap/06-rsvp-feature-plan.md",
+   "size": 10118,
+   "sha256": "411f099d5ffffe115c61f1ac4f4e267aa0271d18ee4fe4c8c3a1daf8c2e64e54",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "graphify-out/GRAPH_REPORT.md",
+   "size": 85978,
+   "sha256": "cd45383cb567f1f329c5ba8439fe7139b1680c56f77a3d9083951e5e9e45a9f6",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "graphify-out/cost.json",
+   "size": 355,
+   "sha256": "93384e900464874c304e9544cf3ce4350e85875e9883eb097e41de9ba0b6df10",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "graphify-out/graph.html",
+   "size": 487120,
+   "sha256": "64409057b01faafcc385226f99bf5a9bed1fc3c2b0bf2eb003640040baa92e7c",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "graphify-out/graph.json",
+   "size": 7378598,
+   "sha256": "32258b7b51dd20daf218e84c9c19edac4acf67663a98d222c6aa9916f13c89d7",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "graphify-out/manifest.json",
+   "size": 52596,
+   "sha256": "a82877890ac2501f7ec1a4cbf653e66538006c724270446600d7ef3e73242f47",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "scripts/benchmark.sh",
+   "size": 1111,
+   "sha256": "51f1076380bac938f919fbdab50ef5e1c1ee9bb4bf2a7c58722853036ef11339",
+   "mode": "0o755",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "scripts/bundle_smoke.py",
+   "size": 3128,
+   "sha256": "407fe4d38bbd4b4aa79282d22c802b2f9093612a1c4d4436a713129e4a4ecc50",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "scripts/census.sh",
+   "size": 1066,
+   "sha256": "76bfb74bd47b24299e40a9076494e9155cd7307788f88d6f27ae404a79cd7e0d",
+   "mode": "0o755",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "scripts/generate-app-icon.py",
+   "size": 6439,
+   "sha256": "e5f46ab4d45938ffb36f1e49b957f642e2ea3570656cd41db13b187c20f91bbf",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "scripts/package-release.sh",
+   "size": 3459,
+   "sha256": "a795b77739d404b5aed237d4efd24583424584c108d782ca518c9542103aa4bf",
+   "mode": "0o755",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "scripts/stage-mirage-runtime.sh",
+   "size": 4935,
+   "sha256": "bbbec23bc0badc03c6308d72bc4e72778937aee784c7f590dc37fe259975f773",
+   "mode": "0o755",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "scripts/tib/observe.py",
+   "size": 6001,
+   "sha256": "624c4e9bb3ab99290d96b0cb4a5c311a289aa2061472afb5527e1f630d018d72",
+   "mode": "0o755",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "scripts/verify-clean-machine.sh",
+   "size": 1451,
+   "sha256": "3f5407af33af0d55d853359a40038d41cb1f4526b92395448a31a1c18d0d0266",
+   "mode": "0o644",
+   "tracked": true,
+   "ignored": false
+  },
+  {
+   "path": "scripts/verify-test-isolation.sh",
+   "size": 891,
+   "sha256": "c301b8e8c03f0b18f86c1298ea3dca51ee7ca00ed326fc71acf6d0d46fb43186",
+   "mode": "0o755",
+   "tracked": true,
+   "ignored": false
+  }
+ ]
+}
