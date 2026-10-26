@@ -156,3 +156,30 @@ stays visible while hovered or while a popover/sheet is open, and a small
 top-left reveal control restores it on demand. Chapter changes deliberately
 re-show the controls with the new label. Owner retest of the refinement is
 pending.
+
+---
+
+## 004 — Reader appearance system and library polish (candidate)
+
+**Date and time:** 2026-10-25 20:58:01 EDT (−0400)
+**Build:** `dist/AsterismaV1.0-1.0-arm64.zip`
+**SHA-256:** `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`
+**Code:** `3bff002` · tag `asterisma-v1.0-polish-1`
+
+### What shipped
+
+- Apple Books-style Appearance panel with six themes.
+- Font family, bold, size, line/character/word spacing, margins.
+- Justify, hyphenation, Auto/One/Two columns.
+- Slide/Fade/Instant page turns and optional page numbers.
+- Adaptive reader chrome and document-level edge-click page turns.
+- Redesigned selected-book detail and quieter sidebar rows.
+
+### Status
+
+Candidate implemented, built, signed, and packaged. `ReaderAppearanceTests`
+passes 5/5, including WCAG AA contrast for every theme. Owner visual
+acceptance is pending, so this is a candidate milestone rather than an
+owner-accepted one.
+
+Live store at session close: **1 book / 3 sessions / 77 page timings**.

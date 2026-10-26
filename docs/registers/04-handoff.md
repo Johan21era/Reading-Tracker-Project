@@ -77,7 +77,7 @@ The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old �
 
 > **Owner-test authority:** the owner's personal test results are the absolute source of truth and override every benchmark, census, gate receipt, and documentation claim. See `docs/12-owner-test-authority.md`; record sessions in `docs/owner-test-results/`.
 
-**Live data:** `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` — **1 book / 3 sessions / 20 page timings** after the owner’s deliberate erase/reset and acceptance test. The owner deleted the local backup snapshots on 2026-10-24, so the live library is currently the only copy; rely on Time Machine or an external backup before risky work.
+**Live data:** `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` — **1 book / 3 sessions / 77 page timings** after the owner’s deliberate erase/reset and acceptance test. The owner deleted the local backup snapshots on 2026-10-24, so the live library is currently the only copy; rely on Time Machine or an external backup before risky work.
 
 **Docs map:** start at `README.md` → this handoff → `docs/plans/bedrock/` for the release gates → `docs/integration/` for anything Mirage.
 
@@ -104,3 +104,24 @@ The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old �
 - `docs/REBRAND-ASTERISMA.md` — rename and data-root migration record
 - `docs/integration/RT_Mirage_Codebase_Merge_Playbook.md` — the merge-era constitution (§22 still executes the TiB era)
 - `docs/audits/08-deep-audit.md` — the full independent audit (October 2026)
+
+---
+
+## Session close — 2026-10-25
+
+**Delivered:** Apple Books-style reader appearance panel and library polish.
+Candidate package `a8ebf2ec…17009` (code `3bff002`, tag
+`asterisma-v1.0-polish-1`).
+
+**Verification:** Debug/Release builds green; package signature and bundle
+smoke green; `ReaderAppearanceTests` 5/5. Full UI-inclusive census remains
+blocked by the macOS UI-test automation bootstrap.
+
+**Cleanup:** removed ~2.9 GB of Xcode DerivedData, 91 temporary test/build
+artifacts, all `.DS_Store` files, and two empty legacy project folders. Kept
+the signed release zip, the staged Mirage runtime, and graphify deliverables.
+`.obsidian/` is now ignored as local vault configuration.
+
+**Next:** owner visual retest of the Appearance panel and book plate. The next
+polish batch is in-book search/bookmarks/highlights, vertical scroll, and
+per-theme custom settings.

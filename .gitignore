@@ -1,6 +1,9 @@
 # macOS noise
 .DS_Store
 
+# Local Obsidian vault configuration
+.obsidian/
+
 # Xcode user-state (machine-local)
 xcuserdata/
 *.xcuserstate

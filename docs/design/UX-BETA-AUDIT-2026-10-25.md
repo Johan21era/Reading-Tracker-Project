@@ -249,3 +249,16 @@ Census:                  new appearance suite 5/5; full UI-runner census blocked
 
 The audit is a living register. A finding moves to **fixed** only after the
 owner reproduces the acceptance criteria in the real application.
+
+---
+
+## Session close — 2026-10-25
+
+Phase 1 of the polish program shipped in `asterisma-v1.0-polish-1`
+(`3bff002`): Apple Books-style Appearance panel, adaptive reader chrome,
+page-turn styles, optional page numbers, document-level edge clicks, and a
+redesigned selected-book plate. Owner visual acceptance is pending.
+
+The remaining polish backlog is unchanged: in-book search, bookmarks,
+highlights/notes, vertical scroll, per-theme custom settings, library
+shelf/grid, and the full accessibility/responsive matrix.

@@ -23,8 +23,9 @@ This is a map of every file and folder in the project, organized so you can find
 | `AsterismaV1.0.entitlements` | Permissions the app asks macOS for (sandbox, user-selected files, location) |
 | `AsterismaV1.0-Info.plist` | App settings such as its name, icon, and location description |
 | `scripts/` | Census, benchmark, test-isolation, runtime staging, icon, and release-package scripts |
-| `dist/` | Locally built release packages (gitignored) |
-| `graphify-out/` | Generated knowledge graph, report, and interactive HTML |
+| `dist/` | Locally built release packages (gitignored); the final signed polish zip is kept here |
+| `.mirage-runtime/` | Local staged Mirage runtime (gitignored; required for a fresh build) |
+| `graphify-out/` | Generated knowledge graph, report, and interactive HTML (5,265-node code graph as of 2026-10-25) |
 | `.gitignore` | Tells Git which files to ignore (build junk, user settings, etc.) |
 
 ---
@@ -49,6 +50,7 @@ Every documentation file begins with a number so you can read them in order:
 | `docs/plans/bedrock/` | — | G0–G8 gate record, master plan, baseline, distribution notes | Anyone auditing the release |
 | `docs/design/fullscreen-surface-audit.md` | — | Fullscreen surface audit, border inventory, and after capture | Anyone reviewing the UI |
 | `docs/design/UX-BETA-AUDIT-2026-10-25.md` | — | Beta UX audit, finding register, and remediation phases | Design, engineering, QA, and product owners |
+| `docs/design/READER-POLISH-2026-10-25.md` | — | Apple Books benchmark, Appearance panel, chrome, and library polish record | Design, engineering, and anyone continuing the polish program |
 | `docs/12-owner-test-authority.md` | 12 | The owner's personal test results are the absolute source of truth | Everyone — this overrides all other claims |
 | `docs/MILESTONES.md` | — | Pinned capability milestones with exact timestamps | Everyone — the wins matter too |
 | `docs/owner-test-results/` | — | Personal test sessions, template, and evidence | The owner, then anyone acting on the results |
@@ -92,7 +94,7 @@ This folder contains every Swift file that makes the app run. They are grouped b
 
 These are automated checks that run without you having to click anything. Each test is named after the specific bug or behavior it guards. If a test ever starts failing, that is an early warning that something broke.
 
-As of the AsterismaV1.0 release (2026-10-24): 47 test files, 225 `@Test` functions, standing default census **218 passed / 0 failed / 9 skipped**. The 9 skips are deliberate opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo (see `docs/method/07-testing-strategy.md` for how to engage them).
+As of the 2026-10-25 polish candidate: 48 test files and 230 `@Test` functions. The last complete census before the polish batch was **218 passed / 0 failed / 9 skipped**; the new `ReaderAppearanceTests` suite passes **5/5**. A full rerun of the UI-inclusive census is currently blocked by the macOS UI-test automation bootstrap, not by an app assertion. The 9 skips are deliberate opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo (see `docs/method/07-testing-strategy.md` for how to engage them).
 
 ---
 

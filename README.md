@@ -51,7 +51,7 @@ There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for st
 | **Build config** | `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, `SWIFT_APPROACHABLE_CONCURRENCY = YES`, deployment target macOS 26.5, Xcode 27.1 |
 | **Dependencies** | Exactly one Swift dependency: ZIPFoundation 0.9.20 (SPM, pinned via `Package.resolved` — used for unzipping EPUBs). Mirage ships as a self-contained bundled runtime (its own Python interpreter), not a Swift dependency |
 | **App size** | 119 app files · 43,543 raw LOC (counted directly — not estimated) |
-| **Tests** | 47 test files · 225 `@Test` functions · **standing default census: 218 passed / 0 failed / 9 skipped** (opt-in real-engine, benchmark, and SQLite/live-weather gates) |
+| **Tests** | 48 test files · 230 `@Test` functions · last complete census **218 passed / 0 failed / 9 skipped**; new `ReaderAppearanceTests` **5/5**; full UI-inclusive rerun currently blocked by macOS automation bootstrap (opt-in real-engine, benchmark, and SQLite/live-weather gates) |
 | **How it is tested** | Swift Testing (`@Suite` / `@Test` / `#expect`) — not XCTest |
 | **History** | ~30 working sessions (Jun–Oct 2026), 45+ commits, then the **RT–Mirage merge campaign** (Oct 2026): the 8-PR integration ladder PR-1…PR-8, closed with owner signatures; then the **Bedrock / AsterismaV1.0 release** (2026-10-24) |
 | **Where your data lives** | Sandbox container: `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` (see §3) — plus Mirage's own stratum (§3.5) |
@@ -131,11 +131,11 @@ The full campaign of record — playbook, ADR register (ADR-2…ADR-8, ADR-12), 
 Checked directly against the merged `main` worktree on 2026-10-25 — not inherited from an old note:
 
 - ✅ `xcodebuild build` (Debug and Release, default DerivedData) → **BUILD SUCCEEDED**
-- ✅ Full census on merged `main` → **218 passed / 0 failed / 9 skipped** (227 cases). The 9 skips are deliberate opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo.
+- ✅ Last complete census before the polish batch → **218 passed / 0 failed / 9 skipped** (227 cases). The new `ReaderAppearanceTests` suite passes **5/5**; a full UI-inclusive rerun is currently blocked by the macOS UI-test automation bootstrap, not by an app assertion. The 9 skips are deliberate opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo.
 - ✅ Rebrand verified live: app/product/display name **AsterismaV1.0**, Swift module `AsterismaV1_0`, and data root migrated to `Application Support/Asterisma/`.
-- ✅ Live library after the owner’s deliberate erase/reset and acceptance test: **1 book / 3 sessions / 20 page timings**.
+- ✅ Live library after the owner’s erase/reset and reading sessions: **1 book / 3 sessions / 77 page timings**.
 - ✅ Release package built, ad-hoc signed, `codesign --verify --deep --strict` passes, and the packaged-app launch smoke passes.
-- ✅ `main` contains the release merge at `aba8aa4` plus the owner-accepted reader build and polish candidate at `3bff002` (tag `asterisma-v1.0-polish-1`); all release, owner-test, and Bedrock tags are pushed. The working tree is clean except the untracked `.obsidian/` vault config.
+- ✅ `main` contains the release merge at `aba8aa4` plus the owner-accepted reader build and polish candidate at `3bff002` (tag `asterisma-v1.0-polish-1`); all release, owner-test, and Bedrock tags are pushed. The working tree is clean; the local Obsidian vault configuration is now ignored.
 - 👑 **Owner-test authority:** the owner's personal test results outrank every item above. See `docs/12-owner-test-authority.md`.
 
 ---
@@ -158,7 +158,7 @@ The audit-era **NEW-DE-1 … NEW-DE-8 punch list was fixed and pinned** during B
 
 The full defect register remains the source of truth for the F-series items; the old NEW-DE block is historical and should not be read as still open.
 
-**Reader status:** the EPUB reader now uses CSS-column pagination with a two-page spread on wide windows, left/right page turns, exact chapter/page position persistence, cover/titlepage filtering, typography controls, and compact in-content controls instead of the native toolbar. The owner accepted this workflow on 2026-10-25; the current candidate adds auto-hiding top-left controls. A whole-book physical page map and honoring the EPUB’s own embedded font remain future work.
+**Reader status:** the EPUB reader uses CSS-column pagination with one/two-page layouts, left/right page turns, exact chapter/page position persistence, cover/titlepage filtering, and compact in-content controls instead of the native toolbar. The 2026-10-25 polish candidate adds the Apple Books-style Appearance panel: six themes, font family, bold, text size, line/character/word spacing, margins, justification, hyphenation, page-turn style, and optional page numbers. The owner accepted the underlying reader workflow; visual acceptance of the new panel is pending. A whole-book physical page map remains future work.
 
 ---
 

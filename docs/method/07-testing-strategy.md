@@ -17,8 +17,8 @@ This describes **what to build so the same classes of bug get caught automatical
 | | |
 |---|---|
 | **Framework** | Swift Testing — `@Suite` / `@Test` / `#expect` (the project standardized after converting the original XCTest suites) |
-| **Scale** | 47 test files · 225 `@Test` functions |
-| **Standing census** | **218 passed / 0 failed / 9 skipped** — the default, ungated census of every ordinary run |
+| **Scale** | 48 test files · 230 `@Test` functions |
+| **Standing census** | Last complete run **218 passed / 0 failed / 9 skipped**; the new `ReaderAppearanceTests` suite passes **5/5**. A full UI-inclusive rerun on 2026-10-25 was blocked by the macOS UI-test automation bootstrap, not by an app assertion. |
 | **The 9 skips** | 4 Mirage real-engine cases (identity import, handshake/health, and the two lifecycle steps), 1 benchmark, 2 real-library SQLite parity cases, and 2 live Open-Meteo cases |
 | **Census discipline** | Every fixing session opens and closes on a green census; canonical numbers come from `xcrun xcresulttool get test-results summary --path <.xcresult>` — never from eyeballing the console |
 

@@ -113,3 +113,11 @@ Primary references:
   verified independently.
 - Owner visual acceptance is still required for theme fit, spacing, page-turn
   feel, and the redesigned book plate.
+
+## Session close
+
+Committed as `3bff002` (docs `6bcea96`) and tagged
+`asterisma-v1.0-polish-1`. The final signed package was preserved; generated
+Xcode/test residue was removed. Graphify was rebuilt against the new source
+(5,265 nodes / 11,862 edges); `graph.html` was regenerated as the aggregated
+community view because the graph exceeds the default 5,000-node limit.

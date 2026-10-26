@@ -47,9 +47,9 @@ fixed on top of the accepted release. The owner later accepted the full reader
 workflow and requested auto-hiding reader controls; this is the current
 candidate:
 
-- Commit `cfeb677`; tag `asterisma-v1.0-ux-audit-3`.
+- Commit `3bff002`; tag `asterisma-v1.0-polish-1`.
 - Package: `dist/AsterismaV1.0-1.0-arm64.zip`
-- SHA-256: `298cd18ca6a2f4acd152f2bb7145a3583d4216fd3765a89c10963d4dae233a70`
+- SHA-256: `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`
 - F1: packaged app now carries its sandbox/entitlements.
 - F2: onboarding Finish now dismisses the sheet.
 - F3: Add Book accepts iBooks-style unzipped `.epub` directories.
@@ -57,7 +57,9 @@ candidate:
 - F5: seamless fullscreen surface — flat sidebar, unified canvas, focus-only search ring; library toolbar removed.
 - F6: Add Book picker rejects parent folders and admits PDF/EPUB files and iBooks EPUB packages.
 - F7: reader top-left controls auto-hide after 3 seconds and return on demand.
-- Regression pin: `FolderEPUBImportTests`.
+- F8: Apple Books-style Appearance panel (six themes, fonts, bold, spacing, margins, justification, columns, hyphenation, page turns, optional page numbers).
+- F9: selected-book book plate and quieter sidebar rows.
+- Regression pin: `FolderEPUBImportTests`, `ReaderAppearanceTests`.
 - Owner retest is the acceptance gate for this candidate.
 
 ## Known deltas (must be read with acceptance)
@@ -77,7 +79,7 @@ candidate:
 ## Distribution
 
 - Package: `dist/AsterismaV1.0-1.0-arm64.zip`
-- SHA-256: `298cd18ca6a2f4acd152f2bb7145a3583d4216fd3765a89c10963d4dae233a70`
+- SHA-256: `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`
 - Ad-hoc signed, not notarized.
 - First launch requires right-click → Open (documented in `DISTRIBUTION.md`).
 - Bundle ID remains `johan.Reading-Tracker` for MVP container compatibility;

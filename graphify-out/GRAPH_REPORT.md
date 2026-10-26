@@ -1,412 +1,395 @@
-# Graph Report - AsterismaV1.0  (2026-10-24)
+# Graph Report - AsterismaV1.0  (2026-10-25)
 
 ## Corpus Check
-- 252 files · ~337,967 words
+- 246 files · ~406,100 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 4674 nodes · 11424 edges · 416 communities (226 shown, 190 thin omitted)
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 666 edges (avg confidence: 0.8)
+- 5265 nodes · 11862 edges · 585 communities (236 shown, 349 thin omitted)
+- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 630 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `aba8aa4c`
+- Built from commit: `6bcea963`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- SessionCoordinator
-- SwiftUI
-- AnalyticsCache
-- Foundation
-- .dataRootURL
-- ReadingSession
-- Identifiable
-- Sendable
-- CodingKeys
-- CodingKeys
-- BookDeadline
-- CaseIterable
-- ReadingGenre
-- .mapped
-- NoteTag
-- DailyActivity
-- DataStore
-- AppKit
-- View
-- CoverStore
-- .validate
-- ReadingInsight
 - MaturityEvidenceDigest
-- Combine
-- BehavioralCategory
-- .addBook
-- LibraryDatabase
-- .updateGoalSet
-- AnnualReportArchiveView
-- LibraryArchive
-- .generateBooks
-- .enqueue
-- DemoRapidSwitchTests
-- .runCycle
-- SentinelEngine.swift
-- SentinelFinding
-- String
-- SentinelEngine
-- RSVPPlaybackEngine
-- .versionIsSupported
-- AnalyticsEngine.swift
-- AnalyticsEngine
-- .gate
-- .estimate
-- AchievementDefinition
-- AchievementKind
-- AchievementEngine
-- AudioContextProfile
-- AudioCategory
-- AudioSource
-- MusicalAnalysisEngine
-- AudioMonitorService
-- AudioProfileStore
-- AudioFactor
-- BehaviorContextEngine2.swift
-- InactivityGapRecord
-- Double
-- UUID
-- Date
-- BehaviorCategory
-- MirageProcessTransport
-- RoutineCategory
-- ContextContinuityType
-- ContextTrend
-- BehavioralEvent
-- .gap
-- .evidence
-- BehavioralCategory.swift
-- DeviceStateType
-- Date
-- BehaviorContextAccessKit
-- Int
-- BehavioralObservationWindow
-- ThermalStateEvent
-- Equatable
-- BehavioralObserverStatus
-- Color
-- PersonaDetail
-- DeveloperConsoleDashboardView
+- DataStore
 - ConsoleSubsystemSnapshot
+- RSVPPlaybackEngine
+- EPUBReaderScreen
+- UUID
+- Stage B — Bedrock / Asterisma
+- MirageProcessTransport
+- MirageImportOutcome
+- BehavioralCategory
+- BehaviorContextEngine2.swift
+- MirageSidecarSupervisor
+- Sendable
+- AnalyticsEngine
+- NotificationCandidate
+- PR-4 Current-State Defect Analysis — Real Sidecar Lifecycle
+- .validate
+- View
+- MirageBundledRuntimeTests
+- ReadingSession
+- .addBook
+- Identifiable
+- .generateBooks
+- Equatable
+- Date
+- MirageClient
+- MusicalAnalysisEngine
+- Foundation
+- Double
+- .perform
+- AudioCategory
+- MirageAnalysisStatus
+- 08 · Deep Audit (Oct 2026)
+- .estimate
+- AudioMonitorService
+- Double
+- WeatherSnapshot
+- .generate
+- SwiftUI
+- Int
+- BehavioralCategory.swift
+- BehaviorContextAccessKit
+- CoverStore
+- ReadingInsight
+- CodingKeys
+- BehavioralEvent
+- MirageWireAction
+- InactivityGapRecord
+- LocationProvider
+- BookImporter.swift
+- SessionCoordinator
+- BookVisualState
+- 🖥️ Part 2 — MirageV1.0
+- AchievementKind
+- String
+- OpenMeteoProvider
+- .makeFixture
+- CaseIterable
+- BehaviorCategory
+- LibraryDatabase
+- AnalyticsEngine.swift
+- RoutineCategory
+- .recommend
+- Bedrock Master Plan
+- 21. Technical escalation addendum (section-by-section ≥21× intensification layer)
+- SentinelFinding
+- .normalise
+- MirageStatusSurfaceTests
+- LibraryArchive
+- AudioContextProfile
+- Date
 - DeveloperConsoleSection
-- DeveloperConsoleSystemMetrics
+- LibraryFilterState
+- MirageJSONValue
+- 22. The Titanium Bridge (TiB) — continuous-convergence subsystem
+- .gate
+- AchievementDefinition
+- DeviceStateType
+- Color
+- GoalStatus
+- .importEPUB
+- 10 · Profiler fix (freeze post-mortem)
+- ADR-7 — Spoiler-cursor contract (with S10-ES-3 formal sub-document as annex)
+- RT-Mirage Merge Log
+- 🧭 Navigation Hub — read this first
+- ReadingGenre
+- ReadingBehaviorMetric
+- Coordinator
+- AnalyticsCache
+- .versionIsSupported
+- Bedrock Session Record (2026-10-24)
+- .updateGoalSet
+- EnvironmentEngine
+- SettingsRootView.swift
+- MirageCursorGateError
 - State
+- LibrarySortMode
+- AsterismaV1.0 Project Report (README)
+- Testing Strategy
+- ShootingStarManager
+- BookDeadline
+- WeatherAnalysisEngine.swift
+- EnvironmentalFactor
+- .runCycle
+- SentinelEngine
+- AudioFactor
+- NewYearTransitionMonitor.swift
+- AsterismaV1_0UITests
+- 06 · RSVP Feature Plan
+- .enqueue
+- .gap
+- CodingKeys
+- EnvironmentAnchorPeriod
+- EnvironmentColor
+- OpenMeteoProvider.swift
+- SpatialNavigatorCard
+- PDFReaderView
+- DailyActivity
+- Combine
+- DemoRapidSwitchTests
+- AchievementEngine
+- SeededGenerator
+- WeatherInsightPanel
+- InsightKind
+- NewYearCelebrationOverlay
+- WeatherSnapshotStoreTests
+- 09 · Final Traces performance marathon
+- AudioSource
+- DeveloperConsoleDashboardView
 - SentinelPaneView
-- BookDiscoveryView
 - AvailabilityState
 - BookDiscoveryService
 - BookDiscoveryViewModel
 - GutendexBook
-- CodingKeys
-- EnvironmentAnchorPeriod
-- EnvironmentColor
-- EnvironmentEngine
-- SeededGenerator
-- .clampUnit
-- EnvironmentState
-- ShootingStarManager
+- ValidationIssue
 - Star
-- OpenMeteoProvider.swift
-- OpenMeteoLiveSmokeTests.swift
-- WeatherSnapshot
-- LocationProvider
-- OpenMeteoProvider
 - .archiveSnapshot
-- WeatherAnalysisEngine.swift
 - WeatherConditionCategory
-- SeasonalPeriod
-- Double
-- EnvironmentalFactor
-- ReadingBehaviorMetric
-- CorrelationLifecycle
-- WeatherInsightPanel
-- .assembleAtSessionEnd
-- .normalise
-- Coordinator
-- GoalStatus
-- GoalKind
-- SettingsRootView.swift
-- InsightKind
-- ReadingInsightsDashboard.swift
-- BookDetailsView
-- BookImporter.swift
-- PDFReaderView
-- .importEPUB
 - .importPDF
-- ImportWarningLevel
-- ImportPlugin
-- LibraryFilterSidebarView
-- LibraryFilterState
-- AdaptiveLayoutTier
-- BookVisualState
-- SpatialNavigatorCard
-- MirageImportOutcome
-- MirageClient
-- MirageSidecarSupervisor
-- .perform
-- MirageCursorGateError
 - MirageDetailRequest
-- .makeFixture
-- MirageBundledRuntimeTests
-- MirageSettings.swift
-- MirageAnalysisStatus
-- MirageStatusSurfaceTests
-- MirageJSONValue
-- MirageWireAction
-- NotificationCandidate
-- OnboardingView
-- EPUBReaderScreen
-- .recommend
 - RecommendationCard
-- .generate
-- analyticsPeriod
-- NewYearTransitionMonitor.swift
-- NewYearCelebrationOverlay
-- SnowParticle
-- CelebrationPhase
-- Step
-- SheetDismissAffordance
-- SessionHistoryView
-- ContentView
-- LibrarySortMode
-- AnalyticsCachePinsTests.swift
-- BedrockBaselineTests.swift
-- DismissalFlag
-- G1CorrectnessPinsTests.swift
 - .disabledFeatureNeverRunsTheStatusRunner
-- MirageIdentityRealEngineImportTests.swift
-- ProbeTripwireTransport
-- GoalStreakTests
-- SQLiteFoundationTests.swift
-- SchemaEvolutionTests
+- RT critical facts (root `/Users/johanrembeci/Desktop/Reading Tracker Main /`)
+- SeasonalPeriod
+- OnboardingView
 - .record
-- WeatherLivePipelineTests.swift
-- WeatherSnapshotStoreTests
-- AsterismaV1_0UITests
-- benchmark.sh
-- bundle_smoke.py
-- census.sh
-- generate-app-icon.py
-- package-release.sh
-- stage-mirage-runtime.sh
-- observe.py
-- verify-clean-machine.sh
-- verify-test-isolation.sh
-- 08 · Deep Audit (Oct 2026)
-- 09 · Final Traces performance marathon
-- 10 · Profiler fix (freeze post-mortem)
-- PR-4 Current-State Defect Analysis — Real Sidecar Lifecycle
-- PR-5 Execution Plan — Identity Map + One-Book Import (drafted 2026-10-18 evening)
-- 🧭 Navigation Hub — read this first
-- 1. Source-derived baseline and confidence rules
-- 2. Product and architecture contract
-- 3. Data ownership, identity, and synchronization
-- 4. Repository strategy and GitHub safety
-- 5. Phase 0 — Governance, scope, and stop conditions
-- 6. Phase 1 — Establish and verify both baselines
-- 7. Phase 2 — Source-code discovery and contract extraction
-- 8. Phase 3 — Fix or isolate pre-existing RT risks
-- 9. Phase 4 — Build the integration boundary first
-- 10. Phase 5 — Implement the book/edition and cursor adapter
-- 11. Phase 6 — Expose Mirage as an optional RT feature
-- 12. Phase 7 — Security, privacy, and local-first guarantees
-- 13. Phase 8 — Testing strategy and quality gates
-- 14. Phase 9 — Build, packaging, and release engineering
-- 15. Phase 10 — Rollback, recovery, and operational support
-- 16. Implementation sequence and pull-request plan
-- 18. Final acceptance checklist
-- Appendix D — Multi-pass document audit
-- 21. Technical escalation addendum (section-by-section ≥21× intensification layer)
-- Appendix F — Quick reference (one-page cheat sheet)
-- 22. The Titanium Bridge (TiB) — continuous-convergence subsystem
-- 🖥️ Part 2 — MirageV1.0
-- ADR-12 — Titanium Bridge (TiB) charter: continuous convergence across the guarded boundary
+- SentinelEngine.swift
+- ThermalStateEvent
+- BehavioralObserverStatus
+- ContextContinuityType
+- PersonaDetail
+- CorrelationLifecycle
+- ContentView
+- Reaction wave (badge/goal recompute on main after bulk swap)
+- AppKit
+- .dataRootURL
+- BehavioralObservationWindow
+- ContextTrend
+- .evidence
+- EnvironmentState
+- BookDetailsView
+- DismissalFlag
+- GoalStreakTests
 - ADR-2: integration transport & protocol (managed stdio NDJSON sidecar)
-- ADR-3 — Packaged runtime distribution (engine + interpreter bundled with RT)
 - ADR-4 — Data directories, Mirage ledger placement & backup ownership
 - ADR-5: identity-mapping contract (RT Book ↔ Mirage book/edition)
+- §15.3 recovery rehearsal log — S15-ES-3 artifacts (2026-10-18 session)
+- 16. Implementation sequence and pull-request plan
+- AudioProfileStore
+- DeveloperConsoleSystemMetrics
+- .clampUnit
+- SessionHistoryView
+- MirageIdentityRealEngineImportTests.swift
+- ADR-3 — Packaged runtime distribution (engine + interpreter bundled with RT)
 - ADR-6 — Mirage as an optional RT feature: lifecycle governance (canonical §17 seat)
-- ADR-6a — Mirage import-path independence from RT's onboarding-import bypass (NEW-DE-5)
-- ADR-7 — Spoiler-cursor contract (with S10-ES-3 formal sub-document as annex)
-- ADR-8 — Repository strategy: two canonical repositories, one verified vendored copy (canonical §17 seat)
-- README.md
-- §15.4 Operational handoff bundle — RT ⇄ Mirage integration (2026-10-18)
-- §18 Final Acceptance Checklist (2026-10-18, ladder complete)
 - Evidence artifact — MirageV1.0 normative docs + wire protocol extraction (Phase 1/2)
 - Binding claims (path:line-anchored)
-- RT critical facts (root `/Users/johanrembeci/Desktop/Reading Tracker Main /`)
-- §15.3 recovery rehearsal log — S15-ES-3 artifacts (2026-10-18 session)
+- SchemaEvolutionTests
+- §15.4 Operational handoff bundle — RT ⇄ Mirage integration (2026-10-18)
+- §18 Final Acceptance Checklist (2026-10-18, ladder complete)
+- PR-5 Execution Plan — Identity Map + One-Book Import (drafted 2026-10-18 evening)
+- AsterismaV1.0 Release Package
+- observe.py
+- AnnualReportArchiveView
+- CodingKeys
+- ReadingInsightsDashboard.swift
+- LibraryFilterSidebarView
+- AdaptiveLayoutTier
+- analyticsPeriod
+- SnowParticle
+- SQLiteFoundationTests.swift
+- ADR-6a — Mirage import-path independence from RT's onboarding-import bypass (NEW-DE-5)
+- 13. Phase 8 — Testing strategy and quality gates
+- 3. Data ownership, identity, and synchronization
+- Appendix F — Quick reference (one-page cheat sheet)
 - TB-M0 gate plan — manifest + hash-verify in observe mode (OPEN — ADR-12 countersigned 2026-10-18)
+- NoteTag
+- BookDiscoveryView
+- .assembleAtSessionEnd
+- GoalKind
+- SheetDismissAffordance
+- ADR-8 — Repository strategy: two canonical repositories, one verified vendored copy (canonical §17 seat)
+- 10. Phase 5 — Implement the book/edition and cursor adapter
+- 14. Phase 9 — Build, packaging, and release engineering
+- 18. Final acceptance checklist
+- 2. Product and architecture contract
+- 4. Repository strategy and GitHub safety
+- 6. Phase 1 — Establish and verify both baselines
+- 9. Phase 4 — Build the integration boundary first
+- Appendix D — Multi-pass document audit
+- generate-app-icon.py
+- MirageSettings.swift
+- CelebrationPhase
+- OpenMeteoLiveSmokeTests.swift
+- Diagnostics: xcodebuild test run 2026-08-26
+- ADR-12 — Titanium Bridge (TiB) charter: continuous convergence across the guarded boundary
+- 11. Phase 6 — Expose Mirage as an optional RT feature
+- 12. Phase 7 — Security, privacy, and local-first guarantees
+- 15. Phase 10 — Rollback, recovery, and operational support
+- 7. Phase 2 — Source-code discovery and contract extraction
+- 8. Phase 3 — Fix or isolate pre-existing RT risks
+- ImportPlugin
+- ImportWarningLevel
+- Step
+- BedrockBaselineTests.swift
+- G1CorrectnessPinsTests.swift
+- ProbeTripwireTransport
+- 1. Source-derived baseline and confidence rules
+- 5. Phase 0 — Governance, scope, and stop conditions
+- .mapped
+- AnalyticsCachePinsTests.swift
+- WeatherLivePipelineTests.swift
+- bundle_smoke.py
+- verify-test-isolation.sh
+- Gate G2B — Mirage embedding and signing
+- README.md
 - observe-ledger.md
-- 06 · RSVP Feature Plan
-- Reaction wave (badge/goal recompute on main after bulk swap)
-- Slim Timings (downsample synthetic page-timings)
-- nonisolated stamps (~15 functions on generation path)
-- STEP 1 playbook: sample the frozen process
-- debug_replaceLibrary (persona library swap)
-- SessionEventRouter2 (library-changed listener)
-- AnalyticsEngine (page-timing accountant)
+- benchmark.sh
+- census.sh
+- package-release.sh
+- stage-mirage-runtime.sh
+- verify-clean-machine.sh
+- BCE Phase-2 dead scaffold (81% dormant)
+- DataMaturityEngine (evidence gating with injected clocks)
 - Deep Audit RA-DEEP-20261017
+- EPUBPackage (exactly-once cleanup design)
+- Monolith persistence at scale (unpruned lifetime growth)
 - NEW-DE-1: PersistenceWriter stale-overwrite window
 - NEW-DE-2: Explore/spatial cards never show real covers
 - NEW-DE-3: crash-window time inflation
 - NEW-DE-4: AnalyticsCache stale across midnight
 - NEW-DE-5: onboarding import bypass + goal-set clobber
-- Diagnostics: xcodebuild test run 2026-08-26
-- Monolith persistence at scale (unpruned lifetime growth)
-- BCE Phase-2 dead scaffold (81% dormant)
 - Four release blockers (AppIcon, WeatherKit entitlement, CFBundleID, readonly conflict)
-- DataMaturityEngine (evidence gating with injected clocks)
-- EPUBPackage (exactly-once cleanup design)
+- FULLMUTEX + owned serial queue lesson (SQLITE_ENABLE_THREAD_ASSERTIONS)
 - Upgrade #1: normalized SQLite core blueprint
 - Upgrade #3: split @Observable stores blueprint (Library/Goal/Health)
 - Upgrade #4 safe slice: PersistenceWriter owned serial queue
 - Upgrade #5: AnalyticsCache (signature ⊕ epoch memoization)
-- FULLMUTEX + owned serial queue lesson (SQLITE_ENABLE_THREAD_ASSERTIONS)
+- Achievement flood on bulk history import
 - Developer Console freeze (persona install, Sep 2026)
 - EnvironmentObject.error() fatal root cause
 - One-line fix: .environmentObject(dataStore) on the console window
 - Profile-first discipline (sample the frozen process before reasoning)
-- Achievement flood on bulk history import
 - Winter Romantic persona (620 sessions, 185k timings)
-- PR-4 current-state defect analysis (PR4-DEF-ANALYSIS-2026-10-18)
-- BUG-001: batch-context silent stdout wedge
-- H1: ghost consumer on the pipe read end (falsified)
-- H3: bytes never entered the pipe (falsified)
-- H2 confirmed: FileHandle.read machinery-local wedge
-- E1 kernel-level forensic probe (raw read(2) discriminator)
-- C2 fix: raw read(2) transport path + MirageOnceCloser epoch disposal
-- MirageProcessTransport
-- MirageChildProcess / MirageProcessLauncher / MiragePythonLocator
-- MirageSidecarSupervisor (backoff ladder, permanent-down)
-- BUG-003: CodeSign xattr detritus from iCloud File Provider
-- BUG-005: stale probe artifact (wrong pipe index, never compiled)
-- OPE-003: PR-4 census (138 executed / 0 failed / 1 skipped)
-- swift-subprocess adoption track (future countersigned PR)
-- Test-campaign protocol (xattr clean, no timeout, delete probes)
-- PR-5 execution plan (identity map + one-book import)
-- MirageIdentityMap.swift (stratum load/store)
-- MirageImportFlow.swift (import orchestrator)
-- Pinned-case matrix (duplicate/changed/ambiguous/missing/cancel/crash/schema floor)
-- import_epub payload contract (extract from MirageV1.0, logged as M-022)
-- ID-SYNTH-9001: RT never infers mirageEditionID
-- RT Mirage Codebase Merge Playbook (governing playbook)
-- Parent-child hierarchy (RT parent app, Mirage optional capability)
-- Explicit non-goals (no store unification, no repo deletion, no auto-analysis)
-- MirageIntegration module (typed integration boundary)
-- Evidence labels (SOURCE-VERIFIED / TEST-VERIFIED / README-REPORTED / INFERRED / DECISION-REQUIRED / BLOCKED)
-- PR-1...PR-8 integration ladder
-- ADR register (§17, ADR-1...ADR-11 slots)
-- Identity mapping is a first-class subsystem (no title guessing)
-- Spoiler-cursor boundary (highest-risk semantic boundary)
-- S10-ES-1 explicit-gesture pre-flight doctrine
-- S16-ES-1 PR gate ladder (per-PR acceptance gates)
-- S8-ES-5 house suite standard
-- §21 impossibility rule + W3 (no invented wire fields / no ID synthesis)
-- Playbook §22 Titanium Bridge specification (TB-* pipeline)
-- Git risk classes Ω/Δ/Π (owner countersign gates)
-- MirageV1.0 (local-first, spoiler-safe literary knowledge graph)
-- MirageService (Python API embedding surface)
-- mirage CLI (CLI embedding surface)
-- mirage --serve-web local browser UI
-- ledger@0.0.10 SQLite ledger of truth (graph is projection)
-- Spoiler visibility deterministic by cursor and source evidence
-- D-010 corrections overlay (audited, append-only, never book truth)
-- crates/mirage-core Rust reference core (demoted per ADR-0002)
-- One analysis job at a time (8 GB budget, incremental processing)
-- unread | reading@cursor | read state vocabulary
-- Unified NDJSON serve/sidecar protocol
+- AnalyticsEngine (page-timing accountant)
+- debug_replaceLibrary (persona library swap)
+- nonisolated stamps (~15 functions on generation path)
+- STEP 1 playbook: sample the frozen process
+- SessionEventRouter2 (library-changed listener)
+- Slim Timings (downsample synthetic page-timings)
+- Generation model inviolable (whole-directory atomic swap only)
+- TB-M0...TB-M5 owner-gated milestones (gates are the only brake)
+- Owner custody of promotion signing keys (fail-closed on unsigned material)
+- Titanium Bridge (continuous convergence: same bytes inside RT by +1 min)
+- Two rings, one bridge (dev ring flag / release ring gates)
+- id-echo request correlation
+- Pipe I/O on nonisolated worker (no MainActor-blocked work ≥5 ms)
 - Managed stdio NDJSON sidecar transport decision
 - Operational handshake (health banner → version → api_version pin)
 - mirageProtocolIncompatible mask (feature masked to status row)
-- Single-instance supervision + bounded restart (≤3 attempts, 2/4/8 s backoff)
-- S2-ES-4 wire discipline (one compact JSON per LF line, no invented fields)
 - S12-ES-3: localhost is not a trusted call (HTTP disabled inside RT)
-- Pipe I/O on nonisolated worker (no MainActor-blocked work ≥5 ms)
-- id-echo request correlation
+- S2-ES-4 wire discipline (one compact JSON per LF line, no invented fields)
+- Single-instance supervision + bounded restart (≤3 attempts, 2/4/8 s backoff)
 - ADR-3: packaged runtime distribution (engine + interpreter bundled)
 - Bundled runtime decision (RT.app/Contents/Resources/mirage-runtime)
-- RUNTIME-MANIFEST.json (pinned checksums, honest provenance)
-- Pinned python-build-standalone CPython (relocatable, redistributable)
+- Clean-machine gate (fresh-clone build + bundle spawn + census subset)
 - Runtime locator ladder (bundled → dev gate → unavailable copy)
 - MIRAGE_REAL_ENGINE_DIR dev-opt-in gate
-- Clean-machine gate (fresh-clone build + bundle spawn + census subset)
 - MirageBundledRuntimeTests
-- Ledger stratum: ReadTracker/mirage/mirage.sqlite3 (exclusive Mirage-write territory)
-- S0-ES-3 disjoint write-sets doctrine
+- Pinned python-build-standalone CPython (relocatable, redistributable)
+- RUNTIME-MANIFEST.json (pinned checksums, honest provenance)
 - Ledger backup ownership = Mirage's own doctrine (RT never fabricates ledger backups)
+- S0-ES-3 disjoint write-sets doctrine
 - Ledger.backup is in-process only (not a NDJSON action)
-- RT restoreState invariance (restore ≠ ledger deletion)
+- Ledger stratum: ReadTracker/mirage/mirage.sqlite3 (exclusive Mirage-write territory)
 - MirageLedgerPathPinsTests
 - MirageRestoreInvarianceTests
-- identity-map.json stratum (schema mirage-identity-map@1)
+- RT restoreState invariance (restore ≠ ledger deletion)
+- Content-derived EPUB identity (edition_<digest>)
+- degraded_import receipt rejected as mapping input
 - Identity entry contract (rtBookID, mirageBookID, mirageEditionID, sourceFingerprint, status)
 - Fail-Closed Identity (no title inference; degrade instead of guess)
 - identityDrift rule (RT recomputes byte-hash vs sourceFingerprint)
-- Orphaned mapping states (source-changed / edition-gone, no auto-cleanup)
-- degraded_import receipt rejected as mapping input
-- reused:true idempotent import receipt
-- Content-derived EPUB identity (edition_<digest>)
-- MirageIdentityMapContractTests
+- identity-map.json stratum (schema mirage-identity-map@1)
 - MirageIdentityDriftTests
+- MirageIdentityMapContractTests
+- Orphaned mapping states (source-changed / edition-gone, no auto-cleanup)
+- reused:true idempotent import receipt
 - ADR-6: Mirage feature lifecycle (canonical §17 seat)
+- Disable-deletes-nothing doctrine
+- MirageFeatureLifecycleTests
 - mirage.enabled plain switch (Settings ▸ Mirage, default ON)
 - OFF means NO engine, NO spawn (defense-in-depth gating)
-- Disable-deletes-nothing doctrine
 - One analyze gesture = one clean sidecar lifecycle
-- MirageFeatureLifecycleTests
 - ADR-6a: Mirage import-path independence (NEW-DE-5 discharge)
 - Independence-by-construction argument (no addBook, no goal machinery)
-- Structural census gate (zero banned symbols in Mirage feature files)
 - Onboarding bypass anatomy (OnboardingView.importBook → BookImporter direct; commitGoal overwrites goals)
+- Structural census gate (zero banned symbols in Mirage feature files)
 - ADR-7: spoiler-cursor contract (+ S10-ES-3 annex)
-- No-conversion-is-the-safe-conversion (spoiler detail surface ships disabled)
 - Fail-closed cursor refusals (CURSOR-MISSING / SPOILER-CURSOR-UNVERIFIED / SPOILER-PROBE-REJECTED)
-- State transduction table (read / reading-page-N-of-M / unread, no Mirage declaration)
-- Page-turn non-trigger pin (no Mirage calls from reader events)
 - MirageCursorContractTests
 - MirageSpoilerProbeTests
-- Titanium Bridge (continuous convergence: same bytes inside RT by +1 min)
-- Two rings, one bridge (dev ring flag / release ring gates)
-- Generation model inviolable (whole-directory atomic swap only)
-- Owner custody of promotion signing keys (fail-closed on unsigned material)
-- TB-M0...TB-M5 owner-gated milestones (gates are the only brake)
+- No-conversion-is-the-safe-conversion (spoiler detail surface ships disabled)
+- Page-turn non-trigger pin (no Mirage calls from reader events)
+- State transduction table (read / reading-page-N-of-M / unread, no Mirage declaration)
 - ADR-8 — Repository Strategy (Two Canonical Repositories, One Verified Vendor)
 - Verified Vendor Pattern (byte-verbatim, digest re-verifiable, refusal pins)
+- §15.4 Operational Handoff Bundle (2026-10-18)
 - OPE-001 — Class Δ Stub-Cover Deletion (38 files, archived list)
 - §19 Evidence Bundle — Assembly Manifest (2026-10-18)
-- §15.4 Operational Handoff Bundle (2026-10-18)
 - Honest Deltas (five ledgered, not acceptance-blocking)
-- Mirage Protocol Extraction (Phase 1/2, pinned SHA 81422613…)
-- Mirage NDJSON Wire Protocol (P-1…P-10, no version field, banner-first framing)
-- MirageService (api/service.py, 28-action run_command dispatcher)
-- Mirage Ledger (SQLite WAL, schema ledger@0.0.10, migrate refuses newer)
-- Import Identity (sha256 digest-derived edition_/book_ ids, reused:true, collision refusal)
-- Spoiler Safety Predicate (fail-closed future-evidence gate, I-SP1/I-SP2)
-- Fail-Closed Doctrine (refuse rather than degrade silently)
 - AdapterPositionResolver (page↔unit mapping, persisted position_mappings)
-- Ledger.backup(dst) (SQLite online backup + PRAGMA integrity_check, in-process only)
 - Mirage ADR-0001 (deterministic classical-only, no network providers)
 - Mirage ADR-0002 (Rust core demoted; Python API only sanctioned surface)
-- RT Normative-Document Extraction (12 docs, dirty tree 8fbd5357)
+- Fail-Closed Doctrine (refuse rather than degrade silently)
+- Import Identity (sha256 digest-derived edition_/book_ ids, reused:true, collision refusal)
+- Ledger.backup(dst) (SQLite online backup + PRAGMA integrity_check, in-process only)
+- Mirage Ledger (SQLite WAL, schema ledger@0.0.10, migrate refuses newer)
+- MirageService (api/service.py, 28-action run_command dispatcher)
+- Mirage NDJSON Wire Protocol (P-1…P-10, no version field, banner-first framing)
+- Mirage Protocol Extraction (Phase 1/2, pinned SHA 81422613…)
+- Spoiler Safety Predicate (fail-closed future-evidence gate, I-SP1/I-SP2)
+- 08-deep-audit (October deep audit)
+- Feature-Module Isolation Doctrine (self-contained module, zero feature deps)
 - Fix-Finality Triad (Finality statement + fix-log entry + pinned test)
 - NEW-DE-1…13 Audit Punch List (audit-era ledger, all OPEN)
-- Feature-Module Isolation Doctrine (self-contained module, zero feature deps)
 - RT Release Blockers ×4 (AppIcon, WeatherKit entitlement, CFBundleIdentifier, readonly build setting)
-- 08-deep-audit (October deep audit)
-- Touchpoint Inventory (16 integration touchpoints, path:line anchored)
+- RT Normative-Document Extraction (12 docs, dirty tree 8fbd5357)
+- Cursor Semantics (RT pages ≠ Mirage unit indexes; adapter mandatory)
+- DataStore3 (library.json/library-state.json owner, debounce, degraded fallback)
 - MainActor-Default Isolation (SWIFT_DEFAULT_ACTOR_ISOLATION, three sanctioned idioms)
 - PersistenceWriter (sole serial-queue write path for library JSON)
-- DataStore3 (library.json/library-state.json owner, debounce, degraded fallback)
-- Cursor Semantics (RT pages ≠ Mirage unit indexes; adapter mandatory)
 - Sandbox Capability Boundary (no inherit entitlement; RT owns scoped bytes)
+- Touchpoint Inventory (16 integration touchpoints, path:line anchored)
+- BUG-001: batch-context silent stdout wedge
+- BUG-003: CodeSign xattr detritus from iCloud File Provider
+- BUG-005: stale probe artifact (wrong pipe index, never compiled)
+- E1 kernel-level forensic probe (raw read(2) discriminator)
+- H1: ghost consumer on the pipe read end (falsified)
+- H2 confirmed: FileHandle.read machinery-local wedge
+- H3: bytes never entered the pipe (falsified)
+- MirageChildProcess / MirageProcessLauncher / MiragePythonLocator
+- MirageProcessTransport
+- MirageSidecarSupervisor (backoff ladder, permanent-down)
+- OPE-003: PR-4 census (138 executed / 0 failed / 1 skipped)
+- PR-4 current-state defect analysis (PR4-DEF-ANALYSIS-2026-10-18)
+- C2 fix: raw read(2) transport path + MirageOnceCloser epoch disposal
+- swift-subprocess adoption track (future countersigned PR)
+- Test-campaign protocol (xattr clean, no timeout, delete probes)
+- ID-SYNTH-9001: RT never infers mirageEditionID
+- import_epub payload contract (extract from MirageV1.0, logged as M-022)
+- MirageIdentityMap.swift (stratum load/store)
+- MirageImportFlow.swift (import orchestrator)
+- Pinned-case matrix (duplicate/changed/ambiguous/missing/cancel/crash/schema floor)
+- PR-5 execution plan (identity map + one-book import)
 - §15.3 Recovery Rehearsal Log (S15-ES-3 artifacts, 2026-10-18)
 - R1 — Code Rollback Rehearsal (in vivo, PR-6→PR-5 census, 1/4 executed)
 - R2 — Sidecar Crash-Recovery Rehearsal (test-anchored)
@@ -414,47 +397,233 @@
 - R4 — Invalid-Mapping Recovery Rehearsal (drift refusals)
 - R5 — Backup-Restore Rehearsal (Ledger.backup verified from source)
 - R6 — Packaged-Runtime Staging/Swap Rehearsal (live, PR-8/ADR-3)
-- TB-M0 Gate Plan (manifest + hash-verify, observe mode)
-- TB-M0 Observation Gate (§22.19.1 exit bar: 7 days, 0 false-green, tamper drill)
+- ADR register (§17, ADR-1...ADR-11 slots)
+- Evidence labels (SOURCE-VERIFIED / TEST-VERIFIED / README-REPORTED / INFERRED / DECISION-REQUIRED / BLOCKED)
+- Explicit non-goals (no store unification, no repo deletion, no auto-analysis)
+- Git risk classes Ω/Δ/Π (owner countersign gates)
+- Identity mapping is a first-class subsystem (no title guessing)
+- §21 impossibility rule + W3 (no invented wire fields / no ID synthesis)
+- RT Mirage Codebase Merge Playbook (governing playbook)
+- MirageIntegration module (typed integration boundary)
+- Parent-child hierarchy (RT parent app, Mirage optional capability)
+- PR-1...PR-8 integration ladder
+- S10-ES-1 explicit-gesture pre-flight doctrine
+- S16-ES-1 PR gate ladder (per-PR acceptance gates)
+- Playbook §22 Titanium Bridge specification (TB-* pipeline)
+- S8-ES-5 house suite standard
+- Spoiler-cursor boundary (highest-risk semantic boundary)
+- TB-M0 Observation Ledger (append-only, day-one GREEN + tamper refusal)
 - Observe Mode (verify · record · notify; no swap machinery built)
 - Subset Manifest (whole-subset declaration of RT's vendored Mirage copy)
 - Tamper Drill (flipped byte → TB-VERIFY-HASH refusal, red-side proof)
+- TB-M0 Observation Gate (§22.19.1 exit bar: 7 days, 0 false-green, tamper drill)
+- TB-M0 Gate Plan (manifest + hash-verify, observe mode)
 - Verify Instrument (scripts/tib/observe.py, std-lib digest verify)
-- TB-M0 Observation Ledger (append-only, day-one GREEN + tamper refusal)
-- 06 · RSVP Feature Plan (preserved design record; shipped as P5-B2)
-- RSVP Speed Reading (shipped P5-B2 f5ec995, tokenizer→playback→UI)
+- D-010 corrections overlay (audited, append-only, never book truth)
+- ledger@0.0.10 SQLite ledger of truth (graph is projection)
+- mirage CLI (CLI embedding surface)
+- MirageService (Python API embedding surface)
+- MirageV1.0 (local-first, spoiler-safe literary knowledge graph)
+- Unified NDJSON serve/sidecar protocol
+- One analysis job at a time (8 GB budget, incremental processing)
+- crates/mirage-core Rust reference core (demoted per ADR-0002)
+- mirage --serve-web local browser UI
+- Spoiler visibility deterministic by cursor and source evidence
+- unread | reading@cursor | read state vocabulary
 - readrrr (iOS prior art, direct model for feature)
-- Testing Strategy
-- AsterismaV1.0 Project Report (README)
+- RSVP Speed Reading (shipped P5-B2 f5ec995, tokenizer→playback→UI)
+- 06 · RSVP Feature Plan (preserved design record; shipped as P5-B2)
+- app.json
+- Gate G4 — Weather that works (Open-Meteo)
+- Gate G7 — Debt retirement, Swift 6, cleanup
+- LibraryExplorerView
+- EPUBPackageError
+- ReaderAppearanceTests.swift
+- Owner Test Session — YYYY-MM-DD (session N)
+- Local Distribution — AsterismaV1.0
+- Gate G3B — SQLite summary DataStore + lazy page timings
+- Gate G3C — Real-data cutover and JSON retirement
+- Gate G5 — Library intelligence (metadata, notes, collections)
+- Owner Test Results
+- Gate G6 — Behavior Context V3
+- SchemaVersion
+- SessionHistoryView
+- Reading_TrackerTests.swift
+- LibraryDatabase.swift
+- GATE-LOG.md
+- Numbered Documentation Scheme
+- Engines Layer
+- Features Layer
+- Mirage Feature Files (14 Typed Files)
+- Project Tree Map
+- Behavior Context Evidence Starvation
+- Byte-Weighted Completion Model (67.1%)
+- Crash-Window Time Inflation
+- Dead/Dormant Code Inventory
+- Documentation Drift
+- Duplicate Achievements Bug
+- JSON Monolith Scaling Risk (R4)
+- Persistence Write Reordering Defect
+- Completion and Health Report (2026-10-24)
+- Audit Risk Register R1-R10
+- Test Coverage and Isolation Gaps
+- WeatherKit/Location Entitlement Gap
+- 09 · Final Traces performance marathon
+- 10 · Profiler fix (freeze post-mortem)
+- ADR-2: integration transport & protocol (managed stdio NDJSON sidecar)
+- ADR-5: identity-mapping contract (RT Book ↔ Mirage book/edition)
+- §18 Final Acceptance Checklist (2026-10-18, ladder complete)
+- ADR-2 Transport and Protocol
+- ADR-3 Packaged Runtime Distribution
+- ADR-4 Ledger Placement and Backup Ownership
+- ADR-5 Identity Mapping
+- ADR-7 Spoiler-Cursor Contract
+- ADR-8 Repository Strategy
+- BUG-001 Child-Pipe Read Wedge
+- BUG-003 iCloud File Provider CodeSign Failure
 - RT-Mirage Merge Log
-- Bedrock Session Record (2026-10-24)
+- Mirage Identity Map Stratum
+- NDJSON Stdio Wire Protocol
+- OPE-001 Stub Cover Cleanup
+- Owner Countersign Gate Doctrine
+- 8-PR Integration Ladder (PR-1 to PR-8)
+- RUNTIME-MANIFEST.json Digest Bindings
+- MirageSidecarSupervisor
+- Single-Branch Consolidation
+- TB-M0 Observation Gate
+- Mirage Integration Test Bands
+- Opt-In Gated Test Suites
+- Defect-Named Pin Convention
+- Swift Testing Framework Usage
+- Testing Strategy
+- Bedrock Baseline (G0)
+- Baseline Performance Numbers
+- Test Isolation Harness
+- D-003 Open-Meteo Behind Provider Protocol
+- D-004 GRDB SQLite Normalized Core
+- D-005 Keep All Reading History
+- D-006 Behavior Context V3 Fully Wired
+- D-007 Mirage Runtime Embedded and Signed
+- D-010 Delete Debris, Quarantine Scaffold
+- Definition of Done
+- Gate Dependency Graph G0-G8
+- Gate Protocol (Approve / Changes / Stop)
 - Bedrock Master Plan
-- AsterismaV1.0 Release Package
+- Performance and Data Budgets
+- One-Time Gatekeeper Right-Click Step
+- Local Distribution Guide
+- Notarization / Developer ID Gap
+- Final Merge to main at aba8aa4
+- G0-G8 Plus R1 Gate Sequence
+- Nine-Section Gate Receipt
+- Gate Review Template
+- G1CorrectnessPinsTests
+- 592 to 10 Achievement Dedupe Receipt
+- Gate G1 - Correctness First
+- G1 Known Issues and Deltas
+- Ad-hoc signed Release package
+- Embedded Mirage runtime
+- RUNTIME-MANIFEST.json
+- GRDB SQLite foundation
+- Transactional JSON-to-SQLite import
+- LibraryDatabase
+- DataStore.StorageEngine (json / sqlite)
+- Lazy page-timing loading
+- Cached seconds-per-page
+- library.grdb.sqlite3
+- Real-data SQLite cutover
+- Location honesty (no default NYC)
+- OpenMeteoProvider
+- Session-to-snapshot-to-SQLite weather pipeline
+- WeatherProviding protocol
+- Book Details inspector
+- EPUB genre/series/word-count pipeline
+- Advanced Context window
+- Behavior Context V3
+- behavior-evidence.json archive
+- Debt retirement and cleanup
+- Swift 6 strict-concurrency deferral
+- Known deltas at acceptance
+- dist/AsterismaV1.0-1.0-arm64.zip
+- Achievement Dedupe Migration
+- PersistenceWriter Ordering Fix
+- RuntimeEnvironment Test Store Isolation
+- Bedrock Session Record (2026-10-24)
+- AppIdentity Migration
+- Bundle Identifier MVP Constraint
+- Data Root Migration ReadTracker to Asterisma
+- Asterisma Rebrand Record
+- Pre-Rename Rollback Snapshot
+- F-01 Calendar crash in Annual Reports
+- F-02 New Year celebration timer chain
+- F-03 Numeric HTML entity destruction
+- F-04 State-file upgrade data loss
+- F-08 Unearnable Goal Week badge
+- ID-space disambiguation (NEW-DE ledgers)
+- NEW-DE-1…NEW-DE-8 audit punch list
+- Severity and confidence marks
+- Unwired/dormant systems inventory
+- Fix protocol (Finality, log entry, pinned test)
+- SWIFT_DEFAULT_ACTOR_ISOLATION MainActor hotfix
+- P5-G Storage Engine 2.0 revert
+- persistenceHealth banner
+- THE SENTINEL watchdog
+- Sentinel security doctrine S1–S7
 - Stage B — Bedrock / Asterisma
+- Stage M — RT–Mirage integration era
+- Asterisma rebrand and data-root migration
+- Next-work queue
+- Standing constraints
+- Repo-wide definition of done
+- NA-1 Weather-fix contradiction
+- NA-2 Goals end-to-end
+- Preserve-list
+- Scalability thresholds (~10x / ~100x volume)
+- AnalyticsCache Memoization
+- AsterismaV1.0 Project Report (README)
+- Behavior Context V3
+- DataStore3 Persistence Layer
+- Developer Console
+- Distribution Readiness Gap
+- Finality / Log / Pin Fix Protocol
+- GRDB/SQLite Summary Store
+- library.json Monolith
+- MainActor-Default Isolation Discipline
+- Mirage Companion Engine
+- Typed One-Way Spawn Boundary
+- RT/Mirage Store Ownership Doctrine
+- One Analyze, One Sidecar Lifecycle
+- Open-Meteo Weather Provider
+- PersistenceWriter Serial Write Queue
+- AsterismaV1.0 Release Package
+- RSVP Speed-Reading Mode
+- Sentinel Security Doctrine S1-S7
+- Sentinel Self-Repair Watchdog
+- Swift 6 Strict Concurrency Migration
 
 ## God Nodes (most connected - your core abstractions)
-1. `DataStore` - 131 edges
-2. `Foundation` - 118 edges
+1. `DataStore` - 136 edges
+2. `Foundation` - 123 edges
 3. `ReadingSession` - 66 edges
 4. `BehavioralEnvironmentType` - 62 edges
 5. `ContextConfidence` - 53 edges
 6. `ReadingContextRecord` - 51 edges
 7. `BehavioralEvent` - 48 edges
-8. `BehaviorContextAccessKit` - 46 edges
-9. `WeatherAnalysisEngine` - 46 edges
-10. `SwiftUI` - 45 edges
+8. `Testing` - 48 edges
+9. `AsterismaV1_0` - 48 edges
+10. `SwiftUI` - 47 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Finality / Log / Pin Fix Protocol` --semantically_similar_to--> `Defect-Named Pin Convention`  [INFERRED] [semantically similar]
-  README.md → docs/method/07-testing-strategy.md
-- `Distribution Readiness Gap` --semantically_similar_to--> `Notarization / Developer ID Gap`  [INFERRED] [semantically similar]
-  README.md → docs/plans/bedrock/DISTRIBUTION.md
-- `Merge-Presence Receipt` --conceptually_related_to--> `Standing Census 212/0/9`  [INFERRED]
-  .github/workflows/census.yml → README.md
-- `AsterismaV1.0 Project Report (README)` --conceptually_related_to--> `Documentation Drift`  [EXTRACTED]
-  README.md → docs/audits/11-completion-and-health-report-2026-10-24.md
-- `Mirage Companion Engine` --conceptually_related_to--> `RT-Mirage Merge Log`  [INFERRED]
-  README.md → docs/integration/merge-log.md
+- `WeatherAnalysisEngineIntegrationTests` --calls--> `WeatherAnalysisEngine`  [EXTRACTED]
+  AsterismaV1.0Tests/WeatherTests.swift → AsterismaV1.0/Features/Environment/Weather/WeatherAnalysisEngine.swift
+- `WeatherSnapshotNormaliserTests` --calls--> `WeatherSnapshotNormaliser`  [INFERRED]
+  AsterismaV1.0Tests/WeatherTests.swift → AsterismaV1.0/Features/Environment/Weather/WeatherKitService2.swift
+- `CountingLauncher` --references--> `MirageChildLauncher`  [EXTRACTED]
+  AsterismaV1.0Tests/MirageStubSidecarSupport.swift → AsterismaV1.0/Features/Mirage/MirageChildProcess.swift
+- `makeStubSupervisorConfig()` --references--> `MirageChildLauncher`  [EXTRACTED]
+  AsterismaV1.0Tests/MirageStubSidecarSupport.swift → AsterismaV1.0/Features/Mirage/MirageChildProcess.swift
+- `StubSidecarLauncher` --implements--> `MirageChildLauncher`  [EXTRACTED]
+  AsterismaV1.0Tests/MirageStubSidecarSupport.swift → AsterismaV1.0/Features/Mirage/MirageChildProcess.swift
 
 ## Import Cycles
 - None detected.
@@ -467,935 +636,972 @@
 - **SQLite migration program** — docs_plans_bedrock_gates_gate_g3a_grdb_sqlite_foundation, docs_plans_bedrock_gates_gate_g3a_library_database, docs_plans_bedrock_gates_gate_g3b_lazy_page_timings, docs_plans_bedrock_gates_gate_g3c_real_data_cutover, docs_plans_bedrock_gates_gate_g3c_library_grdb_sqlite [EXTRACTED 1.00]
 - **Receipt-driven Asterisma release governance** — docs_registers_02_defect_register_defect_register, docs_registers_03_fix_log_fix_protocol, docs_registers_03_fix_log_fix_log, docs_plans_bedrock_gates_gate_g8_release_receipt, docs_registers_04_handoff_handoff_document [INFERRED 0.90]
 - **Fail-closed doctrine family (no synthesis / no inference under uncertainty)** — docs_integration_adr_adr_5_identity_mapping_fail_closed_identity, docs_integration_adr_adr_7_spoiler_cursor_contract_fail_closed_cursor, docs_integration_twin_readmes_2026_10_18_spoiler_visibility, docs_integration_adr_adr_2_transport_and_protocol_protocol_incompatible_mask, docs_integration_pr5_execution_plan_2026_10_18_id_synth_rule [INFERRED 0.85]
-- **Mirage strata ownership (ledger / identity / RT territory, disjoint write-sets)** — docs_integration_adr_adr_4_ledger_placement_and_backup_ownership_ledger_stratum, docs_integration_adr_adr_5_identity_mapping_identity_map_json, readme_mirage_stratum, docs_integration_adr_adr_4_ledger_placement_and_backup_ownership_disjoint_write_sets [INFERRED 0.85]
-- **Sidecar transport stack (managed stdio NDJSON + raw read(2) fix)** — docs_integration_adr_adr_2_transport_and_protocol_managed_sidecar, docs_integration_pr4_defect_analysis_2026_10_18_mirageprocesstransport, docs_integration_pr4_defect_analysis_2026_10_18_miragechildprocess, docs_integration_pr4_defect_analysis_2026_10_18_miragesidecarsupervisor, readme_mirage_wire_types [INFERRED 0.85]
-- **TB-M0 Observe-Mode Instrument Chain (manifest → verify → ledger)** — docs_integration_merge_log_adr_12, docs_integration_tib_tb_m0_gate_plan_tb_m0, docs_integration_tib_tb_m0_gate_plan_tb_m0_gate_plan, docs_integration_tib_tb_m0_gate_plan_subset_manifest, docs_integration_tib_tb_m0_gate_plan_verify_instrument, docs_integration_tib_tb_m0_gate_plan_tamper_drill, docs_integration_tib_observe_ledger_observe_ledger [EXTRACTED 1.00]
 
-## Communities (416 total, 190 thin omitted)
-
-### Community 50 - "SessionCoordinator"
-Cohesion: 0.12
-Nodes (14): AsterismaApp, App, Scene, ReadingHUD, Book, TimeInterval, String, SessionCoordinator (+6 more)
-
-### Community 38 - "SwiftUI"
-Cohesion: 0.06
-Nodes (25): SwiftUI, SentinelReportCardView, Int, String, Void, OnlineBookDetailView, OnlineBook, OnlineBook (+17 more)
-
-### Community 88 - "AnalyticsCache"
-Cohesion: 0.25
-Nodes (8): AnalyticsCache, Signature, Int, UInt64, Book, Bool, TrendAnalytics, TimeOfDayAnalytics
-
-### Community 27 - "Foundation"
-Cohesion: 0.13
-Nodes (8): Foundation, CryptoKit, Testing, AsterismaV1_0, G6EvidencePersistenceTests, MirageCursor, MirageRealEngineSmokeTests, AsterismaV1_0Tests
-
-### Community 155 - ".dataRootURL"
-Cohesion: 0.24
-Nodes (5): AppIdentity, URL, RuntimeEnvironment, Bool, URL
-
-### Community 19 - "ReadingSession"
-Cohesion: 0.16
-Nodes (27): Book, UUID, String, URL, Int, Bool, Date, Data (+19 more)
-
-### Community 21 - "Identifiable"
-Cohesion: 0.15
-Nodes (15): Identifiable, Int, DataMaturityContextV1Adapter, BehaviorContextEngine, ReadingSessionRecord, DateInterval, BehaviorEvidence, ReadingContextRecord (+7 more)
-
-### Community 12 - "Sendable"
-Cohesion: 0.12
-Nodes (41): Codable, Hashable, Sendable, HistoricalBehaviorPattern, BehavioralCorrelation, BehavioralSequencePattern, BehavioralDiversityMetrics, ContextDistributionMetrics (+33 more)
-
-### Community 44 - "CodingKeys"
-Cohesion: 0.07
-Nodes (29): CodingKeys, id, title, author, fileURL, fileType, totalPages, currentPage (+21 more)
-
-### Community 184 - "CodingKeys"
-Cohesion: 0.29
-Nodes (7): CodingKey, CodingKeys, id, timestamp, thermalState, CodingKeys, imageJPEG
-
-### Community 100 - "BookDeadline"
-Cohesion: 0.21
-Nodes (9): Decoder, ReadingGoalSet, TimeInterval, BookDeadline, UUID, Date, Bool, GoalProgressViewModel (+1 more)
-
-### Community 57 - "CaseIterable"
-Cohesion: 0.08
-Nodes (24): CaseIterable, InsightCategory, preferredSoundtrack, distractionPattern, optimalEnvironment, genrePreference, temporalPattern, behaviorShift (+16 more)
-
-### Community 85 - "ReadingGenre"
-Cohesion: 0.10
-Nodes (20): ReadingGenre, unknown, fiction, nonFiction, fantasy, scienceFiction, mystery, thriller (+12 more)
-
-### Community 196 - "NoteTag"
-Cohesion: 0.33
-Nodes (6): NoteTag, general, highlight, question, idea, vocabulary
-
-### Community 117 - "DailyActivity"
-Cohesion: 0.21
-Nodes (10): DailyActivity, Set, ReadingWindow, morning, afternoon, evening, night, ReadingInsightsDashboard (+2 more)
-
-### Community 1 - "DataStore"
-Cohesion: 0.08
-Nodes (23): LibraryState, DataStore, Book, PersistenceStatus, healthy, degraded, String, StorageEngine (+15 more)
-
-### Community 154 - "AppKit"
-Cohesion: 0.22
-Nodes (6): AppKit, Book, NSImage, Bool, BookCoverThumbnail, CGFloat
-
-### Community 17 - "View"
-Cohesion: 0.10
-Nodes (21): View, AdvancedContextView, String, Double, AnnualReportView, Void, Int, VolumeSlide (+13 more)
-
-### Community 42 - "CoverStore"
-Cohesion: 0.13
-Nodes (13): CoverStore, URL, UUID, String, Data, NSImage, CGFloat, Bool (+5 more)
-
-### Community 16 - ".validate"
-Cohesion: 0.09
-Nodes (24): SchemaVersion, v1, v2, v3, ValidationIssue, Severity, warning, error (+16 more)
-
-### Community 43 - "ReadingInsight"
-Cohesion: 0.16
-Nodes (16): Int, ReaderProfileAnalytics, ReadingInsight, UUID, String, Double, InsightPriority, critical (+8 more)
+## Communities (585 total, 349 thin omitted)
 
 ### Community 0 - "MaturityEvidenceDigest"
 Cohesion: 0.06
-Nodes (52): CustomStringConvertible, MaturityDomain, String, ClaimTypeIdentifier, NarrativeStrengthTier, Int, Bool, ClaimDisposition (+44 more)
+Nodes (55): ClaimDecision, ClaimDisposition, blocked, displayableFull, displayableSoftened, ClaimRegistry, ClaimRequirement, ClaimRule (+47 more)
 
-### Community 118 - "Combine"
-Cohesion: 0.12
-Nodes (7): Combine, CoreGraphics, DesignGrid, CGFloat, Double, GRDB, Network
-
-### Community 9 - "BehavioralCategory"
-Cohesion: 0.05
-Nodes (38): ObservableObject, BehavioralCategory, gaming, entertainment, communication, browsing, productivity, development (+30 more)
-
-### Community 20 - ".addBook"
+### Community 1 - "DataStore"
 Cohesion: 0.09
-Nodes (12): AnalyticsCachePinsTests, URL, String, Book, DurabilityPinsTests, URL, String, Int (+4 more)
+Nodes (20): LibraryState, DataStore, PersistenceStatus, degraded, healthy, StorageEngine, json, sqlite (+12 more)
 
-### Community 59 - "LibraryDatabase"
-Cohesion: 0.16
-Nodes (10): LibraryDatabase, DatabasePool, URL, DatabaseMigrator, JSONEncoder, JSONDecoder, Book, Database (+2 more)
-
-### Community 91 - ".updateGoalSet"
-Cohesion: 0.14
-Nodes (7): GoalEditorPane, GoalPersistenceTests, URL, String, Book, RebindIdempotenceTests, Bool
-
-### Community 183 - "AnnualReportArchiveView"
-Cohesion: 0.38
-Nodes (3): AnnualReportArchiveView, Int, Bool
-
-### Community 68 - "LibraryArchive"
-Cohesion: 0.16
-Nodes (13): LibraryArchive, Int, Date, String, Book, Data, LibraryArchiveError, emptyLibrary (+5 more)
-
-### Community 22 - ".generateBooks"
-Cohesion: 0.13
-Nodes (21): LocalizedError, DemoProfileLabView, SeededRNG, UInt64, String, Double, ClosedRange, Int (+13 more)
-
-### Community 109 - ".enqueue"
-Cohesion: 0.23
-Nodes (8): PersistenceWriter, DispatchQueue, String, Task, Never, WriteResult, CheckedContinuation, G1PersistenceWriterPinsTests
-
-### Community 119 - "DemoRapidSwitchTests"
-Cohesion: 0.19
-Nodes (5): SentinelDataBridge, URL, DemoRapidSwitchTests, String, Int
-
-### Community 103 - ".runCycle"
-Cohesion: 0.34
-Nodes (4): UserDefaults, SentinelPinsTests, Book, Void
-
-### Community 146 - "SentinelEngine.swift"
-Cohesion: 0.47
-Nodes (9): SentinelProbe, IntegrityProbe, PersistenceHealthProbe, StoreWritabilityProbe, OrphanedActiveSessionProbe, StaleBookmarkProbe, DiskSpaceProbe, DeadlineOverdueProbe (+1 more)
-
-### Community 65 - "SentinelFinding"
-Cohesion: 0.13
-Nodes (13): SentinelFinding, Severity, info, warning, critical, Outcome, detected, autoFixed (+5 more)
-
-### Community 54 - "String"
-Cohesion: 0.14
-Nodes (20): String, DayPeriod, dawn, morning, afternoon, evening, night, UUID (+12 more)
-
-### Community 104 - "SentinelEngine"
-Cohesion: 0.20
-Nodes (5): URL, SentinelEngine, Int, Timer, Bool
+### Community 2 - "ConsoleSubsystemSnapshot"
+Cohesion: 0.08
+Nodes (26): ConsoleSubsystemCategory, engine, manager, model, pipeline, service, utility, view (+18 more)
 
 ### Community 3 - "RSVPPlaybackEngine"
-Cohesion: 0.06
-Nodes (33): stripHTML(), String, decodeHTMLEntities(), decodeNumericEntities(), normalizeWhitespace(), wordCount(), Bool, Int (+25 more)
+Cohesion: 0.13
+Nodes (14): RSVPPlaybackEngine, Double, Int, Never, String, Task, Void, ORPCalculator (+6 more)
 
-### Community 89 - ".versionIsSupported"
-Cohesion: 0.17
-Nodes (9): Comparable, ClosedRange, Self, MirageProtocolConstants, String, Data, Bool, SemVer (+1 more)
-
-### Community 60 - "AnalyticsEngine.swift"
+### Community 4 - "EPUBReaderScreen"
 Cohesion: 0.10
-Nodes (22): Int, AnalyticsPeriod, today, thisWeek, thisMonth, thisYear, custom, Date (+14 more)
+Nodes (20): Coordinator, EPUBChapterWebView, Content, Context, Coordinator, Error, String, URL (+12 more)
+
+### Community 5 - "UUID"
+Cohesion: 0.05
+Nodes (108): AnalyticsContextEnrichment, BehavioralCorrelation, BehavioralDiversityMetrics, BehavioralDiversityProfile, BehavioralEnvironment, BehavioralEnvironmentType, administrative, browsing (+100 more)
+
+### Community 6 - "Stage B — Bedrock / Asterisma"
+Cohesion: 0.22
+Nodes (8): Acceptance checklist, Decision, Distribution, Gate G8 — Final acceptance / release candidate, Known deltas (must be read with acceptance), Owner-test fixes (post-acceptance), Release receipt, Rollback
+
+### Community 7 - "MirageProcessTransport"
+Cohesion: 0.25
+Nodes (11): MirageChildChannels, MirageProcessTransport, MirageProcessTransportConfig, framingCorruption, Bool, Data, Int, Int32 (+3 more)
+
+### Community 8 - "MirageImportOutcome"
+Cohesion: 0.06
+Nodes (28): MirageAnalysisSheet, Book, Color, String, MirageAnalyzeSession, MirageAppImportMount, MirageOutcomeCopy, MirageSupportPaths (+20 more)
+
+### Community 9 - "BehavioralCategory"
+Cohesion: 0.09
+Nodes (24): BehavioralCategorizer, BehavioralCategory, browsing, communication, creativeWork, development, education, entertainment (+16 more)
+
+### Community 10 - "BehaviorContextEngine2.swift"
+Cohesion: 0.06
+Nodes (34): BehavioralContextSummary, BehavioralDiversityAnalyzer, BehavioralDiversityProfileBuilder, BehavioralRoutine, BehavioralSequenceAnalyzer, BehaviorContextEngine, BehaviorEvidence, ContextCorrelationAnalyzer (+26 more)
+
+### Community 11 - "MirageSidecarSupervisor"
+Cohesion: 0.18
+Nodes (17): MirageSidecarSupervisor, MirageHandshakePinTests, MirageRealEngineSmokeTests, CountingLauncher, LaunchCounter, makeMirageTestTempDir(), makeStubSupervisorConfig(), makeStubTransportConfig() (+9 more)
+
+### Community 12 - "Sendable"
+Cohesion: 0.06
+Nodes (36): Color, ReaderAppearance, ReaderColumnLayout, automatic, double, single, ReaderFontFamily, athelas (+28 more)
 
 ### Community 13 - "AnalyticsEngine"
 Cohesion: 0.12
-Nodes (12): AnalyticsEngine, Book, Double, TimeInterval, UInt64, UUID, ChapterPredictionAnalytics, ImprovementAnalytics (+4 more)
-
-### Community 75 - ".gate"
-Cohesion: 0.13
-Nodes (15): ProductiveContextResult, ProductiveContextFinder, ConsistentContextResult, ConsistentContextFinder, NarrativeCategory, routine, environment, transition (+7 more)
-
-### Community 33 - ".estimate"
-Cohesion: 0.20
-Nodes (15): ReadingContext, Int, UUID, Bool, Date, SpeedComponents, Double, SpeedModel (+7 more)
-
-### Community 76 - "AchievementDefinition"
-Cohesion: 0.15
-Nodes (13): AchievementDefinition, AchievementTier, bronze, silver, gold, platinum, AchievementPanel, String (+5 more)
-
-### Community 53 - "AchievementKind"
-Cohesion: 0.08
-Nodes (26): AchievementKind, pages100, pages500, pages1000, pages5000, pages10000, sessions5, sessions25 (+18 more)
-
-### Community 120 - "AchievementEngine"
-Cohesion: 0.26
-Nodes (7): UUID, Date, AchievementEngine, Book, Void, Bool, Int
-
-### Community 69 - "AudioContextProfile"
-Cohesion: 0.23
-Nodes (17): InferredMood, calm, focused, energetic, melancholic, upbeat, neutral, unavailable (+9 more)
-
-### Community 30 - "AudioCategory"
-Cohesion: 0.13
-Nodes (24): AudioCategory, silence, music, podcast, audioBook, spokenWord, videoAudio, ambientSoundscape (+16 more)
-
-### Community 127 - "AudioSource"
-Cohesion: 0.15
-Nodes (13): AudioSource, appleMusicApp, spotifyApp, podcastsApp, audiobooksApp, quickTimePlayer, vlcPlayer, iinaPlayer (+5 more)
-
-### Community 26 - "MusicalAnalysisEngine"
-Cohesion: 0.20
-Nodes (5): AudioSessionRecord, AudioCorrelation, Double, MusicalAnalysisEngine, Book
-
-### Community 34 - "AudioMonitorService"
-Cohesion: 0.14
-Nodes (14): CoreAudio, AudioTrackMetadata, String, TimeInterval, UUID, AudioMonitorService, Bool, Timer (+6 more)
-
-### Community 168 - "AudioProfileStore"
-Cohesion: 0.39
-Nodes (4): AudioProfileStore, URL, JSONEncoder, JSONDecoder
-
-### Community 105 - "AudioFactor"
-Cohesion: 0.12
-Nodes (16): AudioFactor, audioCategory, audioSource, listeningIntensity, silenceFraction, genreMood, genreEnergy, trackDiversity (+8 more)
-
-### Community 10 - "BehaviorContextEngine2.swift"
-Cohesion: 0.08
-Nodes (29): Sequence, Element, BehavioralDiversityAnalyzer, ContextDistributionAnalyzer, RoutineDisruptionAnalyzer, EnvironmentStabilityAnalyzer, ContextEvidenceChainBuilder, ContextCorrelationAnalyzer (+21 more)
-
-### Community 47 - "InactivityGapRecord"
-Cohesion: 0.09
-Nodes (20): Configuration, TimeInterval, ContextWindowPreset, narrow, standard, extended, fullDay, custom (+12 more)
-
-### Community 35 - "Double"
-Cohesion: 0.11
-Nodes (17): Double, Bool, SignificanceAssessment, AdvancedSignificanceAssessment, BehavioralSignificanceClassification, incidentalNoise, weakSignal, moderateSignal (+9 more)
-
-### Community 5 - "UUID"
-Cohesion: 0.07
-Nodes (32): String, Int, UUID, BehavioralEnvironmentType, development, research, gaming, entertainment (+24 more)
-
-### Community 70 - "Date"
-Cohesion: 0.13
-Nodes (14): Date, ContextWindow, FatigueSignalType, increasingGaps, multipleExtendedGaps, overnightFollowedByBrief, FatigueSignal, EnvironmentEvolutionPeriod (+6 more)
-
-### Community 58 - "BehaviorCategory"
-Cohesion: 0.10
-Nodes (18): BehaviorCategory, productivity, development, research, gaming, entertainment, learning, social (+10 more)
-
-### Community 7 - "MirageProcessTransport"
-Cohesion: 0.08
-Nodes (33): work, MirageTransportFailure, spawnFailed, String, pipeWriteFailed, pipeReadFailed, pipeEOFWhileAwaitingResponse, responseTimeout (+25 more)
-
-### Community 61 - "RoutineCategory"
-Cohesion: 0.11
-Nodes (17): RoutineCategory, morningReading, afternoonReading, eveningReading, lateNightReading, weekdayReading, weekendReading, weatherAssociated (+9 more)
-
-### Community 149 - "ContextContinuityType"
-Cohesion: 0.25
-Nodes (7): ContextContinuityType, continuous, partialTransition, majorTransition, isolatedReading, ContextContinuityRecord, ContextContinuityAnalyzer
-
-### Community 157 - "ContextTrend"
-Cohesion: 0.27
-Nodes (7): ContextTrendDirection, increasing, decreasing, stable, emerging, ContextTrend, ContextTrendAnalyzer
-
-### Community 45 - "BehavioralEvent"
-Cohesion: 0.18
-Nodes (10): BehaviorContextAdapterInput, BehavioralEvent, ApplicationUsageSession, DeviceStateEvent, InactivityRecord, BehaviorEvidenceArchive, BehavioralEventStore, BehavioralTimelineValidator (+2 more)
-
-### Community 110 - ".gap"
-Cohesion: 0.27
-Nodes (6): FatigueIndicatorAnalyzer, BehavioralSessionGapAnalyzer, FatigueAnalyzerTests, Int, Double, UUID
-
-### Community 158 - ".evidence"
-Cohesion: 0.29
-Nodes (4): BehaviorEvidenceBuilder, Int, Date, Double
-
-### Community 40 - "BehavioralCategory.swift"
-Cohesion: 0.09
-Nodes (15): IOKit, IOKit.pwr_mgt, BehavioralEvidencePersistence, BehavioralSequenceGenerator, UInt64, SequencedBehavioralEvent, BehavioralEventJournal, SessionConflictResolver (+7 more)
-
-### Community 77 - "DeviceStateType"
-Cohesion: 0.12
-Nodes (11): DeviceStateType, active, inactive, sleeping, awake, locked, unlocked, BehavioralSnapshot (+3 more)
-
-### Community 24 - "Date"
-Cohesion: 0.11
-Nodes (19): ApplicationDescriptor, UUID, Int32, Date, BehavioralTimelineSegment, BehavioralEventBatch, BehavioralReplayFrame, BehavioralTimelineBuilder (+11 more)
-
-### Community 41 - "BehaviorContextAccessKit"
-Cohesion: 0.14
-Nodes (8): URL, BehaviorContextAccessKit, NSObjectProtocol, Timer, Notification, NSRunningApplication, BehavioralRetentionController, ObserverLifecycleTests
-
-### Community 39 - "Int"
-Cohesion: 0.10
-Nodes (16): TimeInterval, ApplicationBehaviorProfile, Int, BehavioralStatistics, Self, Bool, BehavioralRetentionPolicy, BehavioralIntegrityReport (+8 more)
-
-### Community 156 - "BehavioralObservationWindow"
-Cohesion: 0.29
-Nodes (4): BehavioralObservationWindow, BehavioralStoragePartition, BehavioralWindowCache, BehavioralPartitionBuilder
-
-### Community 147 - "ThermalStateEvent"
-Cohesion: 0.25
-Nodes (6): ThermalStateEvent, ProcessInfo, Decoder, Encoder, BehavioralExportEncoder, Data
-
-### Community 23 - "Equatable"
-Cohesion: 0.09
-Nodes (25): Equatable, MirageIdentityMapSchema, MirageIdentityMapTime, Date, MirageIdentityMapEntry, Status, active, orphaned (+17 more)
-
-### Community 148 - "BehavioralObserverStatus"
-Cohesion: 0.25
-Nodes (7): BehavioralObserverHealth, active, inactive, degraded, failed, BehavioralObserverStatus, BehavioralObserverDiagnostics
-
-### Community 78 - "Color"
-Cohesion: 0.15
-Nodes (10): ContextInsightPanel, Int, String, RoutineRow, GoalsDashboard, BookDeadlineRow, Color, ActivityHeatmapView (+2 more)
-
-### Community 150 - "PersonaDetail"
-Cohesion: 0.29
-Nodes (6): String, PersonaRow, Bool, Void, PersonaDetail, Content
-
-### Community 128 - "DeveloperConsoleDashboardView"
-Cohesion: 0.27
-Nodes (7): DeveloperConsoleKnownSubsystem, String, DeveloperConsoleKnownSubsystems, DeveloperConsoleDashboardView, FlaggedItem, Bool, ConsolePalette
-
-### Community 2 - "ConsoleSubsystemSnapshot"
-Cohesion: 0.04
-Nodes (40): DeveloperConsoleObservable, AnyObject, DeveloperConsoleStaticObservable, DeveloperConsoleRegistry, String, Int, T, DeveloperConsoleStaticEngineManifest (+32 more)
-
-### Community 71 - "DeveloperConsoleSection"
-Cohesion: 0.10
-Nodes (19): DeveloperConsoleWindowID, DeveloperConsoleSection, dashboard, sentinel, demoLab, subsystemExplorer, eventTimeline, stateInspector (+11 more)
-
-### Community 169 - "DeveloperConsoleSystemMetrics"
-Cohesion: 0.31
-Nodes (4): DeveloperConsoleSystemMetrics, String, UInt64, Double
-
-### Community 95 - "State"
-Cohesion: 0.13
-Nodes (17): Darwin, State, disabled, handshaking, ready, protocolIncompatible, String, engineUnavailable (+9 more)
-
-### Community 129 - "SentinelPaneView"
-Cohesion: 0.19
-Nodes (5): SentinelPaneView, Int, Story, Bool, Date
-
-### Community 197 - "BookDiscoveryView"
-Cohesion: 0.40
-Nodes (3): BookDiscoveryView, OnlineBook, String
-
-### Community 130 - "AvailabilityState"
-Cohesion: 0.23
-Nodes (11): BookSource, openLibrary, gutenberg, worldCat, AvailabilityState, free, referenceOnly, unknown (+3 more)
-
-### Community 131 - "BookDiscoveryService"
-Cohesion: 0.36
-Nodes (5): BookDiscoveryService, String, OnlineBook, Int, Bool
-
-### Community 132 - "BookDiscoveryViewModel"
-Cohesion: 0.24
-Nodes (7): BookDiscoveryViewModel, OnlineBook, String, Task, Void, Never, Bool
-
-### Community 133 - "GutendexBook"
-Cohesion: 0.27
-Nodes (9): BookProvider, GutenbergProvider, String, OnlineBook, GutendexResponse, GutendexBook, Int, GutendexAuthor (+1 more)
-
-### Community 111 - "CodingKeys"
-Cohesion: 0.19
-Nodes (12): OpenLibraryProvider, String, OnlineBook, OpenLibrarySearchResponse, OpenLibraryDocument, Int, CodingKeys, key (+4 more)
-
-### Community 112 - "EnvironmentAnchorPeriod"
-Cohesion: 0.15
-Nodes (11): EnvironmentAnchorPeriod, night, morning, midday, afternoon, AnchorClock, Date, Calendar (+3 more)
-
-### Community 113 - "EnvironmentColor"
-Cohesion: 0.29
-Nodes (8): EnvironmentColor, Double, String, EnvironmentGradientStop, EnvironmentPaletteSnapshot, Double, EnvironmentPalette, TimedKeyframe
-
-### Community 92 - "EnvironmentEngine"
-Cohesion: 0.22
-Nodes (9): EnvironmentEngine, Task, Void, Never, Duration, Calendar, Date, Bool (+1 more)
-
-### Community 121 - "SeededGenerator"
-Cohesion: 0.15
-Nodes (11): SeededGenerator, RandomNumberGenerator, UInt64, EnvironmentBackgroundView, CGSize, Animation, StarField, Double (+3 more)
-
-### Community 170 - ".clampUnit"
-Cohesion: 0.20
-Nodes (8): EnvironmentMath, Double, ClosedRange, ShootingStarView, Date, GraphicsContext, CGSize, Double
-
-### Community 159 - "EnvironmentState"
-Cohesion: 0.20
-Nodes (7): EnvironmentState, Double, Bool, WeatherEnvironmentModifier, Double, TimeInterval, Date
-
-### Community 99 - "ShootingStarManager"
-Cohesion: 0.15
-Nodes (14): ShootingStar, UUID, Date, CGPoint, Double, CGSize, ShootingStarManager, Task (+6 more)
-
-### Community 135 - "Star"
-Cohesion: 0.19
-Nodes (10): Star, UUID, CGPoint, Double, CGFloat, StarFieldView, Double, Bool (+2 more)
-
-### Community 114 - "OpenMeteoProvider.swift"
-Cohesion: 0.23
-Nodes (13): OpenMeteoError, Int, malformedResponse, noHistoricalData, String, Double, CurrentResponse, Decodable (+5 more)
-
-### Community 213 - "OpenMeteoLiveSmokeTests.swift"
-Cohesion: 0.40
-Nodes (3): CoreLocation, liveWeatherEnabled(), Bool
-
-### Community 36 - "WeatherSnapshot"
-Cohesion: 0.13
-Nodes (15): WeatherProviding, WeatherSnapshot, EnvironmentalForecastInput, WeatherKitService, WeatherSnapshotStore, Date, Int, CLAuthorizationStatus (+7 more)
-
-### Community 48 - "LocationProvider"
-Cohesion: 0.11
-Nodes (21): Error, SQLite3, WeatherKit, WeatherKitServiceError, locationUnavailable, noHistoricalDataAvailable, noForecastAvailable, storeWriteFailure (+13 more)
-
-### Community 55 - "OpenMeteoProvider"
-Cohesion: 0.14
-Nodes (13): badStatus, Date, OpenMeteoProvider, Fetch, URLSession, CLLocation, URL, Data (+5 more)
-
-### Community 136 - ".archiveSnapshot"
-Cohesion: 0.27
-Nodes (12): CodingKeys, temperature2m, relativeHumidity2m, apparentTemperature, precipitation, snowfall, cloudCover, pressureMsl (+4 more)
-
-### Community 101 - "WeatherAnalysisEngine.swift"
-Cohesion: 0.24
-Nodes (14): Int, ConfidenceReport, TemperatureProfile, ClosedRange, SeasonalProfile, WeatherInfluenceProfile, EnvironmentalReadingProfile, EnvironmentalForecast (+6 more)
-
-### Community 137 - "WeatherConditionCategory"
-Cohesion: 0.15
-Nodes (13): WeatherConditionCategory, clear, partlyCloudy, cloudy, fog, rain, heavyRain, snow (+5 more)
-
-### Community 143 - "SeasonalPeriod"
-Cohesion: 0.30
-Nodes (7): SeasonalPeriod, spring, summer, autumn, winter, Double, WeatherAnalysisEngineIntegrationTests
-
-### Community 28 - "Double"
-Cohesion: 0.23
-Nodes (5): Double, EnvironmentalCorrelation, WeatherAnalysisEngine, EnvironmentalSessionRecord, Bool
-
-### Community 102 - "EnvironmentalFactor"
-Cohesion: 0.12
-Nodes (16): EnvironmentalFactor, temperature, feelsLikeTemperature, humidity, pressure, cloudCover, visibility, windSpeed (+8 more)
-
-### Community 86 - "ReadingBehaviorMetric"
-Cohesion: 0.10
-Nodes (20): ReadingBehaviorMetric, readingDuration, pagesRead, chaptersCompleted, booksCompleted, readingSpeed, readingConsistency, readingFrequency (+12 more)
-
-### Community 151 - "CorrelationLifecycle"
-Cohesion: 0.18
-Nodes (10): CorrelationLifecycle, emerging, strengthening, stable, weakening, declining, recurring, seasonal (+2 more)
-
-### Community 122 - "WeatherInsightPanel"
-Cohesion: 0.30
-Nodes (5): WeatherInsightPanel, String, WeatherStatCard, CorrelationRow, Bool
-
-### Community 198 - ".assembleAtSessionEnd"
-Cohesion: 0.67
-Nodes (4): Double, String, Bool, ReadingSessionMetrics
-
-### Community 66 - ".normalise"
-Cohesion: 0.19
-Nodes (7): WeatherSnapshotNormaliser, CurrentWeather, Forecast, HourWeather, WeatherCondition, WeatherSnapshotNormaliserTests, Int
-
-### Community 87 - "Coordinator"
-Cohesion: 0.16
-Nodes (10): NSObject, Context, PDFView, Coordinator, Coordinator, PDFViewDelegate, Timer, URL (+2 more)
-
-### Community 79 - "GoalStatus"
-Cohesion: 0.27
-Nodes (10): GoalStatusCard, String, Int, GoalStatus, Double, String, BookDeadlineStatus, Book (+2 more)
-
-### Community 199 - "GoalKind"
-Cohesion: 0.33
-Nodes (6): GoalKind, dailyPages, dailyTime, annualBooks, weeklyStreak, bookDeadline
-
-### Community 93 - "SettingsRootView.swift"
-Cohesion: 0.14
-Nodes (10): SettingsRootView, DeadlineEditorPane, UUID, String, Date, RSVPSettingsPane, Double, MirageSettingsPane (+2 more)
-
-### Community 123 - "InsightKind"
-Cohesion: 0.14
-Nodes (14): InsightKind, bestReadingTime, readingTrend, difficultyMatch, streakRisk, speedImprovement, goalOnTrack, goalBehind (+6 more)
-
-### Community 185 - "ReadingInsightsDashboard.swift"
-Cohesion: 0.29
-Nodes (4): StatCard, InsightCard, ConfidencePip, Double
-
-### Community 160 - "BookDetailsView"
-Cohesion: 0.24
-Nodes (3): BookDetailsView, UUID, Book
-
-### Community 49 - "BookImporter.swift"
-Cohesion: 0.16
-Nodes (18): ZIPFoundation, Compression, String, Book, Int, DifficultyAnalyzer, ImportAnalyticsReport, Double (+10 more)
-
-### Community 116 - "PDFReaderView"
-Cohesion: 0.22
-Nodes (10): PDFKit, NSViewRepresentable, PDFReaderView, Book, Int, Void, String, PDFReaderScreen (+2 more)
-
-### Community 80 - ".importEPUB"
-Cohesion: 0.21
-Nodes (11): ImportError, unsupportedFileType, fileNotReadable, URL, epubMissingOPF, epubParseFailure, epubUnzipFailure, pdfOpenFailure (+3 more)
-
-### Community 138 - ".importPDF"
-Cohesion: 0.23
-Nodes (6): PDFOutline, BookCoverCapture, CGFloat, PDFDocument, NSImage, NSSize
-
-### Community 222 - "ImportWarningLevel"
-Cohesion: 0.50
-Nodes (4): ImportWarningLevel, info, warning, critical
-
-### Community 186 - "LibraryFilterSidebarView"
-Cohesion: 0.33
-Nodes (5): LibraryFilterSidebarView, Book, String, Bool, Void
-
-### Community 72 - "LibraryFilterState"
-Cohesion: 0.13
-Nodes (12): ReadingStatusFilter, all, notStarted, inProgress, completed, LibraryFilterState, Bool, UUID (+4 more)
-
-### Community 187 - "AdaptiveLayoutTier"
-Cohesion: 0.29
-Nodes (5): AdaptiveLayoutTier, floatingCluster, shallowPerspective, fullSpatialNavigator, Int
-
-### Community 51 - "BookVisualState"
-Cohesion: 0.09
-Nodes (20): BookVisualState, RotationStyle, flat, threeDimensional, CGSize, Double, Bool, View (+12 more)
-
-### Community 115 - "SpatialNavigatorCard"
-Cohesion: 0.18
-Nodes (11): SpatialNavigatorCard, Book, CGFloat, Bool, Void, SpatialNavigatorView, Book, Bool (+3 more)
-
-### Community 8 - "MirageImportOutcome"
-Cohesion: 0.05
-Nodes (37): MirageAnalysisSheet, Book, Status, Status, idle, running, done, String (+29 more)
-
-### Community 25 - "MirageClient"
-Cohesion: 0.14
-Nodes (18): MirageAnalyzeSession, Bool, MirageClient, MirageIdentityMapStore, URL, JSONEncoder, JSONDecoder, Bool (+10 more)
-
-### Community 11 - "MirageSidecarSupervisor"
-Cohesion: 0.11
-Nodes (26): MirageChildLauncher, MirageSidecarSupervisor, Configuration, URL, TimeInterval, async, Void, Bool (+18 more)
-
-### Community 29 - ".perform"
-Cohesion: 0.10
-Nodes (17): String, Outcome, success, MirageJSONValue, engineError, Fault, responseUnparsable, correlationFailure (+9 more)
-
-### Community 94 - "MirageCursorGateError"
-Cohesion: 0.18
-Nodes (12): MirageCursor, absent, estimated, Double, Int, page, unit, MirageCursorGateError (+4 more)
-
-### Community 139 - "MirageDetailRequest"
-Cohesion: 0.29
-Nodes (7): String, detailProbeRejected, MirageDetailRequest, MirageDetailQuery, MirageSpoilerProbeTests, MirageCursor, String
-
-### Community 56 - ".makeFixture"
-Cohesion: 0.23
-Nodes (11): MirageSourceFingerprint, Data, mirageReceiptFixture(), String, Bool, Data, mirageBooksListFixture(), MirageIdentityDriftTests (+3 more)
-
-### Community 18 - "MirageBundledRuntimeTests"
-Cohesion: 0.11
-Nodes (17): MirageRuntimeChannel, bundled, dev, MirageRuntime, URL, MirageRuntimeManifest, Data, MirageRuntimeLocator (+9 more)
-
-### Community 211 - "MirageSettings.swift"
-Cohesion: 0.40
-Nodes (3): MirageSettings, Bool, MirageSettingsCopy
-
-### Community 31 - "MirageAnalysisStatus"
-Cohesion: 0.12
-Nodes (21): MirageInventoryEntry, String, Int, MirageAnalysisStatus, LinkState, notImported, linked, MirageIdentityMapEntry (+13 more)
-
-### Community 67 - "MirageStatusSurfaceTests"
-Cohesion: 0.16
-Nodes (9): MirageJSONValue, MirageStatusInventory, MirageStatusSurfaceTests, EngineFixture, URL, RecordingBooksListTransport, String, Data (+1 more)
-
-### Community 73 - "MirageJSONValue"
-Cohesion: 0.11
-Nodes (15): Encodable, MirageJSONValue, null, bool, Bool, int, double, Double (+7 more)
-
-### Community 46 - "MirageWireAction"
-Cohesion: 0.07
-Nodes (29): MirageWireAction, health, version, importEpub, analyze, projection, search, checkpoint (+21 more)
+Nodes (16): AnalyticsConstants, AnalyticsEngine, BookForecastAnalytics, ChapterPredictionAnalytics, ConfidenceAnalytics, GenreAnalyticsSummary, GenreProfile, SessionQuality (+8 more)
 
 ### Community 14 - "NotificationCandidate"
 Cohesion: 0.14
-Nodes (25): NotificationCategory, readingOpportunity, streakProtection, completionEncouragement, momentumReinforcement, inactivityRecovery, chapterCompletion, sessionContinuation (+17 more)
+Nodes (25): clamp(), IntelligentNotificationEngine, IntelligentNotificationResult, NotificationAnalytics, NotificationBehaviorProfile, NotificationCandidate, NotificationCategory, achievementMilestone (+17 more)
 
-### Community 144 - "OnboardingView"
-Cohesion: 0.21
-Nodes (5): UniformTypeIdentifiers, OnboardingView, Book, Bool, String
+### Community 15 - "PR-4 Current-State Defect Analysis — Real Sidecar Lifecycle"
+Cohesion: 0.04
+Nodes (46): 10. Candidate Solutions and Technical Feasibility, 11. Recommended Remediation Plan, 12. Regression Testing and Verification Criteria, 13. Unresolved Questions, Blockers, and Evidence Gaps, 14. Prioritized Next Actions, 15. References and Source Links, 1. Executive Summary, 2.1 Scope boundaries (+38 more)
 
-### Community 4 - "EPUBReaderScreen"
+### Community 16 - ".validate"
+Cohesion: 0.17
+Nodes (9): repaired, DataStorePersistenceTests, Book, Data, Int, String, URL, UUID (+1 more)
+
+### Community 17 - "View"
+Cohesion: 0.11
+Nodes (20): AdvancedContextView, Double, String, AnnualReportView, GoalsSlide, HighlightCard, HighlightsSlide, LibrarySlide (+12 more)
+
+### Community 18 - "MirageBundledRuntimeTests"
+Cohesion: 0.11
+Nodes (18): MirageSettingsPane, MirageDevChannel, MirageRuntime, MirageRuntimeChannel, bundled, dev, MirageRuntimeLocator, MirageRuntimeManifest (+10 more)
+
+### Community 19 - "ReadingSession"
+Cohesion: 0.12
+Nodes (34): Book, BookCollection, BookFileType, epub, pdf, BookNote, Chapter, DailyActivity (+26 more)
+
+### Community 20 - ".addBook"
+Cohesion: 0.11
+Nodes (8): AnalyticsCachePinsTests, Book, String, URL, DataEraseTests, LibraryMutationTests, SQLiteDataStoreTests, URL
+
+### Community 21 - "Identifiable"
 Cohesion: 0.06
-Nodes (35): os, EPUBSpineItem, String, URL, EPUBPackageError, securityScopeUnavailable, cannotReadContainerXML, opfPathNotFound (+27 more)
+Nodes (35): M-001 · Authorization record (supersedes §21.0 non-execution charter for this session), M-002 · Pinned source revisions (§6.1), M-003 · Environment tuple (§6.1, S6-ES-1), M-005 · Phase 0 governance record (§5) — CLOSED, M-006 · Custody & backup record (§4.3-3/4, S4-ES-5), M-007 · Command & baseline register (S4-ES-3 pre-op blocks; §6), M-008 · RT normative-document extraction — principal findings (Phase 1/2 evidence), M-009 · Mirage wire-protocol contract — principal findings (verification of §21.3 S2-ES-4 vs reality) (+27 more)
 
-### Community 62 - ".recommend"
+### Community 22 - ".generateBooks"
 Cohesion: 0.25
-Nodes (11): BookRecommendationScoreV3, UUID, String, Double, RecommendationResultV3, Date, TimeInterval, PredictiveRecommendationEngineV3 (+3 more)
+Nodes (14): DemoProfileLabView, Book, DemoBookSpec, DemoInstallSummary, DemoLabError, unknownProfile, DemoPersona, DemoProfileCatalog (+6 more)
 
-### Community 140 - "RecommendationCard"
-Cohesion: 0.21
-Nodes (11): RecommendationPanel, Bool, UUID, RecommendationCard, Int, Book, Void, ScoreGauge (+3 more)
+### Community 23 - "Equatable"
+Cohesion: 0.11
+Nodes (22): MirageIdentityMapEntry, MirageIdentityMapFile, MirageIdentityMapLoad, loaded, unreadable, MirageIdentityMapSchema, MirageIdentityMapStore, MirageIdentityMapTime (+14 more)
+
+### Community 24 - "Date"
+Cohesion: 0.03
+Nodes (93): ActivityResumptionEvent, ApplicationBehaviorProfile, ApplicationDescriptor, ApplicationSessionReconstructor, ApplicationUsageSession, BehavioralAdvancedQuery, BehavioralArchive, BehavioralClock (+85 more)
+
+### Community 25 - "MirageClient"
+Cohesion: 0.14
+Nodes (19): MirageClient, MirageFileStat, MirageIdentityState, linked, mapUnreadable, notImported, orphaned, unverifiable (+11 more)
+
+### Community 26 - "MusicalAnalysisEngine"
+Cohesion: 0.18
+Nodes (5): AudioSessionRecord, AudioCorrelation, MusicalAnalysisEngine, Book, Double
+
+### Community 27 - "Foundation"
+Cohesion: 0.09
+Nodes (14): AppKit, AsterismaV1_0, EPUBReadingPositionTests, G1CrashWindowPinsTests, G6ContextPinsTests, G6EvidencePersistenceTests, LibraryMetadataPinsTests, MirageCursor (+6 more)
+
+### Community 28 - "Double"
+Cohesion: 0.07
+Nodes (50): Array, BehaviorEvolutionState, evolving, lost, newBehavior, stable, strengthening, weakening (+42 more)
+
+### Community 29 - ".perform"
+Cohesion: 0.11
+Nodes (15): Fault, correlationFailure, envelopeShapeInvalid, responseUnparsable, Outcome, engineError, success, MirageJSONValue (+7 more)
+
+### Community 30 - "AudioCategory"
+Cohesion: 0.10
+Nodes (32): AudioCategory, ambientSoundscape, audioBook, music, podcast, silence, spokenWord, unknown (+24 more)
+
+### Community 31 - "MirageAnalysisStatus"
+Cohesion: 0.12
+Nodes (21): Channel, engineVerified, localMap, LinkState, linked, mapUnreadable, notImported, orphaned (+13 more)
+
+### Community 32 - "08 · Deep Audit (Oct 2026)"
+Cohesion: 0.06
+Nodes (34): 08 · Deep Audit (Oct 2026), 0. TL;DR — the 60-second version, 10.1 Effort estimates for open work (session units — an "Ox session" ≈ one concentrated working session under your protocol; hours assume a fresh, project-familiar context), 10.2 Scale-performance estimates (monolith kept as-is), 10.3 Project-completion estimates (to "App Store ready", two scenarios), 10.4 Quality-fraction estimates (how much of the code is real vs ornament), 10.5 Test-suitability score (from the tests/config agent's weighted rubric), 10. Estimates (multiple bases, honest) (+26 more)
+
+### Community 33 - ".estimate"
+Cohesion: 0.06
+Nodes (46): ConfidenceLevel, high, low, medium, BookEstimationResult, ChapterEstimation, ConfidenceModel, EstimationEngine (+38 more)
+
+### Community 34 - "AudioMonitorService"
+Cohesion: 0.09
+Nodes (27): AudioSource, appleMusicApp, audiobooksApp, chromeBrowser, firefoxBrowser, iinaPlayer, podcastsApp, quickTimePlayer (+19 more)
+
+### Community 35 - "Double"
+Cohesion: 0.08
+Nodes (21): AdvancedRoutineAnalysis, AdvancedRoutineDetector, AdvancedSignificanceAssessment, AdvancedSignificanceEngine, BehavioralSignificanceClassification, dominantBehavior, incidentalNoise, moderateSignal (+13 more)
+
+### Community 36 - "WeatherSnapshot"
+Cohesion: 0.11
+Nodes (18): WeatherProviding, WeatherSnapshot, EnvironmentalSessionAssembler, ReadingSessionMetrics, Any, Bool, Date, Double (+10 more)
 
 ### Community 37 - ".generate"
+Cohesion: 0.12
+Nodes (25): ImprovementAnalytics, AnnualReportArchiveView, Bool, Int, analyticsPeriod(), AnnualReportData, AnnualReportGenerator, availableReportYears() (+17 more)
+
+### Community 38 - "SwiftUI"
+Cohesion: 0.06
+Nodes (26): SentinelReportCardView, Int, String, Void, OnlineBook, OnlineBookDetailView, OnlineBook, String (+18 more)
+
+### Community 39 - "Int"
+Cohesion: 0.29
+Nodes (5): BehavioralEvidenceCursor, BehavioralEvidencePage, BehavioralPaginationEngine, Bool, T
+
+### Community 41 - "BehaviorContextAccessKit"
+Cohesion: 0.22
+Nodes (5): BehaviorContextAccessKit, Timer, URL, ObserverLifecycleTests, NSObjectProtocol
+
+### Community 42 - "CoverStore"
+Cohesion: 0.13
+Nodes (13): CoverStore, Bool, CGFloat, Data, NSImage, String, URL, UUID (+5 more)
+
+### Community 43 - "ReadingInsight"
+Cohesion: 0.13
+Nodes (18): ReaderProfileAnalytics, Array, InsightEngine, InsightPriority, critical, high, low, medium (+10 more)
+
+### Community 44 - "CodingKeys"
+Cohesion: 0.06
+Nodes (31): CodingKeys, activeSessionID, author, bookmarkData, cachedSecondsPerPage, chapters, collectionIDs, collections (+23 more)
+
+### Community 45 - "BehavioralEvent"
+Cohesion: 0.06
+Nodes (31): 10. Documentation and graphify assessment, 11 · Completion & Health Report (2026-10-24), 11. Recommended next five sessions, 12. Appendix — methodology and caveats, 1. What was measured (not inherited from old notes), 2. The scoreboard, in plain English, 3. Completion by area (literal bytes, stated assumptions), 4. What is genuinely good (+23 more)
+
+### Community 46 - "MirageWireAction"
+Cohesion: 0.06
+Nodes (32): object, MirageWireAction, analyze, bookRemove, booksList, checkpoint, citedClaims, edgeDetail (+24 more)
+
+### Community 47 - "InactivityGapRecord"
+Cohesion: 0.14
+Nodes (11): Configuration, ContextWindowPreset, custom, extended, fullDay, narrow, standard, DynamicContextWindowSelector (+3 more)
+
+### Community 48 - "LocationProvider"
+Cohesion: 0.12
+Nodes (20): LocationError, permissionDenied, permissionPending, timeout, LocationProvider, StoreError, prepareFailed, writeFailed (+12 more)
+
+### Community 49 - "BookImporter.swift"
+Cohesion: 0.11
+Nodes (23): ChapterIssue, ChapterRefinementEngine, DifficultyAnalyzer, ImportAnalyticsEngine, ImportAnalyticsReport, ImportDebugSnapshot, ImportIntelligenceFacade, ImportPlugin (+15 more)
+
+### Community 50 - "SessionCoordinator"
+Cohesion: 0.09
+Nodes (16): App, AsterismaApp, Int, ReadingHUD, Book, String, TimeInterval, SessionCoordinator (+8 more)
+
+### Community 51 - "BookVisualState"
+Cohesion: 0.13
+Nodes (13): BookVisualState, RotationStyle, flat, threeDimensional, Bool, CGSize, Double, View (+5 more)
+
+### Community 52 - "🖥️ Part 2 — MirageV1.0"
+Cohesion: 0.07
+Nodes (26): 1 · What it is, 2 · The numbers (validated by direct count, Oct 17 2026), 3 · Current health (verified live, not inherited), 4 · Where we are project-wise, 5 · Open findings snapshot (October register), 6 · Estimates (multi-basis), 7 · Strengths & weaknesses (verified), 8 · Documentation map (+18 more)
+
+### Community 53 - "AchievementKind"
+Cohesion: 0.08
+Nodes (26): AchievementKind, annualGoalMet, books10, books25, books5, books52, deepReader, firstBook (+18 more)
+
+### Community 54 - "String"
+Cohesion: 0.06
+Nodes (30): 0. The decisions this plan is built on, 10. What I need from you now, 1. Definition of done, 2. Program shape and dependency graph, 3. Gate protocol (how you review), 4. Worktree and commit strategy, 5. Phase details, 6. Tonight’s execution envelope (+22 more)
+
+### Community 55 - "OpenMeteoProvider"
+Cohesion: 0.15
+Nodes (13): badStatus, OpenMeteoProvider, CLLocation, Data, Date, DateFormatter, URL, OpenMeteoLiveSmokeTests (+5 more)
+
+### Community 56 - ".makeFixture"
+Cohesion: 0.22
+Nodes (12): MirageSourceFingerprint, Data, String, Fixture, mirageBooksListFixture(), MirageIdentityDriftTests, mirageReceiptFixture(), Bool (+4 more)
+
+### Community 57 - "CaseIterable"
 Cohesion: 0.17
-Nodes (18): Int, Calendar, sessions(), Book, booksRead(), booksCompleted(), AnnualReportData, Date (+10 more)
+Nodes (12): EnvironmentalInsightCategory, abandonment, completion, consistency, engagement, environmentalSensitivity, genreAvoidance, genrePreference (+4 more)
 
-### Community 188 - "analyticsPeriod"
-Cohesion: 0.62
-Nodes (3): analyticsPeriod(), NonGregorianCalendarTests, Calendar
+### Community 58 - "BehaviorCategory"
+Cohesion: 0.10
+Nodes (17): AnalyticsContextAdapter, BehaviorCategory, administrative, browsing, creative, development, entertainment, gaming (+9 more)
 
-### Community 106 - "NewYearTransitionMonitor.swift"
+### Community 59 - "LibraryDatabase"
+Cohesion: 0.10
+Nodes (14): Bool, LibraryDatabase, Book, Int, JSONDecoder, JSONEncoder, Set, URL (+6 more)
+
+### Community 60 - "AnalyticsEngine.swift"
 Cohesion: 0.20
-Nodes (6): NewYearTransitionMonitor, Timer, DebugCelebrationBus, NewYearTransitionAwareModifier, Content, View
+Nodes (9): AnalyticsPeriod, custom, thisMonth, thisWeek, thisYear, today, ClosedRange, Date (+1 more)
 
-### Community 124 - "NewYearCelebrationOverlay"
-Cohesion: 0.27
-Nodes (7): Bool, NewYearCelebrationOverlay, Void, Task, Never, TimeInterval, CelebrationTimeline
+### Community 61 - "RoutineCategory"
+Cohesion: 0.13
+Nodes (15): RoutineCategory, activityAssociated, afternoonReading, emergingRoutine, entertainmentTransition, eveningReading, lateNightReading, learningTransition (+7 more)
 
-### Community 189 - "SnowParticle"
-Cohesion: 0.38
-Nodes (6): Double, SnowParticle, UUID, CGFloat, Date, SnowflakeParticleView
+### Community 62 - ".recommend"
+Cohesion: 0.13
+Nodes (23): BookRecommendationScoreV3, PredictiveRecommendationEngineV3, RecommendationResultV3, sanityTestRecommendationEngine(), Book, Date, Double, Int (+15 more)
 
-### Community 212 - "CelebrationPhase"
-Cohesion: 0.40
-Nodes (5): CelebrationPhase, toast, expanding, fullscreen, exiting
+### Community 63 - "Bedrock Master Plan"
+Cohesion: 0.17
+Nodes (11): Baseline metrics, Bedrock Session — 2026-10-24, Commands, Completed gates, Data safety / correctness, Known deltas / open work, Rebrand and release, Release / packaging (+3 more)
 
-### Community 223 - "Step"
-Cohesion: 0.50
-Nodes (4): Step, expand, fullscreen, autoExit
+### Community 64 - "21. Technical escalation addendum (section-by-section ≥21× intensification layer)"
+Cohesion: 0.08
+Nodes (24): 21.0 Escalation metric, doctrine, and non-execution charter, 21.10 Escalation of §9 — Integration boundary as formally specified subsystem, 21.11 Escalation of §10 — Adapter algebra: identity, import, cursor, synchronization, 21.11b Escalation of §11 — Feature exposure, query experience, data controls, 21.12 Escalation of §12 — Security/privacy hard plane, 21.13 Escalation of §13 — Testing calculus, quality gates, and statistical sufficiency, 21.14 Escalation of §14 — Build/packaging/release engineering to artifact-custody grade, 21.15 Escalation of §15 — Rollback calculus, recovery rehearsal, operational handoff (+16 more)
 
-### Community 200 - "SheetDismissAffordance"
-Cohesion: 0.33
-Nodes (4): ViewModifier, SheetDismissAffordance, Content, View
+### Community 65 - "SentinelFinding"
+Cohesion: 0.05
+Nodes (41): AppIdentity, URL, RuntimeEnvironment, Bool, URL, AchievementDriftProbe, DeadlineOverdueProbe, DiskSpaceProbe (+33 more)
 
-### Community 171 - "SessionHistoryView"
-Cohesion: 0.28
-Nodes (7): SessionHistoryView, Int, Book, SessionHistoryRow, String, AudioPill, AudioDetailView
+### Community 66 - ".normalise"
+Cohesion: 0.19
+Nodes (7): WeatherSnapshotNormaliser, Int, WeatherSnapshotNormaliserTests, CurrentWeather, Forecast, HourWeather, WeatherCondition
 
-### Community 152 - "ContentView"
+### Community 67 - "MirageStatusSurfaceTests"
+Cohesion: 0.16
+Nodes (9): MirageStatusInventory, MirageJSONValue, EngineFixture, MirageStatusSurfaceTests, RecordingBooksListTransport, Data, MirageIdentityMapEntry, String (+1 more)
+
+### Community 68 - "LibraryArchive"
+Cohesion: 0.10
+Nodes (18): LibraryArchive, LibraryArchiveError, corruptArchive, emptyLibrary, LibraryArchiveManager, Book, Bool, Data (+10 more)
+
+### Community 69 - "AudioContextProfile"
+Cohesion: 0.14
+Nodes (21): AudioCharacteristics, AudioContextProfile, AudioSnapshot, InferredMood, calm, energetic, focused, melancholic (+13 more)
+
+### Community 70 - "Date"
+Cohesion: 0.21
+Nodes (8): bceAppendShannonEntropy(), EnvironmentEvolutionPeriod, month, quarter, week, LongitudinalEnvironmentTracker, SequenceRecurrenceDatabase, TransitionChainReconstructor
+
+### Community 71 - "DeveloperConsoleSection"
+Cohesion: 0.10
+Nodes (19): DeveloperConsoleRootView, DeveloperConsoleSection, architectureExplorer, dashboard, deadCode, demoLab, dependencyGraph, errorCenter (+11 more)
+
+### Community 72 - "LibraryFilterState"
 Cohesion: 0.18
-Nodes (13): View, ContentView, Book, DispatchWorkItem, String, Bool, Int, URL (+5 more)
+Nodes (9): LibraryFilterState, ReadingStatusFilter, all, completed, inProgress, notStarted, Book, Bool (+1 more)
+
+### Community 73 - "MirageJSONValue"
+Cohesion: 0.09
+Nodes (21): Equatable, Self, Status, done, idle, running, MirageJSONValue, array (+13 more)
+
+### Community 74 - "22. The Titanium Bridge (TiB) — continuous-convergence subsystem"
+Cohesion: 0.09
+Nodes (22): 22.0 The contract — formal SLO and the four sub-guarantees, 22.10 The Bridge Ledger — audit trail and the answer machine, 22.11 Failure-mode compendium — typed error registry `TB-*`, 22.12 Drift, divergence, and anti-tamper — the vendored tree is read-only to everyone but the bridge, 22.13 Security threat model — the bridge is a code-injection channel, treat it like one, 22.14 Storms, skew, and pathological schedules, 22.15 Human controls — the DX surface, 22.16 Governance integration — ADR-12 and the doctrine collision, resolved (+14 more)
+
+### Community 75 - ".gate"
+Cohesion: 0.16
+Nodes (12): work, environment, MirageOnceCloser, MirageTransportFailure, oversizedLine, pipeEOFWhileAwaitingResponse, pipeReadFailed, pipeWriteFailed (+4 more)
+
+### Community 76 - "AchievementDefinition"
+Cohesion: 0.14
+Nodes (14): AchievementDefinition, AchievementTier, bronze, gold, platinum, silver, AchievementBadge, AchievementDetailPopover (+6 more)
+
+### Community 77 - "DeviceStateType"
+Cohesion: 0.07
+Nodes (28): 02 · Defect Register, Critical (fix first), Documentation vs reality (status corrections), F-01 · Calendar crash in Annual Reports 🔴 Critical, F-02 · New Year celebration timer chain 🟠 High, F-03 · Numeric HTML entities destroyed in text 🟠 High, F-04 · State file upgrades can destroy goals and achievements 🟠 High, F-05 · Location request can hang forever 🟡 Medium (+20 more)
+
+### Community 78 - "Color"
+Cohesion: 0.27
+Nodes (4): ContextInsightPanel, RoutineRow, Int, String
+
+### Community 79 - "GoalStatus"
+Cohesion: 0.17
+Nodes (17): Decoder, BookDeadline, BookDeadlineStatus, GoalProgressViewModel, GoalStatus, ReadingGoalManager, ReadingGoalSet, Book (+9 more)
+
+### Community 80 - ".importEPUB"
+Cohesion: 0.18
+Nodes (14): BookImporter, ImportError, epubMissingOPF, epubParseFailure, epubUnzipFailure, fileNotReadable, notAnEPUBPackage, pdfOpenFailure (+6 more)
+
+### Community 81 - "10 · Profiler fix (freeze post-mortem)"
+Cohesion: 0.10
+Nodes (20): 10 · Profiler Fix (Freeze Post-Mortem), After, Before, Bottom Line, Current Assessment, Final Result, Reading Tracker — Developer Console Freeze / Crash Fix, Summary (+12 more)
+
+### Community 82 - "ADR-7 — Spoiler-cursor contract (with S10-ES-3 formal sub-document as annex)"
+Cohesion: 0.10
+Nodes (20): A.1 Field provenance, A.2 Conversion algorithm, A.3 Edition-identity requirement, A.4 Invalidation conditions, A.5 Regression policy, A.6 Missing-data behavior (fail closed), A.7 State-vocabulary transduction table, A.8 Unsafe-by-default reminder (+12 more)
+
+### Community 84 - "🧭 Navigation Hub — read this first"
+Cohesion: 0.10
+Nodes (20): 0.1 Required outcome, 0.2 Explicit non-goals, 0. Executive directive, 17. Architecture decisions that must be recorded, 19. Required evidence bundle for handoff, 20. Immediate next actions, Appendix A — Commands shown by the supplied READMEs, Appendix B — Open questions that must be answered from source or by owners (+12 more)
+
+### Community 85 - "ReadingGenre"
+Cohesion: 0.10
+Nodes (20): ReadingGenre, biography, business, children, education, fantasy, fiction, historical (+12 more)
+
+### Community 86 - "ReadingBehaviorMetric"
+Cohesion: 0.10
+Nodes (20): ReadingBehaviorMetric, abandonmentLikelihood, bookLength, booksCompleted, chaptersCompleted, completionLikelihood, complexity, difficulty (+12 more)
+
+### Community 87 - "Coordinator"
+Cohesion: 0.11
+Nodes (18): Coordinator, PDFReaderScreen, PDFReaderView, Book, CGFloat, CGSize, Context, Coordinator (+10 more)
+
+### Community 88 - "AnalyticsCache"
+Cohesion: 0.19
+Nodes (12): AnalyticsCache, Signature, Book, Bool, Int, UInt64, TimeOfDayAnalytics, TrendAnalytics (+4 more)
+
+### Community 89 - ".versionIsSupported"
+Cohesion: 0.19
+Nodes (9): Comparable, ClosedRange, Self, MirageProtocolConstants, SemVer, Bool, Data, Int (+1 more)
+
+### Community 90 - "Bedrock Session Record (2026-10-24)"
+Cohesion: 0.22
+Nodes (8): Baseline performance, Bedrock Baseline — 2026-10-24 (G0), Build and census, Data snapshot, G0 safety changes, Known baseline issues (by design, fixed in later gates), Real data store (snapshot source), Source
+
+### Community 91 - ".updateGoalSet"
+Cohesion: 0.14
+Nodes (7): GoalEditorPane, GoalPersistenceTests, RebindIdempotenceTests, Book, Bool, String, URL
+
+### Community 92 - "EnvironmentEngine"
+Cohesion: 0.12
+Nodes (16): EnvironmentEngine, Bool, Calendar, Date, Never, Task, Void, EnvironmentState (+8 more)
+
+### Community 93 - "SettingsRootView.swift"
+Cohesion: 0.25
+Nodes (5): RSVPSettingsPane, SentinelSettingsPane, SettingsRootView, Double, WeatherSettingsPane
+
+### Community 94 - "MirageCursorGateError"
+Cohesion: 0.12
+Nodes (19): MirageCursor, absent, estimated, page, unit, MirageCursorGate, MirageCursorGateError, detailProbeRejected (+11 more)
+
+### Community 95 - "State"
+Cohesion: 0.12
+Nodes (18): Blocker, engineUnavailable, permanentDown, protocolIncompatible, describe(), MirageSidecarAttemptFailure, restartable, terminal (+10 more)
 
 ### Community 96 - "LibrarySortMode"
+Cohesion: 0.13
+Nodes (9): EPUBReaderScreen, Book, Bool, ClosedRange, Double, Int, Never, Task (+1 more)
+
+### Community 98 - "Testing Strategy"
+Cohesion: 0.40
+Nodes (5): Merge-Presence Receipt, Owner Actions Toggle Prerequisite, Census CI Workflow, Census Discipline, Standing Census 212/0/9
+
+### Community 99 - "ShootingStarManager"
+Cohesion: 0.10
+Nodes (20): Animation, EnvironmentBackgroundView, CGSize, ShootingStar, CGPoint, CGSize, Date, Double (+12 more)
+
+### Community 100 - "BookDeadline"
+Cohesion: 0.08
+Nodes (25): 05 · Remediation Roadmap, 1.1 · NA-1 — Resolve the weather-fix contradiction (wire or delete), 1.2 · NA-2 — Goals end-to-end (three sequential Finalities), 2.1 · D6 — Move disk writes off the main actor, 2.2 · O-8 batch — guarded lookups + divergence checks, 2.3 · F-12 — rebind subscription accumulation, 3.1 · NA-5 — Privacy manifest, 3.2 · NA-4 — Audio automation legality (+17 more)
+
+### Community 101 - "WeatherAnalysisEngine.swift"
+Cohesion: 0.08
+Nodes (24): 03 · Fix Log, Attempted & honestly reverted, Fixed, Live-test remediation (LT-001), Open (queued — next work before ANY Phase 3), Open / unresolved (Finality not reached), P5 — Five Production Features, P5-HOTFIX — App-freeze report (+16 more)
+
+### Community 102 - "EnvironmentalFactor"
+Cohesion: 0.13
+Nodes (15): EnvironmentalFactor, cloudCover, dayPeriod, feelsLikeTemperature, humidity, month, pressure, rain (+7 more)
+
+### Community 103 - ".runCycle"
+Cohesion: 0.10
+Nodes (20): 1. Chapter 25 / Chapter 12 mismatch, 2. Floating status panel, 3. Narrow-window reader behavior, 4. Reading estimates without hover, 5. Sparse-library layout, Asterisma v1.0 — Beta UX Audit & Remediation Register, Beta QA matrix, Current candidate references (+12 more)
+
+### Community 104 - "SentinelEngine"
+Cohesion: 0.21
+Nodes (12): decodeHTMLEntities(), decodeNumericEntities(), extractPlainSentences(), normalizeWhitespace(), ReadingComplexityHints, stripHTML(), Bool, Double (+4 more)
+
+### Community 105 - "AudioFactor"
+Cohesion: 0.12
+Nodes (16): AudioFactor, albumIdentity, artistIdentity, audioCategory, audioSource, dayOfWeek, genreCategory, genreEnergy (+8 more)
+
+### Community 106 - "NewYearTransitionMonitor.swift"
+Cohesion: 0.08
+Nodes (28): CelebrationPhase, exiting, expanding, fullscreen, toast, CelebrationTimeline, DebugCelebrationBus, NewYearCelebrationOverlay (+20 more)
+
+### Community 107 - "AsterismaV1_0UITests"
+Cohesion: 0.16
+Nodes (7): AsterismaV1_0UITests, AsterismaV1_0UITestsLaunchTests, Bool, makeIsolatedApp(), XCTest, XCTestCase, XCUIApplication
+
+### Community 108 - "06 · RSVP Feature Plan"
+Cohesion: 0.12
+Nodes (15): 06 · RSVP Feature Plan, 1. What is readrrr doing?, 2. How does it work?, 3. Why build this?, 4. How can we integrate it?, 5. Why is this plausible on this platform?, 6. What do we need to do, in order?, A. Suggested module layout (+7 more)
+
+### Community 109 - ".enqueue"
 Cohesion: 0.25
-Nodes (8): LibrarySortMode, dateAddedDesc, dateAddedAsc, titleAsc, titleDesc, author, recentlyRead, progress
+Nodes (8): PersistenceWriter, CheckedContinuation, Never, String, Task, WriteResult, G1PersistenceWriterPinsTests, DispatchQueue
 
-### Community 224 - "BedrockBaselineTests.swift"
-Cohesion: 0.50
-Nodes (3): benchmarkEnv(), String, BedrockBaselineTests
+### Community 110 - ".gap"
+Cohesion: 0.27
+Nodes (6): BehavioralSessionGapAnalyzer, FatigueIndicatorAnalyzer, FatigueAnalyzerTests, Double, Int, UUID
 
-### Community 161 - "DismissalFlag"
+### Community 111 - "CodingKeys"
+Cohesion: 0.19
+Nodes (12): CodingKeys, authorName, coverI, isbn, key, title, OpenLibraryDocument, OpenLibraryProvider (+4 more)
+
+### Community 112 - "EnvironmentAnchorPeriod"
 Cohesion: 0.33
-Nodes (3): DismissalFlag, Bool, CelebrationTimelineTests
+Nodes (4): AnchorClock, Calendar, Date, Double
+
+### Community 113 - "EnvironmentColor"
+Cohesion: 0.11
+Nodes (20): EnvironmentAnchorPeriod, afternoon, midday, morning, night, EnvironmentColor, EnvironmentGradientStop, Color (+12 more)
+
+### Community 114 - "OpenMeteoProvider.swift"
+Cohesion: 0.23
+Nodes (13): ArchiveResponse, Array, Current, CurrentResponse, Hourly, OpenMeteoError, malformedResponse, noHistoricalData (+5 more)
+
+### Community 115 - "SpatialNavigatorCard"
+Cohesion: 0.18
+Nodes (11): SpatialNavigatorCard, Book, Bool, CGFloat, Void, SpatialNavigatorView, Book, Bool (+3 more)
+
+### Community 116 - "PDFReaderView"
+Cohesion: 0.13
+Nodes (17): Coordinator, KeyNavigationCommand, down, escape, left, returnKey, right, up (+9 more)
+
+### Community 117 - "DailyActivity"
+Cohesion: 0.24
+Nodes (8): ReadingWindow, afternoon, evening, morning, night, ReadingInsightsDashboard, Date, String
+
+### Community 119 - "DemoRapidSwitchTests"
+Cohesion: 0.19
+Nodes (5): SentinelDataBridge, DemoRapidSwitchTests, Int, String, URL
+
+### Community 120 - "AchievementEngine"
+Cohesion: 0.24
+Nodes (8): AchievementEngine, EarnedAchievement, Book, Bool, Date, Int, UUID, Void
+
+### Community 121 - "SeededGenerator"
+Cohesion: 0.08
+Nodes (22): DesignGrid, CGFloat, Double, SeededGenerator, UInt64, Star, CGFloat, CGPoint (+14 more)
+
+### Community 122 - "WeatherInsightPanel"
+Cohesion: 0.24
+Nodes (6): CorrelationRow, Bool, Color, String, WeatherInsightPanel, WeatherStatCard
+
+### Community 123 - "InsightKind"
+Cohesion: 0.14
+Nodes (14): InsightKind, bestReadingTime, consistencyReward, difficultyMatch, drySpell, genrePattern, goalBehind, goalOnTrack (+6 more)
+
+### Community 124 - "NewYearCelebrationOverlay"
+Cohesion: 0.16
+Nodes (11): MirageBannerFault, notJSON, statusNotReady, MirageChildLauncher, MirageJSONValue, MirageProcessLauncher, MiragePythonLocator, Any (+3 more)
+
+### Community 125 - "WeatherSnapshotStoreTests"
+Cohesion: 0.19
+Nodes (8): Date, Double, URL, UUID, WeatherSnapshotStore, WeatherAnalysisEngineIntegrationTests, WeatherSnapshotStore, WeatherSnapshotStoreTests
+
+### Community 126 - "09 · Final Traces performance marathon"
+Cohesion: 0.14
+Nodes (13): 09 · Final Traces (Performance Marathon), BASELINE, Execution order (risk-graded), FINAL STATE AT HANDOFF, PHASE A LOG — Covers → files + NSCache, PHASE A SHIPPED, PHASE B LOG — Upgrade #5 AnalyticsCache, PHASE C/D LOG — Upgrade #4 safe slice (#3 groundwork next session) (+5 more)
+
+### Community 127 - "AudioSource"
+Cohesion: 0.25
+Nodes (8): EPUBPackage, EPUBSpineItem, OpenCleanup, ParsedOPF, Book, Int, String, URL
+
+### Community 128 - "DeveloperConsoleDashboardView"
+Cohesion: 0.24
+Nodes (9): DeveloperConsoleDashboardView, DeveloperConsoleKnownSubsystem, DeveloperConsoleKnownSubsystems, FlaggedItem, Bool, Color, String, ConsolePalette (+1 more)
+
+### Community 129 - "SentinelPaneView"
+Cohesion: 0.12
+Nodes (15): BehavioralEventType, applicationActivated, applicationDeactivated, applicationLaunched, applicationTerminated, deviceSleep, deviceStateTransition, deviceWake (+7 more)
+
+### Community 130 - "AvailabilityState"
+Cohesion: 0.23
+Nodes (11): AvailabilityState, free, referenceOnly, unknown, BookSource, gutenberg, openLibrary, worldCat (+3 more)
+
+### Community 131 - "BookDiscoveryService"
+Cohesion: 0.36
+Nodes (5): BookDiscoveryService, Bool, Int, OnlineBook, String
+
+### Community 132 - "BookDiscoveryViewModel"
+Cohesion: 0.24
+Nodes (7): BookDiscoveryViewModel, Bool, Never, OnlineBook, String, Task, Void
+
+### Community 133 - "GutendexBook"
+Cohesion: 0.27
+Nodes (9): BookProvider, GutenbergProvider, GutendexAuthor, GutendexBook, GutendexFormats, GutendexResponse, Int, OnlineBook (+1 more)
+
+### Community 134 - "ValidationIssue"
+Cohesion: 0.20
+Nodes (11): DataIntegrityValidator, Severity, error, warning, Book, Bool, Date, String (+3 more)
+
+### Community 135 - "Star"
+Cohesion: 0.16
+Nodes (6): DeveloperConsoleStaticObservable, DeveloperConsoleRegistry, DeveloperConsoleStaticEngineManifest, Int, String, T
+
+### Community 136 - ".archiveSnapshot"
+Cohesion: 0.27
+Nodes (12): CodingKeys, apparentTemperature, cloudCover, precipitation, pressureMsl, relativeHumidity2m, snowfall, temperature2m (+4 more)
+
+### Community 137 - "WeatherConditionCategory"
+Cohesion: 0.15
+Nodes (13): WeatherConditionCategory, clear, cloudy, fog, heavyRain, heavySnow, mixed, partlyCloudy (+5 more)
+
+### Community 138 - ".importPDF"
+Cohesion: 0.29
+Nodes (5): BookCoverCapture, CGFloat, NSImage, NSSize, PDFDocument
+
+### Community 139 - "MirageDetailRequest"
+Cohesion: 0.11
+Nodes (17): 001 — First successful EPUB import and read on a clean slate, 002 — RSVP speed reader survived deliberate abuse, 003 — Beta audit remediation accepted: the core reader works end to end, Evidence, Follow-up — reader controls now yield the page, Future polish (not a defect in this milestone), Milestones, Next (+9 more)
+
+### Community 140 - "RecommendationCard"
+Cohesion: 0.11
+Nodes (17): 00 · AsterismaV1.0 — Project Report, §1 · What the app does, §2 · The project at a glance, 3.1 Architecture, 3.2 Concurrency model, 3.3 Data & persistence surface, 3.4 Sentinel (self-repair watchdog), 3.5 The Mirage integration (October 2026) (+9 more)
 
 ### Community 141 - ".disabledFeatureNeverRunsTheStatusRunner"
 Cohesion: 0.24
-Nodes (6): MirageFeatureLifecycleTests, Bool, Book, MirageIdentityMapEntry, CountingRunnerForLifecycle, Int
+Nodes (6): CountingRunnerForLifecycle, MirageFeatureLifecycleTests, Book, Bool, Int, MirageIdentityMapEntry
 
-### Community 172 - "MirageIdentityRealEngineImportTests.swift"
+### Community 142 - "RT critical facts (root `/Users/johanrembeci/Desktop/Reading Tracker Main /`)"
+Cohesion: 0.15
+Nodes (12): Build settings & sandbox (uniform Debug/Release; pbxproj lines Debug/Release), Concurrency idioms (under `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, project.pbxproj:441-442/477-478), Entry & surfaces, Evidence artifact — cross-codebase touchpoint inventory (Phase 1/2), Import & sessions fan-out, INTEGRATION TOUCHPOINT TABLE (16 rows), Mirage critical facts (root `/Users/johanrembeci/Desktop/MirageV1.0`), Naive-use failure flags (summary) (+4 more)
+
+### Community 143 - "SeasonalPeriod"
+Cohesion: 0.15
+Nodes (9): AnyObject, DeveloperConsoleObservable, SessionEventRouter, Book, Date, Int, Set, UUID (+1 more)
+
+### Community 144 - "OnboardingView"
+Cohesion: 0.21
+Nodes (5): OnboardingView, Book, Bool, String, UniformTypeIdentifiers
+
+### Community 145 - ".record"
+Cohesion: 0.21
+Nodes (6): SeededRNG, Book, Date, UInt64, DemoProfileServiceTests, String
+
+### Community 146 - "SentinelEngine.swift"
+Cohesion: 0.30
+Nodes (6): MirageIdentityMapContractTests, MirageIdentityMapEntry, MirageIdentityMapEntry, String, URL, UUID
+
+### Community 147 - "ThermalStateEvent"
+Cohesion: 0.32
+Nodes (3): BehavioralExportEncoder, Data, Encoder
+
+### Community 148 - "BehavioralObserverStatus"
+Cohesion: 0.27
+Nodes (7): BehavioralObserverDiagnostics, BehavioralObserverHealth, active, degraded, failed, inactive, BehavioralObserverStatus
+
+### Community 149 - "ContextContinuityType"
+Cohesion: 0.15
+Nodes (12): Evidence, F1 — Packaged app launched unsandboxed with an empty store, F2 — Freeze at the reading-goal step, F3 — Desktop EPUBs grayed out in the Add Book panel, F4 — Toolbar absent and green zoom inert in windowed mode, F6 — Add Book reported "Unsupported file type" for the parent folder, Findings, Next (+4 more)
+
+### Community 150 - "PersonaDetail"
+Cohesion: 0.29
+Nodes (6): PersonaDetail, PersonaRow, Bool, Content, String, Void
+
+### Community 151 - "CorrelationLifecycle"
+Cohesion: 0.20
+Nodes (10): CorrelationLifecycle, declining, emerging, persistent, recurring, seasonal, stable, strengthening (+2 more)
+
+### Community 152 - "ContentView"
+Cohesion: 0.21
+Nodes (4): BookImportPanel, FolderEPUBImportTests, NSOpenPanel, UTType
+
+### Community 153 - "Reaction wave (badge/goal recompute on main after bulk swap)"
+Cohesion: 0.18
+Nodes (11): EnvironmentObject.error() fatal assertion on main thread, freeze.txt — 5-second sample capture of frozen app (pid 68556, Aug 30 2026), AchievementEngine (badge thresholds walker), DemoDataService (fabricates deterministic fake history), THE LAST DEFEAT — demo profile freeze saga, DemoProfileLabView (console screen with Install button), GoalProgressViewModel (progress calculator on main), LibraryBatchUpdate bracket (suspend listeners during bulk swap) (+3 more)
+
+### Community 154 - "AppKit"
+Cohesion: 0.40
+Nodes (5): Book, BookCoverThumbnail, Bool, CGFloat, NSImage
+
+### Community 155 - ".dataRootURL"
+Cohesion: 0.15
+Nodes (12): 1. Scope delivered, 2. What did not change, 3. Tests, 4. Data receipt, 5. Performance receipt, 6. Manual evidence, 7. Known issues / deltas, 8. Rollback (+4 more)
+
+### Community 156 - "BehavioralObservationWindow"
+Cohesion: 0.17
+Nodes (11): 12 · Owner-Test Authority, Before testing: snapshot the live library, Full automated suite (optional), How results are recorded, How to run a session, Option A — Release package (recommended for acceptance), Option B — Xcode Run (for debugging), Precedence order (+3 more)
+
+### Community 157 - "ContextTrend"
+Cohesion: 0.18
+Nodes (10): Appearance panel, Deliberately still open, Library polish, Next polish phases, Owner acceptance checklist, Phase 1 shipped, Reader chrome, Reader & Library Polish — 2026-10-25 (+2 more)
+
+### Community 158 - ".evidence"
 Cohesion: 0.33
-Nodes (7): mirageZipFixtureDirectory(), URL, MirageImportFault, String, writeMinimalRealEpubFixture(), Bool, MirageIdentityRealEngineImportTests
+Nodes (4): BehaviorEvidenceBuilder, Date, Double, Int
 
-### Community 226 - "ProbeTripwireTransport"
-Cohesion: 0.50
-Nodes (3): ProbeTripwireTransport, Int, Data
+### Community 159 - "EnvironmentState"
+Cohesion: 0.24
+Nodes (7): ShallowPerspectiveView, Book, Bool, CGFloat, Double, Int, Void
+
+### Community 160 - "BookDetailsView"
+Cohesion: 0.24
+Nodes (3): BookDetailsView, Book, UUID
+
+### Community 161 - "DismissalFlag"
+Cohesion: 0.33
+Nodes (3): CelebrationTimelineTests, DismissalFlag, Bool
 
 ### Community 162 - "GoalStreakTests"
 Cohesion: 0.56
 Nodes (3): GoalStreakTests, Int, UUID
 
-### Community 190 - "SQLiteFoundationTests.swift"
-Cohesion: 0.38
-Nodes (4): sqliteEnv(), String, SQLiteFoundationTests, URL
+### Community 163 - "ADR-2: integration transport & protocol (managed stdio NDJSON sidecar)"
+Cohesion: 0.20
+Nodes (9): ADR-2 — Integration transport & protocol: managed stdio NDJSON sidecar, Alternatives considered, Consequences, Context (evidence-anchored), Decision, Problem statement, Rollback implications, Security & privacy impact (+1 more)
 
-### Community 177 - "SchemaEvolutionTests"
-Cohesion: 0.25
-Nodes (3): SchemaEvolutionTests, JSONEncoder, JSONDecoder
+### Community 164 - "ADR-4 — Data directories, Mirage ledger placement & backup ownership"
+Cohesion: 0.20
+Nodes (9): ADR-4 — Data directories, Mirage ledger placement & backup ownership, Alternatives considered, Consequences, Context (evidence-anchored), Decision, Problem statement, Rollback implications, Security & privacy impact (+1 more)
 
-### Community 145 - ".record"
-Cohesion: 0.35
-Nodes (4): WeatherConfidencePinsTests, Date, Double, String
+### Community 165 - "ADR-5: identity-mapping contract (RT Book ↔ Mirage book/edition)"
+Cohesion: 0.20
+Nodes (9): ADR-5 — Identity-mapping contract: RT Book ↔ Mirage book/edition, Alternatives considered, Consequences, Context (evidence-anchored), Decision, Problem statement, Rollback implications, Security & privacy impact (+1 more)
 
-### Community 125 - "WeatherSnapshotStoreTests"
-Cohesion: 0.25
-Nodes (6): Date, WeatherSnapshotStoreTests, WeatherSnapshotStore, URL, WeatherSnapshotStore, UUID
-
-### Community 107 - "AsterismaV1_0UITests"
-Cohesion: 0.16
-Nodes (7): XCTest, AsterismaV1_0UITests, XCTestCase, AsterismaV1_0UITestsLaunchTests, Bool, makeIsolatedApp(), XCUIApplication
-
-### Community 210 - "generate-app-icon.py"
-Cohesion: 0.60
-Nodes (5): lerp(), rounded_mask(), radial_gradient(), star(), main()
-
-### Community 182 - "observe.py"
-Cohesion: 0.50
-Nodes (7): sha256(), tree_digest(), load_manifest(), compute(), check(), append_row(), main()
-
-### Community 32 - "08 · Deep Audit (Oct 2026)"
-Cohesion: 0.06
-Nodes (34): 08 · Deep Audit (Oct 2026), 0. TL;DR — the 60-second version, 1. What this project is, 2. Method & verification performed THIS audit (nothing inherited), 3. Where we are project-wise (the honest scoreboard), 4. The numbers (all directly validated today), 5. Strengths (verified, not flattery), 6. Weaknesses (verified) (+26 more)
-
-### Community 126 - "09 · Final Traces performance marathon"
-Cohesion: 0.14
-Nodes (13): Execution order (risk-graded), Standing lessons that shape every decision, BASELINE, PHASE A LOG — Covers → files + NSCache, PHASE A SHIPPED, PHASE B LOG — Upgrade #5 AnalyticsCache, PHASE C/D LOG — Upgrade #4 safe slice (#3 groundwork next session), REMAINING BLUEPRINTS (for next sessions) (+5 more)
-
-### Community 81 - "10 · Profiler fix (freeze post-mortem)"
-Cohesion: 0.10
-Nodes (20): Reading Tracker — Developer Console Freeze / Crash Fix, Summary, What We Were Seeing, The Important Debugging Decision, What `sample` Showed, What an `EnvironmentObject` Means, What We Found in `DemoProfileLabView`, Why the Developer Console Was Different (+12 more)
-
-### Community 15 - "PR-4 Current-State Defect Analysis — Real Sidecar Lifecycle"
-Cohesion: 0.04
-Nodes (46): PR-4 Current-State Defect Analysis — Real Sidecar Lifecycle, Table of Contents, 1. Executive Summary, 2. Investigation Scope and Current-State Snapshot, 2.1 Scope boundaries, 2.2 Repository snapshot (verified 2026-10-18 ~18:0x Eastern), 2.3 Merge-distance snapshot (management estimate, unchanged from session), 3. Environment and Reproduction Context (+38 more)
-
-### Community 180 - "PR-5 Execution Plan — Identity Map + One-Book Import (drafted 2026-10-18 evening)"
-Cohesion: 0.25
-Nodes (7): PR-5 Execution Plan — Identity Map + One-Book Import (drafted 2026-10-18 evening), 0. Gate contract + pre-decided locks (nothing below may be silently renegotiated), 1. Runtime file plan (feature-module only; RT store untouched), 2. Wire interaction — the one unpinned fact to extract FIRST, 3. Pinned-case matrix (the gate's seven), 4. Sequencing (next session, in order), 5. Owner questions reserved for the next session (do not decide silently)
-
-### Community 84 - "🧭 Navigation Hub — read this first"
-Cohesion: 0.10
-Nodes (20): Reading Tracker + Mirage — Safe Codebase Integration Playbook, 🧭 Navigation Hub — read this first, Document map, Reading paths by role, Table of contents, Conventions & code registries, 0. Executive directive, 0.1 Required outcome (+12 more)
-
-### Community 227 - "1. Source-derived baseline and confidence rules"
-Cohesion: 0.50
-Nodes (4): 1. Source-derived baseline and confidence rules, 1.1 Reading Tracker baseline stated in the README, 1.2 Mirage baseline stated in the README, 1.3 Evidence labels required throughout this project
-
-### Community 205 - "2. Product and architecture contract"
-Cohesion: 0.33
-Nodes (6): 2. Product and architecture contract, 2.1 Parent-child relationship, 2.2 Proposed logical component layout, 2.3 Integration transport: evaluate before choosing, 2.4 Protocol rules, 2.5 Optional feature behavior
-
-### Community 193 - "3. Data ownership, identity, and synchronization"
-Cohesion: 0.29
-Nodes (7): 3. Data ownership, identity, and synchronization, 3.1 One system of truth per domain, 3.2 Identity mapping is a first-class subsystem, 3.3 Importing a book into Mirage, 3.4 Reading position and spoiler cursor, 3.5 Series and cross-book context, 3.6 Corrections and user suggestions
-
-### Community 206 - "4. Repository strategy and GitHub safety"
-Cohesion: 0.33
-Nodes (6): 4. Repository strategy and GitHub safety, 4.1 Decide runtime integration before repository consolidation, 4.2 Repository inventory before any migration, 4.3 Safe Git procedure, 4.4 If the repositories are eventually consolidated, 4.5 Repository-level acceptance checklist
-
-### Community 228 - "5. Phase 0 — Governance, scope, and stop conditions"
-Cohesion: 0.50
-Nodes (4): 5. Phase 0 — Governance, scope, and stop conditions, 5.1 Assign accountable owners, 5.2 Define scope and acceptance in writing, 5.3 Stop conditions
-
-### Community 207 - "6. Phase 1 — Establish and verify both baselines"
-Cohesion: 0.33
-Nodes (6): 6. Phase 1 — Establish and verify both baselines, 6.1 Freeze exact source revisions, 6.2 RT baseline commands, 6.3 Mirage baseline commands, 6.4 Read normative documents before implementation, 6.5 Baseline exit gate
-
-### Community 219 - "7. Phase 2 — Source-code discovery and contract extraction"
-Cohesion: 0.40
-Nodes (5): 7. Phase 2 — Source-code discovery and contract extraction, 7.1 Inventory actual code, not just READMEs, 7.2 Create an interface inventory, 7.3 Inspect persistence and migration boundaries, 7.4 Publish three review artifacts
-
-### Community 220 - "8. Phase 3 — Fix or isolate pre-existing RT risks"
-Cohesion: 0.40
-Nodes (5): 8. Phase 3 — Fix or isolate pre-existing RT risks, 8.1 Do not bury known defects in the merge, 8.2 Define a pre-existing-defect policy, 8.3 Protect RT's concurrency model, 8.4 Phase exit gate
-
-### Community 208 - "9. Phase 4 — Build the integration boundary first"
-Cohesion: 0.33
-Nodes (6): 9. Phase 4 — Build the integration boundary first, 9.1 Implement a host-owned service abstraction, 9.2 Implement lifecycle management, 9.3 Validate every message, 9.4 Keep UI independent, 9.5 Integration-boundary tests
-
-### Community 202 - "10. Phase 5 — Implement the book/edition and cursor adapter"
-Cohesion: 0.33
-Nodes (6): 10. Phase 5 — Implement the book/edition and cursor adapter, 10.1 Start with one explicit user-selected book, 10.2 Verify identity after import, 10.3 Establish the cursor contract, 10.4 Synchronization timing, 10.5 Adapter acceptance gate
-
-### Community 216 - "11. Phase 6 — Expose Mirage as an optional RT feature"
-Cohesion: 0.40
-Nodes (5): 11. Phase 6 — Expose Mirage as an optional RT feature, 11.1 Feature entry point and settings, 11.2 Query experience, 11.3 Loading, errors, and accessibility, 11.4 User-facing data controls
-
-### Community 217 - "12. Phase 7 — Security, privacy, and local-first guarantees"
-Cohesion: 0.40
-Nodes (5): 12. Phase 7 — Security, privacy, and local-first guarantees, 12.1 Preserve local-only operation, 12.2 File and process boundary, 12.3 Logs and diagnostics, 12.4 Dependency and supply-chain checks
-
-### Community 192 - "13. Phase 8 — Testing strategy and quality gates"
-Cohesion: 0.29
-Nodes (7): 13. Phase 8 — Testing strategy and quality gates, 13.1 Preserve independent test suites, 13.2 Unit tests, 13.3 Integration tests, 13.4 Regression and failure injection, 13.5 UI and accessibility testing, 13.6 Performance budgets
-
-### Community 203 - "14. Phase 9 — Build, packaging, and release engineering"
-Cohesion: 0.33
-Nodes (6): 14. Phase 9 — Build, packaging, and release engineering, 14.1 Decide how Mirage is distributed with RT, 14.2 Reproducible build process, 14.3 macOS signing, sandbox, and entitlements, 14.4 CI design, 14.5 Release gate
-
-### Community 218 - "15. Phase 10 — Rollback, recovery, and operational support"
-Cohesion: 0.40
-Nodes (5): 15. Phase 10 — Rollback, recovery, and operational support, 15.1 Code rollback and data rollback are different, 15.2 Rollback triggers, 15.3 Recovery rehearsal, 15.4 Operational handoff
+### Community 166 - "§15.3 recovery rehearsal log — S15-ES-3 artifacts (2026-10-18 session)"
+Cohesion: 0.20
+Nodes (9): §15.3 recovery rehearsal log — S15-ES-3 artifacts (2026-10-18 session), Census receipts for this scaffold, Open items for the §15 ladder, R1 — Code rollback rehearsal (in vivo), R2 — Sidecar crash recovery (test-anchored, live receipt from tonight's census), R3 — Failed initialization (corrupt/disabled state → contained posture), R4 — Invalid mapping recovery (stale/mismatched fingerprint flow), R5 — Documented data-backup restore (disposable data), SQLite discipline verified from source (+1 more)
 
 ### Community 167 - "16. Implementation sequence and pull-request plan"
 Cohesion: 0.20
 Nodes (10): 16. Implementation sequence and pull-request plan, PR 1 — Baseline and documentation only, PR 2 — Architecture and protocol ADR, PR 3 — Host interface and fake transport, PR 4 — Real sidecar lifecycle and handshake, PR 5 — Identity mapping and one-book import, PR 6 — Cursor-safe read-only query, PR 7 — Optional-feature settings and lifecycle polish (+2 more)
 
-### Community 204 - "18. Final acceptance checklist"
-Cohesion: 0.33
-Nodes (6): 18. Final acceptance checklist, Product and architecture, Data safety and correctness, Stability, testing, and performance, Security, privacy, and release, Repository governance
+### Community 168 - "AudioProfileStore"
+Cohesion: 0.36
+Nodes (3): LibraryCollectionTests, Book, String
 
-### Community 209 - "Appendix D — Multi-pass document audit"
-Cohesion: 0.33
-Nodes (6): Appendix D — Multi-pass document audit, D.1 Audit method, D.2 Required source-fidelity reminder, D.3 Final reviewer sign-off, D.4 Automated concurrent scan results, D.5 Final-artifact rescan
+### Community 169 - "DeveloperConsoleSystemMetrics"
+Cohesion: 0.38
+Nodes (3): MirageSidecarLifecycleTests, Data, String
 
-### Community 64 - "21. Technical escalation addendum (section-by-section ≥21× intensification layer)"
-Cohesion: 0.08
-Nodes (24): 21. Technical escalation addendum (section-by-section ≥21× intensification layer), 21.0 Escalation metric, doctrine, and non-execution charter, 21.1 Escalation of §0 — Executive directive → composition-theoretic topology, 21.2 Escalation of §1 — Baseline evidence hardening and reproducibility lattice, 21.3 Escalation of §2 — Integration contract, transport, protocol, and feature behavior, 21.4 Escalation of §3 — Data ownership, identity, and synchronization, 21.5 Escalation of §4 — Repository governance, Git safety, and supply-chain custody, 21.6 Escalation of §5 — Governance topology, scope calculus, and stop-condition lattice (+16 more)
+### Community 170 - ".clampUnit"
+Cohesion: 0.20
+Nodes (9): 07 · Testing Strategy, Engaging the opt-in suites, Example: the shape of a pin in this repo, House conventions (pinned by practice), Standing Mirage doctrine (same rules the code enforces), The Mirage integration band (added by the merge campaign), The test landscape today, What this document is (+1 more)
+
+### Community 171 - "SessionHistoryView"
+Cohesion: 0.40
+Nodes (5): AudioDetailView, AudioPill, SessionHistoryRow, Color, String
+
+### Community 172 - "MirageIdentityRealEngineImportTests.swift"
+Cohesion: 0.47
+Nodes (5): MirageIdentityRealEngineImportTests, mirageZipFixtureDirectory(), Bool, URL, writeMinimalRealEpubFixture()
+
+### Community 173 - "ADR-3 — Packaged runtime distribution (engine + interpreter bundled with RT)"
+Cohesion: 0.22
+Nodes (8): ADR-3 — Packaged runtime distribution (engine + interpreter bundled with RT), Approving owners, Consequences, Decision (PR-8 implementation charter), Problem statement, Security & privacy impact, Source-anchored comparative analysis, Tests
+
+### Community 174 - "ADR-6 — Mirage as an optional RT feature: lifecycle governance (canonical §17 seat)"
+Cohesion: 0.22
+Nodes (8): ADR-6 — Mirage as an optional RT feature: lifecycle governance (canonical §17 seat), Alternatives considered, Approving owners, Consequences, Decision, Problem statement, Supersedes / superseded-by, Tests
+
+### Community 175 - "Evidence artifact — MirageV1.0 normative docs + wire protocol extraction (Phase 1/2)"
+Cohesion: 0.22
+Nodes (8): Doctrine (mission statement — binding on RT as host), Evidence artifact — MirageV1.0 normative docs + wire protocol extraction (Phase 1/2), Import identity (service.py:84-174), Protocol-pinning tests (server-of-record for the wire contract), Reading state & cursor (host-supplied truth), Storage facts, Version boundaries (embedding.md:16-20 + source), Wire protocol (P-1 … P-10, PROVEN unless marked)
+
+### Community 176 - "Binding claims (path:line-anchored)"
+Cohesion: 0.22
+Nodes (8): Architectural tracks (planned-not-executed; do NOT combine with integration), Binding claims (path:line-anchored), Cross-document conflicts (PR-1 must resolve), Evidence artifact — RT normative-document extraction (Phase 1/2), Integration-relevant standing rules (RT house standards), Live-verified (TEST-VERIFIED, this session), NEW-DE defect register (lives ONLY in the audit's §7 — NOT in 02-defect-register.md; grep-verified absence), Persistence & write path
+
+### Community 177 - "SchemaEvolutionTests"
+Cohesion: 0.29
+Nodes (3): SchemaEvolutionTests, JSONDecoder, JSONEncoder
+
+### Community 178 - "§15.4 Operational handoff bundle — RT ⇄ Mirage integration (2026-10-18)"
+Cohesion: 0.25
+Nodes (7): §15.4 Operational handoff bundle — RT ⇄ Mirage integration (2026-10-18), Backups (both systems, independently — §18 row), Check version / protocol compatibility, Feature on/off and failure states (operator-facing), Identify the running Mirage process, Locate the approved ledger (and what may touch it), The packaged runtime (PR-8)
+
+### Community 179 - "§18 Final Acceptance Checklist (2026-10-18, ladder complete)"
+Cohesion: 0.25
+Nodes (7): §18 Final acceptance checklist — receipts (2026-10-18, ladder complete), Data safety and correctness, Honest deltas (not acceptance-blocking, ledgered), Product and architecture, Repository governance, Security, privacy, release, Stability, testing, performance
+
+### Community 180 - "PR-5 Execution Plan — Identity Map + One-Book Import (drafted 2026-10-18 evening)"
+Cohesion: 0.25
+Nodes (7): 0. Gate contract + pre-decided locks (nothing below may be silently renegotiated), 1. Runtime file plan (feature-module only; RT store untouched), 2. Wire interaction — the one unpinned fact to extract FIRST, 3. Pinned-case matrix (the gate's seven), 4. Sequencing (next session, in order), 5. Owner questions reserved for the next session (do not decide silently), PR-5 Execution Plan — Identity Map + One-Book Import (drafted 2026-10-18 evening)
+
+### Community 182 - "observe.py"
+Cohesion: 0.50
+Nodes (7): append_row(), check(), compute(), load_manifest(), main(), sha256(), tree_digest()
+
+### Community 183 - "AnnualReportArchiveView"
+Cohesion: 0.20
+Nodes (9): 04 · Handoff, Overarching goal, Plain-language answers, Related documents, What did I end up doing?, What needs to happen next? (in order), What should the next person know to start instantly?, What was I doing? (+1 more)
+
+### Community 184 - "CodingKeys"
+Cohesion: 0.29
+Nodes (7): CodingKeys, id, thermalState, timestamp, CodingKeys, imageJPEG, CodingKey
+
+### Community 185 - "ReadingInsightsDashboard.swift"
+Cohesion: 0.28
+Nodes (5): DeadlineEditorPane, Color, Date, String, UUID
+
+### Community 186 - "LibraryFilterSidebarView"
+Cohesion: 0.33
+Nodes (5): LibraryFilterSidebarView, Book, Bool, String, Void
+
+### Community 187 - "AdaptiveLayoutTier"
+Cohesion: 0.29
+Nodes (5): AdaptiveLayoutTier, floatingCluster, fullSpatialNavigator, shallowPerspective, Int
+
+### Community 188 - "analyticsPeriod"
+Cohesion: 0.25
+Nodes (7): RSVPPivotWordView, RSVPReaderView, Double, Int, String, Void, Character
+
+### Community 189 - "SnowParticle"
+Cohesion: 0.32
+Nodes (6): Configuration, Bool, TimeInterval, URL, Void, async
+
+### Community 191 - "ADR-6a — Mirage import-path independence from RT's onboarding-import bypass (NEW-DE-5)"
+Cohesion: 0.29
+Nodes (6): ADR-6a — Mirage import-path independence from RT's onboarding-import bypass (NEW-DE-5), Boundaries (what this ADR is NOT), Context, Countersign, Decision (the independence argument, path-anchored), Structural-census gate (verified each merge-log census, first at M-024)
+
+### Community 192 - "13. Phase 8 — Testing strategy and quality gates"
+Cohesion: 0.29
+Nodes (7): 13.1 Preserve independent test suites, 13.2 Unit tests, 13.3 Integration tests, 13.4 Regression and failure injection, 13.5 UI and accessibility testing, 13.6 Performance budgets, 13. Phase 8 — Testing strategy and quality gates
+
+### Community 193 - "3. Data ownership, identity, and synchronization"
+Cohesion: 0.29
+Nodes (7): 3.1 One system of truth per domain, 3.2 Identity mapping is a first-class subsystem, 3.3 Importing a book into Mirage, 3.4 Reading position and spoiler cursor, 3.5 Series and cross-book context, 3.6 Corrections and user suggestions, 3. Data ownership, identity, and synchronization
 
 ### Community 194 - "Appendix F — Quick reference (one-page cheat sheet)"
 Cohesion: 0.29
 Nodes (7): Appendix F — Quick reference (one-page cheat sheet), F.1 The ten rules that rule everything, F.2 Phase & gate map, F.3 PR ladder, F.4 Key facts & versions (README-REPORTED — re-verify at the pinned SHA), F.5 Templates, F.6 Where to file things
 
-### Community 74 - "22. The Titanium Bridge (TiB) — continuous-convergence subsystem"
-Cohesion: 0.09
-Nodes (22): 22. The Titanium Bridge (TiB) — continuous-convergence subsystem, 22.0 The contract — formal SLO and the four sub-guarantees, 22.1 Identity model — commits, generations, and why diffs are the wrong unit, 22.2 Topology — one bridge, two rings, one direction of truth, 22.3 Generation manifest, transport, and determinism of assembly, 22.4 The change-classification engine — not every line is "just a line", 22.5 The 60-second pipeline, hop by hop — and the 4:00 PM story, 22.6 Atomic swap engineering — pointer flips on APFS (+14 more)
-
-### Community 52 - "🖥️ Part 2 — MirageV1.0"
-Cohesion: 0.07
-Nodes (26): 📚 Twin READMES, ⚡ At a glance, 📇 How to navigate, 😴 Part 1 — “Reading Tracker”, A macOS reading-analytics app, 1 · What it is, 2 · The numbers (validated by direct count, Oct 17 2026), 3 · Current health (verified live, not inherited) (+18 more)
-
-### Community 215 - "ADR-12 — Titanium Bridge (TiB) charter: continuous convergence across the guarded boundary"
-Cohesion: 0.40
-Nodes (4): ADR-12 — Titanium Bridge (TiB) charter: continuous convergence across the guarded boundary, Problem statement, Decision (proposed), Consequences
-
-### Community 163 - "ADR-2: integration transport & protocol (managed stdio NDJSON sidecar)"
-Cohesion: 0.20
-Nodes (9): Problem statement, Context (evidence-anchored), Alternatives considered, Decision, Consequences, Security & privacy impact, Rollback implications, Tests required (named; implemented in the PR that introduces them) (+1 more)
-
-### Community 173 - "ADR-3 — Packaged runtime distribution (engine + interpreter bundled with RT)"
-Cohesion: 0.22
-Nodes (8): ADR-3 — Packaged runtime distribution (engine + interpreter bundled with RT), Problem statement, Source-anchored comparative analysis, Decision (PR-8 implementation charter), Consequences, Security & privacy impact, Tests, Approving owners
-
-### Community 164 - "ADR-4 — Data directories, Mirage ledger placement & backup ownership"
-Cohesion: 0.20
-Nodes (9): ADR-4 — Data directories, Mirage ledger placement & backup ownership, Problem statement, Context (evidence-anchored), Alternatives considered, Decision, Consequences, Security & privacy impact, Rollback implications (+1 more)
-
-### Community 165 - "ADR-5: identity-mapping contract (RT Book ↔ Mirage book/edition)"
-Cohesion: 0.20
-Nodes (9): Problem statement, Context (evidence-anchored), Alternatives considered, Decision, Consequences, Security & privacy impact, Rollback implications, Tests required (named; implemented in the PR that introduces them) (+1 more)
-
-### Community 174 - "ADR-6 — Mirage as an optional RT feature: lifecycle governance (canonical §17 seat)"
-Cohesion: 0.22
-Nodes (8): ADR-6 — Mirage as an optional RT feature: lifecycle governance (canonical §17 seat), Problem statement, Decision, Alternatives considered, Consequences, Tests, Approving owners, Supersedes / superseded-by
-
-### Community 191 - "ADR-6a — Mirage import-path independence from RT's onboarding-import bypass (NEW-DE-5)"
+### Community 195 - "TB-M0 gate plan — manifest + hash-verify in observe mode (OPEN — ADR-12 countersigned 2026-10-18)"
 Cohesion: 0.29
-Nodes (6): ADR-6a — Mirage import-path independence from RT's onboarding-import bypass (NEW-DE-5), Context, Decision (the independence argument, path-anchored), Boundaries (what this ADR is NOT), Structural-census gate (verified each merge-log census, first at M-024), Countersign
+Nodes (6): Exit evidence (per §22.19.1, verbatim bar), Goal, Operating rules while TB-M0 runs, Scope (what TB-M0 will materially add per §22.19.1), TB-M0 gate plan — manifest + hash-verify in observe mode (OPEN — ADR-12 countersigned 2026-10-18), What TB-M0 will NOT decide
 
-### Community 82 - "ADR-7 — Spoiler-cursor contract (with S10-ES-3 formal sub-document as annex)"
-Cohesion: 0.10
-Nodes (20): ADR-7 — Spoiler-cursor contract (with S10-ES-3 formal sub-document as annex), Problem statement, Context (source-anchored), Decision, Alternatives (considered, rejected), Consequences, Security & privacy impact, Rollback implications (+12 more)
+### Community 196 - "NoteTag"
+Cohesion: 0.29
+Nodes (5): AchievementsSlide, ActivityHeatmapView, Color, CGFloat, Double
+
+### Community 197 - "BookDiscoveryView"
+Cohesion: 0.33
+Nodes (4): BookDiscoveryView, Color, OnlineBook, String
+
+### Community 198 - ".assembleAtSessionEnd"
+Cohesion: 0.25
+Nodes (7): 01 · Project Tree, How to use this map, The app code (`AsterismaV1.0/`), The `docs/` folder (documentation), The tests (`AsterismaV1.0Tests/` and `AsterismaV1.0UITests/`), The top level (what you see when you open the project folder), What this document is
+
+### Community 199 - "GoalKind"
+Cohesion: 0.33
+Nodes (6): GoalKind, annualBooks, bookDeadline, dailyPages, dailyTime, weeklyStreak
+
+### Community 200 - "SheetDismissAffordance"
+Cohesion: 0.25
+Nodes (7): Data receipt, Decision requested, Gate G1 — Correctness first, Known issues / deltas, Rollback, Scope delivered, Tests
 
 ### Community 201 - "ADR-8 — Repository strategy: two canonical repositories, one verified vendored copy (canonical §17 seat)"
 Cohesion: 0.33
-Nodes (5): ADR-8 — Repository strategy: two canonical repositories, one verified vendored copy (canonical §17 seat), Problem statement, Context, Decision, Consequences
+Nodes (5): ADR-8 — Repository strategy: two canonical repositories, one verified vendored copy (canonical §17 seat), Consequences, Context, Decision, Problem statement
 
-### Community 178 - "§15.4 Operational handoff bundle — RT ⇄ Mirage integration (2026-10-18)"
+### Community 202 - "10. Phase 5 — Implement the book/edition and cursor adapter"
+Cohesion: 0.33
+Nodes (6): 10.1 Start with one explicit user-selected book, 10.2 Verify identity after import, 10.3 Establish the cursor contract, 10.4 Synchronization timing, 10.5 Adapter acceptance gate, 10. Phase 5 — Implement the book/edition and cursor adapter
+
+### Community 203 - "14. Phase 9 — Build, packaging, and release engineering"
+Cohesion: 0.33
+Nodes (6): 14.1 Decide how Mirage is distributed with RT, 14.2 Reproducible build process, 14.3 macOS signing, sandbox, and entitlements, 14.4 CI design, 14.5 Release gate, 14. Phase 9 — Build, packaging, and release engineering
+
+### Community 204 - "18. Final acceptance checklist"
+Cohesion: 0.33
+Nodes (6): 18. Final acceptance checklist, Data safety and correctness, Product and architecture, Repository governance, Security, privacy, and release, Stability, testing, and performance
+
+### Community 205 - "2. Product and architecture contract"
+Cohesion: 0.33
+Nodes (6): 2.1 Parent-child relationship, 2.2 Proposed logical component layout, 2.3 Integration transport: evaluate before choosing, 2.4 Protocol rules, 2.5 Optional feature behavior, 2. Product and architecture contract
+
+### Community 206 - "4. Repository strategy and GitHub safety"
+Cohesion: 0.33
+Nodes (6): 4.1 Decide runtime integration before repository consolidation, 4.2 Repository inventory before any migration, 4.3 Safe Git procedure, 4.4 If the repositories are eventually consolidated, 4.5 Repository-level acceptance checklist, 4. Repository strategy and GitHub safety
+
+### Community 207 - "6. Phase 1 — Establish and verify both baselines"
+Cohesion: 0.33
+Nodes (6): 6.1 Freeze exact source revisions, 6.2 RT baseline commands, 6.3 Mirage baseline commands, 6.4 Read normative documents before implementation, 6.5 Baseline exit gate, 6. Phase 1 — Establish and verify both baselines
+
+### Community 208 - "9. Phase 4 — Build the integration boundary first"
+Cohesion: 0.33
+Nodes (6): 9.1 Implement a host-owned service abstraction, 9.2 Implement lifecycle management, 9.3 Validate every message, 9.4 Keep UI independent, 9.5 Integration-boundary tests, 9. Phase 4 — Build the integration boundary first
+
+### Community 209 - "Appendix D — Multi-pass document audit"
+Cohesion: 0.33
+Nodes (6): Appendix D — Multi-pass document audit, D.1 Audit method, D.2 Required source-fidelity reminder, D.3 Final reviewer sign-off, D.4 Automated concurrent scan results, D.5 Final-artifact rescan
+
+### Community 210 - "generate-app-icon.py"
+Cohesion: 0.60
+Nodes (5): lerp(), main(), radial_gradient(), rounded_mask(), star()
+
+### Community 211 - "MirageSettings.swift"
+Cohesion: 0.40
+Nodes (3): MirageSettings, MirageSettingsCopy, Bool
+
+### Community 212 - "CelebrationPhase"
 Cohesion: 0.25
-Nodes (7): §15.4 Operational handoff bundle — RT ⇄ Mirage integration (2026-10-18), Identify the running Mirage process, Check version / protocol compatibility, Locate the approved ledger (and what may touch it), Backups (both systems, independently — §18 row), Feature on/off and failure states (operator-facing), The packaged runtime (PR-8)
-
-### Community 179 - "§18 Final Acceptance Checklist (2026-10-18, ladder complete)"
-Cohesion: 0.25
-Nodes (7): Product and architecture, Data safety and correctness, Stability, testing, performance, Security, privacy, release, Repository governance, Honest deltas (not acceptance-blocking, ledgered), §18 Final Acceptance Checklist (2026-10-18, ladder complete)
-
-### Community 175 - "Evidence artifact — MirageV1.0 normative docs + wire protocol extraction (Phase 1/2)"
-Cohesion: 0.22
-Nodes (8): Evidence artifact — MirageV1.0 normative docs + wire protocol extraction (Phase 1/2), Version boundaries (embedding.md:16-20 + source), Wire protocol (P-1 … P-10, PROVEN unless marked), Doctrine (mission statement — binding on RT as host), Storage facts, Import identity (service.py:84-174), Reading state & cursor (host-supplied truth), Protocol-pinning tests (server-of-record for the wire contract)
-
-### Community 176 - "Binding claims (path:line-anchored)"
-Cohesion: 0.22
-Nodes (8): Evidence artifact — RT normative-document extraction (Phase 1/2), Binding claims (path:line-anchored), Persistence & write path, NEW-DE defect register (lives ONLY in the audit's §7 — NOT in 02-defect-register.md; grep-verified absence), Integration-relevant standing rules (RT house standards), Architectural tracks (planned-not-executed; do NOT combine with integration), Cross-document conflicts (PR-1 must resolve), Live-verified (TEST-VERIFIED, this session)
-
-### Community 142 - "RT critical facts (root `/Users/johanrembeci/Desktop/Reading Tracker Main /`)"
-Cohesion: 0.15
-Nodes (12): Evidence artifact — cross-codebase touchpoint inventory (Phase 1/2), RT critical facts (root `/Users/johanrembeci/Desktop/Reading Tracker Main /`), Entry & surfaces, Persistence (single-writer discipline), Reader position (authoritative model), Import & sessions fan-out, Concurrency idioms (under `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, project.pbxproj:441-442/477-478), Build settings & sandbox (uniform Debug/Release; pbxproj lines Debug/Release) (+4 more)
-
-### Community 166 - "§15.3 recovery rehearsal log — S15-ES-3 artifacts (2026-10-18 session)"
-Cohesion: 0.20
-Nodes (9): §15.3 recovery rehearsal log — S15-ES-3 artifacts (2026-10-18 session), R1 — Code rollback rehearsal (in vivo), R2 — Sidecar crash recovery (test-anchored, live receipt from tonight's census), R3 — Failed initialization (corrupt/disabled state → contained posture), R4 — Invalid mapping recovery (stale/mismatched fingerprint flow), R5 — Documented data-backup restore (disposable data), SQLite discipline verified from source, Census receipts for this scaffold, R6 — Packaged-runtime staging + spawn-from-bundle (PR-8 / ADR-3, executed live) (+1 more)
-
-### Community 195 - "TB-M0 gate plan — manifest + hash-verify in observe mode (OPEN — ADR-12 countersigned 2026-10-18)"
-Cohesion: 0.29
-Nodes (6): TB-M0 gate plan — manifest + hash-verify in observe mode (OPEN — ADR-12 countersigned 2026-10-18), Goal, Scope (what TB-M0 will materially add per §22.19.1), Exit evidence (per §22.19.1, verbatim bar), Operating rules while TB-M0 runs, What TB-M0 will NOT decide
-
-### Community 108 - "06 · RSVP Feature Plan"
-Cohesion: 0.12
-Nodes (15): 06 · RSVP Feature Plan, What this document is, 1. What is readrrr doing?, 2. How does it work?, 3. Why build this?, 4. How can we integrate it?, 5. Why is this plausible on this platform?, 6. What do we need to do, in order? (+7 more)
-
-### Community 153 - "Reaction wave (badge/goal recompute on main after bulk swap)"
-Cohesion: 0.18
-Nodes (11): THE LAST DEFEAT — demo profile freeze saga, Winter Romantic persona (≈620 sessions / 185,000 page-timings), DemoDataService (fabricates deterministic fake history), DemoProfileLabView (console screen with Install button), Reaction wave (badge/goal recompute on main after bulk swap), LibraryBatchUpdate bracket (suspend listeners during bulk swap), SentinelEngine (implementation of the Sentinel), AchievementEngine (badge thresholds walker) (+3 more)
+Nodes (7): Asterisma Rebrand — MVP, Data migration, Deliberate MVP constraint: bundle identifier, Release receipt, Rollback, Verification, What changed
 
 ### Community 214 - "Diagnostics: xcodebuild test run 2026-08-26"
 Cohesion: 0.40
 Nodes (5): NEW-DE-12: test hygiene (CoverStore.shared side effects), Upgrade #2: CoverStore content-addressed cover files + NSCache, Diagnostics: xcodebuild test run 2026-08-26, DurabilityPinsTests.exportImportRoundTrip failure (Aug 26), OPE-001: stub-cover debris corpus (hash-family cleanup, Class Δ gate)
 
-### Community 98 - "Testing Strategy"
-Cohesion: 0.15
-Nodes (17): Census CI Workflow, Merge-Presence Receipt, Owner Actions Toggle Prerequisite, Standing Census 212/0/9, Finality / Log / Pin Fix Protocol, Test Coverage and Isolation Gaps, BUG-003 iCloud File Provider CodeSign Failure, OPE-001 Stub Cover Cleanup (+9 more)
+### Community 215 - "ADR-12 — Titanium Bridge (TiB) charter: continuous convergence across the guarded boundary"
+Cohesion: 0.40
+Nodes (4): ADR-12 — Titanium Bridge (TiB) charter: continuous convergence across the guarded boundary, Consequences, Decision (proposed), Problem statement
 
-### Community 97 - "AsterismaV1.0 Project Report (README)"
-Cohesion: 0.14
-Nodes (18): AsterismaV1.0 Project Report (README), Mirage Companion Engine, One Analyze, One Sidecar Lifecycle, DataStore3 Persistence Layer, PersistenceWriter Serial Write Queue, AnalyticsCache Memoization, Sentinel Self-Repair Watchdog, Sentinel Security Doctrine S1-S7 (+10 more)
+### Community 216 - "11. Phase 6 — Expose Mirage as an optional RT feature"
+Cohesion: 0.40
+Nodes (5): 11.1 Feature entry point and settings, 11.2 Query experience, 11.3 Loading, errors, and accessibility, 11.4 User-facing data controls, 11. Phase 6 — Expose Mirage as an optional RT feature
 
-### Community 83 - "RT-Mirage Merge Log"
-Cohesion: 0.15
-Nodes (21): Typed One-Way Spawn Boundary, RT/Mirage Store Ownership Doctrine, RT-Mirage Merge Log, 8-PR Integration Ladder (PR-1 to PR-8), NDJSON Stdio Wire Protocol, ADR-2 Transport and Protocol, ADR-3 Packaged Runtime Distribution, ADR-4 Ledger Placement and Backup Ownership (+13 more)
+### Community 217 - "12. Phase 7 — Security, privacy, and local-first guarantees"
+Cohesion: 0.40
+Nodes (5): 12.1 Preserve local-only operation, 12.2 File and process boundary, 12.3 Logs and diagnostics, 12.4 Dependency and supply-chain checks, 12. Phase 7 — Security, privacy, and local-first guarantees
 
-### Community 90 - "Bedrock Session Record (2026-10-24)"
-Cohesion: 0.13
-Nodes (19): GRDB/SQLite Summary Store, library.json Monolith, Asterisma Rebrand Record, AppIdentity Migration, Data Root Migration ReadTracker to Asterisma, Pre-Rename Rollback Snapshot, Duplicate Achievements Bug, Persistence Write Reordering Defect (+11 more)
+### Community 218 - "15. Phase 10 — Rollback, recovery, and operational support"
+Cohesion: 0.40
+Nodes (5): 15.1 Code rollback and data rollback are different, 15.2 Rollback triggers, 15.3 Recovery rehearsal, 15.4 Operational handoff, 15. Phase 10 — Rollback, recovery, and operational support
 
-### Community 63 - "Bedrock Master Plan"
-Cohesion: 0.12
-Nodes (24): Behavior Context V3, Open-Meteo Weather Provider, Completion and Health Report (2026-10-24), Byte-Weighted Completion Model (67.1%), Crash-Window Time Inflation, WeatherKit/Location Entitlement Gap, Behavior Context Evidence Starvation, Dead/Dormant Code Inventory (+16 more)
+### Community 219 - "7. Phase 2 — Source-code discovery and contract extraction"
+Cohesion: 0.40
+Nodes (5): 7.1 Inventory actual code, not just READMEs, 7.2 Create an interface inventory, 7.3 Inspect persistence and migration boundaries, 7.4 Publish three review artifacts, 7. Phase 2 — Source-code discovery and contract extraction
 
-### Community 181 - "AsterismaV1.0 Release Package"
-Cohesion: 0.32
-Nodes (8): AsterismaV1.0 Release Package, Distribution Readiness Gap, Bundle Identifier MVP Constraint, D-001 Local-First Distribution, Local Distribution Guide, One-Time Gatekeeper Right-Click Step, Notarization / Developer ID Gap, Final Merge to main at aba8aa4
+### Community 220 - "8. Phase 3 — Fix or isolate pre-existing RT risks"
+Cohesion: 0.40
+Nodes (5): 8.1 Do not bury known defects in the merge, 8.2 Define a pre-existing-defect policy, 8.3 Protect RT's concurrency model, 8.4 Phase exit gate, 8. Phase 3 — Fix or isolate pre-existing RT risks
 
-### Community 6 - "Stage B — Bedrock / Asterisma"
-Cohesion: 0.07
-Nodes (57): Gate G2 — Local distribution baseline, Ad-hoc signed Release package, Embedded Mirage runtime, RUNTIME-MANIFEST.json, GRDB SQLite foundation, LibraryDatabase, Transactional JSON-to-SQLite import, Lazy page-timing loading (+49 more)
+### Community 221 - "ImportPlugin"
+Cohesion: 0.29
+Nodes (5): BookDeadlineRow, GoalsDashboard, GoalStatusCard, Color, String
+
+### Community 222 - "ImportWarningLevel"
+Cohesion: 0.29
+Nodes (6): Border and surface inventory, Fullscreen Surface Audit — AsterismaV1.0, Original causes of the fragmentation, Revised surface strategy, Verification, Visual audit
+
+### Community 223 - "Step"
+Cohesion: 0.29
+Nodes (6): Decision requested, Gate G2 — Local distribution baseline, Known deltas, Rollback, Scope delivered, Verification
+
+### Community 226 - "ProbeTripwireTransport"
+Cohesion: 0.50
+Nodes (3): ProbeTripwireTransport, Data, Int
+
+### Community 227 - "1. Source-derived baseline and confidence rules"
+Cohesion: 0.50
+Nodes (4): 1.1 Reading Tracker baseline stated in the README, 1.2 Mirage baseline stated in the README, 1.3 Evidence labels required throughout this project, 1. Source-derived baseline and confidence rules
+
+### Community 228 - "5. Phase 0 — Governance, scope, and stop conditions"
+Cohesion: 0.50
+Nodes (4): 5.1 Assign accountable owners, 5.2 Define scope and acceptance in writing, 5.3 Stop conditions, 5. Phase 0 — Governance, scope, and stop conditions
+
+### Community 234 - "Gate G2B — Mirage embedding and signing"
+Cohesion: 0.29
+Nodes (6): Decision requested, Gate G2B — Mirage embedding and signing, Known deltas, Rollback, Scope delivered, Verification
+
+### Community 418 - "app.json"
+Cohesion: 0.29
+Nodes (6): Decision requested, Deliberate delta, Gate G3A — SQLite foundation (GRDB), Rollback, Scope delivered, Verification
+
+### Community 419 - "Gate G4 — Weather that works (Open-Meteo)"
+Cohesion: 0.29
+Nodes (6): Decision requested, Gate G4 — Weather that works (Open-Meteo), Known deltas, Rollback, Scope delivered, Verification
+
+### Community 420 - "Gate G7 — Debt retirement, Swift 6, cleanup"
+Cohesion: 0.29
+Nodes (6): Gate G7 — Debt retirement, Swift 6, cleanup, Remaining debt (documented, not hidden), Rollback, Scope delivered, Swift 6 attempt (honest delta), Verification
+
+### Community 421 - "LibraryExplorerView"
+Cohesion: 0.33
+Nodes (5): LibraryExplorerView, Book, Bool, Void, NavigationSplitViewVisibility
+
+### Community 422 - "EPUBPackageError"
+Cohesion: 0.33
+Nodes (6): EPUBPackageError, cannotReadContainerXML, cannotReadOPF, opfPathNotFound, securityScopeUnavailable, zipFoundationUnavailable
+
+### Community 423 - "ReaderAppearanceTests.swift"
+Cohesion: 0.67
+Nodes (5): contrastRatio(), linearChannel(), relativeLuminance(), Double, String
+
+### Community 424 - "Owner Test Session — YYYY-MM-DD (session N)"
+Cohesion: 0.33
+Nodes (5): Blockers, Evidence, Notes, Owner Test Session — YYYY-MM-DD (session N), Results
+
+### Community 425 - "Local Distribution — AsterismaV1.0"
+Cohesion: 0.33
+Nodes (5): Clean-account rehearsal, Friend install (one-time Gatekeeper step), Local Distribution — AsterismaV1.0, Verification, What we ship
+
+### Community 426 - "Gate G3B — SQLite summary DataStore + lazy page timings"
+Cohesion: 0.33
+Nodes (5): Deliberate delta, Gate G3B — SQLite summary DataStore + lazy page timings, Rollback, Scope delivered, Verification
+
+### Community 427 - "Gate G3C — Real-data cutover and JSON retirement"
+Cohesion: 0.33
+Nodes (5): Gate G3C — Real-data cutover and JSON retirement, Known deltas, Rollback, Scope delivered, Verification
+
+### Community 428 - "Gate G5 — Library intelligence (metadata, notes, collections)"
+Cohesion: 0.33
+Nodes (5): Gate G5 — Library intelligence (metadata, notes, collections), Known deltas, Rollback, Scope delivered, Verification
+
+### Community 429 - "Owner Test Results"
+Cohesion: 0.40
+Nodes (4): Naming, Owner Test Results, Precedence, Start a session
+
+### Community 430 - "Gate G6 — Behavior Context V3"
+Cohesion: 0.40
+Nodes (4): Gate G6 — Behavior Context V3, Known deltas, Rollback, Scope delivered
+
+### Community 431 - "SchemaVersion"
+Cohesion: 0.50
+Nodes (4): SchemaVersion, v1, v2, v3
+
+### Community 432 - "SessionHistoryView"
+Cohesion: 0.67
+Nodes (3): SessionHistoryView, Book, Int
 
 ## Knowledge Gaps
-- **1165 isolated node(s):** `id`, `title`, `author`, `fileURL`, `fileType` (+1160 more)
+- **1649 isolated node(s):** `id`, `title`, `author`, `fileURL`, `fileType` (+1644 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **190 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **349 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Foundation` connect `Foundation` to `MaturityEvidenceDigest`, `DataStore`, `ConsoleSubsystemSnapshot`, `RSVPPlaybackEngine`, `AvailabilityState`, `BookDiscoveryService`, `GutendexBook`, `MirageProcessTransport`, `MirageImportOutcome`, `EPUBReaderScreen`, `BehaviorContextEngine2.swift`, `MirageSidecarSupervisor`, `NotificationCandidate`, `.validate`, `SentinelEngine.swift`, `ReadingSession`, `MirageBundledRuntimeTests`, `.generateBooks`, `Equatable`, `MirageClient`, `AppKit`, `.dataRootURL`, `.perform`, `AudioCategory`, `.evidence`, `EnvironmentState`, `.estimate`, `AudioMonitorService`, `MirageAnalysisStatus`, `DismissalFlag`, `.generate`, `BehavioralCategory.swift`, `DeveloperConsoleSystemMetrics`, `ReadingInsight`, `MirageIdentityRealEngineImportTests.swift`, `LocationProvider`, `BookImporter.swift`, `SchemaEvolutionTests`, `.makeFixture`, `AdaptiveLayoutTier`, `AnalyticsEngine.swift`, `.recommend`, `SQLiteFoundationTests.swift`, `LibraryArchive`, `AudioContextProfile`, `LibraryFilterState`, `MirageJSONValue`, `AchievementDefinition`, `MirageSettings.swift`, `OpenMeteoLiveSmokeTests.swift`, `AnalyticsCache`, `.versionIsSupported`, `MirageCursorGateError`, `State`, `BedrockBaselineTests.swift`, `G1CorrectnessPinsTests.swift`, `BookDeadline`, `WeatherAnalysisEngine.swift`, `AnalyticsCachePinsTests.swift`, `WeatherLivePipelineTests.swift`, `.enqueue`, `CodingKeys`, `EnvironmentAnchorPeriod`, `EnvironmentColor`, `OpenMeteoProvider.swift`, `Combine`, `DemoRapidSwitchTests`, `SeededGenerator`?**
-  _High betweenness centrality (0.158) - this node is a cross-community bridge._
-- **Why does `DataStore` connect `DataStore` to `SentinelPaneView`, `ConsoleSubsystemSnapshot`, `BehavioralCategory`, `RecommendationCard`, `AnalyticsEngine`, `OnboardingView`, `.validate`, `.addBook`, `.generateBooks`, `ContentView`, `Double`, `BookDetailsView`, `AudioProfileStore`, `CoverStore`, `SessionHistoryView`, `SchemaEvolutionTests`, `SessionCoordinator`, `AnnualReportArchiveView`, `LibraryDatabase`, `SQLiteFoundationTests.swift`, `SentinelFinding`, `LibraryArchive`, `LibraryFilterState`, `AchievementDefinition`, `Color`, `.updateGoalSet`, `SettingsRootView.swift`, `BookDeadline`, `.runCycle`, `SentinelEngine`, `.enqueue`, `DailyActivity`, `DemoRapidSwitchTests`, `WeatherInsightPanel`?**
-  _High betweenness centrality (0.058) - this node is a cross-community bridge._
-- **Why does `WeatherSnapshot` connect `WeatherSnapshot` to `.normalise`, `WeatherAnalysisEngine.swift`, `.archiveSnapshot`, `WeatherConditionCategory`, `Sendable`, `SeasonalPeriod`, `.record`, `Identifiable`, `String`, `OpenMeteoProvider`, `Double`, `WeatherSnapshotStoreTests`?**
-  _High betweenness centrality (0.026) - this node is a cross-community bridge._
+- **Why does `Foundation` connect `Foundation` to `MaturityEvidenceDigest`, `DataStore`, `ConsoleSubsystemSnapshot`, `AvailabilityState`, `BookDiscoveryService`, `UUID`, `ValidationIssue`, `Star`, `GutendexBook`, `MirageImportOutcome`, `RSVPPlaybackEngine`, `MirageSidecarSupervisor`, `Sendable`, `AnalyticsEngine`, `NotificationCandidate`, `SeasonalPeriod`, `MirageBundledRuntimeTests`, `ReadingSession`, `.generateBooks`, `Equatable`, `Date`, `MirageClient`, `AppKit`, `Double`, `.perform`, `AudioCategory`, `.evidence`, `MirageAnalysisStatus`, `.estimate`, `AudioMonitorService`, `DismissalFlag`, `.generate`, `ReaderAppearanceTests.swift`, `ReadingInsight`, `MirageIdentityRealEngineImportTests.swift`, `LocationProvider`, `BookImporter.swift`, `LibraryDatabase.swift`, `.makeFixture`, `AdaptiveLayoutTier`, `.recommend`, `SentinelFinding`, `LibraryArchive`, `AudioContextProfile`, `LibraryFilterState`, `MirageJSONValue`, `AchievementDefinition`, `GoalStatus`, `MirageSettings.swift`, `AnalyticsCache`, `EnvironmentEngine`, `MirageCursorGateError`, `State`, `SentinelEngine`, `.enqueue`, `CodingKeys`, `EnvironmentAnchorPeriod`, `EnvironmentColor`, `OpenMeteoProvider.swift`, `Combine`, `DemoRapidSwitchTests`, `SeededGenerator`, `NewYearCelebrationOverlay`, `AudioSource`?**
+  _High betweenness centrality (0.127) - this node is a cross-community bridge._
+- **Why does `DataStore` connect `DataStore` to `ConsoleSubsystemSnapshot`, `BehavioralCategory`, `AnalyticsEngine`, `SeasonalPeriod`, `OnboardingView`, `.validate`, `.addBook`, `.generateBooks`, `BookDetailsView`, `.estimate`, `.generate`, `AudioProfileStore`, `CoverStore`, `SessionHistoryView`, `SchemaEvolutionTests`, `SessionCoordinator`, `ReadingInsightsDashboard.swift`, `LibraryDatabase`, `.recommend`, `SentinelFinding`, `LibraryArchive`, `AudioContextProfile`, `AchievementDefinition`, `GoalStatus`, `.updateGoalSet`, `ImportPlugin`, `SettingsRootView.swift`, `LibrarySortMode`, `.enqueue`, `DailyActivity`, `DemoRapidSwitchTests`, `AchievementEngine`, `WeatherInsightPanel`?**
+  _High betweenness centrality (0.054) - this node is a cross-community bridge._
+- **Why does `ReadingGenre` connect `ReadingGenre` to `BookDetailsView`, `.mapped`, `UUID`, `.generate`, `LibraryFilterState`, `Sendable`, `AnalyticsEngine`, `ReadingSession`, `.generateBooks`, `AnalyticsCache`, `LibraryFilterSidebarView`, `Double`, `.recommend`?**
+  _High betweenness centrality (0.017) - this node is a cross-community bridge._
+- **Are the 32 inferred relationships involving `DataStore` (e.g. with `DispatchQueue` and `.buildEnvironmentalRecords()`) actually correct?**
+  _`DataStore` has 32 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `id`, `title`, `author` to the rest of the system?**
-  _1165 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `SessionCoordinator` be split into smaller, more focused modules?**
-  _Cohesion score 0.1168091168091168 - nodes in this community are weakly interconnected._
-- **Should `SwiftUI` be split into smaller, more focused modules?**
-  _Cohesion score 0.06060606060606061 - nodes in this community are weakly interconnected._
-- **Should `Foundation` be split into smaller, more focused modules?**
-  _Cohesion score 0.12955465587044535 - nodes in this community are weakly interconnected._
+  _1649 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `MaturityEvidenceDigest` be split into smaller, more focused modules?**
+  _Cohesion score 0.05878355419639823 - nodes in this community are weakly interconnected._
+- **Should `DataStore` be split into smaller, more focused modules?**
+  _Cohesion score 0.08888888888888889 - nodes in this community are weakly interconnected._

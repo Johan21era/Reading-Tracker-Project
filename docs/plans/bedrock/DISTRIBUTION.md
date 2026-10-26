@@ -9,7 +9,7 @@
 This is a **local/friend build**, not a notarized App Store build.
 
 **Release refs:** `main` at `aba8aa4`; release commit `6da2d81`, tag
-`asterisma-v1.0-mvp`. Current owner-tested candidate: `3bff002`
+`asterisma-v1.0-mvp`. Current polish candidate: `3bff002`
 (tag `asterisma-v1.0-polish-1`), SHA-256:
 `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`.
 

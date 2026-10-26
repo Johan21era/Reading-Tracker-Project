@@ -299,3 +299,21 @@ package `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `a8ebf2ec1efd0b3513dd59a04a1
 behavior evidence in SQLite, collection rename UI, legacy artifact cleanup,
 CI-runner alignment, and Developer ID signing/notarization.
 
+
+### Polish batch — reader appearance and library surface (2026-10-25)
+
+| Area | What landed | Receipt |
+|---|---|---|
+| Reader appearance | Six theme presets, font family, bold, 80–200% size, line/character/word spacing, margins | `ReaderAppearance.swift`, `ReaderAppearanceTests` |
+| Reader layout | Justify, hyphenation, Auto/One/Two columns, Slide/Fade/Instant page turns, optional page numbers | `EPUBReaderScreen.paginationScript` |
+| Reader chrome | Theme-adaptive capsules; top-left controls still auto-hide | `EPUBReaderScreen.swift` |
+| Page turning | Document-level left/right edge clicks without blocking trackpad scrolling or links | `EPUBReaderScreen.paginationScript` |
+| Library | Selected-book book plate with large cover/progress/actions; quieter sidebar rows | `NewContentView.swift` |
+
+**Verification:** Debug and Release builds green; package signed with sandbox
+entitlements and bundle smoke green; `ReaderAppearanceTests` 5/5 with WCAG AA
+contrast checks. Full UI-inclusive census rerun was blocked by macOS
+`testmanagerd` automation bootstrap, not by an app assertion.
+
+**Candidate:** `a8ebf2ec1efd0b3513dd59a04a1efb8a830aefb2007b32632539906ba0517009`
+(code `3bff002`, tag `asterisma-v1.0-polish-1`).
