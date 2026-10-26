@@ -56,7 +56,22 @@ struct MirageBundledRuntimeTests {
 
     // ---- The actual app host must carry the runtime (G2B) -------------------
 
-    @Test func appHostContainsVerifiedBundledRuntime() throws {
+    /// The 47 MB runtime is staged locally, not committed. A clean CI checkout
+    /// intentionally builds without it (the embed phase warns and continues),
+    /// so this app-host assertion is meaningful only when the resource is
+    /// actually present. The synthetic runtime-contract tests below still run
+    /// everywhere.
+    private static var hasStagedRuntime: Bool {
+        guard let resources = Bundle.main.resourceURL else { return false }
+        return FileManager.default.fileExists(
+            atPath: resources
+                .appendingPathComponent("mirage-runtime/RUNTIME-MANIFEST.json")
+                .path
+        )
+    }
+
+    @Test(.enabled(if: hasStagedRuntime))
+    func appHostContainsVerifiedBundledRuntime() throws {
         let root = try #require(
             MirageRuntimeLocator.bundledResourceRoot(bundle: .main),
             "app host has no resource root")

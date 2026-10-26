@@ -1,27 +1,49 @@
 name: census
+
 on:
   push:
     branches: [main, merge/integration]
   workflow_dispatch:
 
-# PR-8 (ADR-3): CI publishes the merge-presence receipts. NOTE (owner toggle):
-# enabling Actions on the GitHub repository is a repo-settings change owned by
-# the owner (machine side stays read-only for this session); until toggled,
-# this workflow is inert text.
-
+# The project is in Xcode 16+ project format (objectVersion 77) and targets
+# macOS 26.5, so the old macos-14 / Xcode 15.4 runner cannot even open it.
+# macos-26 provides Xcode 26.6 and the macOS 26.5 SDK.
 jobs:
   census:
-    runs-on: macos-14
+    runs-on: macos-26
+    timeout-minutes: 45
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Default census (green = merge-presence receipt)
+      - name: Show toolchain
         run: |
+          xcodebuild -version
+          xcodebuild -showsdks | tail -12
+
+      - name: Unit census (green = merge-presence receipt)
+        shell: bash
+        run: |
+          set -o pipefail
+
+          # UI tests in this repository are placeholder launch stubs and depend
+          # on the interactive macOS automation bootstrap. The merge-presence
+          # receipt is the deterministic unit target, matching the verified
+          # local `scripts/census.sh --unit-only` gate.
+          #
+          # The bundled-runtime presence assertion is self-gated on the ignored
+          # 47 MB .mirage-runtime staging directory. A clean CI checkout builds
+          # without it, so that one assertion skips; the synthetic runtime
+          # contract tests still run.
           xcodebuild test \
             -project "AsterismaV1.0.xcodeproj" \
             -scheme "AsterismaV1.0" \
             -configuration Debug \
-            -destination 'platform=macOS' 2>&1 | tee census.log | grep -E "TEST (SUCCEEDED|FAILED)"
+            -destination 'platform=macOS' \
+            -parallel-testing-enabled NO \
+            -only-testing:AsterismaV1.0Tests \
+            2>&1 | tee census.log | grep -E "Test run with|TEST (SUCCEEDED|FAILED)|error:"
+
           grep -q "TEST SUCCEEDED" census.log
 
       - name: Upload census receipt
