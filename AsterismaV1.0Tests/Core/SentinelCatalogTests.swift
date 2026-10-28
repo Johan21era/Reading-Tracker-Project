@@ -101,14 +101,14 @@ struct SentinelCatalogTests {
 
     // MARK: - Per-probe contract (one case per registry entry)
 
-    private func probe(for descriptor: SentinelProbeDescriptor) -> (any SentinelProbeV2)? {
+    private func registryProbe(for descriptor: SentinelProbeDescriptor) -> (any SentinelProbeV2)? {
         SentinelProbeCatalog.all().first { $0.descriptor.id == descriptor.id }
     }
 
     @Test("Every probe is silent on a clean install",
           arguments: SentinelProbeCatalog.descriptors)
     func cleanInstallIsQuiet(_ descriptor: SentinelProbeDescriptor) async throws {
-        let probe = try #require(probe(for: descriptor))
+        let probe = try #require(registryProbe(for: descriptor))
         let root = SentinelTempRoot()
         defer { root.remove() }
         let defaults = UserDefaults(suiteName: "sentinel.clean.\(UUID().uuidString)")!
@@ -130,7 +130,7 @@ struct SentinelCatalogTests {
     @Test("Every probe is deterministic",
           arguments: SentinelProbeCatalog.descriptors)
     func determinism(_ descriptor: SentinelProbeDescriptor) async throws {
-        let probe = try #require(probe(for: descriptor))
+        let probe = try #require(registryProbe(for: descriptor))
         let root = SentinelTempRoot()
         defer { root.remove() }
         var book = sentinelBook(totalPages: 10, currentPage: 99)
@@ -194,7 +194,7 @@ struct SentinelCatalogTests {
     @Test("Every probe keeps user text out of safe output",
           arguments: SentinelProbeCatalog.descriptors)
     func privacyPerProbe(_ descriptor: SentinelProbeDescriptor) async throws {
-        let probe = try #require(probe(for: descriptor))
+        let probe = try #require(registryProbe(for: descriptor))
         let root = SentinelTempRoot()
         defer { root.remove() }
         let secret = "PRIVATE-\(UUID().uuidString)"

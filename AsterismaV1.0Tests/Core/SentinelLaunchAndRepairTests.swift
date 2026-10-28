@@ -466,7 +466,7 @@ struct SentinelRepairCatalogTests {
             updatedAt: sentinelTestNow)
     }
 
-    private func plan(
+    private func makePlan(
         rule: String,
         snapshot: SentinelSnapshot,
         subjects: [SentinelSubject]? = nil
@@ -487,7 +487,7 @@ struct SentinelRepairCatalogTests {
     func clampPage() throws {
         let book = sentinelBook(totalPages: 10, currentPage: 99)
         let snapshot = SentinelSnapshot.fixture(books: [book], now: sentinelTestNow)
-        let plan = try #require(plan(rule: "LIB-004", snapshot: snapshot))
+        let plan = try #require(makePlan(rule: "LIB-004", snapshot: snapshot))
         #expect(plan.id == "REP-006")
         #expect(plan.actions.count == 1)
         guard case .replaceBook(_, let expected, let replacement) = plan.actions[0] else {
@@ -512,7 +512,7 @@ struct SentinelRepairCatalogTests {
                            endTime: sentinelTestNow.addingTimeInterval(-30)),
             ])]
         let snapshot = SentinelSnapshot.fixture(books: [book], now: sentinelTestNow)
-        let plan = try #require(plan(rule: "SES-006", snapshot: snapshot))
+        let plan = try #require(makePlan(rule: "SES-006", snapshot: snapshot))
         #expect(plan.id == "REP-004")
         guard case .replaceBook(_, _, let replacement) = plan.actions[0] else {
             Issue.record("Expected a book replacement")
@@ -532,7 +532,7 @@ struct SentinelRepairCatalogTests {
             books: [book],
             state: LibraryState(collections: [collection]),
             now: sentinelTestNow)
-        let plan = try #require(plan(rule: "COL-002", snapshot: snapshot))
+        let plan = try #require(makePlan(rule: "COL-002", snapshot: snapshot))
         #expect(plan.id == "REP-008")
         guard case .replaceBook(_, _, let replacement) = plan.actions[0] else {
             Issue.record("Expected a book replacement")
@@ -546,7 +546,7 @@ struct SentinelRepairCatalogTests {
         var book = sentinelBook()
         book.collectionIDs = [UUID()]
         let snapshot = SentinelSnapshot.fixture(books: [book], now: sentinelTestNow)
-        let plan = try #require(plan(rule: "LIB-009", snapshot: snapshot))
+        let plan = try #require(makePlan(rule: "LIB-009", snapshot: snapshot))
         #expect(plan.id == "REP-010")
         guard case .replaceBook(_, _, let replacement) = plan.actions[0] else {
             Issue.record("Expected a book replacement")
@@ -561,7 +561,7 @@ struct SentinelRepairCatalogTests {
         let deadline = BookDeadline(bookID: missing, targetDate: sentinelTestNow)
         let snapshot = SentinelSnapshot.fixture(
             books: [], state: LibraryState(deadlines: [deadline]), now: sentinelTestNow)
-        let plan = try #require(plan(rule: "GOL-005", snapshot: snapshot,
+        let plan = try #require(makePlan(rule: "GOL-005", snapshot: snapshot,
                                      subjects: [SentinelSubject(.deadline, missing.uuidString)]))
         #expect(plan.id == "REP-011")
         guard case .replaceLibraryState(let expected, let replacement) = plan.actions[0] else {
@@ -577,7 +577,7 @@ struct SentinelRepairCatalogTests {
         var book = sentinelBook(totalPages: 10)
         book.chapters = [Chapter(title: "Bad", index: 0, startPage: 40, endPage: 2)]
         let snapshot = SentinelSnapshot.fixture(books: [book], now: sentinelTestNow)
-        let plan = try #require(plan(rule: "LIB-008", snapshot: snapshot))
+        let plan = try #require(makePlan(rule: "LIB-008", snapshot: snapshot))
         #expect(plan.id == "REP-017")
         guard case .replaceBook(_, _, let replacement) = plan.actions[0] else {
             Issue.record("Expected a book replacement")
@@ -593,7 +593,7 @@ struct SentinelRepairCatalogTests {
         var book = sentinelBook()
         book.notes = [note, note]
         let snapshot = SentinelSnapshot.fixture(books: [book], now: sentinelTestNow)
-        let plan = try #require(plan(rule: "LIB-012", snapshot: snapshot))
+        let plan = try #require(makePlan(rule: "LIB-012", snapshot: snapshot))
         #expect(plan.id == "REP-018")
         guard case .replaceBook(_, _, let replacement) = plan.actions[0] else {
             Issue.record("Expected a book replacement")
@@ -620,7 +620,7 @@ struct SentinelRepairCatalogTests {
             cachedAverageSecondsPerPage: 999)]
         book.cachedSecondsPerPage = 999
         let snapshot = SentinelSnapshot.fixture(books: [book], now: sentinelTestNow)
-        let plan = try #require(plan(rule: "LIB-010", snapshot: snapshot))
+        let plan = try #require(makePlan(rule: "LIB-010", snapshot: snapshot))
         #expect(plan.id == "REP-019")
         guard case .replaceBook(_, _, let replacement) = plan.actions[0] else {
             Issue.record("Expected a book replacement")
@@ -634,7 +634,7 @@ struct SentinelRepairCatalogTests {
         var book = sentinelBook()
         book.coverImageData = Data([0xFF, 0xD8, 0xFF])
         let snapshot = SentinelSnapshot.fixture(books: [book], now: sentinelTestNow)
-        let plan = try #require(plan(rule: "FILE-005", snapshot: snapshot))
+        let plan = try #require(makePlan(rule: "FILE-005", snapshot: snapshot))
         #expect(plan.id == "REP-025")
         guard case .writeCover(let id, let data) = plan.actions.first else {
             Issue.record("Expected a cover write")
