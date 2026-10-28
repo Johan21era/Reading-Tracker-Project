@@ -494,6 +494,10 @@ nonisolated struct MIR004RuntimeMissing: SentinelProbeV2 {
         defaultSeverity: .warning, defaultImpact: .low)
 
     func run(snapshot: SentinelSnapshot, environment: SentinelEnvironment) async throws -> [RawFinding] {
+        // A Debug/test build legitimately ships without the staged 47 MB runtime;
+        // only a packaged Release is expected to carry it. Reporting it in a
+        // development build would make every clean install look damaged.
+        guard !environment.isDebug else { return [] }
         if snapshot.defaults.object(forKey: "mirage.enabled") as? Bool == false { return [] }
 
         let bundleRoot = Bundle.main.bundleURL
