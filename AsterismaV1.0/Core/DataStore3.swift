@@ -58,8 +58,18 @@ final class DataStore: ObservableObject {
 
     private(set) var storageEngine: StorageEngine = .json
     private var database: LibraryDatabase?
+    /// Set when the SQLite library could not be fully decoded. Ordinary writes
+    /// stay paused so a partial in-memory library can never delete or overwrite
+    /// records that still exist in the database.
+    private var sqliteLoadFailure: String?
     private let dbWriteQueue = DispatchQueue(
         label: "readingtracker.datastore.sqlite", qos: .utility)
+
+    private var blockedSQLiteSaveMessage: String? {
+        guard let sqliteLoadFailure else { return nil }
+        return "Saves are paused because the SQLite library could not be fully read " +
+            "(\(sqliteLoadFailure)). Existing records were left untouched."
+    }
 
     // MARK: - Private
 
@@ -87,6 +97,10 @@ final class DataStore: ObservableObject {
     /// ROADMAP 2.1 (D6): tail of the serialized background-write chain.
     /// Each enqueued write awaits its predecessor, guaranteeing on-disk ordering.
     private var pendingWrite: Task<String?, Never>?
+
+    /// Release-safe fact used by Sentinel's app-state probes. The debug-only
+    /// text below stays in Debug builds; this boolean always exists.
+    private(set) var lastLoadRepairNotePresent = false
 
     #if DEBUG
     private(set) var consoleLastSaveError: String?
@@ -197,7 +211,9 @@ final class DataStore: ObservableObject {
         }
 
         if storageEngine == .sqlite, let database {
-            let empty = (try? database.counts().books ?? 0) == 0
+            // Only a confirmed-empty store may be bootstrapped: deleting and
+            // re-importing over an unreadable state row would lose it.
+            let empty = (try? database.isEmptyStore()) ?? false
             if empty, FileManager.default.fileExists(atPath: self.fileURL.path) {
                 if !Self.bootstrapSQLite(
                     database: database,
@@ -255,6 +271,9 @@ final class DataStore: ObservableObject {
             repairedBooks[i].collectionIDs.removeAll { !validCollectionIDs.contains($0) }
         }
         // Drop duplicate collection names by keeping archived ids where possible.
+        // An explicit archive restore is a deliberate replacement of the whole
+        // library, so it also clears a load-failure save block.
+        sqliteLoadFailure = nil
         books = repairedBooks
         libraryState = state
         // G1 migration: archives written by the old award loop may contain
@@ -366,6 +385,7 @@ final class DataStore: ObservableObject {
         books = []
         libraryState = LibraryState()
         newlyEarnedAchievements = []
+        sqliteLoadFailure = nil
         persistenceHealth = .healthy
         bumpEpoch()
         AnalyticsCache.shared.invalidate()
@@ -410,6 +430,19 @@ final class DataStore: ObservableObject {
 
     func updateGoalSet(_ goalSet: ReadingGoalSet) {
         libraryState.goalSet = goalSet
+        saveLibraryState()
+    }
+
+    /// Sentinel SG3: the one audited entry point for a whole-state repair.
+    /// Callers must have re-read the expected state and verified it matches
+    /// before calling; this method validates the new value and persists along
+    /// the normal path, never by touching files.
+    func updateLibraryState(_ state: LibraryState) {
+        var normalized = state
+        if normalized.schemaVersion != .current {
+            normalized.schemaVersion = .current
+        }
+        libraryState = normalized
         saveLibraryState()
     }
 
@@ -684,8 +717,13 @@ final class DataStore: ObservableObject {
     /// cached speed fields keep analytics exact.
     private func loadFromDatabase(_ db: LibraryDatabase) {
         do {
-            books = try db.loadBooks()
-            libraryState = try db.loadState()
+            // Decode both halves before publishing either: a state failure must
+            // not leave a half-loaded library readable by the UI.
+            let loadedBooks = try db.loadBooks()
+            let loadedState = try db.loadState()
+            books = loadedBooks
+            libraryState = loadedState
+            sqliteLoadFailure = nil
 
             let deduped = AchievementEngine.deduplicated(libraryState.earnedAchievements)
             if deduped.removed > 0 {
@@ -698,9 +736,10 @@ final class DataStore: ObservableObject {
         } catch {
             books = []
             libraryState = LibraryState()
+            sqliteLoadFailure = error.localizedDescription
             persistenceHealth = .degraded(
-                "SQLite library could not be read: \(error.localizedDescription). " +
-                    "No data was overwritten.")
+                blockedSQLiteSaveMessage
+                    ?? ("SQLite library could not be read. Existing records were left untouched."))
         }
     }
 
@@ -772,6 +811,7 @@ final class DataStore: ObservableObject {
 
             let (repaired, report) = DataIntegrityValidator.validate(decoded)
             books = repaired
+            lastLoadRepairNotePresent = !report.isClean
 
             // AUDIT §3.3: never re-persist books that still contain unrepaired
             // errors — surface instead of overwriting the last-good file.
@@ -780,10 +820,12 @@ final class DataStore: ObservableObject {
                     "Library loaded with unrepaired issues. " +
                         "\(report.summary) Auto-save skipped to protect the existing file."
                 )
+                lastLoadRepairNotePresent = true
                 #if DEBUG
                 consoleLastLoadRepairNote = report.summary
                 #endif
             } else if !report.isClean {
+                lastLoadRepairNotePresent = true
                 #if DEBUG
                 consoleLastLoadRepairNote = report.summary
                 #endif
@@ -832,6 +874,10 @@ final class DataStore: ObservableObject {
     /// Debounced save. Multiple rapid calls within 0.5s coalesce into one.
     func scheduleSave() {
         bumpEpoch() // FINAL TRACES #5: any mutation invalidates derived data
+        if let message = blockedSQLiteSaveMessage {
+            persistenceHealth = .degraded(message)
+            return
+        }
         saveTimer?.invalidate()
         let timer = Timer(timeInterval: saveDebounceInterval, repeats: false) { [weak self] _ in
             Task { @MainActor [weak self] in
@@ -855,6 +901,10 @@ final class DataStore: ObservableObject {
         saveTimer = nil
 
         if storageEngine == .sqlite, let database {
+            if let message = blockedSQLiteSaveMessage {
+                persistenceHealth = .degraded(message)
+                return
+            }
             let booksSnapshot = books
             let stateSnapshot = libraryState
             do {
@@ -900,6 +950,10 @@ final class DataStore: ObservableObject {
     /// the write; ordering is still strictly chained.
     private func save() {
         if storageEngine == .sqlite, let database {
+            if let message = blockedSQLiteSaveMessage {
+                persistenceHealth = .degraded(message)
+                return
+            }
             let booksSnapshot = books
             let stateSnapshot = libraryState
             dbWriteQueue.async { [weak self] in

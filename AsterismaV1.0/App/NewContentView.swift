@@ -118,9 +118,17 @@ struct ContentView: View {
     @State private var sidebarDragStart: CGFloat?
     @FocusState private var searchFocused: Bool
 
-    // P6: Sentinel
-    @StateObject private var sentinel = SentinelEngine.shared
-    @State private var sentinelReport: (fixed: Int, stalled: Int, headline: String)?
+    // P6 / SG4: the launch card now reads the v2 runtime, and Review always
+    // opens the Health Center — a real Release window, not the Debug console.
+    @StateObject private var sentinelHealth = SentinelViewModel()
+    @State private var sentinelReport: SentinelLaunchSummary?
+
+    private var sentinelReviewAction: (() -> Void)? {
+        {
+            withAnimation { sentinelReport = nil }
+            openWindow(id: SentinelHealthCenterWindowID.id)
+        }
+    }
 
     /// Filtered+sorted sidebar source.
     ///
@@ -634,7 +642,7 @@ struct ContentView: View {
     /// otherwise retain the previous library.
     private func eraseAllUserData() {
         sessionCoordinator.endAllActiveSessions()
-        sentinel.stop()
+        Task { await SentinelAppIntegration.stop() }
 
         do {
             try dataStore.eraseAllUserData()
@@ -656,10 +664,10 @@ struct ContentView: View {
             )
             WeatherKitService.shared.resetStore()
 
-            sentinel.start()
+            Task { await SentinelAppIntegration.start(dataStore: dataStore) }
             eraseNotice = "The library and all app-owned data were erased. You are starting from a clean slate."
         } catch {
-            sentinel.start()
+            Task { await SentinelAppIntegration.start(dataStore: dataStore) }
             importError = "Could not erase all data: \(error.localizedDescription)"
         }
     }
@@ -771,10 +779,14 @@ struct ContentView: View {
             showOnboarding = OnboardingView.shouldShow(
                 books: dataStore.books, dismissed: onboardingDismissed
             )
-            // P6: Sentinel watchdog — launch cycle + periodic probes.
-            sentinel.start()
-            sentinel.runCycle()
-            sentinelReport = sentinel.overnightReport()
+            // SG4: one integration point starts the v2 runtime, attaches the
+            // live snapshot source and repair bridge, and runs its launch
+            // cycle. The v1 engine is no longer started from the app.
+            Task { @MainActor in
+                await SentinelAppIntegration.start(dataStore: dataStore)
+                await sentinelHealth.refresh()
+                sentinelReport = sentinelHealth.launchSummary()
+            }
 
             // macOS makes the first text field the initial first responder.
             // A library search field must not look permanently focused at
@@ -971,8 +983,9 @@ struct ContentView: View {
             if let report = sentinelReport {
                 SentinelReportCardView(
                     fixed: report.fixed,
-                    stalled: report.stalled,
-                    headline: report.headline
+                    stalled: report.needsDecision,
+                    headline: report.headline,
+                    onReview: sentinelReviewAction
                 ) {
                     withAnimation { sentinelReport = nil }
                 }

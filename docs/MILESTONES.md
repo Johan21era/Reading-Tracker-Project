@@ -251,3 +251,63 @@ pair. The local and remote receipts now agree.
 
 Owner retest on the ready package. If accepted, record acceptance and promote
 milestone 004.
+
+---
+
+## 006 — Sentinel v2 first tranche: 138 probes, 25 verified repairs, Release Health Center
+
+**Date and time:** 2026-10-28 15:27 EDT (−0400)
+**Recorded by:** the engineering session, after the first tranche census
+**Build:** working tree at base `6099e4e` (uncommitted at recording time)
+**Code:** Sentinel v2 under `AsterismaV1.0/Core/Sentinel/` and `AsterismaV1.0/Features/Sentinel/`
+
+### What happened
+
+Sentinel stopped being an eight-probe Debug-console watchdog and became the
+first tranche of the roadwork's immune system:
+
+- **138 probes across 15 domains**, with typed descriptors, budgets, roles,
+  copy, and evidence.
+- **25 repair plans** with preview, safety snapshot, exact-subject re-read,
+  verification, rollback, and undo.
+- A **Release Health Center** (⌘⇧H) with Overview, Issues, History, Checks,
+  and Settings.
+- A launch report card, opt-in notifications with a weekly cap, and a
+  redacted diagnostics export.
+- Segmented journal v2, issue store, fingerprints, diagnoses, and lifecycle.
+- **414 per-probe contract cases** (clean install, determinism, privacy) and
+  a **1.31 ms** fast pass on a 70-book fixture.
+
+### Why it matters
+
+The owner's data is now checked by a system that reports coverage honestly,
+can explain every finding, and can reverse any repair it makes. The old
+watchdog is no longer the product surface; it remains only for the Debug
+Developer Console.
+
+### What this does not mean
+
+This is the **first tranche**, not the 700-probe ceiling. The SG7 gate is
+**HOLD**, not passed:
+
+- v1 `SentinelEngine` is retained for the Debug console.
+- Localization is not started.
+- The ten manual owner scenarios are not run.
+- The menu bar surface was implemented, then removed because SwiftUI
+  `MenuBarExtra` hung the test host.
+- Accessibility automation and the 10× SQLite benchmark are missing.
+
+### Evidence
+
+- `docs/audits/12-sentinel-v2-tranche-2026-10-28.md`
+- `docs/plans/sentinel/gates/README.md` (SG0–SG7 index)
+- Unit census: **379 test functions / 1,024 passed cases / 9 skipped / 0 failed**
+- Fast pass: **1.31 ms** (budget < 50 ms)
+- Release build: exit 0
+- Test isolation: `TEST ISOLATION OK — real app-support data is byte-identical.`
+- Census artifact: `rt-census-20261028-152733.xcresult`
+
+### Next
+
+Owner acceptance run, v1 removal decision, localization, and a 10× SQLite
+benchmark. See SG7 for the exact blockers.

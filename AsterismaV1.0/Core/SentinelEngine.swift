@@ -13,6 +13,8 @@
 //   S1. WRITE SCOPE — the engine writes ONLY:
 //         • Application Support/Asterisma/sentinel-journal.jsonl
 //         • Application Support/Asterisma/SentinelQuarantine/
+//         • a system replacement directory, only for the writability probe,
+//           and only for that probe's lifetime
 //       It has NO code path to delete/overwrite library.json,
 //       library-state.json, library.sqlite3, or any user file. Repairs are
 //       dispatched to existing audited subsystem APIs only.
@@ -25,6 +27,7 @@
 //   S4. NO SECRETS / NO PII IN LOGS — journal stores counts, ids, rule names;
 //       never file contents, bookmarks, or user text. UserSummary strings for
 //       Release are STATIC literals defined here, not interpolations.
+//       debugDetail is never journaled; it stays in memory for the Debug console.
 //   S5. KILL SWITCH — defaults key "sentinel.enabled" (default true) gates
 //       every probe cycle. Setting false makes the engine fully inert.
 //   S6. CONSERVATIVE DEFAULTS — Debug: monitor + autofix. Release: monitor +
@@ -50,8 +53,9 @@ struct SentinelFinding: Codable, Identifiable, Equatable {
     var outcome: Outcome
     /// Static, human-written summary safe for Release UIs. Never interpolated.
     let userSummary: String
-    /// Developer-facing detail (Debug surfaces only). May include ids/paths.
-    let debugDetail: String
+    /// Developer-facing detail (Debug surfaces only). May include ids, paths,
+    /// or diagnostic descriptions; never journaled and never shown in Release.
+    var debugDetail: String
 
     init(probe: String, rule: String, severity: Severity,
          outcome: Outcome, userSummary: String, debugDetail: String,
@@ -64,6 +68,28 @@ struct SentinelFinding: Codable, Identifiable, Equatable {
         self.outcome = outcome
         self.userSummary = userSummary
         self.debugDetail = debugDetail
+    }
+}
+
+/// Journal-safe projection of a finding (S4). Deliberately omits `debugDetail`,
+/// which is the only field that may carry identifiers or paths.
+private struct SentinelJournalRecord: Encodable {
+    let id: UUID
+    let date: Date
+    let probe: String
+    let rule: String
+    let severity: SentinelFinding.Severity
+    let outcome: SentinelFinding.Outcome
+    let userSummary: String
+
+    init(_ finding: SentinelFinding) {
+        id = finding.id
+        date = finding.date
+        probe = finding.probe
+        rule = finding.rule
+        severity = finding.severity
+        outcome = finding.outcome
+        userSummary = finding.userSummary
     }
 }
 
@@ -96,11 +122,18 @@ final class SentinelEngine: ObservableObject {
     @Published private(set) var lastRunDate: Date?
     /// Findings from the most recent cycle, newest first.
     @Published private(set) var recentFindings: [SentinelFinding] = []
-    /// Cumulative counters since install (hydrated from the journal).
-    @Published private(set) var lifetimeAutoFixed: Int = 0
-    @Published private(set) var lifetimeStalled: Int = 0
+    /// Counters computed from the retained journal, not true lifetime totals.
+    /// SENT-008: the journal rotates at 500 lines, so these shrink by design.
+    @Published private(set) var journalAutoFixed: Int = 0
+    @Published private(set) var journalStalled: Int = 0
 
-    private var lifetimeCountersLoaded = false
+    /// Number of probes actually registered in this engine instance.
+    var probeCount: Int { probes.count }
+
+    /// Test-visible count of cycles that ran to completion.
+    private(set) var completedCycleCount = 0
+
+    private var journalCountersLoaded = false
 
     // MARK: Configuration
 
@@ -149,7 +182,7 @@ final class SentinelEngine: ObservableObject {
         // here used to mutate @Published during that render — the source of
         // the red "Modifying state during view update" console spam. Counters
         // now hydrate lazily on first runCycle(), safely outside rendering.
-        lifetimeCountersLoaded = false
+        journalCountersLoaded = false
     }
 
     // MARK: Lifecycle
@@ -174,12 +207,9 @@ final class SentinelEngine: ObservableObject {
     }
 
     var isEnabled: Bool {
-        // Kill switch (S5). Defaults ON in Debug, ON-but-report-only in Release.
-        #if DEBUG
-        return defaults.object(forKey: Self.enabledKey) as? Bool ?? true
-        #else
-        return defaults.object(forKey: Self.enabledKey) as? Bool ?? true
-        #endif
+        // Kill switch (S5). Defaults ON; repair policy is the only Debug/Release
+        // difference, and it lives in `allowsRepair`.
+        defaults.object(forKey: Self.enabledKey) as? Bool ?? true
     }
 
     var allowsRepair: Bool {
@@ -202,16 +232,17 @@ final class SentinelEngine: ObservableObject {
         guard !SentinelDataBridge.shared.isMutationInFlight else { return } // S7: never probe a torn state
         guard let dataStore = SentinelDataBridge.shared.store else { return }
 
-        if !lifetimeCountersLoaded {
-            loadLifetimeCounters()
-            lifetimeCountersLoaded = true
+        if !journalCountersLoaded {
+            loadJournalCounters()
+            journalCountersLoaded = true
         }
 
         let context = SentinelContext(
             books: dataStore.books,
             libraryState: dataStore.libraryState,
             persistenceHealth: dataStore.persistenceHealth,
-            applicationSupportURL: FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            // Test-isolated when running under XCTest; the real data root otherwise.
+            applicationSupportURL: AppIdentity.dataRootURL()
         )
 
         var findings: [SentinelFinding] = []
@@ -255,8 +286,9 @@ final class SentinelEngine: ObservableObject {
             guard let self else { return }
             self.recentFindings = sorted
             self.lastRunDate = Date()
-            self.lifetimeAutoFixed += fixed
-            self.lifetimeStalled += stalled
+            self.journalAutoFixed += fixed
+            self.journalStalled += stalled
+            self.completedCycleCount += 1
         }
     }
 
@@ -294,7 +326,7 @@ final class SentinelEngine: ObservableObject {
             if let sid = b.activeSessionID, !b.sessions.contains(where: { $0.id == sid }) {
                 b.activeSessionID = nil
                 markFixed(&findings, rule: "phantom-active-session-id",
-                          detail: "cleared activeSessionID \(sid.uuidString.prefix(8)) on '\(b.title)'")
+                          detail: "cleared activeSessionID \(sid.uuidString.prefix(8)) on book \(b.id.uuidString.prefix(8))")
             }
             // Orphan active session with endTime==nil but stale beyond 24h → close.
             if let sid = b.activeSessionID,
@@ -314,7 +346,7 @@ final class SentinelEngine: ObservableObject {
                 }
                 b.activeSessionID = nil
                 markFixed(&findings, rule: "orphan-active-session",
-                          detail: "closed >24h orphan session on '\(b.title)' at last activity")
+                          detail: "closed >24h orphan session on book \(b.id.uuidString.prefix(8)) at last activity")
             }
             // Negative page-timing durations → pin endTime=startTime (validator S-5).
             for s in b.sessions.indices {
@@ -323,7 +355,7 @@ final class SentinelEngine: ObservableObject {
                        end < b.sessions[s].pageTimes[p].startTime {
                         b.sessions[s].pageTimes[p].endTime = b.sessions[s].pageTimes[p].startTime
                         markFixed(&findings, rule: "page-timing-negative-duration",
-                                  detail: "pinned negative timing on '\(b.title)'")
+                                  detail: "pinned negative timing on book \(b.id.uuidString.prefix(8))")
                     }
                 }
             }
@@ -343,20 +375,16 @@ final class SentinelEngine: ObservableObject {
             b.collectionIDs.removeAll { !seen.insert($0).inserted }
             dataStore.updateBook(b)
             markFixed(&findings, rule: "duplicate-collection-membership",
-                      detail: "deduped collectionIDs on '\(b.title)'")
+                      detail: "deduped collectionIDs on book \(b.id.uuidString.prefix(8))")
         }
     }
 
     private func markFixed(_ findings: inout [SentinelFinding], rule: String, detail: String) {
-        if let idx = findings.firstIndex(where: { $0.rule == rule && $0.outcome == .detected }) {
+        // SENT-005: mark EVERY matching finding, not just the first. Mutate in
+        // place so each finding keeps its id and date.
+        for idx in findings.indices where findings[idx].rule == rule && findings[idx].outcome == .detected {
             findings[idx].outcome = .autoFixed
-            findings[idx] = SentinelFinding(
-                probe: findings[idx].probe, rule: rule,
-                severity: findings[idx].severity, outcome: .autoFixed,
-                userSummary: findings[idx].userSummary,
-                debugDetail: findings[idx].debugDetail + " → fixed: " + detail,
-                date: findings[idx].date
-            )
+            findings[idx].debugDetail += " → fixed: " + detail
         }
     }
 
@@ -368,7 +396,10 @@ final class SentinelEngine: ObservableObject {
         encoder.dateEncodingStrategy = .iso8601
         var lines = ""
         for f in findings {
-            if let data = try? encoder.encode(f), let line = String(data: data, encoding: .utf8) {
+            // S4: journal the safe projection only. `debugDetail` stays in memory
+            // for the Debug console and is never persisted.
+            if let data = try? encoder.encode(SentinelJournalRecord(f)),
+               let line = String(data: data, encoding: .utf8) {
                 lines += line + "\n"
             }
         }
@@ -399,7 +430,7 @@ final class SentinelEngine: ObservableObject {
         try? FileManager.default.moveItem(at: tmp, to: url)
     }
 
-    private func loadLifetimeCounters() {
+    private func loadJournalCounters() {
         guard let url = journalURL,
               let data = try? Data(contentsOf: url),
               let text = String(data: data, encoding: .utf8) else { return }
@@ -407,8 +438,8 @@ final class SentinelEngine: ObservableObject {
             guard let d = line.data(using: .utf8),
                   let obj = try? JSONSerialization.jsonObject(with: d) as? [String: Any],
                   obj["cycle"] != nil else { continue }
-            lifetimeAutoFixed += obj["fixed"] as? Int ?? 0
-            lifetimeStalled += obj["stalled"] as? Int ?? 0
+            journalAutoFixed += obj["fixed"] as? Int ?? 0
+            journalStalled += obj["stalled"] as? Int ?? 0
         }
     }
 
@@ -498,18 +529,25 @@ struct PersistenceHealthProbe: SentinelProbe {
     }
 }
 
-/// Can we still write to our own data folder right now?
+/// Can we still write to the volume that holds the data folder right now?
+/// SG0: proves this in a system replacement directory, never in the data root.
 struct StoreWritabilityProbe: SentinelProbe {
     let name = "writability"
 
     func run(context: SentinelContext) -> [SentinelFinding] {
-        guard let base = AppIdentity.dataRootURL() else {
-            return []
-        }
-        let probeFile = base.appendingPathComponent(".sentinel-write-test")
+        guard let base = context.applicationSupportURL else { return [] }
         do {
-            try Data("#write-probe".utf8).write(to: probeFile, options: .atomic)
-            try? FileManager.default.removeItem(at: probeFile)
+            // S1/SG0: never write into the data root. Ask the system for a
+            // replacement directory on the same volume and prove a write there.
+            let probeDir = try FileManager.default.url(
+                for: .itemReplacementDirectory,
+                in: .userDomainMask,
+                appropriateFor: base,
+                create: true
+            )
+            defer { try? FileManager.default.removeItem(at: probeDir) }
+            try Data("#write-probe".utf8).write(
+                to: probeDir.appendingPathComponent("writability"), options: .atomic)
             return []
         } catch {
             return [SentinelFinding(
@@ -560,7 +598,7 @@ struct StaleBookmarkProbe: SentinelProbe {
                 severity: .warning,
                 outcome: .stalled,
                 userSummary: "One of your books moved on disk — re-import it to restore access.",
-                debugDetail: "book=\(book.id.uuidString.prefix(8)) '\(book.title)' bookmark unresolvable"
+                debugDetail: "book=\(book.id.uuidString.prefix(8)) bookmark unresolvable"
             )
         }
     }

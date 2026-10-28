@@ -8,7 +8,7 @@ This is the project's long-term plan, organized by phase. Think of it as the "wh
 
 **Governing rule:** Every phase opens with a clean build and a full test suite (verified, not assumed) and closes the same way. Every fix gets its own "Finality" statement (why this is the right fix), one fix-log entry, and nothing more. One defect, one Finality, one log entry.
 
-> **Status note (2026-10-24, AsterismaV1.0 release):** the Bedrock program closed the audit-era correctness punch list, moved the live store to SQLite, and shipped the Asterisma rebrand. The standing census is now **212/0/9**, and the release is merged at `aba8aa4` (tag `asterisma-v1.0-mvp`). The phases below remain the long-term roadmap; the Mirage-era work is governed separately by `docs/integration/` and the TB-M0 cadence.
+> **Status note (2026-10-24, AsterismaV1.0 release):** the Bedrock program closed the audit-era correctness punch list, moved the live store to SQLite, and shipped the Asterisma rebrand. The standing census is now **212/0/9**, and the release is merged at `aba8aa4` (tag `asterisma-v1.0-mvp`). The phases below remain the long-term roadmap; the Mirage-era work is governed separately by `docs/integration/` and the TB-M0 cadence. Sentinel's own 700-probe program is tracked separately in [SENTINEL-ROADWORK.md](../plans/sentinel/SENTINEL-ROADWORK.md), starting with the SG0 truth-and-guardrails gate. As of the Sentinel v2 first tranche (2026-10-28), the unit census is **379 test functions / 1,024 passed cases / 9 skipped / 0 failed**; gate evidence is indexed in [docs/plans/sentinel/gates/README.md](../plans/sentinel/gates/README.md).
 
 ---
 

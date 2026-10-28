@@ -21,11 +21,13 @@ import SwiftUI
 
 struct SentinelPaneView: View {
     @ObservedObject private var engine = SentinelEngine.shared
+    @StateObject private var health = SentinelViewModel()
     @EnvironmentObject private var dataStore: DataStore
 
     enum Face: String, CaseIterable, Identifiable {
         case technical = "Technical"
         case layman = "Plain English"
+        case registry = "V2 Registry"
         var id: String { rawValue }
     }
 
@@ -63,9 +65,11 @@ struct SentinelPaneView: View {
             switch face {
             case .technical: technicalFace
             case .layman: laymanFace
+            case .registry: registryFace
             }
         }
         .background(ConsolePalette.background)
+        .task { await health.refresh() }
         .onDisappear { /* keep engine running; this is just a viewport */ }
     }
 
@@ -92,9 +96,11 @@ struct SentinelPaneView: View {
 
             HStack(spacing: 16) {
                 metricChip("LAST RUN", lastRunText)
-                metricChip("LIFETIME FIXED", "\(engine.lifetimeAutoFixed)")
-                metricChip("AWAITING YOU", "\(engine.lifetimeStalled)")
-                metricChip("PROBES", "\(probeCount)")
+                metricChip("JOURNAL FIXED", "\(engine.journalAutoFixed)")
+                metricChip("JOURNAL STALLED", "\(engine.journalStalled)")
+                metricChip("V1 PROBES", "\(engine.probeCount)")
+                metricChip("V2 PROBES", "\(SentinelProbeCatalog.descriptors.count)")
+                metricChip("V2 ISSUES", "\(health.state.issues.count)")
                 if engine.allowsRepair {
                     Label("AUTO-REPAIR ON", systemImage: "wrench.and.screwdriver.fill")
                         .font(.system(.caption2, design: .monospaced).weight(.bold))
@@ -114,9 +120,6 @@ struct SentinelPaneView: View {
         guard let d = engine.lastRunDate else { return "never" }
         return d.formatted(date: .omitted, time: .standard)
     }
-
-    /// Probe count mirrors the engine's registered list (names only).
-    private var probeCount: Int { 8 } // matches default battery; keep in sync
 
     private func metricChip(_ label: String, _ value: String) -> some View {
         VStack(alignment: .leading, spacing: 1) {
@@ -256,6 +259,65 @@ struct SentinelPaneView: View {
             let base = key.split(separator: "|").first.map(String.init) ?? key
             let headline = v.n > 1 ? "\(base) (\(v.n) similar items)" : base
             return Story(headline: headline, isFix: v.fix, when: v.date)
+        }
+    }
+
+    // MARK: V2 registry
+
+    /// The v2 probe matrix: every registered probe, its domain, tier, whether
+    /// it is required for an all-clear, and what the last cycle did with it.
+    private var registryFace: some View {
+        let results = Dictionary(uniqueKeysWithValues: health.state.probes.map { ($0.probeID, $0) })
+        return ScrollView {
+            LazyVStack(alignment: .leading, spacing: 4) {
+                Text("\(SentinelProbeCatalog.descriptors.count) probes · \(SentinelProbeCatalog.domainCount) domains · \(SentinelRepairCatalog.implementedIDs.count) repair plans")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundStyle(ConsolePalette.textSecondary)
+                    .padding(.bottom, 6)
+
+                ForEach(SentinelProbeCatalog.descriptors, id: \.id) { descriptor in
+                    let result = results[descriptor.id]
+                    HStack(spacing: 8) {
+                        Text(result.map { probeGlyph($0.status) } ?? "·")
+                            .frame(width: 14)
+                        Text(descriptor.id)
+                            .font(.system(.caption, design: .monospaced).weight(.semibold))
+                            .frame(width: 78, alignment: .leading)
+                        Text(descriptor.domain.code)
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundStyle(ConsolePalette.textSecondary)
+                            .frame(width: 46, alignment: .leading)
+                        Text(descriptor.tier.rawValue.uppercased())
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundStyle(ConsolePalette.textSecondary)
+                            .frame(width: 26, alignment: .leading)
+                        Text(descriptor.isRequired ? "REQ" : "opt")
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundStyle(descriptor.isRequired ? Color.orange : ConsolePalette.textSecondary)
+                            .frame(width: 30, alignment: .leading)
+                        Text(descriptor.title)
+                            .font(.system(.caption, design: .monospaced))
+                            .lineLimit(1)
+                        Spacer()
+                        if let result {
+                            Text("\(result.findings.count)f · \(Int(result.duration * 1000))ms")
+                                .font(.system(.caption2, design: .monospaced))
+                                .foregroundStyle(ConsolePalette.textSecondary)
+                        }
+                    }
+                    .padding(.vertical, 1)
+                }
+            }
+            .padding(12)
+        }
+    }
+
+    private func probeGlyph(_ status: SentinelProbeStatus) -> String {
+        switch status {
+        case .completed: return "✓"
+        case .skipped: return "–"
+        case .failed: return "✗"
+        case .timedOut: return "⏱"
         }
     }
 

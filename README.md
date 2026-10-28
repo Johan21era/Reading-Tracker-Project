@@ -2,7 +2,7 @@
 
 > **TL;DR** — AsterismaV1.0 is a macOS reading-tracker app written entirely in Swift/SwiftUI. You import your PDF and EPUB books, read them inside the app, and it quietly records everything: per-page reading speed, time of day, live weather, and the app you were using just before opening the book. As of the October 2026 merge campaign, it also carries **Mirage** — a separately-owned companion engine for EPUB analysis, integrated behind a typed one-way boundary.
 
-> **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. Current CI: **229 tests, 10 deliberate skips, 0 failures** on macOS 26 / Xcode 26.6. The full gate record lives in `docs/plans/bedrock/`.
+> **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. The full gate record lives in `docs/plans/bedrock/`. Current local census (2026-10-28, after the Sentinel v2 first tranche): **379 test functions, 1,024 passing cases, 9 skips, 0 failures** on macOS 26.6.1 / Xcode 26.6; the last GitHub `census` run was green with 229 tests on macOS 26 / Xcode 26.6.
 
 > **Release status (2026-10-26):** `AsterismaV1.0` remains merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`). The owner accepted the full reader workflow on the `asterisma-v1.0-ux-audit-2` build. The ready tree adds the Apple Books-style Appearance panel, the preservation-first repository reorganization, and green CI hardening; app code is `1c88ae5`, tagged `asterisma-v1.0-ready-2026-10-26`. Package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`. It is ad-hoc signed, not notarized; first launch requires right-click → Open. Owner visual retest of the Appearance panel and book plate remains the next acceptance gate.
 
@@ -38,7 +38,7 @@
 - **Night-sky ambience** — a starfield background that tracks real time of day, weather, and location
 - **Mirage analysis (optional, opt-in per gesture)** — for an imported EPUB, an explicit "Analyze with Mirage" gesture sends that single book to a separately-owned analysis engine and wires the results to your reading state; the engine keeps its own ledger and never writes RT's store (see §3.5)
 
-There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for stress-testing with **16 deterministic fake reader personas**, and a built-in **Sentinel** watchdog that scans for data problems at launch, auto-repairs the provably-safe ones, snapshots everything before touching anything, and reports what happened while you were away.
+There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for stress-testing with **16 deterministic fake reader personas**, and a built-in **Sentinel** watchdog that scans 138 checks across 15 data domains, verifies and snapshots every repair, and explains what happened while you were away. The Release Health Center (⌘⇧H) is the full surface.
 
 ---
 
@@ -50,8 +50,8 @@ There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for st
 | **Language** | Swift 5 mode, SwiftUI + AppKit only |
 | **Build config** | `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, `SWIFT_APPROACHABLE_CONCURRENCY = YES`, deployment target macOS 26.5, Xcode 27.1 |
 | **Dependencies** | Exactly one Swift dependency: ZIPFoundation 0.9.20 (SPM, pinned via `Package.resolved` — used for unzipping EPUBs). Mirage ships as a self-contained bundled runtime (its own Python interpreter), not a Swift dependency |
-| **App size** | 119 app files · 43,543 raw LOC (counted directly — not estimated) |
-| **Tests** | 48 Swift test files (47 containing tests) · 229 `@Test` functions in eight responsibility-based suites · GitHub unit census **229 tests / 10 deliberate skips / 0 failures**, green on macOS 26 / Xcode 26.6 |
+| **App size** | 144 app files · 57,139 raw LOC (counted directly — not estimated) |
+| **Tests** | 57 Swift test files · **379 `@Test` functions in 79 suites** · local unit census **1,024 passed cases / 9 skips / 0 failures** (2026-10-28); last GitHub census green with 229 tests / 10 deliberate skips |
 | **How it is tested** | Swift Testing (`@Suite` / `@Test` / `#expect`) — not XCTest |
 | **History** | ~30 working sessions (Jun–Oct 2026), 45+ commits, then the **RT–Mirage merge campaign** (Oct 2026): the 8-PR integration ladder PR-1…PR-8, closed with owner signatures; then the **Bedrock / AsterismaV1.0 release** (2026-10-24) |
 | **Where your data lives** | Sandbox container: `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` (see §3) — plus Mirage's own stratum (§3.5) |
@@ -66,7 +66,7 @@ The codebase is split into three layers, all pure Swift — no bridges, no C ext
 
 | Layer | Path | What lives there |
 |---|---|---|
-| **Core** | `Core/` | `DataStore3` (persistence), `Book2` (models), `PersistenceWriter` (serial disk writes), `AnalyticsCache` (memoization), `CoverStore` (content-addressed cover files + NSCache), `DataIntegrityValidator`, `SentinelEngine`, `LibraryArchiveManager` (`.readingarchive` I/O) |
+| **Core** | `Core/` | `DataStore3` (persistence), `Book2` (models), `PersistenceWriter` (serial disk writes), `AnalyticsCache` (memoization), `CoverStore` (content-addressed cover files + NSCache), `DataIntegrityValidator`, `SentinelRuntime` (v2 watchdog), `LibraryArchiveManager` (`.readingarchive` I/O) |
 | **Engines** | `Engines/` | Pure static-namespace analytics: `AnalyticsEngine`, `EstimationEngine` (weighted-blend speed estimates), `DataMaturityEngine` (evidence gating with injected clocks) |
 | **Features** | `Features/` | Everything user-facing: Library, Reader (PDF/EPUB), RSVP, Reports, Insights, Goals, Achievements, BehaviorContext, Environment (weather/stars), Discovery, Sessions, Audio, Notifications, Onboarding, DeveloperConsole, **and `Mirage/` — the integration surface (14 typed Swift files)** |
 
@@ -90,7 +90,7 @@ All user data lives in one place (sandbox container):
 ├── covers/                   Content-addressed cover files (NSCache-fronted)
 ├── Backups/                  Automatic dated backups — newest 10 kept, hash-gated
 ├── mirage/                   Mirage's OWN stratum (created on first use): ledger db, identity map, supervisor guard file — Mirage-write territory, RT never writes it
-└── sentinel-journal.jsonl    Append-only Sentinel audit log (rotates at 500 entries)
+└── Sentinel/               Sentinel v2 journal segments, issue state, plans, quarantine
 ```
 
 At the time of writing, the author's own working library weighs **~28 MB of `library.json`** with ~43 MB of backups — and these numbers scale linearly with pages turned forever (zero pruning exists). That scaling ceiling is the app's main architectural open item (§5).
@@ -99,18 +99,25 @@ Writes go through `PersistenceWriter` on a serial utility queue behind a debounc
 
 ### 3.4 Sentinel (self-repair watchdog)
 
-| Stage | Behavior |
-|---|---|
-| **Probes** | 8 deterministic, read-only probes run at launch + every N minutes |
-| **Classifier** | Each finding is either provably-safe (`autoFixed`) or stalled for human review |
-| **Dispatcher** | Repairs only through audited APIs; **all artifacts confined to `sentinel-*` files** |
-| **Journal** | Append-only JSONL, atomic temp+rename rotation at 500 entries |
+**Current coverage, matched to the shipped v2 code:**
 
-Security doctrine S1–S7 is pinned by tests (`SentinelPinsTests`), including write-confinement and the kill switch. Release builds default to **monitor + report only**; automatic fixes must be enabled in Settings ▸ Sentinel. To disable entirely:
+| Surface | Reality in the current tranche |
+|---|---|
+| **Probes** | **138** deterministic checks across **15 domains** (library, sessions, goals, collections, database, backups, files, weather, audio, behavior, Mirage, app state, Sentinel itself, security, capacity). 56 are required; the rest are optional deep checks |
+| **Repairs** | **25** implemented plans with preview, safety snapshot, generation/subject re-read, verification, rollback, and undo. R3 recovery is never one-click; auto-fix is R1-only and opt-in |
+| **Surfaces** | Launch report card; **Release Health Center** (⌘⇧H: Overview, Issues, History, Checks, Settings); Settings ▸ Sentinel; Developer Console pane in Debug |
+| **Classifier** | Persistent issue store with fingerprints, owner/contributor evidence, lifecycle (open, acknowledged, snoozed, ignored, resolved), regression detection, and root-cause diagnoses |
+| **Journal** | v2 segmented JSONL with checksums, rotation, retention, and v1 migration. Only the safe projection is stored; `debugDetail` never reaches the journal |
+| **Settings** | Autonomy A0–A3, fast/deep cadence, quiet hours, per-domain toggles, notification opt-in, undo window |
+| **Known limits** | Menu bar surface is not shipped (SwiftUI `MenuBarExtra` hung the test host); English-only; manual owner acceptance pending; the 700-probe / 120-domain / 350-repair program target is not yet reached; no 10× SQLite benchmark |
+
+Security doctrine S1–S7 is pinned by tests, including write-confinement, the kill switch, snapshot-before-mutation, rollback, undo, and journal/diagnostics redaction. The writability check proves a write in a system replacement directory; it never writes a test file into the data root. Release defaults to **Assist** (suggest, user clicks); choose **Off** in Settings ▸ Sentinel to disable entirely, or set it directly:
 
 ```bash
-defaults write johan.Reading-Tracker sentinel.enabled -bool false
+defaults write johan.Reading-Tracker sentinel.autonomy.v2 -string off
 ```
+
+The program, the 120-subdomain atlas, and the 700-probe ceiling are in [SENTINEL-ROADWORK.md](docs/plans/sentinel/SENTINEL-ROADWORK.md). Evidence for every gate is indexed in [gates/README.md](docs/plans/sentinel/gates/README.md); SG7 records the remaining holds honestly.
 
 ### 3.5 The Mirage integration (October 2026)
 
@@ -128,14 +135,14 @@ The full campaign of record — playbook, ADR register (ADR-2…ADR-8, ADR-12), 
 
 ## §4 · Verified health status
 
-Checked directly against the merged `main` worktree on 2026-10-26 — not inherited from an old note:
+Checked directly against the working tree on 2026-10-28 — not inherited from an old note:
 
 - ✅ `xcodebuild build` (Debug and Release, default DerivedData) → **BUILD SUCCEEDED**
-- ✅ GitHub `census` is green on `macos-26` / Xcode 26.6 → **229 tests in 61 suites, 10 deliberate skips, 0 failures** (run `40266848038`). Local unit census with the staged runtime: **220 passed / 0 failed / 9 skipped**. The 10 CI skips are 4 Mirage real-engine, 1 bundled-runtime (clean CI has no staged runtime), 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo. UI tests remain placeholder launch stubs and are excluded from the deterministic CI unit receipt.
+- ✅ Local unit census (2026-10-28): **379 test functions / 1,024 passed cases / 9 skipped / 0 failed**, Release build exit 0. evidence: [census receipt](docs/plans/sentinel/gates/census-2026-10-28.md). The 9 skips are 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo. The last GitHub `census` run (`40266848038`) was green with 229 tests on `macos-26` / Xcode 26.6; the next push rolls it to the current suite. UI tests remain placeholder launch stubs and are excluded from the deterministic unit receipt.
 - ✅ Rebrand verified live: app/product/display name **AsterismaV1.0**, Swift module `AsterismaV1_0`, and data root migrated to `Application Support/Asterisma/`.
 - ✅ Live library after the owner’s erase/reset and reading sessions: **1 book / 3 sessions / 77 page timings**.
 - ✅ Ready package rebuilt from `1c88ae5`: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `786832c8…f4643`, ad-hoc signed; `codesign --verify --deep --strict` and the packaged-app bundle smoke pass.
-- ✅ `main` contains the release merge at `aba8aa4` plus the owner-accepted reader build and preservation-first repository reorganization; app code `1c88ae5`, ready tag `asterisma-v1.0-ready-2026-10-26`; all release, owner-test, and Bedrock tags are pushed. The working tree is clean; local `.obsidian/` configuration is ignored.
+- ✅ `main` contains the release merge at `aba8aa4`, the owner-accepted reader build, the preservation-first repository reorganization, and the Sentinel v2 first tranche; ready tag `asterisma-v1.0-ready-2026-10-26`, release tag `asterisma-v1.0-mvp`; local `.obsidian/` configuration is ignored.
 - 👑 **Owner-test authority:** the owner's personal test results outrank every item above. See `docs/12-owner-test-authority.md`.
 
 ---
@@ -146,6 +153,7 @@ The audit-era **NEW-DE-1 … NEW-DE-8 punch list was fixed and pinned** during B
 
 | # | Item | Why it matters | Estimate |
 |---|------|----------------|----------|
+| 0 | **Sentinel owner acceptance + SG7** | The tranche is shipped and gate-evidenced; the ten manual owner scenarios, v1 removal, and localization still block SG7. | One focused session |
 | 1 | **Distribution readiness** | The build is ad-hoc signed, not notarized, so first launch needs right-click → Open. Public/friend distribution needs Developer ID signing and notarization. The bundle ID is still `johan.Reading-Tracker` for MVP container compatibility; changing it needs a dedicated container migration. | Signing/account setup + migration session |
 | 2 | **Swift 6 strict concurrency** | Flipping to Swift 6 produced 148 actor-isolation errors; the project stays in Swift 5 mode until those surfaces are fixed. | Multi-session arc |
 | 3 | **Reader selection highlights/quotes** | Notes, tags, page anchors, and collections work; EPUB/PDF text-selection highlighting is not wired. | 1–2 sessions |

@@ -25,7 +25,7 @@ This is a map of every file and folder in the project, organized so you can find
 | `scripts/` | Census, benchmark, test-isolation, runtime staging, icon, and release-package scripts |
 | `dist/` | Locally built release packages (gitignored); the final signed ready zip is kept here |
 | `.mirage-runtime/` | Local staged Mirage runtime (gitignored; required for a fresh build) |
-| `graphify-out/` | Generated knowledge graph, report, and interactive HTML (refreshed 2026-10-26; current counts in `GRAPH_REPORT.md`) |
+| `graphify-out/` | Generated knowledge graph, report, and interactive HTML (refreshed 2026-10-28; current counts in `GRAPH_REPORT.md`) |
 | `.gitignore` | Tells Git which files to ignore (build junk, user settings, etc.) |
 
 ---
@@ -46,6 +46,8 @@ Every documentation file begins with a number so you can read them in order:
 | `docs/method/07-testing-strategy.md` | 07 | How tests are written and why | Anyone writing tests |
 | `docs/audits/08-deep-audit.md` | 08 | The full independent audit from Oct 2026 | Anyone who wants the complete picture |
 | `docs/audits/11-completion-and-health-report-2026-10-24.md` | 11 | Bedrock-era completion and health snapshot | Anyone reviewing the release |
+| `docs/audits/12-sentinel-v2-tranche-2026-10-28.md` | 12 | Sentinel v2 first-tranche delivery, census, and honest holds | Anyone reviewing Sentinel or the current census |
+| `docs/plans/sentinel/` | — | Sentinel program plan, 120-subdomain atlas, and SG0–SG7 gate receipts | Anyone extending Sentinel |
 | `docs/REBRAND-ASTERISMA.md` | — | Asterisma rename + data-root migration record | Anyone touching names, paths, or the bundle ID |
 | `docs/plans/bedrock/` | — | G0–G8 gate record, master plan, baseline, distribution notes | Anyone auditing the release |
 | `docs/design/fullscreen-surface-audit.md` | — | Fullscreen surface audit, border inventory, and after capture | Anyone reviewing the UI |
@@ -85,9 +87,9 @@ This folder contains every Swift file that makes the app run. They are grouped b
 | Group | Contains |
 |---|---|
 | `App/` | App composition: the `@main` entry point and the unified library/window shell |
-| `Core/` | The heart of the app: the data store, book models, validators, persistence, Sentinel watchdog |
+| `Core/` | The heart of the app: the data store, book models, validators, persistence, and `Sentinel/` (v2 domain, runtime, journal, probe catalog, repairs; `SentinelEngine` is the legacy Debug-console engine) |
 | `Engines/` | The "accountants": analytics, estimation, data maturity, insights |
-| `Features/` | Everything the user sees and touches: books, reader, goals, weather, audio, achievements, onboarding, reports, RSVP speed-reading, developer console — and `Mirage/` (14 typed files: the RT-side of the Mirage integration — wire types, client, sidecar supervisor, runtime locator, cursor gate, status surface, settings, identity map, import flow, sheet, mount, transport, child-process, protocol constants) |
+| `Features/` | Everything the user sees and touches: books, reader, goals, weather, audio, achievements, onboarding, reports, RSVP speed-reading, `Sentinel/` (Release Health Center, launch card, view model), developer console — and `Mirage/` (14 typed files: the RT-side of the Mirage integration — wire types, client, sidecar supervisor, runtime locator, cursor gate, status surface, settings, identity map, import flow, sheet, mount, transport, child-process, protocol constants) |
 | `Assets.xcassets` | Pictures, colors, and icons used in the app |
 
 ---
@@ -96,7 +98,7 @@ This folder contains every Swift file that makes the app run. They are grouped b
 
 These are automated checks that run without you having to click anything. Each test is named after the specific bug or behavior it guards. If a test ever starts failing, that is an early warning that something broke.
 
-As of 2026-10-26: 48 Swift files in the unit-test target. Forty-seven contain **229 `@Test` functions**, grouped into eight responsibility-based groups: `App`, `Behavior`, `Core`, `DeveloperConsole`, `Environment`, `Library`, `Mirage`, and `Reader`; the 48th is shared support code. The GitHub `census` workflow is green on `macos-26` / Xcode 26.6: **229 tests in 61 suites, 10 deliberate environment/opt-in skips, 0 failures**. Local unit census with the staged Mirage runtime is **220 passed / 0 failed / 9 skipped**. UI tests remain placeholder launch stubs and are not part of the deterministic CI merge receipt. The skips are opt-in gates: 4 Mirage real-engine, 1 bundled-runtime (CI only), 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo. See `docs/method/07-testing-strategy.md` for how to engage them.
+As of 2026-10-28: 57 Swift files in the unit-test target, **379 test functions in 79 suites**, and **1,024 passing cases with 9 environment/live-integration skips**. The target remains grouped by responsibility (`App`, `Behavior`, `Core`, `DeveloperConsole`, `Environment`, `Library`, `Mirage`, `Reader`, plus Sentinel domain/runtime/catalog/persistence suites). Sentinel alone contributes 151 test functions, including 414 parameterized per-probe contract cases (clean install, determinism, privacy) across the 138-probe registry. The 9 skips are opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo. UI tests remain placeholder launch stubs and are not part of the deterministic merge receipt. See `docs/method/07-testing-strategy.md` for how to engage them.
 
 ---
 

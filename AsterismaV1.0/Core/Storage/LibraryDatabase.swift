@@ -13,6 +13,23 @@
 import Foundation
 import GRDB
 
+/// A record that exists in the database but cannot be decoded. Loading fails
+/// closed instead of omitting the row so callers never mistake corruption for
+/// an empty or shortened library.
+enum LibraryDatabaseError: LocalizedError, Equatable {
+    case undecodableBook(id: String, underlying: String)
+    case undecodableLibraryState(underlying: String)
+
+    var errorDescription: String? {
+        switch self {
+        case let .undecodableBook(id, underlying):
+            return "Book record \(id) could not be decoded: \(underlying)"
+        case let .undecodableLibraryState(underlying):
+            return "Library state could not be decoded: \(underlying)"
+        }
+    }
+}
+
 nonisolated final class LibraryDatabase: @unchecked Sendable {
     let pool: DatabasePool
     let dbURL: URL
@@ -505,27 +522,43 @@ nonisolated final class LibraryDatabase: @unchecked Sendable {
     }
 
     /// G3A parity read: full Book payloads (sessions included), no lazy loading.
+    /// Any undecodable row fails the whole load: a partially decoded library
+    /// must never be presented as complete (or later persisted over the row).
     func loadBooks() throws -> [Book] {
         let dec = Self.decoder()
         return try pool.read { db in
-            try Row.fetchAll(db, sql: "SELECT payload_json FROM books ORDER BY date_added")
-                .compactMap { row -> Book? in
-                    let text: String = row["payload_json"]
-                    return try? dec.decode(Book.self, from: Data(text.utf8))
+            let rows = try Row.fetchAll(
+                db, sql: "SELECT id, payload_json FROM books ORDER BY date_added")
+            return try rows.map { row in
+                let id: String = row["id"]
+                let text: String = row["payload_json"]
+                do {
+                    return try dec.decode(Book.self, from: Data(text.utf8))
+                } catch {
+                    throw LibraryDatabaseError.undecodableBook(
+                        id: id, underlying: String(describing: error))
                 }
+            }
         }
     }
 
+    /// A missing root row is a legitimate fresh store. A root row that exists
+    /// but cannot be decoded is corruption and must not become `LibraryState()`.
     func loadState() throws -> LibraryState {
         let dec = Self.decoder()
         return try pool.read { db in
             guard let row = try Row.fetchOne(
-                db, sql: "SELECT payload_json FROM library_state WHERE key = ?", arguments: ["root"]),
-                let state = try? dec.decode(LibraryState.self, from: Data((row["payload_json"] as String).utf8))
+                db, sql: "SELECT payload_json FROM library_state WHERE key = ?", arguments: ["root"])
             else {
                 return LibraryState()
             }
-            return state
+            let text: String = row["payload_json"]
+            do {
+                return try dec.decode(LibraryState.self, from: Data(text.utf8))
+            } catch {
+                throw LibraryDatabaseError.undecodableLibraryState(
+                    underlying: String(describing: error))
+            }
         }
     }
 
@@ -541,6 +574,17 @@ nonisolated final class LibraryDatabase: @unchecked Sendable {
         }
         try? FileManager.default.removeItem(at: destination)
         try FileManager.default.copyItem(at: dbURL, to: destination)
+    }
+
+    /// True only when no books and no library state exist. Bootstrap uses this
+    /// instead of a book count alone so a store holding an unreadable state row
+    /// is never treated as empty and replaced by a legacy import.
+    func isEmptyStore() throws -> Bool {
+        try pool.read { db in
+            let books = try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM books") ?? 0
+            let state = try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM library_state") ?? 0
+            return books == 0 && state == 0
+        }
     }
 
     func counts() throws -> (books: Int, sessions: Int, pageTimes: Int) {

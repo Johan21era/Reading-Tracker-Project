@@ -6,7 +6,7 @@ This describes **what to build so the same classes of bug get caught automatical
 
 **Who should read this:** Anyone who wants to write tests for the project, or understand how the project guards itself against regressions.
 
-**Status:** Current as of the AsterismaV1.0 release (2026-10-24), after the Bedrock and rebrand programs. The audit-era "step zero" (the test target running one placeholder) was resolved long ago: the suite is now real, wide, and enforced at every work boundary.
+**Status:** Current as of the Sentinel v2 first tranche (2026-10-28), after the Bedrock, rebrand, and repository-reorganization programs. The audit-era "step zero" (the test target running one placeholder) was resolved long ago: the suite is now real, wide, and enforced at every work boundary.
 
 > **Precedence:** the automated census is a strong early-warning system, not the final judge. The owner's personal test results are the absolute source of truth and override every benchmark, census, gate receipt, and documentation claim. See `docs/12-owner-test-authority.md`.
 
@@ -17,10 +17,10 @@ This describes **what to build so the same classes of bug get caught automatical
 | | |
 |---|---|
 | **Framework** | Swift Testing — `@Suite` / `@Test` / `#expect` (the project standardized after converting the original XCTest suites) |
-| **Scale** | 48 Swift files in the unit target (47 containing tests) · 229 `@Test` functions · eight responsibility-based groups |
-| **Standing census** | GitHub `census` on `macos-26` / Xcode 26.6: **229 tests in 61 suites, 10 deliberate environment/opt-in skips, 0 failures**. Local unit census (with the staged runtime) is **220 passed / 0 failed / 9 skipped**. |
+| **Scale** | 57 Swift files in the unit target · 379 test functions in 79 suites · 1,024 passing cases · responsibility-based groups plus Sentinel domain/runtime/catalog/persistence suites |
+| **Standing census** | Local census on macOS 26.6.1 / Xcode 26.6 (2026-10-28): **379 test functions, 1,024 passed cases, 9 skipped, 0 failed**; Release build exit 0. Artifact `rt-census-20261028-152733.xcresult`. The remote GitHub census will roll to these numbers on the next push. |
 | **CI scope** | The deterministic unit target is the merge-presence receipt. UI tests are placeholder launch stubs and depend on interactive automation, so they are not part of CI. The bundled-runtime assertion self-gates on `.mirage-runtime` being staged. |
-| **The 9 local skips** | 4 Mirage real-engine cases (identity import, handshake/health, and the two lifecycle steps), 1 benchmark, 2 real-library SQLite parity cases, and 2 live Open-Meteo cases. CI adds a 10th skip: the bundled-runtime presence assertion, because a clean checkout has no staged 47 MB runtime. |
+| **The 9 local skips** | 4 Mirage real-engine cases (identity import, handshake/health, and the two lifecycle steps), 1 benchmark, 2 real-library SQLite parity cases, and 2 live Open-Meteo cases. None are Sentinel coverage skips. CI may add a bundled-runtime presence skip on a clean checkout without the staged 47 MB runtime. |
 | **Census discipline** | Every fixing session opens and closes on a green census; canonical numbers come from `xcrun xcresulttool get test-results summary --path <.xcresult>` — never from eyeballing the console |
 
 ---
@@ -71,6 +71,30 @@ xcodebuild test … -only-testing:"AsterismaV1.0Tests/MirageZBootDiagnosticTests
 - Entries are born **only** from validated `import_epub` receipts — a test may not invent a mapping.
 - The engine's spawn contract is `<interpreter> <engine>/examples/mirage_sidecar.py <ledger>` on a disposable ledger; the real ledger is never touched by tests.
 - The packaged runtime bundle must verify byte-verbatim: no test mutates the staged bundle except the whole-directory swap rehearsal.
+
+---
+
+## The Sentinel v2 band (2026-10-28)
+
+Sentinel is tested in four layers, plus the product surface:
+
+| Band | Suites | What they pin |
+|---|---|---|
+| **Domain laws** | `SentinelDomainTests` | Fingerprint stability, ordering, lifecycle edges, evidence, copy, diagnosis, trend |
+| **Persistence** | `SentinelPersistenceTests` | Journal segments/checksums/rotation, v1 import, torn state fallback, issue rebuild, config migration |
+| **Runtime** | `SentinelRuntimeTests` | One cycle lock, generation snapshots, timeout/failure isolation, coverage honesty, repair guards |
+| **Catalog contract** | `SentinelCatalogTests` | Per descriptor: clean-install silence, determinism, privacy; damaged-fixture evidence; SQL fixtures; 50 ms fast-pass budget |
+| **Repairs** | `SentinelLaunchAndRepairTests` | Launch-card states, executor refusal matrix, plan builders, rollback/undo, notification cap, diagnostics redaction |
+| **Legacy pins** | `SentinelSG0Tests`, `SentinelPinsTests` | v1 security doctrine S1–S7 and write confinement |
+
+The 414 parameterized probe-contract cases come from running three tests over all
+138 descriptors. The catalog is designed so adding a probe automatically adds its
+three contract cases. A new probe with no clean/determinism/privacy coverage is a
+gate failure by construction.
+
+Known test gaps are recorded in [SG7](../plans/sentinel/gates/SG7.md): no automated
+accessibility pass, no 10× SQLite benchmark, and no per-repair fault injection for
+all 25 plans.
 
 ---
 

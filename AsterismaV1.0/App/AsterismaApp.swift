@@ -50,6 +50,10 @@ struct AsterismaApp: App {
     @Environment(\.openWindow) private var openWindowRelease
     #endif
 
+    /// SG4: the Health Center is a Release feature, so it needs an opener in
+    /// both configurations. Kept separate from the Debug-only console opener.
+    @Environment(\.openWindow) private var openWindowHealth
+
     // MARK: - Init
 
     //
@@ -131,6 +135,11 @@ struct AsterismaApp: App {
                     #endif
                 }
                 .keyboardShortcut(",", modifiers: [.command])
+
+                Button("Sentinel Health") {
+                    openWindowHealth(id: SentinelHealthCenterWindowID.id)
+                }
+                .keyboardShortcut("h", modifiers: [.command, .shift])
             }
 
             #if DEBUG
@@ -172,6 +181,13 @@ struct AsterismaApp: App {
                 .environmentObject(contextEngine)
                 .frame(minWidth: 760, minHeight: 620)
         }
+
+        // SG4: Sentinel Health Center — a real Release surface, not a Debug toy.
+        Window("Sentinel Health", id: SentinelHealthCenterWindowID.id) {
+            SentinelHealthCenterView()
+                .frame(minWidth: 860, minHeight: 640)
+        }
+        .defaultSize(width: 980, height: 720)
 
         // ROADMAP 1.2a/1.2b (NA-2): Settings window — the goal/deadline editor.
         // Shares the SAME environment objects as the main window, so a save here
