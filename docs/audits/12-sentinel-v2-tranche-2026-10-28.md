@@ -8,7 +8,7 @@
 
 **Branch:** `main`
 **Base commit:** `6099e4e`
-**Tree state at verification:** working tree, no commit created yet
+**Tree state at verification:** committed in `40bc922`; GitHub `census` green at `6aecdc3` and `2f40a43`
 **Decision:** SG0–SG6 recorded with evidence; **SG7 is HOLD** on the criteria listed below.
 
 ---

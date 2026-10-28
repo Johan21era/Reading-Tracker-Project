@@ -8,7 +8,7 @@
 **Date:** 2026-10-28
 **Branch:** `main`
 **Base commit:** `6099e4e`
-**Tree state:** working tree, uncommitted (no commit was requested)
+**Tree state:** committed in `40bc922`; GitHub `census` green at `6aecdc3`
 
 **Decision:** awaiting owner review. This receipt records evidence, not approval.
 

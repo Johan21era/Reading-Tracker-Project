@@ -3,7 +3,7 @@
 **Date:** 2026-10-28
 **Branch:** `main`
 **Base commit:** `6099e4e`
-**Tree state:** working tree, uncommitted
+**Tree state:** committed in `40bc922`; GitHub `census` green at `6aecdc3`
 
 **Decision:** PASS — owner review still required.
 

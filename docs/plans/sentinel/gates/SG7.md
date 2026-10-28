@@ -3,7 +3,7 @@
 **Date:** 2026-10-28
 **Branch:** `main`
 **Base commit:** `6099e4e`
-**Tree state:** working tree, uncommitted (no commit requested)
+**Tree state:** committed in `40bc922`; GitHub `census` green at `6aecdc3`
 
 **Decision:** HOLD — executable gates are green, but two required criteria are not met. Owner decision required; do not call this gate passed.
 

@@ -1,7 +1,7 @@
 # Sentinel gate index
 
 **As of:** 2026-10-28
-**Branch:** `main` (working tree; no commit requested)
+**Branch:** `main` at `2f40a43`; tranche commit `40bc922`; GitHub `census` green at `6aecdc3`
 **Census:** 379 test functions · 1,024 passed cases · 9 skipped · 0 failed
 **Census receipt:** [census-2026-10-28.md](census-2026-10-28.md) (the temporary `.xcresult` bundle was not retained)
 
