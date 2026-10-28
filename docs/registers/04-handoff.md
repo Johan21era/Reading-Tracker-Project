@@ -74,7 +74,7 @@ An app that can be trusted with years of reading history, with a change process 
 | 7 | **Legacy cleanup + remaining dead code** | 1 short session | Old P5-G `library.sqlite3`, `.migrated` files, graphify bulk, and zero-caller fragments remain; none are live. |
 | 8 | **Mirage standing items** | Process, not code | TB-M0 observation cadence, a perf-budget report, and the engine-side backup-surface gap. The packaged app-embed exercise is done. |
 
-CI runner alignment is complete (2026-10-26): `census` runs on `macos-26` / Xcode 26.6. The last remote run (`40266848038`) was green with 229 tests; the local suite has since grown to **379 test functions / 1,024 passing cases / 9 skips** with the Sentinel v2 tranche. The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old “open” block in the defect register is historical. Sentinel’s remaining holds are tracked in `docs/plans/sentinel/gates/SG7.md`, not in the old defect register.
+CI runner alignment is complete (2026-10-26): `census` runs on `macos-26` / Xcode 26.6. The remote `census` is green on the Sentinel v2 tranche (run `40758619365`, `6aecdc3`): **379 test functions / 1,024 passing cases / 9 skips / 0 failures** locally, same suite in CI. The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old “open” block in the defect register is historical. Sentinel’s remaining holds are tracked in `docs/plans/sentinel/gates/SG7.md`, not in the old defect register.
 
 ---
 
