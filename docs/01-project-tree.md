@@ -25,7 +25,7 @@ This is a map of every file and folder in the project, organized so you can find
 | `scripts/` | Census, benchmark, test-isolation, runtime staging, icon, and release-package scripts |
 | `dist/` | Generated release packages (gitignored, rebuilt by `scripts/package-release.sh`); the stale local build was removed on 2026-10-28 |
 | `.mirage-runtime/` | Local staged Mirage runtime (gitignored; required for a fresh build) |
-| `graphify-out/` | Generated knowledge graph and report (refreshed 2026-10-28: 7,510 nodes / 19,023 edges; interactive HTML omitted because the graph exceeds the 5,000-node visualizer limit) |
+| `graphify-out/` | Generated knowledge graph, community-aggregated HTML, and report (refreshed 2026-10-28: 7,510 nodes / 19,023 edges; `graph.html` shows 369 community nodes because the full graph exceeds the 5,000-node node-level limit) |
 | `.gitignore` | Tells Git which files to ignore (build junk, user settings, etc.) |
 
 ---

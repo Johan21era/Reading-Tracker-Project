@@ -368,3 +368,4 @@ change is the `nonisolated` concurrency annotation.
 |---|---|---|
 | S-008 | Removed regenerable graphify cache/backup, a byte-identical root playbook copy, and OS metadata | 102 MB → 77 MB; tracked tree clean; `graph.json`/`GRAPH_REPORT.md` and the Mirage runtime intact |
 | S-009 | Refreshed the stale GitHub homepage contributor cache with a temporary same-SHA default branch | Sidebar lists 1 contributor (`Johan21era`); temp branch deleted; default branch restored to `main` |
+| S-010 | Generated the missing `graph.html` from the existing graph; the 7,510-node graph auto-aggregated to 369 community nodes / 1,372 cross-community edges | 435 KB; browser preview renders one canvas; `graph.json`/`GRAPH_REPORT.md`/`manifest.json`/`.graphify_labels.json` hashes unchanged |
