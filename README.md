@@ -163,7 +163,7 @@ The audit-era **NEW-DE-1 … NEW-DE-8 punch list was fixed and pinned** during B
 | 7 | **Remaining dead code** | Some zero-caller fragments remain after G7's −1,157-line sweep. | 3–5 h |
 | 8 | **Mirage era — standing items** | TB-M0 observation cadence; a perf-budget report; the engine-side backup-surface gap. The packaged app-embed exercise is now done (runtime embedded and signed). | Process, not code |
 
-CI runner alignment is complete (2026-10-26): the workflow runs on `macos-26` / Xcode 26.6 and the latest `census` run (`40813891217`, 2026-10-29) is green.
+CI runner alignment is complete (2026-10-26): the workflow runs on `macos-26` / Xcode 26.6. The 2026-10-29 `census` runs are green: `40813891217` on `0310c0f`, and `40815638835` on the documentation-sweep commit `737033a`.
 
 The full defect register remains the source of truth for the F-series items; the old NEW-DE block is historical and should not be read as still open.
 

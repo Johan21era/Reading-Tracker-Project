@@ -426,3 +426,19 @@ files' anchors were subject-checked.
 
 Final bytes for that report:
 `5f3e64e5f72d228b727ae21e4b5b437c5f81c266c51aa869ff6aa2ccbadd7ca1`, 389 lines.
+
+### Post-push CI receipt (2026-10-29)
+
+The sweep commit `737033a` ran green on GitHub: `gh run view 40815638835`
+reports `success` with the single `census` job passing every step in 3m11s
+(head `737033a`). That receipt exposed one stale sentence in `README.md` §5:
+it called `40813891217` the *latest* run. It was green, but it was no longer
+latest, so the word "latest" was replaced with two fixed receipts that cannot
+rot: `40813891217` on `0310c0f` and `40815638835` on `737033a`.
+
+`README.md` current bytes:
+`47bbf8db03ef4d797cb23c363c5b2290684e3906428cefc58e203ed7a2db6c60`, 331
+lines, 27,649 B. `python3 scripts/audit-markdown.py README.md` exits 0 with 18
+path claims and 19 command lines. This supersedes the `README.md` `PASS` row
+above; scores are unchanged (96.0, PASS), with A3 still 75 because the quoted
+`xcodebuild` commands were not re-run in this documentation pass.
