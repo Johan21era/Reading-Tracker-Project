@@ -50,10 +50,10 @@ All commands were run from the repository root on 2026-10-29.
 
 | Claim | Command | Result |
 |---|---|---|
-| Probe count 140 | `rg -o 'id: "[A-Z]+-[0-9]+"' -g '*.swift' AsterismaV1.0/Core/Sentinel \| sort -u \| wc -l` | `140` |
+| Probe count 140 | `rg -o 'id: "[A-Z]+-[0-9]+"' -g '*.swift' AsterismaV2.0/Core/Sentinel \| sort -u \| wc -l` | `140` |
 | Graph 7,510 nodes / 19,023 links | `python3 -c "import json; g=json.load(open('graphify-out/graph.json')); print(len(g['nodes']), len(g['links']))"` | `7510 19023` |
-| App size 166 / 62,452 / 55,177 | `find AsterismaV1.0 -name '*.swift' \| wc -l`; `cat` all Swift lines `\| wc -l`; non-blank `\| grep -cv '^[[:space:]]*$'` | `166`; `62452`; `55177` |
-| Test folder 66 files | `find AsterismaV1.0Tests -name '*.swift' \| wc -l` | `66` |
+| App size 166 / 62,452 / 55,177 | `find AsterismaV2.0 -name '*.swift' \| wc -l`; `cat` all Swift lines `\| wc -l`; non-blank `\| grep -cv '^[[:space:]]*$'` | `166`; `62452`; `55177` |
+| Test folder 66 files | `find AsterismaV2.0Tests -name '*.swift' \| wc -l` | `66` |
 | 432 tests, 88 suites | GitHub run `40811182851` log, unit-census step | `✔ Test run with 432 tests in 88 suites passed after 21.641 seconds` |
 | Xcode 27.1 locally | `xcodebuild -version` | `Xcode 27.1` |
 | Xcode 26.6 in CI | run `40811182851` log, “Show toolchain” | `Xcode 26.6` |
@@ -341,11 +341,11 @@ supersedes every prior row for the same file.
 | 83 Markdown files audited | `git ls-files '*.md' \| wc -l` | `83` |
 | Every path and anchor resolves | `python3 scripts/audit-markdown.py --quiet $(git ls-files '*.md')` | exit 0; **417** backticked path claims (before this section was appended), **0** broken; **162** bash-fence commands and **153** 64-hex claims inventoried |
 | Broken claims at sweep start | same collector, first run | **97** broken claims in **9** files |
-| App size | `find AsterismaV1.0 -name '*.swift' \| wc -l`; concatenated line and non-blank counts | `166`; `62452`; `55177` |
-| Test folder and suite | `find AsterismaV1.0Tests -name '*.swift' \| wc -l`; CI run `40811182851` | `66`; `432 tests in 88 suites` |
-| `@Test` reconciliation | `rg -c '@Test' AsterismaV1.0Tests --glob '*.swift'`; one hit is a comment in `AsterismaV1.0Tests/Environment/WeatherTests.swift:15` | **433** lines − 1 comment = **432** test functions, matching the census |
+| App size | `find AsterismaV2.0 -name '*.swift' \| wc -l`; concatenated line and non-blank counts | `166`; `62452`; `55177` |
+| Test folder and suite | `find AsterismaV2.0Tests -name '*.swift' \| wc -l`; CI run `40811182851` | `66`; `432 tests in 88 suites` |
+| `@Test` reconciliation | `rg -c '@Test' AsterismaV2.0Tests --glob '*.swift'`; one hit is a comment in `AsterismaV2.0Tests/Environment/WeatherTests.swift:15` | **433** lines − 1 comment = **432** test functions, matching the census |
 | Census | `./scripts/census.sh --unit-only` | exit 0; `totalTestCount 432`, `passedTests 423`, `skippedTests 9`, `failedTests 0`, `671 test runs` |
-| Probes | `rg -o 'id: "[A-Z]+-[0-9]+"' -g '*.swift' AsterismaV1.0/Core/Sentinel \| sort -u \| wc -l` | `140` |
+| Probes | `rg -o 'id: "[A-Z]+-[0-9]+"' -g '*.swift' AsterismaV2.0/Core/Sentinel \| sort -u \| wc -l` | `140` |
 | Graph | `python3 -c "import json; g=json.load(open('graphify-out/graph.json')); print(len(g['nodes']), len(g['links']))"` | `7599 19164` |
 | Local toolchain | `xcodebuild -version` | `Xcode 27.1` / `27A9275` |
 | Index gate | `python3 scripts/comprehension-bench.py --validate-only` | `bank ok: 30 facts, 12 overview facts`, exit 0 |
@@ -366,7 +366,7 @@ supersedes every prior row for the same file.
 | `docs/reorganization/AV1-ROR-EXECUTION-2026-10-26.md` | Fifty pre-move paths in the relocation table's **From** column | Plain text with an explicit “these are historical” note; **To** column remains current | 0 broken claims |
 | `docs/registers/02-defect-register.md` | “standing census is now 229 / 220” | Current **432 / 671 / 9 / 0**, with 218/229 explicitly historical | today's census command |
 | `docs/roadmap/05-remediation-roadmap.md` | “standing census is now 212/0/9” | “The census at that boundary was 212/0/9”; current 432 line retained | dated boundary vs current |
-| `DBappends.md` | “173 Sentinel tests” | **162** `@Test` functions in Sentinel-named test files | `rg -c '@Test' AsterismaV1.0Tests --glob '*Sentinel*'` |
+| `DBappends.md` | “173 Sentinel tests” | **162** `@Test` functions in Sentinel-named test files | `rg -c '@Test' AsterismaV2.0Tests --glob '*Sentinel*'` |
 | `docs/integration/MIRAGE-DEEP-DIVE-2026-10-28.md` | 229 / 220 presented without a date | Explicit 2026-10-26 snapshot; current 432/671/9 named | today's census |
 | `docs/MILESTONES.md`, `docs/audits/12-sentinel-v2-tranche-2026-10-28.md` | 138 / 379 / 1,024 snapshot with no current pointer | SG8 postscript: 140 probes / 58 required; 432 / 671 / 9 | today's census + probe count |
 | `README.md`, `docs/registers/04-handoff.md` | Census dated 2026-10-28; README's “latest run” unnamed | 2026-10-29 and run `40813891217` | today's census + `gh run view` |
@@ -442,3 +442,241 @@ lines, 27,649 B. `python3 scripts/audit-markdown.py README.md` exits 0 with 18
 path claims and 19 command lines. This supersedes the `README.md` `PASS` row
 above; scores are unchanged (96.0, PASS), with A3 still 75 because the quoted
 `xcodebuild` commands were not re-run in this documentation pass.
+### V2.0 rename re-audit (2026-10-29)
+
+Every Markdown file touched by the `AsterismaV1.0` → `AsterismaV2.0` rename is
+re-audited here against its final bytes. Paths and anchors were re-resolved with
+`python3 scripts/audit-markdown.py` (exit 0, 83 files). Dimension scores are
+carried forward from the last full audit of the same file; the rename changed
+names and paths, not the underlying evidence, and the new build/census/graph
+receipts are in `docs/registers/03-fix-log.md`.
+
+| Date | File | SHA-256 | Lines | Scores (A1 · A2 · A3 · A4 · B1 · B2 · B3 · C1 · C2 · C3 · D1 · D2 · D3 · E1 · E2) | Weighted | Verdict | Evidence / SKIPPED reason |
+|---|---|---|---:|---|---:|---|---|
+| 2026-10-29 | `DBappends.md` | `76ccf0092061948b014cddfaeb754fe8bc0053caad51e4e4573d10aef5357026` | 3801 | 70 · 100 · 0 · 100 · 100 · 90 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 95 · 100 | 86.1 | REVIEW | V2.0 rename; paths and anchors resolve; historical numeric/command re-derivation SKIPPED because the original .xcresult/run logs were not retained; prior scores retained. |
+| 2026-10-29 | `README.md` | `d1cf1ab69a1f827cf0d4964a28b3faf90b36b9b99fdb92de5e64eef904d4ff8a` | 331 | 95 · 100 · 75 · 95 · 100 · 100 · 100 · 95 · 100 · 90 · 100 · 100 · 100 · 100 · 100 | 96.0 | PASS | V2.0 rename; paths and anchors re-resolved; build, census, surface, and graph receipts re-derived on 2026-10-29; prior dimension scores retained. |
+| 2026-10-29 | `docs/01-project-tree.md` | `7a8a959b784aa906ab233e01f2217aecb0366fca5a2167b71c97269b751d2f11` | 113 | 95 · 100 · 100 · 100 · 100 · 100 · 100 · 90 · 100 · 90 · 100 · 100 · 100 · 95 · 100 | 97.8 | PASS | V2.0 rename; paths and anchors re-resolved; build, census, surface, and graph receipts re-derived on 2026-10-29; prior dimension scores retained. |
+| 2026-10-29 | `docs/12-owner-test-authority.md` | `f0a63b1ca1eddabe7d5d7b020823433957054ce4812a34d72b32e6427d827cd7` | 139 | N/A · 100 · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 100.0 | PASS | V2.0 rename; paths and anchors re-resolved; build, census, surface, and graph receipts re-derived on 2026-10-29; prior dimension scores retained. |
+| 2026-10-29 | `docs/INDEX.md` | `aedf418bebe7d36b701ed2b378def5d19beac084c480c61cba4efbee86b6cf41` | 95 | 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 100.0 | PASS | V2.0 rename; paths and anchors re-resolved; build, census, surface, and graph receipts re-derived on 2026-10-29; prior dimension scores retained. |
+| 2026-10-29 | `docs/MILESTONES.md` | `1819be4363a94b6f8a15a4a7613ad347b051462b0c97331e652b17edea1babf8` | 314 | 40 · 100 · 0 · 100 · 100 · 90 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 82.4 | REVIEW | V2.0 rename; paths and anchors resolve; historical numeric/command re-derivation SKIPPED because the original .xcresult/run logs were not retained; prior scores retained. |
+| 2026-10-29 | `docs/REBRAND-ASTERISMA.md` | `ba09773be1e25b68ba6d938d6ad4ab51114f3c9cd3bf19ec6b2d9e02fb62847b` | 125 | 50 · 100 · 0 · 100 · 100 · 90 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 83.8 | REVIEW | V2.0 rename; paths and anchors resolve; historical numeric/command re-derivation SKIPPED because the original .xcresult/run logs were not retained; prior scores retained. |
+| 2026-10-29 | `docs/audits/12-sentinel-v2-tranche-2026-10-28.md` | `08c960fa3980cbb975abd09a6cfdd572c247f3dff76ccfe183d65f234fa8bc80` | 76 | 0 · 100 · 0 · 0 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 72.0 | REVIEW | V2.0 rename; paths and anchors resolve; historical numeric/command re-derivation SKIPPED because the original .xcresult/run logs were not retained; prior scores retained. |
+| 2026-10-29 | `docs/design/fullscreen-surface-audit.md` | `5d9f65b9602c86799f4d84b7a73750a4446b87f7b9ff6dce2e8b94857e1d05be` | 109 | 50 · 100 · 0 · 100 · 100 · 90 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 83.8 | REVIEW | V2.0 rename; paths and anchors resolve; historical numeric/command re-derivation SKIPPED because the original .xcresult/run logs were not retained; prior scores retained. |
+| 2026-10-29 | `docs/integration/MIRAGE-DEEP-DIVE-2026-10-28.md` | `dd4308bb9a2bee401f3bab9a4b82dd44d21bc6a08385e507f77c7432fc38abf6` | 263 | 0 · 100 · 0 · 0 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 72.0 | REVIEW | V2.0 rename; paths and anchors resolve; historical numeric/command re-derivation SKIPPED because the original .xcresult/run logs were not retained; prior scores retained. |
+| 2026-10-29 | `docs/method/07-testing-strategy.md` | `decff20a7e131a79a77c1c2fea0e1cb86e3c2c2088ae711e4b177c17be35b74b` | 125 | 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A · 100 · 100 · 100 | 100.0 | PASS | V2.0 rename; paths and anchors re-resolved; build, census, surface, and graph receipts re-derived on 2026-10-29; prior dimension scores retained. |
+| 2026-10-29 | `docs/plans/bedrock/BASELINE.md` | `f39a61e2ee7dbbc136e3b10d2160a5e2d828adbcc7287d477f0502bce7c09aee` | 98 | 0 · 100 · 0 · 0 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 72.0 | REVIEW | V2.0 rename; paths and anchors resolve; historical numeric/command re-derivation SKIPPED because the original .xcresult/run logs were not retained; prior scores retained. |
+| 2026-10-29 | `docs/plans/bedrock/BEDROCK-MASTER-PLAN-2026-10-24.md` | `2d692ed1cc106a689c8bef8e901edc6aadb5f4dab8962b01cc28d6ff3862d28b` | 742 | 0 · 100 · 0 · 0 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 72.0 | REVIEW | V2.0 rename; paths and anchors resolve; historical numeric/command re-derivation SKIPPED because the original .xcresult/run logs were not retained; prior scores retained. |
+| 2026-10-29 | `docs/plans/bedrock/DISTRIBUTION.md` | `2ed7c356bb8b655392e249350876f16ae572b0a434cd04481271d631bfbf7044` | 58 | 60 · 100 · 40 · 80 · 100 · 90 · 100 · 100 · 100 · 90 · 100 · 100 · 100 · 90 · 100 | 86.3 | REVIEW | V2.0 rename; paths and anchors resolve; historical numeric/command re-derivation SKIPPED because the original .xcresult/run logs were not retained; prior scores retained. |
+| 2026-10-29 | `docs/plans/bedrock/SESSION-2026-10-24.md` | `3e4d37a5545bbacd2c8d87490dccf0393a1f4e4325892e3776ee4d6e430b092f` | 176 | 0 · 100 · 0 · 0 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 72.0 | REVIEW | V2.0 rename; paths and anchors resolve; historical numeric/command re-derivation SKIPPED because the original .xcresult/run logs were not retained; prior scores retained. |
+| 2026-10-29 | `docs/plans/library-recovery/G6.md` | `de453c961df2ba0f99927fe7a2d35a1a08b47e3639f54a4c06dae980164b42fa` | 78 | 100 · 100 · 90 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 99.2 | PASS | V2.0 rename; paths and anchors re-resolved; build, census, surface, and graph receipts re-derived on 2026-10-29; prior dimension scores retained. |
+| 2026-10-29 | `docs/plans/sentinel/SENTINEL-ROADWORK.md` | `afd8581dd5fd8f96af399ace46a351f5254e0fd8e74f595c4972ca4ab28096bd` | 4007 | 70 · 100 · 0 · 100 · 100 · 90 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 95 · 100 | 86.1 | REVIEW | V2.0 rename; paths and anchors resolve; historical numeric/command re-derivation SKIPPED because the original .xcresult/run logs were not retained; prior scores retained. |
+| 2026-10-29 | `docs/plans/sentinel/gates/SG0.md` | `852bf4cec52329f9a9ea29c3c403551ca3dfe94b54009c6ed187bb5c00d166aa` | 89 | 0 · 100 · 0 · 0 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 72.0 | REVIEW | V2.0 rename; paths and anchors resolve; historical numeric/command re-derivation SKIPPED because the original .xcresult/run logs were not retained; prior scores retained. |
+| 2026-10-29 | `docs/plans/sentinel/gates/SG8.md` | `5723a83882032efc6125de8d24dcf1bde3e8cf5d93d14b3afed21655aecd74f3` | 117 | 100 · 100 · 90 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 99.2 | PASS | V2.0 rename; paths and anchors re-resolved; build, census, surface, and graph receipts re-derived on 2026-10-29; prior dimension scores retained. |
+| 2026-10-29 | `docs/registers/03-fix-log.md` | `7e3dff203ff2b8e2f2f227384d40dd01c00e26f5afd56b11f5cccbee6c9678b9` | 542 | 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A · 100 · 100 · 100 | 99.3 | PASS | V2.0 rename; paths and anchors re-resolved; build, census, surface, and graph receipts re-derived on 2026-10-29; prior dimension scores retained. |
+| 2026-10-29 | `docs/registers/04-handoff.md` | `e9d9ded9a757196ba9b9cf133035835c40a390d45ee9c064383114bb7454902a` | 306 | 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 99.3 | PASS | V2.0 rename; paths and anchors re-resolved; build, census, surface, and graph receipts re-derived on 2026-10-29; prior dimension scores retained. |
+| 2026-10-29 | `docs/registers/05-doc-audit.md` | `3408d14b8ca30d52ae9ccb75db0c85ca95ec9e84287c216e9f3fbf436f2ee427` | 444 | — | — | PASS (self) | Self-row: this digest is the pre-append state; the append that contains this row changes these bytes. |
+| 2026-10-29 | `docs/reorganization/AV1-ROR-EXECUTION-2026-10-26.md` | `f12213893cd3949484ab3200b7d2d8049dbb080e73e5d73a20614bbdfb69639d` | 291 | 0 · 100 · 0 · 0 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 72.0 | REVIEW | V2.0 rename; paths and anchors resolve; historical numeric/command re-derivation SKIPPED because the original .xcresult/run logs were not retained; prior scores retained. |
+| 2026-10-29 | `graphify-out/GRAPH_REPORT.md` | `94977b70406a5200ce7038053a6ee831ec44bc8c78a2973a53ab97c788a5425a` | 1772 | — | — | SKIPPED | Generated by graphify; regenerated 2026-10-29 from the current tree; not hand-edited. |
+
+### V2.0 rename re-audit corrections (2026-10-29)
+
+Three files changed after their rows above were recorded: `docs/INDEX.md`
+gained corrected one-hop anchors, and the fix log and handoff gained the
+isolation receipt and graph base-commit qualifier. These rows supersede the
+same-file rows above.
+
+| Date | File | SHA-256 | Lines | Scores (A1 · A2 · A3 · A4 · B1 · B2 · B3 · C1 · C2 · C3 · D1 · D2 · D3 · E1 · E2) | Weighted | Verdict | Evidence / SKIPPED reason |
+|---|---|---|---:|---|---:|---|---|
+| 2026-10-29 | `docs/INDEX.md` | `de03d396f4dc84f8d8f9a5ebbfa57270d8a3918ddfaa8e00660ba76eee1f9fa3` | 95 | 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 100.0 | PASS | Five stale anchors re-pointed to their owning lines; `comprehension-bench.py --validate-only` passes. |
+| 2026-10-29 | `docs/registers/03-fix-log.md` | `c137d1f89f42f7efe13bd10ff094788236bf7b36ea9df2b0b07f54fdac0b88a5` | 542 | 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A · 100 · 100 · 100 | 99.3 | PASS | Rename stage plus isolation and graph base-commit qualifier; D2 N/A (not an index target). |
+| 2026-10-29 | `docs/registers/04-handoff.md` | `1184de63feceab6d6d19b7414ee3dc99a833ac628643d12dca46922b3e5a67c7` | 307 | 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 99.3 | PASS | Rename close-out, isolation receipt, and graph base-commit qualifier. |
+
+### Second tranche re-audit (2026-10-29)
+
+Scope: every Markdown file edited by the Quick Open / adaptive shell tranche,
+against its final bytes after the graph refresh. The command receipts below were
+all run from the repository root on 2026-10-29.
+
+| Date | File | SHA-256 | Lines | Scores (A1 · A2 · A3 · A4 · B1 · B2 · B3 · C1 · C2 · C3 · D1 · D2 · D3 · E1 · E2) | Weighted | Verdict | Evidence / SKIPPED reason |
+|---|---|---|---:|---|---:|---|---|
+| 2026-10-29 | `README.md` | `a22a75a47282ef57f0b939efc1c75eba14ab21135bd7d74c943cb086fa86c7f0` | 335 | 95 · 100 · 80 · 95 · 100 · 100 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 100 · 100 | 97.1 | PASS | Current build, 437-test census, source counts, graph counts, and 3D page re-derived; historical release hashes and run ids retained as historical with dates. A3 is 80 because not every historical command quoted in the file was re-run. |
+| 2026-10-29 | `docs/INDEX.md` | `44de7573a2de48bb5daf4990f88a8a55b5d4a5d81fac86580a0100e7b92a8b4b` | 101 | 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 100.0 | PASS | `python3 scripts/comprehension-bench.py --mode all` exit 0: 30 facts, 12 overview facts, 0 fallbacks, 100% accuracy, 308.4× median speedup. All anchors resolve. |
+| 2026-10-29 | `docs/01-project-tree.md` | `65ac58606ff7c063c63f2087deb1e9a8879a83d51eb8a931368896e911b13346` | 114 | 100 · 100 · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 100 · 100 | 99.7 | PASS | App/test/graph counts re-derived from the tree; current 437-test receipt and Stage Z graph counts match the fix log and README. A3 N/A: no commands are quoted as receipts. |
+| 2026-10-29 | `docs/design/UI-UX-OVERHAUL-2026-10-29.md` | `bfd7dc62787dd6065fa3c3644fc459b369c6fe41e82139e8ed4644585e6e6263` | 339 | 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 100 · 100 · 100 | 99.0 | PASS | Build exit 0; 437-test census exit 0; layout arithmetic and graph counts re-derived. A1 95 and C2 95 because the two weighted models are explicitly expert judgement, not measured task times; the limits section says so. |
+| 2026-10-29 | `docs/registers/03-fix-log.md` | `a5c22eb22358e7df6045ba0b83443939577b1bdf3f4807176cbb5de375bed730` | 624 | 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A · 100 · 100 · 100 | 99.3 | PASS | Stage Z records the exact build, census, source-size, graph, hash, and browser receipts; historical stages retain their own dates. D2 N/A: not an index target. |
+| 2026-10-29 | `docs/registers/04-handoff.md` | `0373a13fecf4f10a86a079d60910fe019d375d6b1ba3d53c8eac6b20ab9aa1c2` | 380 | 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 99.3 | PASS | New session-close section carries the 437-test census, source counts, limits, and next actions; older SG8/rename sections remain dated historical receipts. |
+| 2026-10-29 | `docs/method/07-testing-strategy.md` | `d57736de64e1d444a13a71471cfb9ddab12d89027558e2556efb26053bf5407f` | 125 | 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A · 100 · 100 · 100 | 100.0 | PASS | Current test scale (67 files / 437 tests / 89 suites / 671 runs) matches the xcresult; the older GitHub 432-test run is labelled as pre-rename. D2 N/A. |
+| 2026-10-29 | `docs/roadmap/05-remediation-roadmap.md` | `97d32aa13f75e180f2a57d363741921911d1ee5ea315508778140da9a798ec63` | 215 | 95 · 100 · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A · 100 · 100 · 100 | 99.2 | PASS | Current census updated to 437 tests / 671 runs / 428 passed / 9 skipped / 0 failed; the 212/432 figures are dated historical boundaries. A3 N/A and D2 N/A. |
+| 2026-10-29 | `docs/registers/05-doc-audit.md` | self-referential | — | — | — | PASS (self) | This row cannot contain its own post-append digest; the bytes are pinned by the commit that adds the row. |
+
+**Evidence bundle (all exit 0 unless stated):**
+
+| Claim | Command | Result |
+|---|---|---|
+| Debug build | `xcodebuild build -project AsterismaV2.0.xcodeproj -scheme AsterismaV2.0 -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO` | `** BUILD SUCCEEDED **` |
+| Unit census | `./scripts/census.sh --unit-only` | 437 tests / 671 runs / 428 passed / 9 skipped / 0 failed |
+| Surface manifest | `./scripts/verify-sentinel-surface.sh` | `15 tables, 8 defaults keys, 5 notification names` |
+| One-hop gate | `python3 scripts/comprehension-bench.py --mode all` | `GATE PASSED`, 0 fallbacks, 100% accuracy, 308.4× median speedup |
+| Markdown audit | `python3 scripts/audit-markdown.py --quiet <changed .md files>` | OK on all eight changed files |
+| App size | `find AsterismaV2.0 -name '*.swift' \| wc -l`; raw and non-blank counts | 170 / 64,084 / 56,626 |
+| Test folder | `find AsterismaV2.0Tests -name '*.swift' \| wc -l` | 67 |
+| Graph counts | `python3 -c "import json; g=json.load(open('graphify-out/graph.json')); print(len(g['nodes']), len(g['links']))"` | `7734 19424` |
+| 3D check | `python3 scripts/build-graph-3d.py --check` | `ok` |
+| 3D browser receipt | loopback Chromium check | 1304×1423 canvas, WebGL true, only the document request, one info log, no errors |
+
+### Reader customization re-audit (2026-10-29)
+
+Scope: every Markdown file edited by the EPUB/PDF reader customization pass,
+against its final bytes after the Stage AA graph refresh. These rows supersede
+the prior same-file rows above for these files. Commands were run from the
+repository root on 2026-10-29.
+
+| Date | File | SHA-256 | Lines | Scores (A1 · A2 · A3 · A4 · B1 · B2 · B3 · C1 · C2 · C3 · D1 · D2 · D3 · E1 · E2) | Weighted | Verdict | Evidence / SKIPPED reason |
+|---|---|---|---:|---|---:|---|---|
+| 2026-10-29 | `README.md` | `2800819d54b89f877eb55b54584fa77eecfd64115e6549cf2377af4d32db4dc2` | 336 | 95 · 100 · 80 · 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 97.3 | PASS | Current build, 441-test census, 171/64,758/57,220 source counts, 7,792/19,534/373 graph counts, Stage AA receipts, and 8,265,095 B 3D page re-derived. A3 80: historical xcodebuild/package commands were not all re-run. E2 N/A: not generated. |
+| 2026-10-29 | `docs/01-project-tree.md` | `77c02ec7460f583840d0694e3c855805e6f97966eba6e85d0c0997c852f28635` | 114 | 100 · 100 · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 100 · 100 | 99.7 | PASS | 67 test files, 441 tests / 89 suites, 7,792/19,534/373 graph counts, and the generated-artifact map match the Stage AA receipts. A3 N/A: no commands are quoted as receipts. C3 95: a map, not a risk register. |
+| 2026-10-29 | `docs/INDEX.md` | `e406081fc6c9e854c6bd43170ff34cff3ab7e345c3a95a2d17d6ff6af6b023a9` | 102 | 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 100.0 | PASS | `comprehension-bench.py --mode all` exit 0: 30 facts + 12 overview facts, 0 fallbacks, 100% accuracy, 250-file scan; the final run measured 286.5× median speedup, the preceding run 281.7×. `--validate-only` exit 0. |
+| 2026-10-29 | `docs/design/READER-POLISH-2026-10-25.md` | `5ce527cea85c219c0a3beb4262d6cb1e656e02d3ea9398cdd75b59f3e23516bc` | 238 | 95 · 100 · 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 98.9 | PASS | Phase 2 sections carry the exact build, 9/9 focused suite, 441-test census, browser-harness, and source-size receipts; Phase 1 figures are dated historical. MangaDex claims are limited to the two forum sources that were readable; unverified controls are explicitly labelled native. A3 95: the one-off harness command is not a standing CI command. |
+| 2026-10-29 | `docs/design/UI-UX-OVERHAUL-2026-10-29.md` | `9091a52b2719fd4931019a12cf9ff7543bf02b237c2bb00b49df8694b10ddf1c` | 357 | 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 100 · 100 · N/A | 99.0 | PASS | Stage Z receipts are labelled at the Stage Z boundary; a current-count note records 441 / 671 / 432 passed / 9 skipped / 0 failed and 171 / 64,758 / 57,220. The reader postscript prevents the "readers unchanged" contradiction. C2 95: the two weighted models are explicitly expert judgement, not task-time measurements. |
+| 2026-10-29 | `docs/method/07-testing-strategy.md` | `dc1bd0f66b36393fceb261ef1d0c272a67c439aea75012ab1bfbc8451cb1e0aa` | 140 | 100 · 100 · 90 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A · 100 · 100 · N/A | 99.2 | PASS | 67 files / 441 tests / 89 suites / 671 runs match the xcresult; the reader band states that the browser harness is not CI. A3 90: opt-in Mirage commands are examples, not re-run receipts. D2/E2 N/A. |
+| 2026-10-29 | `docs/registers/03-fix-log.md` | `88167a7d7938f962748b10d092c2be13d93e868ed97ece1b51bc307ed59ff2c3` | 692 | 95 · 100 · 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A · 100 · 100 · 100 | 98.9 | PASS | Stage AA records exact build, focused-suite, census, harness, source-size, graph, hash, and browser receipts. Historical stages keep their own dates. D2 N/A: not an index target. A3/A1 95: older stage commands were not re-run. |
+| 2026-10-29 | `docs/registers/04-handoff.md` | `6ace57023080282dd66ce467bb6d89b127978adf73b25cdccf975cb9d3bc54ce` | 416 | 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 99.3 | PASS | Reader session close carries the exact 441-test census, 9/9 focused suite, 171/64,758/57,220 source counts, and the uncommitted/no-remote-CI limits. Earlier 437/432 boundaries are labelled historical. |
+| 2026-10-29 | `docs/registers/05-doc-audit.md` | `92f7a83681bcf917c2d5ca4891ac66411085abd4ad222232374c82673c7e2113` | 525 | — | — | PASS (self) | Pre-append digest and line count; this append changes the file's bytes. The next audit must supersede this row. |
+
+### Offline contract re-audit (2026-10-29)
+
+Scope: every Markdown file edited by the offline contract pass, against its
+final bytes. These rows supersede the same-file rows above for these files.
+Commands were run from the repository root on 2026-10-29.
+
+| Date | File | SHA-256 | Lines | Scores (A1 · A2 · A3 · A4 · B1 · B2 · B3 · C1 · C2 · C3 · D1 · D2 · D3 · E1 · E2) | Weighted | Verdict | Evidence / SKIPPED reason |
+|---|---|---|---:|---|---:|---|---|
+| 2026-10-29 | `README.md` | `bd1346e0ad86f4e5fde6c7b013ad017d1a33122ac697c8666cc119423f7a19e6` | 337 | 95 · 100 · 80 · 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 97.3 | PASS | Current unit census 447 / 671 / 438 passed / 9 skipped / 0 failed and full UI-inclusive 450 / 673 / 441 / 9 / 0 re-derived from the two xcresults; 172 / 64,868 / 57,315 source counts and 68 test files re-derived. Offline bullet links Stage AB and discloses the failed OS-level denial. A3 80: historical build/package commands were not re-run. E2 N/A: not generated. |
+| 2026-10-29 | `docs/01-project-tree.md` | `0bce6c514a5d7338de415f58633b57c41318c8ad9bf95e19f5dcbd1447450cde` | 114 | 100 · 100 · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 100 · 100 | 99.7 | PASS | 68 unit-test Swift files, 447 tests / 90 suites, and the full 450 / 673 / 441 / 9 / 0 census match the receipts; six offline pins named. A3 N/A: no commands are quoted as receipts. C3 95: a map, not a risk register. |
+| 2026-10-29 | `docs/INDEX.md` | `ffad303aa424289cd5e9560eb902c86bbe8ca0efbd999e60fcc34560f99aaebd` | 103 | 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 100.0 | PASS | `comprehension-bench.py --validate-only` exit 0 (30 facts, 12 overview facts); `--mode all` exit 0 with 0 fallbacks, 100% accuracy, 269.4× median speedup. README anchors L245/L307/L300 re-pointed after the inserted offline bullet shifted them by one line. E2 N/A: not generated. |
+| 2026-10-29 | `docs/method/07-testing-strategy.md` | `71301a9decc0e04608b1e497a8a134dd965f09bbeb92a1a5a4c9c440da5e0a63` | 164 | 100 · 100 · 90 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A · 100 · 100 · N/A | 99.2 | PASS | 68 files / 447 tests / 90 suites / 671 runs match the unit xcresult; full 450 / 673 / 441 / 9 / 0 matches the full xcresult. The offline band names the injected `OfflineURLProtocol` and records the sandbox limitation. A3 90: opt-in Mirage commands are examples, not re-run receipts. D2/E2 N/A. |
+| 2026-10-29 | `docs/registers/03-fix-log.md` | `782f8d7095c2b9857e522f2a8dc21e88643069b99355b6a562c7d6990392012c` | 753 | 95 · 100 · 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A · 100 · 100 · 100 | 98.9 | PASS | Stage AB records the exact build, focused 11-test run, 447/671/438/9/0 unit census, 450/673/441/9/0 full census, source counts, and the failed process-level denial as SKIPPED. A1/A3 95: older stage commands were not re-run. D2 N/A: not an index target. |
+| 2026-10-29 | `docs/registers/04-handoff.md` | `d8d785e69004d0ca90f39a0995f62d6d083b33d63ebb0d21b4d1151b9a822f46` | 458 | 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 99.3 | PASS | Offline session close carries the focused 11-test, unit 447-test, full 450-test, and 172/64,868/57,315 receipts; the whole-suite sandbox denial is stated as SKIPPED. Earlier 441/432 boundaries are labelled historical. E2 N/A: not generated. |
+| 2026-10-29 | `docs/registers/05-doc-audit.md` | self-referential | — | — | — | PASS (self) | This row cannot contain its own post-append digest; the bytes are pinned by the commit that adds the row. |
+
+**Stage AA reader evidence bundle (historical boundary, all exit 0 unless stated):**
+
+| Claim | Command | Result |
+|---|---|---|
+| Debug build | `xcodebuild build -project AsterismaV2.0.xcodeproj -scheme AsterismaV2.0 -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO` | `** BUILD SUCCEEDED **` |
+| Focused reader suite | `xcodebuild test -project AsterismaV2.0.xcodeproj -scheme AsterismaV2.0 -destination 'platform=macOS' -only-testing:AsterismaV2.0Tests/ReaderAppearanceTests CODE_SIGNING_ALLOWED=NO` | `✔ Test run with 9 tests in 1 suite passed` |
+| Unit census | `./scripts/census.sh --unit-only` | 441 tests / 671 runs / 432 passed / 9 skipped / 0 failed; xcresult `rt-census-20261029-012648.xcresult` |
+| Surface manifest | `./scripts/verify-sentinel-surface.sh` | `sentinel-surface: OK — 15 tables, 8 defaults keys, 5 notification names` |
+| One-hop gate | `python3 scripts/comprehension-bench.py --mode all` | `GATE PASSED`, 0 fallbacks, 100% accuracy; final run 286.5×, preceding run 281.7× median speedup |
+| Markdown audit | `python3 scripts/audit-markdown.py README.md docs/01-project-tree.md docs/INDEX.md docs/design/READER-POLISH-2026-10-25.md docs/design/UI-UX-OVERHAUL-2026-10-29.md docs/method/07-testing-strategy.md docs/registers/03-fix-log.md docs/registers/04-handoff.md` | OK on all eight files |
+| App size | `find AsterismaV2.0 -name '*.swift' \| wc -l`; concatenated raw and non-blank counts | 171 / 64,758 / 57,220 |
+| Test folder | `find AsterismaV2.0Tests -name '*.swift' \| wc -l` | 67 |
+| Graph counts | `graphify update . --force` | 7,792 nodes / 19,534 edges / 373 communities |
+| 3D check | `python3 scripts/build-graph-3d.py --check` | `ok` |
+| 3D browser receipt | loopback Chromium, 1400×1000 | canvas 1400×1000, WebGL true, `resources: []`, one info log, no errors |
+| EPUB mode harness | Chromium, 1280×720, 160 paragraphs | 23 paged pages; 21 scrolling viewport-pages; page 3 at `scrollY = 2160`; switch-back at `scrollLeft = 3840` |
+
+**Honest skips:**
+
+| Check | Reason |
+|---|---|
+| `file://` 3D open | Playwright Chromium blocks the `file:` protocol (`Access to "file:" protocol is blocked`). The same generated file was served over loopback and verified there; this is not a file:// receipt. |
+| Owner visual acceptance | No owner session in this work pass; no screenshot because macOS screen capture remains denied. |
+| Real EPUB/PDF pass | No real book was opened in the app during this pass; the reader model is tested and the JavaScript mode switch was harnessed in Chromium. |
+| Remote CI | No push was made for this working tree; the last remote census predates Stage AA. |
+| PDF UI automation | No UI automation exists for PDFKit; the layout/fit/direction/gap mapping is pinned at the model level only. |
+
+### Documentation consistency re-audit (2026-10-29)
+
+Scope: the two design records edited after the offline-contract pass, against
+their final bytes. These rows supersede the same-file rows above for these
+files. `python3 scripts/audit-markdown.py --quiet docs/design/UI-UX-OVERHAUL-2026-10-29.md docs/design/READER-POLISH-2026-10-25.md` exited 0; `python3 scripts/comprehension-bench.py --validate-only` also exited 0.
+
+| Date | File | SHA-256 | Lines | Scores (A1 · A2 · A3 · A4 · B1 · B2 · B3 · C1 · C2 · C3 · D1 · D2 · D3 · E1 · E2) | Weighted | Verdict | Evidence / SKIPPED reason |
+|---|---|---|---:|---|---:|---|---|
+| 2026-10-29 | `docs/design/READER-POLISH-2026-10-25.md` | `a8ce175f35c6af19bac99f485d3e8b4207eaa514956ba6d74139994c02774ed0` | 241 | 95 · 100 · 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 98.9 | PASS | The Phase 2 postscript now records the Stage AB offline census (447 / 671 / 438 / 9 / 0) and labels the earlier 441-test reader boundary as historical. A3 95: the one-off Chromium harness is not a standing CI command. |
+| 2026-10-29 | `docs/design/UI-UX-OVERHAUL-2026-10-29.md` | `07488c13cb855d678e6edb9fc1999dd6ffeba81d1408f6b3a827dc619a1b90f2` | 359 | 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 100 · 100 · N/A | 99.0 | PASS | The current-count note now records 447 / 671 / 438 / 9 / 0 and the full 450 / 673 / 441 / 9 / 0, while the Stage Z figures stay labelled at their boundary. C2 95: the two weighted models are explicitly expert judgement, not task-time measurements. |
+| 2026-10-29 | `docs/registers/05-doc-audit.md` | self-referential | — | — | — | PASS (self) | This row cannot contain its own post-append digest; the bytes are pinned by the commit that adds the row. |
+
+### Stage AC graph-refresh re-audit (2026-10-29)
+
+Scope: the Markdown files edited by the post-offline graph refresh, against
+their final bytes. These rows supersede the same-file rows above for these
+files. `python3 scripts/audit-markdown.py --quiet README.md docs/01-project-tree.md docs/registers/03-fix-log.md docs/registers/04-handoff.md docs/registers/05-doc-audit.md` exited 0; `python3 scripts/comprehension-bench.py --mode all` exited 0 with 100% accuracy and 241.5× median speedup.
+
+| Date | File | SHA-256 | Lines | Scores (A1 · A2 · A3 · A4 · B1 · B2 · B3 · C1 · C2 · C3 · D1 · D2 · D3 · E1 · E2) | Weighted | Verdict | Evidence / SKIPPED reason |
+|---|---|---|---:|---|---:|---|---|
+| 2026-10-29 | `README.md` | `932b2d04678ec032a87d22e1512547e5a6ff25bcd082972ba96f0a8b2d1a0a32` | 337 | 95 · 100 · 80 · 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 97.3 | PASS | Current graph **7,836 / 19,618 / 387**, 3D page 8,298,484 B, and the Stage AC hashes re-derived; the 447/450 census and 172/64,868/57,315 source counts are unchanged. A3 80: historical build/package commands were not re-run. E2 N/A: not generated. |
+| 2026-10-29 | `docs/01-project-tree.md` | `9643c91b9b4ed5c1358c83ff1d36102d8f73ed6a99b89a524a9c9c13adae366d` | 114 | 100 · 100 · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 100 · 100 | 99.7 | PASS | Graph row now says 7,836 / 19,618 / 387 and points at the Stage AC receipt. A3 N/A: no commands are quoted as receipts. C3 95: a map, not a risk register. |
+| 2026-10-29 | `docs/registers/03-fix-log.md` | `13b5b1ba4e932d1a57c0191f516cc8b23e7685b32c9f2a6cfbdeae08815c77db` | 789 | 95 · 100 · 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A · 100 · 100 · 100 | 98.9 | PASS | Stage AC records the exact `graphify update`, `graphify export html`, 3D build/check, loopback browser, artifact hashes, and the seven zero-node metadata inputs. A1/A3 95: older stage commands were not re-run. D2 N/A: not an index target. |
+| 2026-10-29 | `docs/registers/04-handoff.md` | `150167a07b86f781da1845485736a4244821576db5f45cc76aaa1b8260f57f55` | 458 | 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 99.3 | PASS | Offline session close now records the Stage AC graph refresh and no longer claims the graph is stale; the 447/450 census and sandbox SKIPPED note remain. E2 N/A: not generated. |
+| 2026-10-29 | `graphify-out/GRAPH_REPORT.md` | `e770b95ce3973bfc51dd691ede51ff3945b0bd18bdddf28f971ad36e2dfb7af0` | 1932 | — | — | SKIPPED | Generated by graphify in Stage AC; not hand-edited. Its previous 1,772-line row is historical. |
+| 2026-10-29 | `docs/registers/05-doc-audit.md` | self-referential | — | — | — | PASS (self) | This row cannot contain its own post-append digest; the bytes are pinned by the commit that adds the row. |
+
+### Stable run command re-audit (2026-10-29)
+
+Scope: the Markdown edited by Stage AD, against its final bytes. These rows
+supersede the same-file rows above for these files.
+`python3 scripts/audit-markdown.py --quiet README.md docs/01-project-tree.md docs/registers/03-fix-log.md docs/INDEX.md docs/registers/05-doc-audit.md`
+exited 0; `python3 scripts/comprehension-bench.py --mode all` exited 0 with
+100% accuracy and 95.7× median speedup.
+
+| Date | File | SHA-256 | Lines | Scores (A1 · A2 · A3 · A4 · B1 · B2 · B3 · C1 · C2 · C3 · D1 · D2 · D3 · E1 · E2) | Weighted | Verdict | Evidence / SKIPPED reason |
+|---|---|---|---:|---|---:|---|---|
+| 2026-10-29 | `README.md` | `bbf2ac93aa207190e684b25d6b7c41d6a8e51d611411cdc0935fd8ce4dc44f5f` | 345 | 95 · 100 · 80 · 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 97.3 | PASS | §7 now documents the stable runner. Three real runs built and launched pids 2286, 2396, and 2496; `--build-only` exited 0 and left pid 2496 running. A3 80: historical build/package commands were not re-run. E2 N/A: not generated. |
+| 2026-10-29 | `docs/01-project-tree.md` | `7a6147aa6084355b0b5cb8b8bef074879aad4e33b62557b168904efcb5619a57` | 114 | 100 · 100 · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 100 · 100 | 99.7 | PASS | The `scripts/` row now names `run-latest.sh`. A3 N/A: no commands are quoted as receipts. C3 95: a map, not a risk register. |
+| 2026-10-29 | `docs/registers/03-fix-log.md` | `18fc17e0caed81b630234a252ee59325a4f645853e1289ffe93662d1c0bd69b7` | 815 | 95 · 100 · 95 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A · 100 · 100 · 100 | 98.9 | PASS | Stage AD records the three real launches, the graceful-quit behavior, the default-DerivedData reason, and the settle check. A1/A3 95: older stage commands were not re-run. D2 N/A. |
+| 2026-10-29 | `docs/INDEX.md` | `731b1a779b634ea46a5f48429d5203f2bcc601c664a698c75336c55b45d7284a` | 104 | 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 100.0 | PASS | Added the runner row and re-pointed the four shifted README line anchors (six references) after the §7 insertion; `--validate-only` exit 0 and `--mode all` exit 0. E2 N/A: not generated. |
+| 2026-10-29 | `docs/registers/05-doc-audit.md` | self-referential | — | — | — | PASS (self) | This row cannot contain its own post-append digest; the bytes are pinned by the commit that adds the row. |
+
+### Mirage ADR-13 close-out re-audit (2026-10-29)
+
+Scope: the Markdown edited for the warm-engine/library-scale tranche, against its
+final bytes. `python3 scripts/audit-markdown.py --quiet README.md docs/INDEX.md
+docs/01-project-tree.md docs/registers/03-fix-log.md docs/registers/04-handoff.md
+docs/integration/MIRAGE-DEEP-DIVE-2026-10-28.md
+docs/integration/adr/ADR-6-mirage-feature-lifecycle.md
+docs/integration/adr/ADR-13-mirage-warm-engine-and-library-scale.md` exited 0.
+`python3 scripts/comprehension-bench.py --validate-only` exited 0;
+`python3 scripts/comprehension-bench.py --mode all` exited 0 with 100% facts
+accuracy, 0 fallbacks, and 254.1× median indexed speedup. These rows supersede
+the same-file rows above for these files.
+
+| Date | File | SHA-256 | Lines | Scores (A1 · A2 · A3 · A4 · B1 · B2 · B3 · C1 · C2 · C3 · D1 · D2 · D3 · E1 · E2) | Weighted | Verdict | Evidence / SKIPPED reason |
+|---|---|---|---:|---|---:|---|---|
+| 2026-10-29 | `README.md` | `dba8cf535d843f67d8b2b54ced7b95f9d1bd1ad3e0f3949b7ea9d70faea29760` | 345 | 100 · 100 · 80 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 98.4 | PASS | Graph counts 8,037 / 20,085 / 378 and the 3D page size were re-derived from the Stage AF artifacts; the Stage AF pointer resolves. A3 80: older package/test commands in this file were not re-run in this audit. E2 N/A: README is not generated. |
+| 2026-10-29 | `docs/INDEX.md` | `a06d767d58e40ea84c1380edff85e73da8017d383feda7df4b958290e11f8f7b` | 106 | 100 · 100 · 100 · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 100.0 | PASS | Added the ADR-13 and ADR-13-pins rows; moved the three handoff anchors to #L90/#L84 after the Stage AE row shifted the file. `--validate-only` and `--mode all` exited 0 (100% / 0 fallbacks). A4 N/A. |
+| 2026-10-29 | `docs/01-project-tree.md` | `dd9d0c2ec2c522f064e309cb783ff7d46a493a17d89922009412d9c219fac768` | 114 | 100 · 100 · N/A · N/A · 100 · 100 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 100 · N/A | 99.7 | PASS | Mirage file count is 17 (`find … | wc -l`); tests are 71 files / 459 tests / 91 suites from the census, and the graph row matches Stage AF. C3 95: a map, not a risk register. E2 N/A. |
+| 2026-10-29 | `docs/registers/03-fix-log.md` | `37990968a3384bcebd494a6b2725e51593a88294436e73a33ceb454412418e55` | 890 | 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 100.0 | PASS | Stage AE records the 12 new pins and the 459/671/450/9/0 census; Stage AF records the graph counts, four artifact hashes, 3D size, WebGL/no-off-origin receipt, and the skipped network-panel capture. All quoted commands were run in this session. |
+| 2026-10-29 | `docs/registers/04-handoff.md` | `baf772bc193b8ec25014664f57d5f92997ad9a13011a84c8ed9cb946cb856eed` | 459 | 100 · 100 · N/A · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 100.0 | PASS | Baseline now states the ADR-13 census (459/671/450/9/0) and the Stage AF graph counts; row 10 names the still-pending owner acceptance instead of claiming it. No commands are quoted as receipts. E2 N/A. |
+| 2026-10-29 | `docs/integration/MIRAGE-DEEP-DIVE-2026-10-28.md` | `2bd4868a8142d88942951b4b8abcec3ecf5f9e22cd6c1bf5ea6b4747173e73a9` | 297 | 100 · 100 · 100 · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 100.0 | PASS | The 2026-10-28 per-gesture lifecycle is labelled historical; §3.2 names 17 existing files; §10 records ADR-13 and the 459/671/450/9/0 census. `./scripts/run-latest.sh --build-only` and the census were run. E2 N/A. |
+| 2026-10-29 | `docs/integration/adr/ADR-6-mirage-feature-lifecycle.md` | `4ed4b3eecdb50740698b7347c0ea25e7763a3bc7a63881dc047b54c955e9e81a` | 81 | N/A · 100 · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 100.0 | PASS | Decision 5 now carries the ADR-13 supersession note; the ADR-13 path exists and the other decisions remain in force. A4 100: ADR-13 resolves. E2 N/A. |
+| 2026-10-29 | `docs/integration/adr/ADR-13-mirage-warm-engine-and-library-scale.md` | `d9e6c9b47740aaf4f62c241ca6e60af813407457233e7a97cd1fb80aeb3d7cd9` | 94 | 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 100.0 | PASS | New decision record: 17-file count, 450/9/0 across 459/671, three suite names, and the Stage AE receipt. All quoted commands were run; owner acceptance is explicitly pending rather than claimed. E2 N/A. |
+| 2026-10-29 | `docs/registers/05-doc-audit.md` | self-referential | — | — | — | PASS (self) | This section cannot contain its own post-append digest; the bytes are pinned by the commit that adds the rows. |
+
+### Closeout Initiative re-audit (2026-10-29)
+
+Scope: every Markdown file edited for the ADR-13 close-out, audited against its
+final bytes. The audit command was
+`python3 scripts/audit-markdown.py --quiet` over the twelve files below and
+exited 0 after the Stage AG path phrasing fix. `comprehension-bench.py
+--validate-only` exited 0 (`bank ok: 30 facts, 12 overview facts`);
+`comprehension-bench.py --mode all` exited 0 with 100% facts accuracy, 0
+fallbacks, 244.7× median indexed speedup, and 94.3× overview speedup. These rows
+supersede the same-file rows above.
+
+| Date | File | SHA-256 | Lines | A1 · A2 · A3 · A4 · B1 · B2 · B3 · C1 · C2 · C3 · D1 · D2 · D3 · E1 · E2 | Weighted | Verdict | Evidence / SKIPPED reason |
+|---|---|---|---:|---|---:|---|---|
+| 2026-10-29 | `AGENTS.md` | `2cf870c639dc9ba92557f6aca7ef3d806c5cc1fe3d08def1f007044eae174627` | 300 | N/A · 100 · 70 · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A · 100 · 100 · N/A | 96.8 | PASS | The protocol is now named **Closeout Initiative** and states the five-step order. A3 70: the CI and graph commands are quoted as instructions, not all re-run as receipts in this audit. A4 N/A (no commit/run IDs stated). D2 N/A: AGENTS.md is repository law, not an INDEX lookup target. |
+| 2026-10-29 | `README.md` | `79b22012e98483b456d6ca754ab4264cac9ae355f7d3f71971bedd8dc6651d5b` | 345 | 100 · 100 · 85 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 98.8 | PASS | Census 459 / 671 / 450 / 9 / 0, app size 175 files / 66,050 raw / 58,378 non-blank, test folder 71 files, and graph 8,045 / 20,093 / 381 were re-derived this session. A3 85: package-release and older stage commands are quoted but were not re-run. E2 N/A: README is not generated. |
+| 2026-10-29 | `docs/01-project-tree.md` | `64dff851e8ac2c3725457da6c496e98f3e17c3320df3bc382066e0fd3fe28867` | 114 | 100 · 100 · N/A · N/A · 100 · 100 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 100 · N/A | 99.6 | PASS | Mirage row is 17 files (counted); tests are 71 files / 459 tests / 93 suites (census); graph row is 8,045 / 20,093 / 381. A3/A4 N/A: the file states no commands or run IDs. C3 95: a map, not a risk register. |
+| 2026-10-29 | `docs/registers/03-fix-log.md` | `bae5bc9d69a18b509dabe20e6b05185486ef562fd71996189ed74c6004cd51fa` | 916 | 100 · 100 · 90 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 | 99.2 | PASS | Stage AG records the 459-test census, both graph rebuilds, the 67,612 KiB junk removal, and five artifact hashes. A3 90: earlier stages quote commands that were not re-run in this close-out; Stage AG commands all ran. The two removed-directory paths are now plain prose, so no backticked path is missing. |
+| 2026-10-29 | `docs/registers/04-handoff.md` | `52e6b4c3d24c530fedcc91122b7365f863d260a72072fce0dd54f2596fdab72f` | 459 | 100 · 100 · N/A · 90 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 99.3 | PASS | Baseline states 459 / 671 / 450 / 9 / 0 and the Stage AG graph counts; the older boundaries are labelled historical. A4 90: the package SHA is labelled “last documented”, not re-derived. A3 N/A: no command is presented as a receipt. |
+| 2026-10-29 | `docs/method/07-testing-strategy.md` | `bb994b010df2ffdee7cb2c56a3bc6c6f6e692728e70b1587881f9ee5de44295b` | 165 | 100 · 100 · 90 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 99.2 | PASS | Scale row is 71 files / 459 tests / 93 suites / 671 runs; the offline band's 447 figure is explicitly historical. A3 90: the cited GitHub run was not re-queried this session. E2 N/A. |
+| 2026-10-29 | `docs/roadmap/05-remediation-roadmap.md` | `e476d44366c18515554710233637d46c9dabe3a3de39db72e8a8d7e71df9f6b2` | 215 | 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 100.0 | PASS | The dated 2026-10-29 note now reads 459 / 671 / 450 / 9 / 0; run `40811182851` is kept as the labelled pre-rename baseline. E2 N/A. |
+| 2026-10-29 | `docs/MILESTONES.md` | `9bb84284a92e325ce659423cadf1c15f514008f3c24497d841a11395371c7aa9` | 362 | 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 100.0 | PASS | Milestone 007 records ADR-13 with the 459-test census and xcresult `rt-census-20261029-031816.xcresult`; its “what this does not mean” section discloses the missing owner run, session-scoped queue, and ADR-7 limit. |
+| 2026-10-29 | `docs/design/UI-UX-OVERHAUL-2026-10-29.md` | `60cc1a53b48f3cb2acc402088b47da7bd2e2d70d92e710b9840bfe826ed2e2a3` | 361 | 100 · 100 · 85 · 100 · 100 · 95 · 100 · 100 · 100 · 95 · 100 · 100 · 100 · 100 · N/A | 97.9 | PASS | The Stage Z table stays the dated UI receipt; the later-counts note now carries Stage AB (447) and Stage AE (459 / 93 suites / 175 files / 58,378 non-blank). A3 85 and C3 95: historical commands and residual UI risks rest with the older record. |
+| 2026-10-29 | `docs/integration/MIRAGE-DEEP-DIVE-2026-10-28.md` | `2bd4868a8142d88942951b4b8abcec3ecf5f9e22cd6c1bf5ea6b4747173e73a9` | 297 | 100 · 100 · 100 · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 100.0 | PASS | Unchanged since the ADR-13 audit row above; the digest matches, the 2026-10-28 lifecycle is labelled historical, and §10 carries ADR-13. |
+| 2026-10-29 | `docs/integration/adr/ADR-6-mirage-feature-lifecycle.md` | `4ed4b3eecdb50740698b7347c0ea25e7763a3bc7a63881dc047b54c955e9e81a` | 81 | N/A · 100 · N/A · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 100.0 | PASS | Unchanged; decision 5 carries the ADR-13 supersession note and the ADR-13 path resolves. |
+| 2026-10-29 | `docs/integration/adr/ADR-13-mirage-warm-engine-and-library-scale.md` | `d9e6c9b47740aaf4f62c241ca6e60af813407457233e7a97cd1fb80aeb3d7cd9` | 94 | 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · 100 · N/A | 100.0 | PASS | Unchanged; census, build receipt, the 17-file count, and owner-acceptance-as-pending are all stated. |
+| 2026-10-29 | `docs/registers/05-doc-audit.md` | self-referential | — | — | — | PASS (self) | This section cannot contain its own post-append digest; the bytes are pinned by the commit that adds these rows. |

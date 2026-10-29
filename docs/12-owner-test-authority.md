@@ -55,11 +55,11 @@ and the Release build:
 cd /Users/johanrembeci/Desktop/AsterismaV1.0
 rm -rf /tmp/asterisma-owner-test
 mkdir -p /tmp/asterisma-owner-test
-ditto -x -k dist/AsterismaV1.0-1.0-arm64.zip /tmp/asterisma-owner-test
-open /tmp/asterisma-owner-test/AsterismaV1.0.app
+ditto -x -k dist/AsterismaV2.0-2.0-arm64.zip /tmp/asterisma-owner-test
+open /tmp/asterisma-owner-test/AsterismaV2.0.app
 ```
 
-To keep it for daily use, drag `AsterismaV1.0.app` from that folder to
+To keep it for daily use, drag `AsterismaV2.0.app` from that folder to
 `/Applications` and launch it normally. If macOS blocks the first launch,
 right-click → Open.
 
@@ -68,20 +68,20 @@ right-click → Open.
 Use this when you need the debugger, console logs, or the Developer Console
 (⌘⇧D):
 
-1. Open `AsterismaV1.0.xcodeproj`.
-2. Select scheme `AsterismaV1.0`, destination **My Mac**.
+1. Open `AsterismaV2.0.xcodeproj`.
+2. Select scheme `AsterismaV2.0`, destination **My Mac**.
 3. Press ⌘R.
 
 Or from the terminal:
 
 ```bash
 xcodebuild build \
-  -project "AsterismaV1.0.xcodeproj" \
-  -scheme "AsterismaV1.0" \
+  -project "AsterismaV2.0.xcodeproj" \
+  -scheme "AsterismaV2.0" \
   -configuration Debug \
   -destination 'platform=macOS'
 
-open ~/Library/Developer/Xcode/DerivedData/AsterismaV1.0-*/Build/Products/Debug/AsterismaV1.0.app
+open ~/Library/Developer/Xcode/DerivedData/AsterismaV2.0-*/Build/Products/Debug/AsterismaV2.0.app
 ```
 
 Run **one copy at a time**. Both Debug and Release use the same live sandbox

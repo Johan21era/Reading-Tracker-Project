@@ -6,8 +6,8 @@ CDN, no server, no network calls. Open it with:
 
     open graphify-out/graph-3d-full.html
 
-This is the only 3D view: every graph node (7,510 nodes / 19,023 edges at the
-time of the first build). The aggregated community view was retired on
+This is the only 3D view: every graph node (7,621 nodes / 19,186 edges at the
+2026-10-29 build). The aggregated community view was retired on
 2026-10-29 — `graphify-out/graph.html` is the 2D community export.
 
 Examples:
@@ -171,7 +171,7 @@ def full_view(
 
     payload = {
         "mode": "full",
-        "title": "Graphify 3D — AsterismaV1.0 full view",
+        "title": "Graphify 3D — AsterismaV2.0 full view",
         "subtitle": (
             f"{len(view_nodes):,} nodes · {len(view_links):,} edges · "
             f"{len(communities):,} communities · hover a node to inspect"

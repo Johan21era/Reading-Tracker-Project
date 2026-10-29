@@ -34,6 +34,11 @@ recorded lifecycle decision the settings semantics would be ad-hoc and uncountab
    does not alter the lifecycle doctrine; the "persistent settings session" idea the ladder
    once contemplated is NOT taken here (the machinery boundary M-024 — one spawn per
    process — is honored rather than fought; see M-027 root-cause record).
+
+   > **Superseded 2026-10-29 by ADR-13.** M-027 found no machinery boundary on the
+   > production path, so the warm app-scoped session is now implemented. This decision's
+   > safety intent is preserved by serialized requests, explicit gestures, idle/background
+   > teardown, and the explicit retry gate. The other ADR-6 decisions remain in force.
 6. **The unavailable-state experience** — three honest worlds, each with plain language:
    (a) engine not set up (no dev checkout; future: bundle) `— "The Mirage engine isn't set up
    on this Mac yet…"`; (b) feature disabled — the sheet reports and starts nothing and the

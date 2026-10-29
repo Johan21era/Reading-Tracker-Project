@@ -1,4 +1,4 @@
-# Fullscreen Surface Audit — AsterismaV1.0
+# Fullscreen Surface Audit — AsterismaV1.0 (historical)
 
 **Date:** 2026-10-24
 **Scope:** main window, sidebar, search, toolbar, detail canvas

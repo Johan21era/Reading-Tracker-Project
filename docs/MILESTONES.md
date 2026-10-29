@@ -205,7 +205,7 @@ of the panel and book plate is still pending.
 
 1. The repository was reorganized without changing file contents, ownership,
    history, or behavior:
-   - app shell moved to `AsterismaV1.0/App/`;
+   - app shell moved to `AsterismaV2.0/App/`;
    - 48 flat test files grouped into `App`, `Behavior`, `Core`,
      `DeveloperConsole`, `Environment`, `Library`, `Mirage`, and `Reader`;
    - 50 `git mv` operations, 100% renames, 0 insertions/deletions;
@@ -259,7 +259,7 @@ milestone 004.
 **Date and time:** 2026-10-28 15:27 EDT (−0400)
 **Recorded by:** the engineering session, after the first tranche census
 **Build:** working tree at base `6099e4e` (uncommitted at recording time)
-**Code:** Sentinel v2 under `AsterismaV1.0/Core/Sentinel/` and `AsterismaV1.0/Features/Sentinel/`
+**Code:** Sentinel v2 under `AsterismaV2.0/Core/Sentinel/` and `AsterismaV2.0/Features/Sentinel/`
 
 ### What happened
 
@@ -312,3 +312,51 @@ This is the **first tranche**, not the 700-probe ceiling. The SG7 gate is
 
 Owner acceptance run, v1 removal decision, localization, and a 10× SQLite
 benchmark. See SG7 for the exact blockers.
+
+## 007 — Mirage becomes a warm, library-scale system (ADR-13)
+
+**Date:** 2026-10-29
+**Decision record:** `docs/integration/adr/ADR-13-mirage-warm-engine-and-library-scale.md`
+**Census:** 459 tests / 671 runs / 450 passed / 9 skipped / 0 failed, exit 0
+(`./scripts/census.sh --unit-only`, xcresult
+`rt-census-20261029-031816.xcresult`)
+
+### What happened
+
+Mirage stopped paying a cold-start handshake for every gesture. One
+app-scoped session now stays warm, serializes every request through a FIFO
+gate, and stops on idle, disable, or app background. On top of that session:
+
+- a library-wide `books_list` scan caches `mirage/library-index.json` and
+  reconciles lost editions into one atomic identity-map write;
+- a batch sequencer analyzes every unlinked EPUB through the same one-book
+  path, with cooperative cancel and failure-only retry;
+- Settings ▸ Mirage became a control center for engine state, coverage, scan
+  freshness, and batch progress.
+
+### Why it matters
+
+The earlier architecture could analyze one book per process lifetime; the
+library-scale goal needed a session that survives across requests. This tranche
+is the first one where "analyze my whole library" is a single explicit gesture
+instead of a repeated cold start.
+
+### What this does not mean
+
+- No owner acceptance run, no UI interaction run, and no remote CI run for this
+  working tree.
+- The batch queue is session-scoped: it is not restored after an app relaunch.
+- Spoiler-sensitive detail surfaces stay disabled under ADR-7; this tranche
+  scales analysis storage and throughput, not disclosure.
+
+### Evidence
+
+- `docs/registers/03-fix-log.md` Stage AE (implementation + focused pins) and
+  Stage AF (graph refresh).
+- `AsterismaV2.0Tests/Mirage/MirageEngineServiceTests.swift`,
+  `MirageLibraryIndexTests.swift`, `MirageBatchAnalyzerTests.swift` — 12 pins.
+
+### Next
+
+Owner acceptance of the warm engine and batch flow, then persistence and
+restart resilience for the queue.

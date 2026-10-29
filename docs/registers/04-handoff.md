@@ -4,7 +4,7 @@
 
 This document answers the seven questions every close-out should answer, in plain language. It is written so that anyone — whether or not they have ever written code — can pick up the project and know exactly where things stand.
 
-**Refreshed 2026-10-28: AsterismaV1.0 is released, merged, reorganized, CI-green, and now carries the Sentinel v2 first tranche.** The app is usable now. The remaining work is distribution hardening, owner visual acceptance of the reader polish, and the Sentinel holds recorded in SG7 (manual acceptance, v1 removal, localization, menu bar, accessibility, 10× benchmark).
+**Refreshed 2026-10-29: the V1.0 release is merged, reorganized, and CI-green, and it carries the Sentinel v2 first tranche; `AsterismaV2.0` is the current working identity, not a shipped release.** The V2.0 tree now also carries the Home/Library shell overhaul, the reader customization pass, the offline contract pass, and the ADR-13 Mirage warm-engine/library-scale overhaul, all compiled and unit-tested but **not committed and not visually accepted**. The app is usable now. The remaining work is owner acceptance of the shell/reader/offline/Mirage changes, distribution hardening, and the Sentinel holds recorded in SG7 (manual acceptance, v1 removal, localization, menu bar, accessibility, 10× benchmark).
 
 ---
 
@@ -61,7 +61,7 @@ Then, the **Library Recovery program** (2026-10-28): preservation-first incident
 
 ## Overarching goal
 
-An app that can be trusted with years of reading history, with a change process that is receipt-driven end to end. AsterismaV1.0 adds a clean product identity and a faster SQLite-backed store without trading away the user’s existing library.
+An app that can be trusted with years of reading history, with a change process that is receipt-driven end to end. AsterismaV2.0 adds a clean product identity and a faster SQLite-backed store without trading away the user’s existing library.
 
 ---
 
@@ -79,6 +79,7 @@ An app that can be trusted with years of reading history, with a change process 
 | 7 | **Collection rename UI** | Small | Create/delete/membership work; rename has no UI. |
 | 8 | **Legacy cleanup + remaining dead code** | 1 short session | Repository graphify cache/backup, duplicate playbook, and OS metadata were removed on 2026-10-29; old P5-G `library.sqlite3`/`.migrated` app-support artifacts and zero-caller fragments remain, none live. |
 | 9 | **Mirage standing items** | Process, not code | TB-M0 observation cadence, a perf-budget report, and the engine-side backup-surface gap. The packaged app-embed exercise is done. |
+| 10 | **Mirage ADR-13 owner acceptance** | One focused session | Exercise the warm engine (start, two analyses without a cold restart, idle stop), a library scan, a batch cancel, and a retry-failed run from Settings ▸ Mirage. Record results in `docs/owner-test-results/`; the stage is not accepted until then. |
 
 CI runner alignment is complete (2026-10-26): `census` runs on `macos-26` / Xcode 26.6. The remote `census` is green on the Sentinel v2 tranche (run `40758619365`, `bed710a`); the local census after SG8 is **432 tests / 671 runs / 9 skips / 0 failures**, and CI now runs the surface-freshness gate before the census. SG8 adds auto-extending structural coverage but does not close SG7: owner acceptance (row 1) is still the gate. The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old “open” block in the defect register is historical. Sentinel’s remaining holds are tracked in `docs/plans/sentinel/gates/SG7.md`, not in the old defect register.
 
@@ -86,7 +87,7 @@ CI runner alignment is complete (2026-10-26): `census` runs on `macos-26` / Xcod
 
 ## What should the next person know to start instantly?
 
-**Baseline:** `main` carries the original release merge at `aba8aa4` plus the owner-accepted reader build, the preservation-first repository reorganization, CI hardening, the Sentinel v2 first tranche (`6099e4e`), and SG8 (`29dd4f6`); ready tag `asterisma-v1.0-ready-2026-10-26`, release tag `asterisma-v1.0-mvp`. Latest local unit census (2026-10-29, after SG8): **432 tests / 671 runs / 9 skipped / 0 failed**; Release build exit 0; test isolation byte-identical. The generated `dist/` package was removed during the 2026-10-28 artifact cleanup; rebuild with `scripts/package-release.sh`. The last documented package SHA-256 is `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`. Canonical census numbers come from `xcrun xcresulttool get test-results summary`; Sentinel evidence is indexed in `docs/plans/sentinel/gates/README.md`.
+**Baseline:** `main` carries the original release merge at `aba8aa4` plus the owner-accepted reader build, the preservation-first repository reorganization, CI hardening, the Sentinel v2 first tranche (`6099e4e`), and SG8 (`29dd4f6`); ready tag `asterisma-v1.0-ready-2026-10-26`, release tag `asterisma-v1.0-mvp`. At the SG8 boundary the local unit census was **432 tests / 671 runs / 9 skipped / 0 failed**; the reader boundary was **441 tests / 671 runs / 432 passed / 9 skipped / 0 failed** (Stage AA); the offline boundary was **447 tests / 671 runs / 438 passed / 9 skipped / 0 failed** (Stage AB, historical). The current ADR-13 boundary is **459 tests / 671 runs / 450 passed / 9 skipped / 0 failed** (`./scripts/census.sh --unit-only`, exit 0; see Stage AE in `docs/registers/03-fix-log.md`). Release build exit 0 for the earlier boundary; the reader and offline passes have Debug build receipts only. Test isolation was byte-identical at the earlier boundary; it was not re-run after the reader or offline pass. The generated `dist/` package was removed during the 2026-10-28 artifact cleanup; rebuild with `scripts/package-release.sh`. The last documented package SHA-256 is `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`. Canonical census numbers come from `xcrun xcresulttool get test-results summary`; Sentinel evidence is indexed in `docs/plans/sentinel/gates/README.md`. The close-out graph refresh (Stage AG) is **8,045 nodes / 20,093 edges / 381 communities**; the 3D page is 8,474,994 B and all artifact hashes are in the Stage AG receipt. The earlier ADR-13 refresh (Stage AF) recorded 8,037 / 20,085 / 378.
 
 > **History note (2026-10-28):** `main` was rewritten to remove AI co-author trailers from five commits. Trees are byte-identical. Remapped SHAs: `40bc922`→`16d6d16`, `fd524cd`→`5a369e9`, `6aecdc3`→`bed710a`, `2f40a43`→`310b9d3`, `ae4ee36`→`76e8a23`. A local-only `backup/pre-attribution-rewrite` branch may hold the old objects; it is not pushed and is safe to delete.
 
@@ -94,7 +95,7 @@ CI runner alignment is complete (2026-10-26): `census` runs on `macos-26` / Xcod
 
 **Live data:** `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` — **1 book / 3 sessions / 77 page timings** after the owner’s deliberate erase/reset and acceptance test. The owner deleted the local backup snapshots on 2026-10-24, so the live library is currently the only copy; rely on Time Machine or an external backup before risky work.
 
-**Docs map:** start at `README.md` → this handoff → `docs/reorganization/` for the final structure audit → `docs/plans/bedrock/` for the release gates → `docs/design/READER-POLISH-2026-10-25.md` for the current reader polish → `docs/integration/` for anything Mirage.
+**Docs map:** start at `README.md` → this handoff → `docs/reorganization/` for the final structure audit → `docs/plans/bedrock/` for the release gates → `docs/design/READER-POLISH-2026-10-25.md` for the current reader customization record → `docs/integration/` for anything Mirage.
 
 **Standing constraints:**
 - Whole-file rewrites only for `BehaviorContextEngine2` and `BehavioralCategory`.
@@ -103,7 +104,7 @@ CI runner alignment is complete (2026-10-26): `census` runs on `macos-26` / Xcod
 - **Owner results outrank the census.** A personal test failure is a real failure even if the suite is green; record it and fix it.
 - Data root is `Application Support/Asterisma/`; the legacy `ReadTracker/` name is migration-only.
 - The bundle ID is intentionally stable for this MVP; changing it needs a container migration.
-- **Mirage rules:** never unify the two stores; entries are born only from validated receipts; one sidecar lifecycle per gesture; spoiler detail surfaces stay disabled until a verified calibration amendment (ADR-7, fail-closed).
+- **Mirage rules:** never unify the two stores; entries are born only from validated receipts; one warm sidecar serves serialized requests and stops on idle/disable/background (ADR-13); spoiler detail surfaces stay disabled until a verified calibration amendment (ADR-7, fail-closed).
 - During a freeze, run `sample <pid>` before reasoning about performance (`10-profiler-fix.md` is the proof).
 
 **Fresh-clone build:** stage the gitignored Mirage runtime first:
@@ -270,3 +271,189 @@ skip register are in `docs/registers/05-doc-audit.md`.
 index anchors current; refresh the graph again after the next batch of doc edits
 if the node counts matter for a receipt. A new full sweep belongs with the next
 release, not an ordinary edit.
+
+## Session close — 2026-10-29 (AsterismaV2.0 rename)
+
+**Delivered:** the product, Xcode project, app target, scheme, test targets,
+Swift module, source/test/UI folders, Info.plist, entitlements, release script,
+CI workflow, and current documentation now use **AsterismaV2.0** /
+**AsterismaV2_0**. `MARKETING_VERSION` is **2.0** and
+`CURRENT_PROJECT_VERSION` is **2**. The bundle identifier
+`johan.Reading-Tracker` and the `Application Support/Asterisma/` data root were
+deliberately left unchanged so the existing sandbox container and library
+survive the rename. The V1.0 package names, tags, and SHAs in dated receipts
+were preserved as history.
+
+**Verified locally:** `xcodebuild build` succeeded for both Debug and Release
+under `AsterismaV2.0.xcodeproj` / scheme `AsterismaV2.0`; the unit census is
+**432 tests / 671 runs / 423 passed / 9 skipped / 0 failed** with
+`environmentDescription` `AsterismaV2.0 · Built with macOS 26.6.1`; surface
+manifest OK; `comprehension-bench.py --validate-only` OK (30 facts, 12 overview
+facts); `audit-markdown.py` OK on all 83 Markdown files; `verify-test-isolation.sh`
+reports the real app-support data byte-identical.
+
+**Graph:** `graphify update . --force` rebuilt **7,621 nodes / 19,186 edges /
+355 communities** from the working tree on base commit `fced076`. The aggregated 2D page is 355 community nodes / 1,339
+cross-community edges (432,802 B); the full 3D page is 7,621 nodes / 19,186
+links (8,146,098 B, 7.77 MiB) and `--check` returns `ok`.
+
+**Remote CI:** **not yet run for this rename.** The last green workflow is
+`40816019439` (2m37s) on `fced076`, which predates the rename. The rename must
+pass the same workflow before it can be called release-ready.
+
+**Next:** commit and push the rename, watch `census.yml` to green, then
+visually check `graph.html` and `graph-3d-full.html`. The outer worktree folder
+is still `/Users/johanrembeci/Desktop/AsterismaV1.0`; renaming it is a separate
+owner action because moving the checkout during a session would invalidate
+the recorded paths.
+
+---
+
+## Session close — 2026-10-29 (Home/Library UI shell)
+
+**Delivered:** the main window now opens on a resume-first **Home** reading
+desk; the sidebar is a four-destination map (Home, Library, Insights, Goals,
+⌘1–⌘4); the Library is one adaptive grid/list with search, shelf filters, and a
+selected-book dock; Insights and Goals are embedded destinations instead of
+sheets; and the duplicate spatial-explorer entry point is gone from the main
+window. The reader was deliberately left unchanged. Full design record:
+`docs/design/UI-UX-OVERHAUL-2026-10-29.md`.
+
+**Why this shape:** a weighted multi-criteria model (`T/U/L/A/C/V/E/X`) put
+shell/navigation, Home, and Library at the top; a ±15% weight sensitivity run
+kept those three in the top three in 100% of 20,000 draws. The spatial explorer
+scored high on leverage only because deleting it is cheap; its low consistency
+score is why it was retired rather than extended.
+
+**Verified locally:** `xcodebuild build` (Debug, scheme `AsterismaV2.0`) →
+**BUILD SUCCEEDED**, exit 0. `./scripts/census.sh --unit-only` → **432 tests /
+671 runs / 423 passed / 9 skipped / 0 failed**, exit 0. App source is **169
+Swift files / 63,448 raw lines / 56,051 non-blank**; the test folder remains 66
+Swift files. No new test file was added for the presentation-only tranche.
+
+**Not verified:** owner visual acceptance at 900×640 and 1200×780; VoiceOver,
+keyboard-only, and 200% text-size passes; remote CI. The app was launched and
+its 1200×742 window observed through `CGWindowListCopyWindowInfo`, but macOS
+denied `screencapture` ("could not create image from window/rect"), so there is
+no screenshot receipt. The V2.0 rename and this shell are both uncommitted in
+the working tree; the last remote run predates both.
+
+**Graph:** refreshed after the new Swift files and docs; the exact counts and
+artifact hashes are in the Stage Y receipt in `docs/registers/03-fix-log.md`.
+
+**Next:** owner opens the app, approves or rejects Home/Library/dock at both
+window sizes, then the work is committed and pushed and `census.yml` is watched
+to green. If the layout is rejected, change the owning view, not the model.
+
+---
+
+## Session close — 2026-10-29 (Quick Open + adaptive shell)
+
+**Delivered:** the second UI/UX tranche. The shell now has a keyboard-first
+**Quick Open** palette (⌘K) over destinations, books, discovery, import, and
+Settings; Home's hero adapts between cover-beside-copy and stacked shapes;
+Today's card reads the active daily goal and opens Goals; a Recently finished
+shelf closes the loop after a book is completed; the Library dock clamps to
+236–292 pt and stacks its actions when compact; ⌘F focuses Library search.
+Full record: `docs/design/UI-UX-OVERHAUL-2026-10-29.md` §7.
+
+**Verified locally:** `xcodebuild build` (Debug, scheme `AsterismaV2.0`) →
+**BUILD SUCCEEDED**, exit 0. `./scripts/census.sh --unit-only` → **437 tests /
+671 runs / 428 passed / 9 skipped / 0 failed**, exit 0, xcresult
+`rt-census-20261029-005620.xcresult`. App source is **170 Swift files / 64,084
+raw lines / 56,626 non-blank**; the test folder is **67 Swift files**, including
+five new `CommandPaletteTests`.
+
+**Not verified:** owner visual acceptance at 900×640, 900×640 with a 300 pt
+sidebar, and 1200×780; VoiceOver, keyboard-only, and 200% text-size passes; the
+palette overlay's focus/⌘K behavior (the pure ranking index is tested); remote
+CI. The macOS screen-capture permission is still denied, so there is no
+screenshot receipt. The V2.0 rename, Stage Y, and Stage Z remain uncommitted in
+the working tree; the last remote run predates all of them.
+
+**Graph:** refreshed after the new Swift files, design record, README, project
+tree, and Stage Z receipt; exact counts and hashes are in the Stage Z graph row
+in `docs/registers/03-fix-log.md`.
+
+**Next:** owner opens the app and validates Home, the adaptive hero, Library,
+the dock, Quick Open, and the reader return path at all three window sizes. Then
+commit and push, watch `census.yml` to green, and run the keyboard/VoiceOver
+pass. If the layout is rejected, change the owning view, not the model.
+
+---
+
+## Session close — 2026-10-29 (reader customization)
+
+**Delivered:** the EPUB Appearance panel now has Paged/Scrolling mode, a
+35–100% page-only brightness dimmer, Both Margins Advance, and the existing
+six themes, eleven font choices, bold, 80–200% size, line/character/word
+spacing, margins, justification, hyphenation, page-turn style, and page-number
+toggle. The PDF panel is separate because PDFs keep publisher typography:
+single/continuous/facing/facing+scroll layouts, fit page/width/height/actual,
+cover-alone, LTR/RTL page order through PDFKit's `displaysRTL`, a 0–80 pt page
+gap, system/paper/slate mat colors, and the same dimmer. Full record:
+`docs/design/READER-POLISH-2026-10-25.md` Phase 2.
+
+**Verified locally:** Debug build `** BUILD SUCCEEDED **`, exit 0. Focused
+`ReaderAppearanceTests` → **9 tests in 1 suite passed**, exit 0, xcresult
+`Test-AsterismaV2.0-2026.10.29_01-29-24--0400.xcresult`. Full unit census →
+**441 tests / 671 runs / 432 passed / 9 skipped / 0 failed**, exit 0, xcresult
+`rt-census-20261029-012648.xcresult`. A Chromium harness at 1280×720 rendered
+**23 paged pages**, switched to **21 scrolling viewport-pages**, landed at
+`scrollY = 2160` for page 3, and restored page 3 at `scrollLeft = 3840` when
+switching back. App source is **171 Swift files / 64,758 raw lines / 57,220
+non-blank**; the test folder is **67 Swift files**.
+
+**Not verified:** owner visual acceptance and a real-book pass; the macOS
+screen-capture permission is still denied, so there is no screenshot receipt.
+The WKWebView mode switch is covered by a one-off browser harness, not a
+standing CI test. No remote CI run for this working tree. The V2.0 rename, the
+UI tranches, and this reader pass remain uncommitted.
+
+**Next:** owner opens an EPUB and a PDF and runs the 15-step acceptance
+checklist in `docs/design/READER-POLISH-2026-10-25.md`, especially RTL spread
+order, cover-alone, Scrolling mode position return, and brightness legibility.
+Then commit and push, watch `census.yml` to green, and refresh the graph after
+the final docs edits.
+
+---
+
+## Session close — 2026-10-29 (offline contract)
+
+**Delivered:** an offline contract for the local-first app. The source audit
+found only four live network surfaces — Open-Meteo weather, Open Library and
+Gutendex discovery, and remote discovery cover images — and no network code in
+the reader, library, goals, insights, engines, or core groups. Discovery now
+uses a bounded ephemeral session (10 s request / 15 s resource, no connectivity
+wait), queries both providers concurrently, and cancels both in-flight requests
+when the path drops; its offline state says the local surfaces still work.
+Weather requests are capped at 10 s and run in an independent task, so an
+offline session close cannot delay notifications or local analysis. Exact code
+and test receipt: `docs/registers/03-fix-log.md` Stage AB.
+
+**Verified locally:** Debug build `** BUILD SUCCEEDED **`, exit 0. Focused
+`DiscoveryOfflineTests` + `OpenMeteoProviderTests` → **11 tests in 2 suites
+passed**, 0 failed, 0 skipped, exit 0, xcresult
+`Test-AsterismaV2.0-2026.10.29_01-48-57--0400.xcresult`. Unit census → **447
+tests / 671 runs / 438 passed / 9 skipped / 0 failed**, exit 0, xcresult
+`rt-census-20261029-020548.xcresult`. Full UI-inclusive census → **450 tests /
+673 runs / 441 passed / 9 skipped / 0 failed**, exit 0, xcresult
+`rt-census-20261029-020643.xcresult`. App source is **172 Swift files / 64,868
+raw lines / 57,315 non-blank**; the test folder is **68 Swift files**. The six
+new pins cover the bounded session, both providers offline, cross-provider
+dedupe, cancellation of both providers, and typed weather failure.
+
+**Not verified — explicit skip:** a whole-suite run with the network denied at
+the OS level could not be executed. `sandbox-exec` around `xcodebuild` hung
+before the test runner connected (346–352 s), and launching the already
+App-Sandboxed app directly under `sandbox-exec` ended with `Trace/BPT trap: 5`.
+Xcode's own package resolution also fails under `sandbox-exec`
+(`sandbox_apply: Operation not permitted`). This is recorded as `SKIPPED`, not
+as an offline pass. Also unverified: owner offline acceptance with Wi-Fi off, a
+real-book pass in that state, remote CI, and a commit/push for this working tree.
+The graph was refreshed immediately afterward in Stage AC: **7,836 nodes / 19,618 edges / 387 communities**, 3D page **8,298,484 B (7.91 MiB)**, `build-graph-3d.py --check` exit 0, and a loopback Chromium check with WebGL true and no external resource requests.
+
+**Next:** disconnect the network, launch the app, and exercise Home → Library →
+an EPUB and a PDF → Goals/Insights; open Discover and confirm the offline state
+and that the sheet closes cleanly. Then reconnect, confirm search resumes, and
+commit/push with `census.yml` watched to green.

@@ -154,11 +154,16 @@ credentials, a runner-image change). Report that blocker explicitly with the
 run URL and the exact unaddressed failure, and leave the red run visible rather
 than pretending it passed.
 
-## Large-task close-out protocol
+## Closeout Initiative (large-task close-out protocol)
+
+"Closeout Initiative" is the name of this sequence: **update the docs, audit
+every edited Markdown file, run the checks and the census, remove regenerable
+junk, refresh both graphify views, then commit and push.** Use the name when the
+owner asks to activate it.
 
 ### Trigger
 
-Run this protocol after an **enormous or massively long task**: one that spans
+Run the Closeout Initiative after an **enormous or massively long task**: one that spans
 multiple sessions or phases, touches more than roughly ten files, adds or
 removes a subsystem, changes release or packaging behavior, generates gate
 receipts or other artifacts, or materially changes architecture or release
@@ -281,7 +286,7 @@ If approved:
 
 ### Exit criteria
 
-A large-task close-out is complete only when:
+A Closeout Initiative is complete only when:
 
 - every affected Markdown file is technically accurate and internally
   consistent;
@@ -291,5 +296,5 @@ A large-task close-out is complete only when:
   recorded honestly;
 - the owner has separately verified the commit and the push.
 
-For a small task, skip this close-out protocol, but still follow the fix
+For a small task, skip the Closeout Initiative, but still follow the fix
 protocol and the no-attribution rule.

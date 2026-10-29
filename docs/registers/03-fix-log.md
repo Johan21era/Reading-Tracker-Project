@@ -328,7 +328,7 @@ UI-inclusive gate remains unclaimed.
 
 | Item | What changed | Verification |
 |---|---|---|
-| R-001 | App shell moved from the flat app root to `AsterismaV1.0/App/` | 2 `git mv` operations; before/after SHA-256 equal |
+| R-001 | App shell moved from the flat app root to `AsterismaV2.0/App/` | 2 `git mv` operations; before/after SHA-256 equal |
 | R-002 | 48 flat test files grouped into `App`, `Behavior`, `Core`, `DeveloperConsole`, `Environment`, `Library`, `Mirage`, and `Reader` | 48 `git mv` operations; 100% renames, 0 content edits |
 | R-003 | 280-file baseline reconciled; path-dependent, signing, user-data, release, and historical files left in place | 0 missing, 0 mismatched, 0 unapproved changes; report in `docs/reorganization/` |
 | R-004 | GitHub `census` moved from `macos-14` / Xcode 15.4 to `macos-26` / Xcode 26.6 | Xcode 15.4 cannot open project format 77; Xcode 26.6 opens and builds it |
@@ -515,3 +515,402 @@ re-extraction of docs was not run because no Gemini/Google backend is
 configured; doc changes were re-extracted structurally by the update. The
 tracked Markdown files outside this audit remain scheduled for the full sweep
 recorded in `docs/registers/05-doc-audit.md`.
+
+## Stage X — AsterismaV2.0 rename (2026-10-29)
+
+| Item | What changed | Verification |
+|---|---|---|
+| R-002 | Product, project, app target, scheme, test targets, Swift module, source/test/UI folders, Info.plist, entitlements, release script, CI, and current docs renamed to `AsterismaV2.0` / `AsterismaV2_0`. Bundle ID and data root deliberately unchanged. | Debug and Release builds both `** BUILD SUCCEEDED **`; unit census 432 / 671 / 423 / 9 / 0; surface manifest OK; comprehension bank OK; 83 Markdown files audit OK; `verify-test-isolation.sh` byte-identical. |
+| R-003 | `MARKETING_VERSION` raised to 2.0 and `CURRENT_PROJECT_VERSION` to 2; generated Sentinel surface catalog regenerated after the module rename. | `xcodebuild -list` shows targets `AsterismaV2.0`, `AsterismaV2.0Tests`, `AsterismaV2.0UITests`; surface report 15 tables / 8 defaults keys / 5 notification names. |
+| X-001 | Graph refreshed after 256 path moves and the doc rewrite. | `graphify update . --force` on the working tree (base commit `fced076`) → **7,621 nodes / 19,186 edges / 355 communities**; aggregated `graph.html` 355 community nodes / 1,339 cross-community edges (432,802 B); `build-graph-3d.py` 8,146,098 B (7.77 MiB), `--check` → `ok`. |
+
+**Historical preservation:** V1.0 package filenames, tags, SHAs, milestone
+receipts, and the frozen 2026-10-26 baseline/relocation JSON files were left
+as V1.0. The V1.0 paragraphs in `README.md`, the defect register, the roadmap,
+the handoff, and the rebrand record are explicitly labelled V1.0-era history.
+
+**Graph artifact hashes (2026-10-29, post-rename):** `graph.json`
+`dc49302ffdaf58666b202469c83dad7744042cd6dbefbfecb86b1c474a1f51cc`;
+`graph.html` `7054868abb13fc1ddc5c0ec602a7ef33da5d021c35750007ac93909a3e14f3db`;
+`GRAPH_REPORT.md` `94977b70406a5200ce7038053a6ee831ec44bc8c78a2973a53ab97c788a5425a`;
+`manifest.json` `f929e8c2a325516a7e2df9318266c0a0ad2588a4b2e3008c0304f0f83779d4e8`.
+The gitignored 3D page is
+`af54b24099a359e9b77d5912805d6b6b2dba468c9b955d70dd9b2c42f187c2ef`.
+
+**Remote CI:** not run for this rename. The last green workflow is
+`40816019439` on `fced076`, which predates it; the rename must pass the same
+`census.yml` gate before release.
+
+## Stage Y — Home/Library UI shell (2026-10-29)
+
+**Goal:** replace the management-first launch state with a reading-first shell,
+remove the duplicate library mental model, and keep the reader untouched.
+
+| Item | What changed | Verification |
+|---|---|---|
+| Y-001 | Added a weighted multi-criteria model and the design record for the shell, including the 20,000-draw ±15% weight sensitivity run. | `docs/design/UI-UX-OVERHAUL-2026-10-29.md`; shell/Home/Library were top three in 100% of draws. |
+| Y-002 | New Home reading desk: resume-first hero, today/streak/in-progress/finished stats, in-progress and next-up shelves, empty and caught-up states. | `AsterismaV2.0/Features/Home/ReadingDeskView.swift`; Debug build succeeded. |
+| Y-003 | New unified Library browser: adaptive grid, list toggle, search, five shelf filters, selected-book dock, empty/no-match states. | `AsterismaV2.0/Features/Library/LibraryBrowserView.swift`; Debug build succeeded. |
+| Y-004 | Replaced the book-list sidebar with four destinations (Home, Library, Insights, Goals, ⌘1–⌘4); embedded Insights/Goals; retained secondary actions in More; kept Add Book one click away. | `AsterismaV2.0/App/AppSection.swift`, `AsterismaV2.0/App/NewContentView.swift`; Debug build succeeded. |
+| Y-005 | Removed the spatial-explorer entry point from the main window. The unreferenced spatial files remain in the tree for a separate cleanup decision. | `rg -n "LibraryExplorerView" AsterismaV2.0` returns only the definition/comments; no app call site. |
+| Y-006 | Refreshed graphify and the full 3D page after the new Swift files and design record. | `graphify update . --force` → **7,677 nodes / 19,284 edges / 359 communities**; `graphify export html` → 359 community nodes / 1,362 cross-community edges, 439,168 B; `python3 scripts/build-graph-3d.py` → 8,182,614 B (7.80 MiB), `--check` → `ok`. |
+
+**Graph artifact hashes (2026-10-29, Stage Y):** `graph.json`
+`bf59ee18ded073a121f3a5318f068af60caff662adc7f66f337b38026efbf4b8`;
+`graph.html`
+`eec7f2663b11032de2d04fee68ac393885dd1eff14bdbdf990f87e42b5d0a45b`;
+`GRAPH_REPORT.md`
+`ea784d9ec4a98080f59deeaa646d7ba10a7429d1fc99fec1b5f33ce6aba7d0ec`;
+`manifest.json`
+`0232c5c4353149c39f93d4ab78b5c486e38dac7e8f52fb3ebcfced4e7e32dca2`.
+The gitignored 3D page is
+`4a0e77cec3a1fe20fdbe38e72ad0792aefab9f00e43034936eb7dc98626720ae`.
+
+**Browser receipt:** the 3D page loaded over loopback with a 1175×1281 canvas,
+WebGL true, **0 network requests**, and one informational console line
+(`full view ready: 7677 nodes, 19284 links`); no console errors. The 2D page was
+exported but not re-opened in this stage.
+
+**Local verification:** Debug build `** BUILD SUCCEEDED **` (exit 0);
+`./scripts/census.sh --unit-only` → **432 tests / 671 runs / 423 passed / 9
+skipped / 0 failed** (exit 0, xcresult `rt-census-20261029-004752.xcresult`);
+app source **169 Swift files / 63,448 raw lines / 56,051 non-blank**, test folder
+**66 Swift files**.
+
+**Limits:** no owner visual acceptance; no screenshot because macOS denied
+`screencapture`; no VoiceOver/keyboard-only/200% text pass; no remote CI. The
+graph was refreshed before the final README/project-tree pointer edits and this
+receipt were appended, and graphify warned that 7 non-code files produced zero
+nodes (asset manifests and frozen baseline JSONs). The V2.0 rename and Stage Y
+are uncommitted in the working tree.
+
+## Stage Z — Quick Open and adaptive shell (2026-10-29)
+
+**Goal:** make the first-tranche shell hold up at the real window floor and
+give keyboard users one surface that reaches every destination, book, and
+secondary action without hunting.
+
+| Item | What changed | Verification |
+|---|---|---|
+| Z-001 | Added `CommandPalette.swift`: a pure index over four destinations, three actions, and the library; empty query omits books; exact title > prefix > title token > subtitle ranking; all tokens must match. The 620 × 430 overlay opens from a visible **Quick open** button or ⌘K. | Debug build succeeded; five `CommandPaletteTests` pass. |
+| Z-002 | Home hero now uses `ViewThatFits` with a wide cover-beside-copy shape and a stacked narrow shape. The wide shape needs 554 pt of content; the stacked shape is used at the maximum sidebar width. | Build succeeded; arithmetic recorded in the design record §7.2. |
+| Z-003 | Library dock width is clamped to 236–292 pt (about one third of the canvas) instead of a fixed 292 pt. Below 270 pt the cover shrinks, the title gets four lines, and Info/Estimate stack. | Build succeeded; layout arithmetic in design record §7.2. |
+| Z-004 | Today's stat card is goal-aware: daily pages first, daily time second, otherwise today's pages with “Set a daily goal.” The card opens Goals. Added a **Recently finished** shelf. | Build succeeded; uses existing `GoalProgressViewModel.statuses` and `Book` fields only. |
+| Z-005 | Added ⌘F to focus Library search, Escape to clear/leave the field, and accessibility labels/values on shelf filters. | Build succeeded. |
+| Z-006 | Added `CommandPaletteTests` covering empty-query scope, exact-title rank, author/all-token matching, subtitle matches, and the result cap. | `./scripts/census.sh --unit-only` → **437 tests / 671 runs / 428 passed / 9 skipped / 0 failed**, exit 0, xcresult `rt-census-20261029-005620.xcresult`. |
+| Z-007 | Re-ran the source-size count after the new files. | `find AsterismaV2.0 -name '*.swift' \| wc -l` → **170**; concatenated raw lines **64,084**; non-blank **56,626**; test folder **67** Swift files. |
+| Z-008 | Refreshed graphify and the full 3D page after the new Swift files and docs. | `graphify update . --force` → **7,734 nodes / 19,424 edges / 369 communities**; `graphify export html` → 369 community nodes / 1,363 cross-community edges, 443,890 B; `python3 scripts/build-graph-3d.py` → 8,226,681 B (7.84 MiB), `--check` → `ok`. |
+
+**Graph artifact hashes (2026-10-29, Stage Z):** `graph.json`
+`626eef6023f7d76fab72a30818a37b5884e0e77f2470180ba011ade31bebdc6d`;
+`graph.html`
+`c02c554a0649bafc0af08906c7504e140c981a8e7f6b3fcfe39012d8bc49d13f`;
+`GRAPH_REPORT.md`
+`b207175c4852425bae5c7db77a7e65f023a5bf476260f577a9b648cb646bf19e`;
+`manifest.json`
+`fd73d8c17b3886ae5a669ff628cb59cd4b7a73bb4970cee8dec4a208951da196`.
+The gitignored 3D page is
+`06306521bb431998e197bfa50fc38c08b12c0118dbdb30f93eb787c5a6d439ea`.
+
+**Browser receipt:** the 3D page loaded over loopback in Chromium with a
+1304×1423 canvas, WebGL true, **only the document request** (200), one
+informational console line (`full view ready: 7734 nodes, 19424 links`), and no
+console errors. The 2D page was exported but not re-opened in this stage.
+
+**Limits:** no owner visual acceptance; no screenshot because macOS denied
+`screencapture`; no VoiceOver/keyboard-only/200% text pass. The palette's pure
+index is tested; the overlay's focus/⌘K behavior is compile-only. No remote CI
+run for Stage Z. The V2.0 rename, Stage Y, and Stage Z remain uncommitted in the
+working tree.
+
+## Stage AA — Reader customization (2026-10-29)
+
+**Goal:** bring Apple Books/MangaDex-grade controls to both readers, applied
+live without reloading the chapter or reopening the PDF, and preserve the
+reader's position while the page is re-framed.
+
+| Item | What changed | Verification |
+|---|---|---|
+| AA-001 | `ReaderAppearance` gained `ReaderReadingMode` (Paged / Scrolling), a `readingMode` key in the settings JSON, and the `ReaderBrightnessOverlay`/`ReaderComfort` helpers (35–100%, page-only veil). | Debug build exit 0; `ReaderAppearanceTests` green. |
+| AA-002 | EPUB Appearance panel gained Mode, Both Margins Advance, and Brightness. The chapter's WKWebView applies changes through `window.__epubApplySettings`; Scrolling switches the same DOM to vertical flow and back without reloading. | Browser harness: 23 paged pages, 21 scrolling viewport-pages, page 3 at `scrollY = 2160`, switch-back at `scrollLeft = 3840`. |
+| AA-003 | New `PDFReaderSettings.swift`: `PDFPageLayout` (single/continuous/facing/facing+scroll), `PDFFitMode` (page/width/height/actual), `PDFReadingDirection`, background, page gap 0–80 pt, cover-alone. | `ReaderAppearanceTests.pdfSettingsMap`, `pdfPageGap`, `pdfReadingDirection`; Debug build exit 0. |
+| AA-004 | `ReaderPDFView` now applies `displaysRTL`, `displaysAsBook`, `pageBreakMargins`, background, fit height, and layout in `updateNSView`; the current page is not reopened. Arrow keys and chevrons follow RTL. | Debug build exit 0; model pins above; no live PDF UI automation. |
+| AA-005 | Extended `ReaderAppearanceTests` from six to nine tests: theme contrast/migration/defaults, full settings injection, brightness clamping, PDF mapping, page-gap margins, RTL presentation, Original-font preservation. | Focused suite: **9 tests in 1 suite passed**, exit 0, xcresult `Test-AsterismaV2.0-2026.10.29_01-29-24--0400.xcresult`. |
+| AA-006 | Updated README, project tree, index, testing strategy, reader design record, UI postscript, handoff, and this log. | `python3 scripts/audit-markdown.py` clean; audit rows appended. |
+| AA-007 | Refreshed graphify and the full 3D view after the new Swift file and docs. | `graphify update . --force` → **7,792 nodes / 19,534 edges / 373 communities**; `graphify export html` → 373 community nodes / 1,419 cross-community edges, 456,587 B; `python3 scripts/build-graph-3d.py` → 8,265,095 B (7.88 MiB), `--check` → `ok`. |
+
+**Focused reader-suite receipt:** `xcodebuild test -project AsterismaV2.0.xcodeproj
+-scheme AsterismaV2.0 -destination 'platform=macOS'
+-only-testing:AsterismaV2.0Tests/ReaderAppearanceTests CODE_SIGNING_ALLOWED=NO` →
+`✔ Test run with 9 tests in 1 suite passed`, exit 0.
+
+**Full census receipt:** `./scripts/census.sh --unit-only` → **441 tests / 671
+runs / 432 passed / 9 skipped / 0 failed**, exit 0, xcresult
+`rt-census-20261029-012648.xcresult`. The 9 skips are unchanged: 4 Mirage
+real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo.
+
+**Browser harness receipt:** Chromium at 1280×720, harness page with 160
+paragraphs. Paged mode: `scrollWidth = 14920`, `pages = 23`. Scrolling mode:
+`documentElement.scrollHeight = 14623`, `pages = 21`, page 3 → `scrollY = 2160`;
+switching back → page 3 at `scrollLeft = 3840`, `scrollY = 0`. The harness is not
+a committed CI test; it was a one-off check and was deleted after the run.
+
+**Source-size receipt:** `find AsterismaV2.0 -name '*.swift' | wc -l` → **171**;
+concatenated raw lines **64,758**; non-blank **57,220**; test folder **67** Swift
+files. Previous Stage Z was 170 / 64,084 / 56,626.
+
+**Graph artifact hashes (2026-10-29, Stage AA):** `graph.json`
+`0e633b95105a4f43d634be04c62f02ae74a553fe3d2c3b0145274478c99c618a`
+(11,582,850 B); `graph.html`
+`785a1bde4b4bf00e1156de2ae29100c51ab16c4c0add5031fa005ec41b47cfa7`
+(456,587 B); `GRAPH_REPORT.md`
+`b5ac79bad65547c25232c5b4608b860115916c91590a743046a61cffb3be0f68`
+(95,656 B); `manifest.json`
+`38b0ce3529cf6cf0c812c4dfa77e80edf1999abb57b87a846f884b1a18395589`
+(64,045 B). The gitignored 3D page is
+`d470c3d5ce77a98ef8772cc425d7c98ac2803c1daf661bb89f389eb93e963c73`
+(8,265,095 B).
+
+**Browser receipt (3D):** `file://` was blocked by the Playwright Chromium
+profile, so the page was served over loopback instead. At 1400×1000 the canvas
+was 1400×1000, WebGL true, `performance.getEntriesByType('resource')` returned
+`[]`, and the only console line was `[graphify 3d] full view ready: 7792 nodes,
+19534 links`; no errors. The 2D page was exported but not re-opened.
+
+**Changed files:** `AsterismaV2.0/Features/Reader/ReaderAppearance.swift`,
+`EPUBReaderScreen.swift`, `PDFReaderSettings.swift` (new), `PDFReaderView2.swift`,
+`AsterismaV2.0Tests/Reader/ReaderAppearanceTests.swift`, `README.md`,
+`docs/01-project-tree.md`, `docs/INDEX.md`, `docs/design/READER-POLISH-2026-10-25.md`,
+`docs/design/UI-UX-OVERHAUL-2026-10-29.md`, `docs/method/07-testing-strategy.md`,
+`docs/registers/03-fix-log.md`, `docs/registers/04-handoff.md`,
+`docs/registers/05-doc-audit.md`, and the generated graph artifacts.
+
+**Limits:** no owner visual acceptance, no screenshot, no real EPUB/PDF pass; the
+WKWebView mode switch is covered by a one-off harness, not CI; the PDF UI is
+model-tested only; no remote CI for this working tree; the V2.0 rename, UI
+tranches, and this reader pass remain uncommitted. PDFs keep publisher typography:
+font, size, spacing, and reflow controls are EPUB-only by design.
+
+## Stage AB — Offline contract (2026-10-29)
+
+**Goal:** prove the local library, EPUB/PDF readers, goals, analytics, and
+settings remain fully available with no route to the internet, and make the two
+optional network features fail fast and quietly instead of holding a spinner or
+delaying local work. Offline is a product contract here, not a launch-only
+smoke test.
+
+| Item | What changed | Verification |
+|---|---|---|
+| AB-001 | Added `DiscoveryNetworking.swift`: an ephemeral `URLSession` with a 10 s request cap, 15 s resource cap, `waitsForConnectivity = false`, and no request cache. Both discovery providers accept an injected session; every request also carries the 10 s timeout. | `AsterismaV2.0/Features/Discovery/DiscoveryNetworking.swift`; Debug build `** BUILD SUCCEEDED **`, exit 0. |
+| AB-002 | `BookDiscoveryService` now queries Open Library and Gutendex concurrently, checks cancellation before/after both waits, and keeps the existing ISBN/title-author dedupe and ranking. `BookProvider` and `OnlineBook` are `Sendable`; both providers are `nonisolated`. | `OnlineBookDiscoveryService.swift`, `OnlineBookProvider.swift`, `OnlineBook.swift`, provider files; offline tests below. |
+| AB-003 | `BookDiscoveryViewModel` cancels the in-flight search as soon as `NWPathMonitor` reports no route, clears the duplicate offline/error banner, and renders one explicit offline state that says the local library, goals, insights, and readers still work. | `OnlineBookDiscoveryViewModel.swift`, `BookDiscoveryView.swift`; Debug build exit 0. |
+| AB-004 | Open-Meteo requests are capped at 10 s (`OpenMeteoProvider.requestTimeout`), and the post-session weather capture runs in its own task instead of ahead of notification evaluation and behavioral analysis. Offline weather failure is swallowed and cannot delay local work. | `OpenMeteoProvider.swift`, `SessionEventRouter2.swift`; Debug build exit 0. |
+| AB-005 | Added six network-free pins: five in `DiscoveryOfflineTests` (bounded session, Open Library offline, Gutendex offline, cross-provider dedupe, cancellation of both providers) and one Open-Meteo offline case, plus a timeout assertion in the existing mapping test. | Focused run: **11 tests in 2 suites passed**, 0 failed, 0 skipped, exit 0, xcresult `Test-AsterismaV2.0-2026.10.29_01-48-57--0400.xcresult`. |
+| AB-006 | Re-derived the offline surface and source counts. The only live network code is Open-Meteo, Open Library, Gutendex, the discovery cover `AsyncImage`, and the discovery path monitor; the reader, library, goals, insights, engines, and core groups emit no `URLSession`/`Network`/`NWPathMonitor` matches. | `rg -n "https://|URLSession|NWPathMonitor|AsyncImage" AsterismaV2.0 --glob '*.swift'`; app **172 Swift files / 64,868 raw lines / 57,315 non-blank**; test folder **68 Swift files**. |
+
+**Focused offline receipt:** `xcodebuild test -project AsterismaV2.0.xcodeproj
+-scheme AsterismaV2.0 -configuration Debug -destination 'platform=macOS'
+-parallel-testing-enabled NO -only-testing:AsterismaV2.0Tests/DiscoveryOfflineTests
+-only-testing:AsterismaV2.0Tests/OpenMeteoProviderTests` → **11 tests in 2
+suites passed**, 0 failures, exit 0. The discovery tests inject an
+`OfflineURLProtocol` that fails with `URLError(.notConnectedToInternet)`; both
+providers return `[]` in under a second. The cancellation test starts two
+2-second providers, cancels after 50 ms, and completes in 0.053 s.
+
+**Census receipts:** `./scripts/census.sh --unit-only` → **447 tests / 671
+runs / 438 passed / 9 skipped / 0 failed**, exit 0, xcresult
+`rt-census-20261029-020548.xcresult`. Full UI-inclusive `./scripts/census.sh` →
+**450 tests / 673 runs / 441 passed / 9 skipped / 0 failed**, exit 0, xcresult
+`rt-census-20261029-020643.xcresult`. The skips are unchanged: 4 Mirage
+real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo.
+
+**Process-level offline check — SKIPPED:** `sandbox-exec -f
+/tmp/asterisma-deny-external.sb xcodebuild test-without-building -xctestrun …`
+hung before the test runner established its connection (346–352 s), and launching
+the built app directly under `sandbox-exec` ended with `Trace/BPT trap: 5`; the
+app is already App-Sandboxed. Xcode's own package resolution also
+fails under `sandbox-exec` (`sandbox_apply: Operation not permitted`). The
+targeted offline tests and the source audit above are the available evidence;
+this is not a whole-suite deny-network pass.
+
+**Changed files:** `AsterismaV2.0/Features/Discovery/DiscoveryNetworking.swift`
+(new), `OnlineBookDiscoveryService.swift`, `OnlineBookDiscoveryViewModel.swift`,
+`OnlineBookProvider.swift`, `OnlineBook.swift`,
+`Providers/OpenLibraryProvider.swift`, `Providers/GutenbergProvider.swift`,
+`BookDiscoveryView.swift`, `AsterismaV2.0/Features/Environment/Weather/OpenMeteoProvider.swift`,
+`AsterismaV2.0/Features/Sessions/SessionEventRouter2.swift`,
+`AsterismaV2.0Tests/Discovery/DiscoveryOfflineTests.swift` (new),
+`AsterismaV2.0Tests/Environment/OpenMeteoProviderTests.swift`, `README.md`,
+`docs/01-project-tree.md`, `docs/INDEX.md`,
+`docs/method/07-testing-strategy.md`, `docs/registers/03-fix-log.md`,
+`docs/registers/04-handoff.md`, and `docs/registers/05-doc-audit.md`.
+
+**Limits:** no owner offline acceptance, no real-book pass with Wi-Fi disabled,
+no remote CI run, and no commit for this working tree. The graph was not
+refreshed at this boundary because the change set is code/docs only; it was
+refreshed immediately afterward in Stage AC, whose receipt follows. Discovery
+remains an online-only browse surface by design; the local library is the
+offline alternative.
+
+## Stage AC — Graph refresh after the offline contract (2026-10-29)
+
+**Goal:** put the new offline code and documentation into the knowledge graph,
+then rebuild both graph views so the next session starts from the actual tree.
+
+| Item | What changed | Verification |
+|---|---|---|
+| AC-001 | Rebuilt the code graph from the current tree. | `graphify update . --force` exit 0; **7,836 nodes / 19,618 edges / 387 communities**. The run re-extracted 29 uncached code files and warned that seven source files produced zero nodes: three `Contents.json`, `subset-manifest.gen-0001.json`, `baseline-tracked-2026-10-26.json`, and two more; no Swift source failed extraction. |
+| AC-002 | Rebuilt the 2D community export and the full-node 3D page. | `graphify export html` exit 0 → 387 community nodes / 1,407 cross-community edges, 460,646 B; `python3 scripts/build-graph-3d.py` → 8,298,484 B (7.91 MiB); `python3 scripts/build-graph-3d.py --check` → `ok`. |
+| AC-003 | Opened the 3D page over a loopback server and inspected it in Chromium. | 1,175×1,173 canvas, WebGL true, `performance.getEntriesByType('resource')` returned `[]`, one info log (`[graphify 3d] full view ready: 7836 nodes, 19618 links`), no errors. |
+| AC-004 | Updated the live graph counts and receipt pointers in README, the project tree, the handoff, and this log. | `audit-markdown.py` clean; `comprehension-bench.py --validate-only` exit 0. |
+
+**Artifact hashes and sizes (2026-10-29, Stage AC):** `graph.json`
+`bf3612829def50e3e0a502e9eb198a3c2a8317ba003a709e58518b166926fd67`
+(11,637,810 B); `graph.html`
+`78ecaf5bc72cff9d3876a9a09aca303886e285b9c8eefa2b9b5fed9cb6169ad3`
+(460,646 B); `GRAPH_REPORT.md`
+`e770b95ce3973bfc51dd691ede51ff3945b0bd18bdddf28f971ad36e2dfb7af0`
+(98,121 B); `manifest.json`
+`cc9e7cd12057b34ac95a1fe5751f5637c797740d621b5a56d71ef4cd7821ab4b`
+(64,265 B). The gitignored 3D page is
+`af7e5edbb3c67a8cc096a5fe56dbef8c857f95d24103bf51310c7bdf12193aaa`
+(8,298,484 B).
+
+**Changed files:** generated `graphify-out/graph.json`, `graphify-out/graph.html`,
+`graphify-out/GRAPH_REPORT.md`, `graphify-out/manifest.json`; gitignored
+`graphify-out/graph-3d-full.html`; `README.md`, `docs/01-project-tree.md`,
+`docs/registers/03-fix-log.md`, `docs/registers/04-handoff.md`, and
+`docs/registers/05-doc-audit.md`.
+
+**Limits:** no owner review of the refreshed 3D page; the `file://` launch was
+not retried because Playwright Chromium blocks that protocol, so the receipt is
+from a loopback server. The 2D page is generated and hashed but was not opened
+in this stage. The graph still omits the seven empty JSON inputs above; it does
+contain the new offline Swift files.
+
+## Stage AD — Stable local run command (2026-10-29)
+
+**Goal:** replace the drifting workflow — double-click the Xcode project, press
+Run, then run whatever `xcodebuild` command an assistant suggested that day —
+with one command that always builds the current working tree and launches the
+exact bundle it just built.
+
+| Item | What changed | Verification |
+|---|---|---|
+| AD-001 | Added `scripts/run-latest.sh`: finds the newest `AsterismaV*.xcodeproj` by version, derives its scheme, builds the current tree, resolves the product path from `xcodebuild -showBuildSettings`, and opens that app bundle. | `bash -n` exit 0; `--help` exit 0; real run built `/Users/johanrembeci/Library/Developer/Xcode/DerivedData/AsterismaV2.0-dvllmxwmwdknajegockzapvjsuxs/Build/Products/Debug/AsterismaV2.0.app` and launched pid 2286, exit 0. |
+| AD-002 | The runner uses Xcode's **default DerivedData** and documents why: a custom `-derivedDataPath` on this Desktop/iCloud checkout breaks code signing (BUG-003). | Source comment in `scripts/run-latest.sh`; README §7. |
+| AD-003 | The runner quits a running instance through the app's bundle identifier, waits for termination, and refuses to force-kill it because that could lose reading data. A second real run quit pid 2286 and launched pid 2396, exit 0. | `./scripts/run-latest.sh` output; `pgrep -fl AsterismaV2.0` showed the replacement process. |
+| AD-004 | After `open`, the runner waits for a live process and rechecks after one second, so a bundle that dies during startup fails the command instead of reporting a false launch. | Third real run quit pid 2396, launched pid 2496, and exited 0 after the settle check. |
+| AD-005 | Documented the command in README §7 and the scripts row of the project tree. | `python3 scripts/audit-markdown.py` clean; `comprehension-bench.py --validate-only` exit 0. |
+
+**Changed files:** `scripts/run-latest.sh` (new), `README.md`,
+`docs/01-project-tree.md`, `docs/registers/03-fix-log.md`, and
+`docs/registers/05-doc-audit.md`.
+
+**Limits:** no automated shell-test harness exists for this script; the receipt
+is three real build-and-launch runs from the current tree. The runner builds the
+local working tree only — it does not `git pull`, change branches, or install
+dependencies. It requires Xcode and a working local signing setup; a build or
+launch failure is printed with the last 80 log lines from
+`~/Library/Logs/AsterismaV2.0/run-latest.log`.
+
+## Stage AE — Mirage warm engine + library scale (2026-10-29)
+
+**Goal:** move Mirage from one-spawn-per-gesture to one warm, serialized engine
+that can scan the whole library and analyze it in a batch, without weakening the
+wire contract, the identity stratum, the never-auto-run rule, or the
+"disable deletes nothing" guarantee. Decision record:
+`docs/integration/adr/ADR-13-mirage-warm-engine-and-library-scale.md`.
+
+| Item | What changed | Verification |
+|---|---|---|
+| AE-001 | `MirageEngineService` owns at most one warm session, serializes every request through a FIFO gate, stops after 10 idle minutes, and stops on Settings disable or app background. The old per-gesture teardown in `MirageAnalyzeSession.performImport` is removed. | `MirageEngineServiceTests`: explicit start reuses one session (acquire count 3 for start + two requests); two overlapping calls peak at concurrency 1; idle warm-down stops once; disabled feature builds no session; stop-while-busy defers. |
+| AE-002 | `MirageLibraryIndex` refreshes the whole `books_list` inventory in one read, persists `mirage/library-index.json` atomically, and reconciles active identity links to `edition-gone` in one map write. Malformed rows refuse the whole scan. | `MirageLibraryIndexTests`: one scan caches 2 rows and totals; 1 missing edition orphans with `editionGone`; second identical scan leaves map bytes identical; malformed row throws `unexpectedShape`; absent/wrong-schema states; injected save interruption leaves old bytes. |
+| AE-003 | `MirageBatchAnalyzer` sequences EPUB jobs through `MirageEngineService.analyze`; cancel is cooperative, retry re-queues failures only, and planning skips PDFs/already-linked books. | `MirageBatchAnalyzerTests`: in-order run with peak concurrency 1; cancel analyzes only the first job and marks 3 cancelled; retry re-runs only the failed book; planner returns only the unlinked EPUB. |
+| AE-004 | Settings ▸ Mirage is a control center: warm/asleep engine row, start/stop/retry, coverage, last scan, one-gesture library scan, batch progress/cancel/retry, and a storage-folder button. The reader sheet and status check now lease the warm service. `AsterismaApp` stops the engine on `.background`. | `./scripts/run-latest.sh --build-only` exit 0. No UI interaction run in this stage. |
+| AE-005 | Added 12 focused pins in three suites. | `./scripts/census.sh --unit-only` exit 0: **459 tests / 671 runs / 450 passed / 9 skipped / 0 failed**, xcresult `/var/folders/27/v3xbp1813kb2vj7k2gycvp8w0000gn/T//rt-census-20261029-024948.xcresult`. The three new suites pass 12/12 in 3.229 s in a focused run. |
+| AE-006 | Documented the decision and refreshed the lookup surface: ADR-13, ADR-6 decision-5 supersession note, the deep-dive §2.3/§3.2/§10 revision, the index rows, the project-tree file/test counts, and this log. | `python3 scripts/audit-markdown.py` and `python3 scripts/comprehension-bench.py --validate-only` receipts are recorded in the Stage AE close-out and the audit ledger. |
+
+**Changed files (code):** `AsterismaV2.0/Features/Mirage/MirageEngineService.swift` (new),
+`AsterismaV2.0/Features/Mirage/MirageLibraryIndex.swift` (new),
+`AsterismaV2.0/Features/Mirage/MirageBatchAnalyzer.swift` (new),
+`AsterismaV2.0/Features/Mirage/MirageAppImportMount.swift`,
+`AsterismaV2.0/Features/Mirage/MirageStatusSurface.swift`,
+`AsterismaV2.0/Features/Mirage/MirageAnalysisSheetView.swift`,
+`AsterismaV2.0/Features/Goals/SettingsRootView.swift`,
+`AsterismaV2.0/App/AsterismaApp.swift`.
+
+**Changed files (tests):** `AsterismaV2.0Tests/Mirage/MirageEngineServiceTests.swift` (new),
+`AsterismaV2.0Tests/Mirage/MirageLibraryIndexTests.swift` (new),
+`AsterismaV2.0Tests/Mirage/MirageBatchAnalyzerTests.swift` (new).
+
+**Limits:** no owner acceptance run; no real-engine opt-in smoke of the warm
+session (the opt-in real-engine suites remain environment-gated and were among
+the 9 skips); no UI interaction run; no remote CI run for this working tree. The
+batch queue is session-scoped and is not restored after an app relaunch. The
+warm engine holds one child process while active; the idle/background/disable
+boundaries above are the only automatic stops.
+
+## Stage AF — Graph refresh after ADR-13 (2026-10-29)
+
+**Goal:** put the warm-engine, library-index, and batch files into the knowledge
+graph and rebuild both graph views from the actual tree.
+
+| Item | What changed | Verification |
+|---|---|---|
+| AF-001 | Rebuilt the code graph from the current tree. | `graphify update . --force` exit 0; **8,037 nodes / 20,085 edges / 378 communities**; 28/28 uncached code files extracted. The same seven empty JSON inputs as Stage AC produced zero nodes; no Swift source failed extraction. |
+| AF-002 | Rebuilt the aggregated 2D export and the full-node 3D view. | `graphify export html` exit 0 → 378 community nodes / 1,333 cross-community edges, 442,035 B; `python3 scripts/build-graph-3d.py` exit 0 → 8,468,130 B; `python3 scripts/build-graph-3d.py --check` → `ok`. |
+| AF-003 | Opened the 3D page over the existing loopback server (`127.0.0.1:8765`, serving `graphify-out/`). | 1,175×1,173 canvas; WebGL true; `performance.getEntriesByType('resource')` contained no off-origin URL; console showed one info line (`[graphify 3d] full view ready: 8037 nodes, 20085 links`) and no error line in the captured console stream. |
+| AF-004 | Updated the live counts and receipt pointer in `README.md`, `docs/01-project-tree.md`, and this log. | Values above; `audit-markdown.py` and `comprehension-bench.py --validate-only` re-run at close-out. |
+
+**Artifact hashes and sizes (2026-10-29, Stage AF):** `graph.json`
+`a78a93ede137eed1404f448165ff3104a24e9351dcee771cc0fb947cba90aae9`
+(11,921,738 B); `graph.html`
+`489f6774525535ee4d363e0abd64b2ca1c6682d1753836969df9cfe499c5cc6a`
+(442,035 B); `GRAPH_REPORT.md`
+`5e063b68a34ac7c51024933bd5c46904fa3e57b84c7c1b5f206d4e565fef2c6f`
+(96,420 B); `manifest.json`
+`d494a6eac3d857ab6545a5242f3358acc90979a8673f0615d0d90f3aef187e74`
+(65,652 B). The gitignored 3D page is
+`74c1b6cb4d6760c936036901de0203e2688504df57dc97c6dcaa841aaad6b92c`
+(8,468,130 B).
+
+**Changed files:** generated `graphify-out/graph.json`, `graphify-out/graph.html`,
+`graphify-out/GRAPH_REPORT.md`, `graphify-out/manifest.json`; gitignored
+`graphify-out/graph-3d-full.html`; `README.md`, `docs/01-project-tree.md`,
+`docs/INDEX.md`, `docs/registers/03-fix-log.md`, `docs/registers/04-handoff.md`,
+`docs/registers/05-doc-audit.md`, and `scripts/comprehension-questions.json`
+(the two graph-count questions and the overview pattern now read the Stage AF
+numbers).
+
+**Limits:** no owner review of the refreshed 3D page; the network panel capture
+was not obtained (the tab was released after the console read), so the
+off-origin receipt is the `performance` evaluate above. The 2D page is generated
+and hashed but was not opened in this stage. The graph still omits the seven
+empty JSON inputs.
+
+## Stage AG — Closeout Initiative (2026-10-29)
+
+**Goal:** run the named close-out sequence — documentation sweep, Markdown
+truth audit, checks/census, junk removal, both graph refreshes, then commit and
+push — after the ADR-13 Mirage warm-engine tranche.
+
+| Item | What changed | Verification |
+|---|---|---|
+| AG-001 | Renamed the AGENTS.md protocol to **Closeout Initiative** and reconciled every document that still stated the pre-ADR-13 census: `README.md`, `docs/method/07-testing-strategy.md`, `docs/roadmap/05-remediation-roadmap.md`, `docs/design/UI-UX-OVERHAUL-2026-10-29.md`, `docs/01-project-tree.md`, `docs/registers/04-handoff.md`; added milestone 007. Current totals: **459 tests / 671 runs / 450 passed / 9 skipped / 0 failed**, 93 suites, app source **175 Swift files / 66,050 raw lines / 58,378 non-blank**, test folder **71 Swift files**. | `python3 scripts/audit-markdown.py` and `python3 scripts/comprehension-bench.py --validate-only` exit 0; `--mode all` exits 0 at 100% facts accuracy with 0 fallbacks. |
+| AG-002 | Removed regenerable junk only: the repository's `.DS_Store` inside `.git`; the 12 MiB dated graphify backup directory (2026-10-29); and the 14 MiB extractor cache directory. Both removed directories were regenerated automatically by the refresh and are not source. | `graphify-out` went **61,740 KiB → 20,536 KiB** in the first pass (41,204 KiB freed), then **46,980 KiB → 20,572 KiB** after the refresh recreated its cache/backup (26,408 KiB freed); 67,612 KiB total. Kept: `graph.json`, `graph.html`, `GRAPH_REPORT.md`, `manifest.json`, `.graphify_labels.json`, `cost.json`, the gitignored 3D page, `.mirage-runtime/` (48 MiB), `.obsidian/`, `.freebuff/`, lockfiles, and the ignored root `merge-log.md` (64 KiB, **not** byte-identical to `docs/integration/merge-log.md` — preserved as unknown, not deleted). |
+| AG-003 | Ran the three CI-mirror steps plus the comprehension gate. | `./scripts/verify-sentinel-surface.sh` → `sentinel-surface: OK — 15 tables, 8 defaults keys, 5 notification names`, exit 0. `python3 scripts/comprehension-bench.py --validate-only` → `bank ok: 30 facts, 12 overview facts`, exit 0. `./scripts/census.sh --unit-only` → **459 tests / 671 runs / 450 passed / 9 skipped / 0 failed**, exit 0, xcresult `rt-census-20261029-031816.xcresult`. `python3 scripts/comprehension-bench.py --mode all` → `GATE PASSED`, 100% accuracy, 0 fallbacks, median 244.7× indexed speedup, overview 94.3×. |
+| AG-004 | Rebuilt the regular graph, the aggregated 2D export, and the full 3D view from the current tree (cache deliberately cold). | `graphify update . --force` exit 0 → **8,045 nodes / 20,093 edges / 381 communities**; seven empty JSON inputs still produce zero nodes and are named in the log. `graphify export html` exit 0 → **381 community nodes / 1,413 cross-community edges**, 459,440 B. `python3 scripts/build-graph-3d.py` exit 0 → 8,474,994 B; `--check` → `ok`. |
+| AG-005 | Opened the 3D page over the existing loopback server (`127.0.0.1:8765`, serving `graphify-out/`). | Canvas 1,175×1,281; WebGL true; `performance.getEntriesByType('resource')` had no off-origin URL; console contained one info line (`[graphify 3d] full view ready: 8045 nodes, 20093 links`) and no errors; the page reports **8,045 nodes**. |
+| AG-006 | Recorded artifact identity for this generation. | `graph.json` `0ee7bff9713609139a633102491274472b9228077752c80510996f7b636023d3` (11,930,813 B); `graph.html` `a4b28aa1dd5b38f33d98aef45dfdd4a2c549ab845b949f72528b2901407a629a` (459,440 B); `GRAPH_REPORT.md` `be9004cdf950137e52ea22cc372f9a79fa180b1f4ffae1c57b910003cb856403` (97,865 B); `manifest.json` `d3c07adc355d3960ef21c283c46362ad59aea357f0db996cdc2b5a3c9c849e40` (65,651 B); gitignored `graph-3d-full.html` `f2aa418cc0548260caee524e8170a8cfc1c35c60e0fd47dd7c83769a48db976f` (8,474,994 B). |
+
+**Changed files:** `AGENTS.md`; the six documents above plus this log and
+`docs/registers/05-doc-audit.md`; `scripts/comprehension-questions.json` (graph
+answers now 8,045 / 20,093); generated `graphify-out/graph.json`,
+`graphify-out/graph.html`, `graphify-out/GRAPH_REPORT.md`,
+`graphify-out/manifest.json`, and the gitignored 3D page.
+
+**Limits:** the aggregated `graph.html` was regenerated and hashed but not
+opened in a browser this stage (its vis-network renderer loads from unpkg and
+needs network access). No owner acceptance run, no UI interaction run, and no
+remote CI run before the commit; the workflow is watched after the pushed run.

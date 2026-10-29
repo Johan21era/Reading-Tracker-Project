@@ -17,16 +17,16 @@ This is a map of every file and folder in the project, organized so you can find
 | `docs/INDEX.md` | The one-hop lookup: a question maps to the exact file (and line) that owns it |
 | `RT_Mirage_Codebase_Merge_Playbook.md` | Owner's kept snapshot of the merge playbook (tracked canon: `docs/integration/` — ignored here by `.gitignore`) |
 | `merge-log.md` | Owner's kept snapshot of the campaign log (tracked canon: `docs/integration/merge-log.md` — ignored here by `.gitignore`) |
-| `AsterismaV1.0/` | The actual app code — every Swift file that makes the app work |
-| `AsterismaV1.0Tests/` | Automated tests that prove the app works correctly |
-| `AsterismaV1.0UITests/` | User-interface tests (mostly placeholder stubs) |
-| `AsterismaV1.0.xcodeproj/` | The Xcode project file (do not edit by hand) |
-| `AsterismaV1.0.entitlements` | Permissions the app asks macOS for (sandbox, user-selected files, location) |
-| `AsterismaV1.0-Info.plist` | App settings such as its name, icon, and location description |
-| `scripts/` | Census, benchmark, test-isolation, runtime staging, icon, release-package, 3D-graph build (`build-graph-3d.py` + vendored renderer), the cold-retrieval harness (`comprehension-bench.py` + its question bank), and the Markdown evidence collector (`audit-markdown.py`) |
+| `AsterismaV2.0/` | The actual app code — every Swift file that makes the app work |
+| `AsterismaV2.0Tests/` | Automated tests that prove the app works correctly |
+| `AsterismaV2.0UITests/` | User-interface tests (mostly placeholder stubs) |
+| `AsterismaV2.0.xcodeproj/` | The Xcode project file (do not edit by hand) |
+| `AsterismaV2.0.entitlements` | Permissions the app asks macOS for (sandbox, user-selected files, location) |
+| `AsterismaV2.0-Info.plist` | App settings such as its name, icon, and location description |
+| `scripts/` | Census, benchmark, test-isolation, runtime staging, icon, release-package, 3D-graph build (`build-graph-3d.py` + vendored renderer), the cold-retrieval harness (`comprehension-bench.py` + its question bank), the Markdown evidence collector (`audit-markdown.py`), and the stable build-and-launch command (`run-latest.sh`) |
 | `dist/` | Generated release packages (gitignored, rebuilt by `scripts/package-release.sh`); the stale local build was removed on 2026-10-28 |
 | `.mirage-runtime/` | Local staged Mirage runtime (gitignored; required for a fresh build) |
-| `graphify-out/` | Generated knowledge graph, 2D community HTML, offline full-node 3D HTML, and report (refreshed 2026-10-29: 7,599 nodes / 19,164 edges / 361 communities; `graph.html` shows 361 aggregated community nodes / 1,425 cross-community edges because the full graph exceeds the 5,000-node 2D limit; `graph-3d-full.html` is the generated-local 7,599-node 3D view, 7.76 MiB, and the only 3D export — `graph-3d.html` was retired 2026-10-29) |
+| `graphify-out/` | Generated knowledge graph, 2D community HTML, offline full-node 3D HTML, and report. The current graph is **8,045 nodes / 20,093 edges / 381 communities**; counts, sizes, and hashes are in the Stage AG close-out receipt in `docs/registers/03-fix-log.md`. `graph-3d-full.html` is the only 3D export — `graph-3d.html` was retired 2026-10-29 |
 | `.gitignore` | Tells Git which files to ignore (build junk, user settings, etc.) |
 | `.graphifyignore` | Tells graphify to skip `scripts/vendor/` — the minified 3D renderer — so graph counts describe project code and docs |
 
@@ -56,7 +56,8 @@ Every documentation file begins with a number so you can read them in order:
 | `docs/plans/bedrock/` | — | G0–G8 gate record, master plan, baseline, distribution notes | Anyone auditing the release |
 | `docs/design/fullscreen-surface-audit.md` | — | Fullscreen surface audit, border inventory, and after capture | Anyone reviewing the UI |
 | `docs/design/UX-BETA-AUDIT-2026-10-25.md` | — | Beta UX audit, finding register, and remediation phases | Design, engineering, QA, and product owners |
-| `docs/design/READER-POLISH-2026-10-25.md` | — | Apple Books benchmark, Appearance panel, chrome, and library polish record | Design, engineering, and anyone continuing the polish program |
+| `docs/design/READER-POLISH-2026-10-25.md` | — | Apple Books benchmark, Phase 1/2 reader customization, chrome, and library polish record | Design, engineering, and anyone continuing the polish program |
+| `docs/design/UI-UX-OVERHAUL-2026-10-29.md` | — | Two weighted UI models, Home/Library shell and Quick Open/adaptive decision records, receipts, and limits | Design, engineering, QA, and the next UI session |
 | `docs/reorganization/` | — | AV1-ROR baseline, relocation ledger, exception register, and execution report | Anyone auditing repository structure |
 | `docs/12-owner-test-authority.md` | 12 | The owner's personal test results are the absolute source of truth | Everyone — this overrides all other claims |
 | `docs/MILESTONES.md` | — | Pinned capability milestones with exact timestamps | Everyone — the wins matter too |
@@ -84,25 +85,25 @@ Also in `docs/history/`:
 
 ---
 
-## The app code (`AsterismaV1.0/`)
+## The app code (`AsterismaV2.0/`)
 
 This folder contains every Swift file that makes the app run. They are grouped by what they do:
 
 | Group | Contains |
 |---|---|
-| `App/` | App composition: the `@main` entry point and the unified library/window shell |
+| `App/` | App composition: the `@main` entry point, the four-destination shell (`AppSection`), Quick Open (`CommandPalette`), and the main window (`NewContentView`) |
 | `Core/` | The heart of the app: the data store, book models, validators, persistence, and `Sentinel/` (v2 domain, runtime, journal, probe catalog, repairs; `SentinelEngine` is the legacy Debug-console engine) |
 | `Engines/` | The "accountants": analytics, estimation, data maturity, insights |
-| `Features/` | Everything the user sees and touches: books, reader, goals, weather, audio, achievements, onboarding, reports, RSVP speed-reading, `Sentinel/` (Release Health Center, launch card, view model), developer console — and `Mirage/` (14 typed files: the RT-side of the Mirage integration — wire types, client, sidecar supervisor, runtime locator, cursor gate, status surface, settings, identity map, import flow, sheet, mount, transport, child-process, protocol constants) |
+| `Features/` | Everything the user sees and touches: `Home/` (resume-first reading desk), `Library/` (unified browser, filters, selected-book dock), books, reader, goals, weather, audio, achievements, onboarding, reports, RSVP speed-reading, `Sentinel/` (Release Health Center, launch card, view model), developer console — and `Mirage/` (17 typed files: the RT-side of the Mirage integration — wire types, client, sidecar supervisor, runtime locator, cursor gate, status surface, settings, identity map, import flow, sheet, mount, transport, child-process, protocol constants, plus the ADR-13 warm service `MirageEngineService.swift`, cached `MirageLibraryIndex.swift`, and `MirageBatchAnalyzer.swift`) |
 | `Assets.xcassets` | Pictures, colors, and icons used in the app |
 
 ---
 
-## The tests (`AsterismaV1.0Tests/` and `AsterismaV1.0UITests/`)
+## The tests (`AsterismaV2.0Tests/` and `AsterismaV2.0UITests/`)
 
 These are automated checks that run without you having to click anything. Each test is named after the specific bug or behavior it guards. If a test ever starts failing, that is an early warning that something broke.
 
-As of 2026-10-29: **66 Swift files** in the unit-test folder and **432 tests in 88 suites**; GitHub census run `40811182851` passed those 432 tests, and the local receipt records 432 tests / 671 runs / 9 skipped / 0 failed. The target remains grouped by responsibility (`App`, `Behavior`, `Core`, `DeveloperConsole`, `Environment`, `Library`, `Mirage`, `Reader`, plus Sentinel domain/runtime/catalog/persistence suites). UI tests remain placeholder launch stubs and are not part of the deterministic merge receipt. See `docs/method/07-testing-strategy.md` for how to engage them.
+As of 2026-10-29: **71 Swift files** in the unit-test folder and **459 tests in 93 suites**. The post-ADR-13 local unit census (`./scripts/census.sh --unit-only`, exit 0) records **459 tests / 671 runs / 450 passed / 9 skipped / 0 failed** under `AsterismaV2.0`, including the 12 new ADR-13 pins in `MirageEngineServiceTests`, `MirageLibraryIndexTests`, and `MirageBatchAnalyzerTests`. The older UI-inclusive count (450 tests / 673 runs / 441 passed / 9 skipped / 0 failed) is historical and was not re-run for this working tree. The target remains grouped by responsibility (`App`, `Behavior`, `Core`, `DeveloperConsole`, `Environment`, `Library`, `Mirage`, `Reader`, plus Sentinel domain/runtime/catalog/persistence suites). UI tests remain placeholder launch stubs and are not part of the deterministic merge receipt. See `docs/method/07-testing-strategy.md` for how to engage them.
 
 ---
 

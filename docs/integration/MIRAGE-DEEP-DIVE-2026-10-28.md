@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document ID** | MIRAGE-DEEP-DIVE-2026-10-28 |
-| **Status** | Final synthesis of the 2026-10 deep-dive arc; supersedes no prior record, consolidates the deep-dive evidence |
+| **Status** | Final synthesis of the 2026-10 deep-dive arc; supersedes no prior record, consolidates the deep-dive evidence. **2026-10-29 revision:** the per-gesture lifecycle bullet in §2.3 and the RT file count in §3.2 are historical; see §10 and ADR-13 |
 | **Scope** | RT ↔ Mirage integration band + Mirage engine runtime (`.mirage-runtime/mirage-runtime` staged bundle ↔ `/Users/johanrembeci/Desktop/MirageV1.0` canonical checkout) |
 | **Governing documents** | `docs/integration/RT_Mirage_Codebase_Merge_Playbook.md` · ADR-2…ADR-8, ADR-12 · `docs/integration/merge-log.md` · `docs/integration/final-acceptance-2026-10-18.md` · docs/product_era_plan.md (P18–P23) · docs/problems.md (P-001…P-028) · `docs/12-owner-test-authority.md` |
 | **Author / date** | Engineering investigation session, 2026-10-28 (final deep-dive pass) |
@@ -69,7 +69,7 @@ the coming weeks, in owner-gated order.
 | Canonical engine checkout | `/Users/johanrembeci/Desktop/MirageV1.0` — HEAD `8142261` (single initial-import commit), bundle SHA `81422613610701d81956394d9601bcb61e2938e9` |
 | Staged runtime pin | `.mirage-runtime/mirage-runtime` — `RUNTIME-MANIFEST.json`, bundled CPython 3.12.7, `PYTHONDONTWRITEBYTECODE=1` |
 | Live data root | `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` |
-| Uncommitted working tree | Modified `AsterismaV1.0/Core/DataStore3.swift`, `AsterismaV1.0/Core/Storage/LibraryDatabase.swift` (fail-closed SQLite load); untracked `AsterismaV1.0Tests/Core/SQLiteLoadIntegrityTests.swift`, `docs/plans/sentinel/` |
+| Uncommitted working tree | Modified `AsterismaV2.0/Core/DataStore3.swift`, `AsterismaV2.0/Core/Storage/LibraryDatabase.swift` (fail-closed SQLite load); untracked `AsterismaV2.0Tests/Core/SQLiteLoadIntegrityTests.swift`, `docs/plans/sentinel/` |
 
 ### 2.2 Verification reality (owner-test authority still governs)
 
@@ -89,8 +89,10 @@ the coming weeks, in owner-gated order.
   verify_checkpoint, reconstruct, verify_deltas, export_graph, cited_claims, translate, neighborhood, edge_detail,
   history, books_list, edition_remove, book_remove, search_eligible, series_create, series_list, series_candidates,
   series_attach, series_detach, series_read_state, series_breakdown, series_remove).
-- RT never sends bare `import`; identity faults are terminal `protocol_incompatible`; pid-file single-instance guard;
-  one gesture = one clean sidecar (spawn → work → SIGTERM→5 s grace → SIGKILL), backoff `[2,4,8]` s → `permanentDown`.
+- RT never sends bare `import`; identity faults are terminal `protocol_incompatible`; pid-file single-instance guard.
+  At the **2026-10-28 snapshot (historical)**, one gesture meant one clean sidecar (spawn → work → SIGTERM→5 s grace →
+  SIGKILL), backoff `[2,4,8]` s → `permanentDown`. The handshake and backoff still govern each (re)connect; the
+  per-gesture teardown was superseded by ADR-13 on 2026-10-29.
 
 ### 2.4 Deep-dive probe results (this session)
 
@@ -125,9 +127,10 @@ i18n/, config.py, diagnostics.py, cli/, __init__.py
 
 ### 3.2 RT integration band
 
-`Features/Mirage/` — 14 typed files: MirageWireTypes, MirageProtocolConstants, MirageClient, MirageTransport,
-MirageSettings, MirageSidecarSupervisor, MirageRuntimeLocator, MirageChildProcess, MirageImportFlow, MirageIdentityMap,
-MirageCursor, MirageStatusSurface, MirageAnalysisSheetView, MirageAppImportMount.
+`Features/Mirage/` — **17 typed files as of 2026-10-29**: MirageWireTypes, MirageProtocolConstants, MirageClient,
+MirageTransport, MirageSettings, MirageSidecarSupervisor, MirageRuntimeLocator, MirageChildProcess, MirageImportFlow,
+MirageIdentityMap, MirageCursor, MirageStatusSurface, MirageAnalysisSheetView, MirageAppImportMount, and the ADR-13
+additions `MirageEngineService.swift`, `MirageLibraryIndex.swift`, and `MirageBatchAnalyzer.swift`.
 
 ### 3.3 Cross-cutting contracts
 
@@ -260,4 +263,35 @@ Per `docs/12-owner-test-authority.md` and `docs/method/07-testing-strategy.md`:
 
 ---
 
-*End of MIRAGE-DEEP-DIVE-2026-10-28.*
+## 10. 2026-10-29 addendum — warm engine and library scale (ADR-13)
+
+This addendum records the post-deep-dive architecture change; it does not rewrite the
+2026-10-28 evidence above.
+
+- **Warm session.** `AsterismaV2.0/Features/Mirage/MirageEngineService.swift` owns one
+  `MirageAnalyzeSession` for the app process and serializes requests through a FIFO gate.
+  The sheet, the status check, and the batch runner all lease that one session; none of them
+  spawn or tear down a process. Idle warm-down is 10 minutes, and the app's `.background`
+  scene phase requests a stop. Disable still deletes nothing.
+- **Library index.** `AsterismaV2.0/Features/Mirage/MirageLibraryIndex.swift` refreshes the
+  whole inventory with one read-only `books_list`, writes `mirage/library-index.json`
+  (`mirage-library-index@1`) atomically, and orphans active links whose edition vanished.
+- **Batch queue.** `AsterismaV2.0/Features/Mirage/MirageBatchAnalyzer.swift` sequences EPUB
+  jobs through the same one-book analyze path. Cancel is cooperative; retry re-queues only
+  failed rows. The queue is session-scoped, not persisted across launches.
+- **UI.** Settings ▸ Mirage is now a control center for warm/asleep engine state, coverage,
+  scan freshness, and batch progress (`AsterismaV2.0/Features/Goals/SettingsRootView.swift`).
+- **Decision record.** `docs/integration/adr/ADR-13-mirage-warm-engine-and-library-scale.md`
+  supersedes ADR-6 decision 5 only. The wire, runtime ladder, ledger ownership, identity
+  mapping, and spoiler-cursor contracts are unchanged.
+- **Receipts (2026-10-29).** `./scripts/run-latest.sh --build-only` exited 0;
+  `./scripts/census.sh --unit-only` exited 0 with **450 passed / 9 skipped / 0 failed**
+  across **459 tests / 671 runs**. New pins: `MirageEngineServiceTests`,
+  `MirageLibraryIndexTests`, `MirageBatchAnalyzerTests`.
+- **Limits.** No owner acceptance run, no real-engine smoke test of the warm session in this
+  session, and no remote CI run for this working tree. The opt-in real-engine suites remain
+  environment-gated and were skipped by the census.
+
+---
+
+*End of MIRAGE-DEEP-DIVE-2026-10-28 (with 2026-10-29 addendum).*

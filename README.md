@@ -1,10 +1,10 @@
-# 00 · AsterismaV1.0 — Project Report
+# 00 · AsterismaV2.0 — Project Report
 
-> **TL;DR** — AsterismaV1.0 is a macOS reading-tracker app written entirely in Swift/SwiftUI. You import your PDF and EPUB books, read them inside the app, and it quietly records everything: per-page reading speed, time of day, live weather, and the app you were using just before opening the book. As of the October 2026 merge campaign, it also carries **Mirage** — a separately-owned companion engine for EPUB analysis, integrated behind a typed one-way boundary.
+> **TL;DR** — AsterismaV2.0 is a macOS reading-tracker app written entirely in Swift/SwiftUI. You import your PDF and EPUB books, read them inside the app, and it quietly records everything: per-page reading speed, time of day, live weather, and the app you were using just before opening the book. As of the October 2026 merge campaign, it also carries **Mirage** — a separately-owned companion engine for EPUB analysis, integrated behind a typed one-way boundary.
 
-> **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. The full gate record lives in `docs/plans/bedrock/`. Current local census (2026-10-29, after SG8): **432 tests / 671 runs, 9 skips, 0 failures** on macOS 26.6.1 / Xcode 26.6; CI also runs the surface-manifest freshness gate before the census.
+> **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. The full gate record lives in `docs/plans/bedrock/`. Current local census (2026-10-29, after SG8, the UI shell tranches, the reader customization pass, the offline contract pass, and the ADR-13 Mirage warm-engine/library-scale pass): **459 tests / 671 runs, 450 passed, 9 skips, 0 failures** on macOS 26.6.1 / Xcode 26.6; CI also runs the surface-manifest freshness gate before the census.
 
-> **Release status (2026-10-26):** `AsterismaV1.0` remains merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`). The owner accepted the full reader workflow on the `asterisma-v1.0-ux-audit-2` build. The ready tree adds the Apple Books-style Appearance panel, the preservation-first repository reorganization, and green CI hardening; app code is `1c88ae5`, tagged `asterisma-v1.0-ready-2026-10-26`. Package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`. It is ad-hoc signed, not notarized; first launch requires right-click → Open. Owner visual retest of the Appearance panel and book plate remains the next acceptance gate.
+> **Release status (2026-10-26, V1.0 era):** `AsterismaV1.0` remains merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`). The owner accepted the full reader workflow on the `asterisma-v1.0-ux-audit-2` build. The ready tree adds the Apple Books-style Appearance panel, the preservation-first repository reorganization, and green CI hardening; app code is `1c88ae5`, tagged `asterisma-v1.0-ready-2026-10-26`. Package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`. It is ad-hoc signed, not notarized; first launch requires right-click → Open. Owner visual retest of the Appearance panel and book plate remains the next acceptance gate.
 
 > **Owner-test authority (2026-10-24):** results from Johan's personal testing are the **absolute source of truth** and override all previous benchmarks, censuses, gate receipts, and documentation claims. See `docs/12-owner-test-authority.md`; sessions are recorded in `docs/owner-test-results/` and pinned by tag `owner-test-authority-2026-10-24`.
 
@@ -27,7 +27,7 @@
 
 ## §1 · What the app does
 
-**AsterismaV1.0** imports PDF and EPUB books — including iBooks-style unzipped `.epub` package folders — and lets you read them in-app, including an RSVP (Rapid Serial Visual Presentation) speed-reading mode that streams a chapter or a whole PDF one word at a time. While you read, the app records:
+**AsterismaV2.0** imports PDF and EPUB books — including iBooks-style unzipped `.epub` package folders — and lets you read them in-app, including an RSVP (Rapid Serial Visual Presentation) speed-reading mode that streams a chapter or a whole PDF one word at a time. While you read, the app records:
 
 - **Per-page timing** — turn speed captured for every single page, feeding analytics and estimates
 - **Temporal habits** — hour-of-day and day-of-week engagement patterns
@@ -50,8 +50,8 @@ There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for st
 | **Language** | Swift 5 mode, SwiftUI + AppKit only |
 | **Build config** | `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, `SWIFT_APPROACHABLE_CONCURRENCY = YES`, deployment target macOS 26.5, Xcode 27.1 locally; CI pins Xcode 26.6 |
 | **Dependencies** | Exactly one Swift dependency: ZIPFoundation 0.9.20 (SPM, pinned via `Package.resolved` — used for unzipping EPUBs). Mirage ships as a self-contained bundled runtime (its own Python interpreter), not a Swift dependency |
-| **App size** | 166 Swift files · 62,452 raw lines (55,177 non-blank) — counted from the tree on 2026-10-29 |
-| **Tests** | **432 tests / 671 runs · 9 skips · 0 failures** in the local unit census (2026-10-29, after SG8); CI runs the surface-freshness gate before the census |
+| **App size** | 175 Swift files · 66,050 raw lines (58,378 non-blank) — counted from the tree on 2026-10-29 after the ADR-13 Mirage pass |
+| **Tests** | **459 tests / 671 runs · 450 passed · 9 skips · 0 failures** in the local unit census (2026-10-29, after SG8, the UI shell tranches, the reader customization pass, the offline contract pass, and ADR-13); CI runs the surface-freshness gate before the census |
 | **How it is tested** | Swift Testing (`@Suite` / `@Test` / `#expect`) — not XCTest |
 | **History** | ~30 working sessions (Jun–Oct 2026), 45+ commits, then the **RT–Mirage merge campaign** (Oct 2026): the 8-PR integration ladder PR-1…PR-8, closed with owner signatures; then the **Bedrock / AsterismaV1.0 release** (2026-10-24) |
 | **Where your data lives** | Sandbox container: `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` (see §3) — plus Mirage's own stratum (§3.5) |
@@ -135,11 +135,14 @@ The full campaign of record — playbook, ADR register (ADR-2…ADR-8, ADR-12), 
 
 ## §4 · Verified health status
 
-Checked directly against the working tree on 2026-10-28 — not inherited from an old note:
+Checked directly against the working tree on 2026-10-29 (V2.0 rename pass), with historical release receipts labelled:
 
-- ✅ `xcodebuild build` (Debug and Release, default DerivedData) → **BUILD SUCCEEDED**
-- ✅ Local unit census (2026-10-29, after SG8): **432 tests / 671 runs / 9 skipped / 0 failed**, Release build exit 0. Evidence: [SG8 gate](docs/plans/sentinel/gates/SG8.md). The 9 skips are 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo. CI runs `scripts/verify-sentinel-surface.sh` before the census, so a stale surface manifest fails the run. UI tests remain placeholder launch stubs and are excluded from the deterministic unit receipt.
-- ✅ Rebrand verified live: app/product/display name **AsterismaV1.0**, Swift module `AsterismaV1_0`, and data root migrated to `Application Support/Asterisma/`.
+- ✅ `xcodebuild build` (Debug and Release, default DerivedData, V2.0 scheme) → **BUILD SUCCEEDED**
+- ✅ Local unit census (2026-10-29, after the V2.0 rename, SG8, the UI shell tranches, the reader customization pass, the offline contract pass, and the ADR-13 Mirage pass): **459 tests / 671 runs / 450 passed / 9 skipped / 0 failed**, Debug build exit 0. Evidence: [Stage AE](docs/registers/03-fix-log.md) for the 459-test Mirage tranche, [Stage AB](docs/registers/03-fix-log.md) for the 447-test offline tranche, [Stage AA](docs/registers/03-fix-log.md) for the 441-test reader tranche, [Stage Z](docs/registers/03-fix-log.md) for the earlier 437-test tranche, and [SG8 gate](docs/plans/sentinel/gates/SG8.md) for the older 432-test baseline. The nine `ReaderAppearanceTests`, five `CommandPaletteTests`, six offline/network pins, and twelve ADR-13 Mirage pins are part of the 459. The 9 skips are 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo. CI runs `scripts/verify-sentinel-surface.sh` before the census, so a stale surface manifest fails the run. UI tests remain placeholder launch stubs and are excluded from the deterministic unit receipt.
+- ✅ V2.0 rename verified: app/product/display name **AsterismaV2.0**, Swift module `AsterismaV2_0`, project/targets/scheme **AsterismaV2.0**, and source folders `AsterismaV2.0/` / `AsterismaV2.0Tests/` / `AsterismaV2.0UITests/`. Debug builds and the current 459-test census ran under the new scheme. The bundle ID `johan.Reading-Tracker` and the `Application Support/Asterisma/` data root are unchanged so existing libraries survive.
+- ✅ UI shell tranches (2026-10-29): a resume-first Home, a four-destination sidebar (⌘1–⌘4), a unified grid/list Library with a selected-book dock, embedded Insights/Goals, and a ⌘K Quick Open palette. The second tranche makes the Home hero and Library dock adaptive, makes Today goal-aware, and adds a Recently finished shelf. Debug build **BUILD SUCCEEDED**; the local unit census at that boundary was **441 / 671 / 432 passed / 9 skipped / 0 failed**. Owner visual acceptance is pending; the macOS screen-capture permission was denied, so no screenshot receipt exists. Design record: [UI-UX-OVERHAUL-2026-10-29.md](docs/design/UI-UX-OVERHAUL-2026-10-29.md).
+- ✅ Reader customization (2026-10-29): the EPUB Appearance panel now has Paged/Scrolling mode, page turn animation, Both Margins Advance, and a 35–100% brightness dimmer; the PDF panel adds single/continuous/facing/facing+scroll layouts, fit page/width/height/actual, cover-alone, LTR/RTL page order, a 0–80 pt page gap, three mat colors, and the same brightness dimmer. Debug build **BUILD SUCCEEDED**; the reader-boundary census was green; a Chromium harness exercised 23 paged pages, 21 scrolling viewport-pages, `goToPage(3)` → `scrollY = 2160`, and the switch back to page 3 at `scrollLeft = 3840`. Owner visual acceptance and a real-book pass remain pending.
+- ✅ Offline contract (2026-10-29): the local library, EPUB/PDF readers, goals, analytics, and settings have no network code. The only live network surfaces are Open-Meteo weather, Open Library and Gutendex discovery, and remote discovery cover images. Discovery now uses a bounded 10 s request / 15 s resource ephemeral session, queries both providers concurrently, and cancels both when the path drops; weather uses a 10 s request bound and runs in its own task so an offline session close cannot delay notifications or local analysis. Six new network-free tests passed; the full unit census is **447 / 671 / 438 passed / 9 skipped / 0 failed**. A whole-suite OS-level network-denial run could not be executed because Xcode's test runner hung before connecting and a direct App-Sandboxed launch trapped; that limitation is recorded in Stage AB, not presented as a pass.
 - ✅ Live library after the owner’s erase/reset and reading sessions: **1 book / 3 sessions / 77 page timings**.
 - ✅ Release packaging is reproducible with `scripts/package-release.sh`; generated `dist/` output is no longer retained in the working tree (removed during the 2026-10-28 artifact cleanup). The last documented package SHA-256 remains in the handoff and fix log as a historical receipt.
 - ✅ `main` contains the release merge at `aba8aa4`, the owner-accepted reader build, the preservation-first repository reorganization, the Sentinel v2 first tranche, and the SG8 surface layer; ready tag `asterisma-v1.0-ready-2026-10-26`, release tag `asterisma-v1.0-mvp`; local `.obsidian/` configuration is ignored.
@@ -167,7 +170,9 @@ CI runner alignment is complete (2026-10-26): the workflow runs on `macos-26` / 
 
 The full defect register remains the source of truth for the F-series items; the old NEW-DE block is historical and should not be read as still open.
 
-**Reader status:** the EPUB reader uses CSS-column pagination with one/two-page layouts, left/right page turns, exact chapter/page position persistence, cover/titlepage filtering, and compact in-content controls instead of the native toolbar. The ready build adds the Apple Books-style Appearance panel: six themes, font family, bold, text size, line/character/word spacing, margins, justification, hyphenation, page-turn style, and optional page numbers. The owner accepted the underlying reader workflow; visual acceptance of the new panel is pending. A whole-book physical page map remains future work.
+**Reader status:** the EPUB reader uses CSS-column pagination with one/two-page layouts, left/right page turns, exact chapter/page position persistence, cover/titlepage filtering, and compact in-content controls instead of the native toolbar. The 2026-10-29 reader pass adds the Apple Books-style Appearance panel (six themes, eleven font choices, bold, 80–200% text size, line/character/word spacing, margins, justification, hyphenation, page-turn style, optional page numbers, Both Margins Advance), a vertical Scrolling mode, and a page-only brightness dimmer. The PDF Appearance panel adds single/continuous/facing/facing+scroll layouts, fit page/width/height/actual, cover-alone, LTR/RTL page order, a 0–80 pt page gap, system/paper/slate mat colors, and the same dimmer. PDFs keep their publisher typography; font, spacing, and reflow controls are EPUB-only. The owner accepted the underlying reader workflow; visual acceptance of the expanded panels is pending. Highlights, notes, in-book search, page-curl animation, and a whole-book physical page map remain future work.
+
+**UI shell status (2026-10-29):** the app now opens on a resume-first Home rather than a book list, and the Library is a single adaptive grid/list with a selected-book dock. The second tranche adds ⌘K Quick Open, a goal-aware Today card, a Recently finished shelf, an adaptive Home hero, and a dock that clamps to 236–292 pt; ⌘F focuses Library search. Insights and Goals are embedded destinations; discovery, reports, recommendations, achievements, history, environment/context, import/export, and erase are secondary actions in the sidebar's **More** menu. The reader was deliberately left unchanged. The next UI gate is owner visual acceptance at 900×640, 900×640 with a 300 pt sidebar, and 1200×780; a screenshot could not be captured because macOS denied the screen-capture request.
 
 ---
 
@@ -196,7 +201,8 @@ docs/
 ├── reorganization/                          AV1-ROR baseline, relocation ledger, and execution report
 ├── design/fullscreen-surface-audit.md       Fullscreen surface audit, border inventory, after capture
 ├── design/UX-BETA-AUDIT-2026-10-25.md       Beta UX audit, finding register, remediation phases
-├── design/READER-POLISH-2026-10-25.md       Apple Books benchmark + Phase 1 reader/library polish record
+├── design/READER-POLISH-2026-10-25.md       Apple Books benchmark + Phase 1/2 reader customization record
+├── design/UI-UX-OVERHAUL-2026-10-29.md      Weighted UI model, Home/Library shell, receipts, limits
 ├── 12-owner-test-authority.md               Owner results are the absolute source of truth
 ├── MILESTONES.md                            Pinned capability milestones, with exact timestamps
 ├── owner-test-results/                      Personal test sessions + template
@@ -228,7 +234,15 @@ Campaign bookkeeping note: the root copies `merge-log.md` and `RT_Mirage_Codebas
 
 Requires a Mac with Xcode installed.
 
-1. **Open the project:** double-click `AsterismaV1.0.xcodeproj`
+### Run the latest working tree
+
+```bash
+./scripts/run-latest.sh
+```
+
+The runner picks the newest `AsterismaV*.xcodeproj` (V2.0 today), builds the current working tree with Xcode's default DerivedData, quits a running instance gracefully, and launches the exact bundle it just built. `--build-only` builds without launching; the log is at `~/Library/Logs/AsterismaV2.0/run-latest.log`. Use this instead of remembering a changing `xcodebuild` command or double-clicking the project and pressing Run when you need the terminal to be the source of truth.
+
+1. **Open the project:** double-click `AsterismaV2.0.xcodeproj`
 2. **Run:** ⌘R (or the Play button)
 3. **Developer Console:** ⌘⇧D (Debug builds only)
 4. **Settings:** ⌘, — includes the **Mirage pane** (feature switch, engine availability)
@@ -236,13 +250,13 @@ Requires a Mac with Xcode installed.
 To verify from the command line:
 
 ```bash
-xcodebuild build -project "AsterismaV1.0.xcodeproj" \
-  -scheme "AsterismaV1.0" \
+xcodebuild build -project "AsterismaV2.0.xcodeproj" \
+  -scheme "AsterismaV2.0" \
   -configuration Debug \
   -destination 'platform=macOS'
 
-xcodebuild test -project "AsterismaV1.0.xcodeproj" \
-  -scheme "AsterismaV1.0" \
+xcodebuild test -project "AsterismaV2.0.xcodeproj" \
+  -scheme "AsterismaV2.0" \
   -configuration Debug \
   -destination 'platform=macOS'
 ```
@@ -253,10 +267,10 @@ Mirage real-engine development (opt-in only, never part of the default suite):
 
 ```bash
 TEST_RUNNER_MIRAGE_REAL_ENGINE_DIR=/path/to/MirageV1.0 \
-  xcodebuild test -project "AsterismaV1.0.xcodeproj" \
-  -scheme "AsterismaV1.0" -configuration Debug \
+  xcodebuild test -project "AsterismaV2.0.xcodeproj" \
+  -scheme "AsterismaV2.0" -configuration Debug \
   -destination 'platform=macOS' \
-  -only-testing:"AsterismaV1.0Tests/MirageIdentityRealEngineImportTests"
+  -only-testing:"AsterismaV2.0Tests/MirageIdentityRealEngineImportTests"
 ```
 
 Mirage runtime staging (required for a fresh clone; the packaged release already contains it):
@@ -271,7 +285,7 @@ Release package:
 
 ```bash
 ./scripts/package-release.sh
-# → dist/AsterismaV1.0-1.0-arm64.zip + .sha256
+# → dist/AsterismaV2.0-2.0-arm64.zip + .sha256
 ```
 
 The package is ad-hoc signed, not notarized. First launch on another Mac requires right-click → Open. See `docs/plans/bedrock/DISTRIBUTION.md`.
@@ -291,7 +305,7 @@ python3 scripts/build-graph-3d.py                 # full node-level view
 python3 scripts/build-graph-3d.py --check         # fail if the output is stale
 ```
 
-`graph-3d-full.html` is the only 3D view: all 7,599 nodes / 19,164 edges across 361 communities, 7.76 MB, generated locally and gitignored. `graph.html` remains the 2D community export (361 community nodes / 1,425 cross-community edges, because the full graph exceeds the 5,000-node 2D limit). The 3D page embeds `3d-force-graph` 1.80.0 with its MIT notice; the renderer is vendored under `scripts/vendor/`, and the page template is `scripts/graph3d-template.html`. A root `.graphifyignore` keeps that minified bundle (3,371 AST nodes) out of the graph, so the counts describe project code and docs. `--check` is deterministic because the generator embeds the source and renderer hashes, not a build timestamp. The aggregated community view (`graph-3d.html`) was retired on 2026-10-29.
+`graph-3d-full.html` is the only 3D view; it is generated locally and gitignored. The current graph is **8,045 nodes / 20,093 edges / 381 communities** (2026-10-29, Stage AG close-out); the full-node 3D page is 8,474,994 B (8.08 MiB). Exact artifact hashes are recorded in the Stage AG receipt in `docs/registers/03-fix-log.md`; do not copy older counts forward. `graph.html` remains the 2D community export (aggregated because the full graph exceeds the 5,000-node 2D limit). The 3D page embeds `3d-force-graph` 1.80.0 with its MIT notice; the renderer is vendored under `scripts/vendor/`, and the page template is `scripts/graph3d-template.html`. A root `.graphifyignore` keeps that minified bundle (3,371 AST nodes) out of the graph, so the counts describe project code and docs. `--check` is deterministic because the generator embeds the source and renderer hashes, not a build timestamp. The aggregated community view (`graph-3d.html`) was retired on 2026-10-29.
 
 The 3D view orbits a full 360° in pitch and yaw (the camera flips its up vector at the poles), the arrow keys drive the same rotation, and the settled layout is cached locally, so a reopen is interactive in a few hundred milliseconds instead of replaying the force simulation.
 
@@ -328,4 +342,4 @@ House rules:
 
 ## Status
 
-**AsterismaV1.0 is accepted, merged, pushed, and honest about what remains.** It builds, the census is green, the live library survived the rename, and the release package has a launch receipt. The next session starts at `docs/registers/04-handoff.md` — distribution hardening, reader highlights, Swift 6, or the Mirage standing cadence — baseline green first, commit at every boundary, exactly as every session before it did.
+**AsterismaV2.0 is renamed, has a new reading-desk shell, and is honest about what remains.** The V1.0 release line above keeps its own receipts. The V2.0 tree has re-earned its build and census receipts; a launch receipt and a green remote run are still required before it can claim a release. The UI tranche is compiled and unit-tested, not visually accepted. The next session starts at `docs/registers/04-handoff.md` — owner visual acceptance first, then distribution hardening, reader highlights, Swift 6, or the Mirage standing cadence — baseline green first, commit at every boundary, exactly as every session before it did.
