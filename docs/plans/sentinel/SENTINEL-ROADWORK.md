@@ -2,11 +2,11 @@
 
 **Program:** Sentinel 1000 — make Asterisma's watchdog a thousand times stronger, smarter, and easier to use.
 
-**Status:** FIRST TRANCHE IMPLEMENTED (2026-10-28), awaiting owner acceptance. Gate evidence is indexed in [gates/README.md](gates/README.md). This document remains the program plan and the 700-probe ceiling; the shipped tranche is 138 probes / 15 domains / 25 repairs.
+**Status:** FIRST TRANCHE IMPLEMENTED (2026-10-28), awaiting owner acceptance. Gate evidence is indexed in [gates/README.md](gates/README.md). This document remains the program plan and the 700-probe ceiling; the shipped tranche is 140 probes / 15 domains / 25 repairs (SG7's 138 plus SQL-016 and SELF-011 from SG8). SG8 also adds the source-derived surface inventory; see [gate SG8](gates/SG8.md).
 
 **Date:** 2026-10-26 (plan); execution receipt 2026-10-28.
 
-**Baseline:** `main` at `6099e4e`. Final unit census for this tranche: **379 test functions, 1,024 passed cases, 9 skipped, 0 failed** (`./scripts/census.sh --unit-only`, macOS 26.6.1, artifact `rt-census-20261028-152733.xcresult`). Release builds with exit 0; test isolation is byte-identical. The SG7 receipt records the criteria that remain unmet (v1 removal, localization, manual owner scenarios).
+**Baseline:** `main` at `6099e4e` for the tranche. Post-SG8 local census: **432 tests / 671 runs, 9 skipped, 0 failed** (`./scripts/census.sh --unit-only`, macOS 26.6.1). Release builds with exit 0; test isolation is byte-identical. The SG7 receipt records the criteria that remain unmet (v1 removal, localization, manual owner scenarios); SG8 adds structural surface coverage but does not close them.
 
 **Scope of this document:** the complete Sentinel program — product definition, as-is audit, target architecture, probe and repair catalogs, user experience, safety doctrine, testing, scheduling, rollout phases, gates, and success metrics. It is intentionally larger than a normal roadmap. Sentinel is the only subsystem whose failure is invisible, so its plan has to be unusually explicit.
 
@@ -1638,7 +1638,7 @@ Each of the 15 families has exactly **eight subdomains**. The first is what the 
 | **W6** | Scale, recovery & meta | Does it still hold at size, after disaster, over time? | 18 | 93 | 700 |
 | | | **Total** | **105** | **562** | **700** |
 
-The first tranche is 138 probes, so 700 − 138 = 562 new probes, split 94/94/94/94/93/93. Those are budgets, not estimates of effort: a wave that cannot fit its budget splits into two gates rather than borrowing from the next wave.
+The first tranche is 140 probes, so 700 − 140 = 560 new probes. SG8's two probes are infrastructure, so the original 94/94/94/94/93/93 wave budgets total 562 and will be rebalanced by two at W1 rather than rewritten here. Those are budgets, not estimates of effort: a wave that cannot fit its budget splits into two gates rather than borrowing from the next wave.
 
 **Family allocation per wave.** Each cell is the number of new subdomains that family contributes to that wave; every row sums to seven.
 

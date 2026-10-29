@@ -22,6 +22,10 @@ Then, the **ready close-out** (2026-10-26): the preservation-first repository re
 
 Then, the **Sentinel v2 first tranche** (2026-10-28): 138 probes across 15 domains, 25 verified repair plans, a Release Health Center, journal v2 with fingerprints and diagnoses, a launch card, opt-in notifications, and a redacted diagnostics export. SG7 is **HOLD** on manual owner acceptance, v1 removal, and localization.
 
+Then, the **SG8 surface layer** (2026-10-28): two generic probes (`SQL-016`, `SELF-011`), a source-generated surface manifest (15 tables, 8 preferences, 5 notification names), and a CI freshness gate. New tables are structurally contract-checked after regeneration without new probe code; the catalog is now **140 probes / 58 required**, and the full unit census is **432 tests / 671 runs / 9 skipped / 0 failed**. Owner acceptance remains SG7's gate.
+
+Then, the **Library Recovery program** (2026-10-28): preservation-first incident handling, verified backup catalog and drill, atomic restore with rollback and crash reconciliation, logical rebuild, orphan row repair with export/undo, and a two-way Sentinel contract — Sentinel nominates only structural damage, pauses completely during recovery, and runs one deep verification pass afterward. Code complete; owner acceptance is the gate.
+
 ---
 
 ## Why?
@@ -50,7 +54,8 @@ Then, the **Sentinel v2 first tranche** (2026-10-28): 138 probes across 15 domai
 | 11 | **Merge + push:** fast-forwarded `main`, pushed `main` and all tags to GitHub | `main` at `aba8aa4`; tag `asterisma-v1.0-mvp` |
 | 12 | **R2 — repository reorganization:** app shell under `App/`, 48 flat tests into eight responsibility groups, 280-file baseline reconciled with zero content changes | `docs/reorganization/AV1-ROR-EXECUTION-2026-10-26.md` |
 | 13 | **CI hardening + ready package:** `macos-26` / Xcode 26.6 census, Xcode 26.6 concurrency fix, rebuilt signed package, green remote receipt | GitHub run `40266848038`; `dist/AsterismaV1.0-1.0-arm64.zip` |
-| 14 | **Sentinel v2 first tranche:** 138 probes / 15 domains / 25 repairs, Release Health Center, journal v2, launch card, notifications, diagnostics | `docs/audits/12-sentinel-v2-tranche-2026-10-28.md`; `docs/plans/sentinel/gates/` |
+| 14 | **Sentinel v2 first tranche + SG8 surface layer:** 140 probes / 15 domains / 25 repairs; 28 source-derived surfaces with generic table contracts; Release Health Center, journal v2, launch card, notifications, diagnostics | `docs/audits/12-sentinel-v2-tranche-2026-10-28.md`; `docs/plans/sentinel/gates/SG8.md` |
+| 15 | **Library Recovery (Phases 1–6):** preserve → diagnose → export, backup verify/drill, atomic restore + rollback + reconcile, logical rebuild, orphan row repair with undo, Sentinel gate/suspension/verification, Recovery tab + support summary | `DBappends.md`; `docs/plans/library-recovery/G6.md` |
 
 ---
 
@@ -64,23 +69,26 @@ An app that can be trusted with years of reading history, with a change process 
 
 | # | Item | Estimate | Details |
 |---|------|----------|---------|
-| 0 | **Sentinel owner acceptance + SG7 close** | One focused session | Run the ten roadwork scenarios on a copied library, decide v1 removal, then close or narrow SG7. Localization, menu bar, accessibility, and the 10× benchmark remain separate holds. |
-| 1 | **Distribution hardening** | Signing/account setup | Developer ID signing + notarization so first launch is a normal double-click. Today the build is ad-hoc signed and needs right-click → Open. |
-| 2 | **Bundle ID migration** | One focused session | The sandbox ID is still `johan.Reading-Tracker`. Moving to an Asterisma ID requires copying the container to the new sandbox; do not change it casually. |
-| 3 | **Swift 6 strict concurrency** | Multi-session arc | The attempt produced 148 actor-isolation errors; the project stays in Swift 5 mode until those surfaces are fixed. |
-| 4 | **Reader selection highlights/quotes** | 1–2 sessions | Notes, tags, page anchors, and collections work; EPUB/PDF text-selection highlighting is not wired. |
-| 5 | **Behavior evidence to SQLite** | 1 session | Evidence currently persists in a JSON archive; the behavior tables exist but are not the live store. |
-| 6 | **Collection rename UI** | Small | Create/delete/membership work; rename has no UI. |
-| 7 | **Legacy cleanup + remaining dead code** | 1 short session | Old P5-G `library.sqlite3`, `.migrated` files, graphify bulk, and zero-caller fragments remain; none are live. |
-| 8 | **Mirage standing items** | Process, not code | TB-M0 observation cadence, a perf-budget report, and the engine-side backup-surface gap. The packaged app-embed exercise is done. |
+| 0 | **Library Recovery owner acceptance (G6)** | One focused session | Run the nine-step acceptance script in `docs/plans/library-recovery/G6.md` on a copied library. The gate is not passed until this is signed off. Performance tuning for 1.38 M timings is a separate follow-up, by owner decision. |
+| 1 | **Sentinel owner acceptance + SG7 close** | One focused session | Run the ten roadwork scenarios on a copied library, decide v1 removal, then close or narrow SG7. Localization, menu bar, accessibility, and the 10× benchmark remain separate holds. |
+| 2 | **Distribution hardening** | Signing/account setup | Developer ID signing + notarization so first launch is a normal double-click. Today the build is ad-hoc signed and needs right-click → Open. |
+| 3 | **Bundle ID migration** | One focused session | The sandbox ID is still `johan.Reading-Tracker`. Moving to an Asterisma ID requires copying the container to the new sandbox; do not change it casually. |
+| 4 | **Swift 6 strict concurrency** | Multi-session arc | The attempt produced 148 actor-isolation errors; the project stays in Swift 5 mode until those surfaces are fixed. |
+| 5 | **Reader selection highlights/quotes** | 1–2 sessions | Notes, tags, page anchors, and collections work; EPUB/PDF text-selection highlighting is not wired. |
+| 6 | **Behavior evidence to SQLite** | 1 session | Evidence currently persists in a JSON archive; the behavior tables exist but are not the live store. |
+| 7 | **Collection rename UI** | Small | Create/delete/membership work; rename has no UI. |
+| 8 | **Legacy cleanup + remaining dead code** | 1 short session | Old P5-G `library.sqlite3`, `.migrated` files, graphify bulk, and zero-caller fragments remain; none are live. |
+| 9 | **Mirage standing items** | Process, not code | TB-M0 observation cadence, a perf-budget report, and the engine-side backup-surface gap. The packaged app-embed exercise is done. |
 
-CI runner alignment is complete (2026-10-26): `census` runs on `macos-26` / Xcode 26.6. The remote `census` is green on the Sentinel v2 tranche (run `40758619365`, `6aecdc3`): **379 test functions / 1,024 passing cases / 9 skips / 0 failures** locally, same suite in CI. The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old “open” block in the defect register is historical. Sentinel’s remaining holds are tracked in `docs/plans/sentinel/gates/SG7.md`, not in the old defect register.
+CI runner alignment is complete (2026-10-26): `census` runs on `macos-26` / Xcode 26.6. The remote `census` is green on the Sentinel v2 tranche (run `40758619365`, `bed710a`); the local census after SG8 is **432 tests / 671 runs / 9 skips / 0 failures**, and CI now runs the surface-freshness gate before the census. SG8 adds auto-extending structural coverage but does not close SG7: owner acceptance (row 1) is still the gate. The audit-era NEW-DE-1…NEW-DE-8 punch list is **fixed and pinned**; the old “open” block in the defect register is historical. Sentinel’s remaining holds are tracked in `docs/plans/sentinel/gates/SG7.md`, not in the old defect register.
 
 ---
 
 ## What should the next person know to start instantly?
 
-**Baseline:** `main` carries the original release merge at `aba8aa4` plus the owner-accepted reader build, the preservation-first repository reorganization, CI hardening, and the Sentinel v2 first tranche (`6099e4e` plus this working tree); ready tag `asterisma-v1.0-ready-2026-10-26`, release tag `asterisma-v1.0-mvp`. Latest local unit census (2026-10-28): **379 test functions / 1,024 passed cases / 9 skipped / 0 failed**; Release build exit 0; test isolation byte-identical. Package `dist/AsterismaV1.0-1.0-arm64.zip` SHA-256 `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`. Canonical census numbers come from `xcrun xcresulttool get test-results summary`; Sentinel evidence is indexed in `docs/plans/sentinel/gates/README.md`.
+**Baseline:** `main` carries the original release merge at `aba8aa4` plus the owner-accepted reader build, the preservation-first repository reorganization, CI hardening, the Sentinel v2 first tranche (`6099e4e`), and SG8 (`29dd4f6`); ready tag `asterisma-v1.0-ready-2026-10-26`, release tag `asterisma-v1.0-mvp`. Latest local unit census (2026-10-28, after SG8): **432 tests / 671 runs / 9 skipped / 0 failed**; Release build exit 0; test isolation byte-identical. The generated `dist/` package was removed during the 2026-10-28 artifact cleanup; rebuild with `scripts/package-release.sh`. The last documented package SHA-256 is `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`. Canonical census numbers come from `xcrun xcresulttool get test-results summary`; Sentinel evidence is indexed in `docs/plans/sentinel/gates/README.md`.
+
+> **History note (2026-10-28):** `main` was rewritten to remove AI co-author trailers from five commits. Trees are byte-identical. Remapped SHAs: `40bc922`→`16d6d16`, `fd524cd`→`5a369e9`, `6aecdc3`→`bed710a`, `2f40a43`→`310b9d3`, `ae4ee36`→`76e8a23`. A local-only `backup/pre-attribution-rewrite` branch may hold the old objects; it is not pushed and is safe to delete.
 
 > **Owner-test authority:** the owner's personal test results are the absolute source of truth and override every benchmark, census, gate receipt, and documentation claim. See `docs/12-owner-test-authority.md`; record sessions in `docs/owner-test-results/`.
 

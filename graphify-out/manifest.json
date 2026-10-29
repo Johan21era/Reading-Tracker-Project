@@ -1,7 +1,7 @@
 {
   "README.md": {
-    "mtime": 1792988283.934471,
-    "ast_hash": "29942af072e4ed96330b684a6a817cce",
+    "mtime": 1793233186.9637575,
+    "ast_hash": "b04da1949efa5f7d7a1e57ab20ffa7ce",
     "semantic_hash": ""
   },
   "docs/history/LAST_DEFEAT_demo_profiles.txt": {
@@ -40,13 +40,13 @@
     "semantic_hash": "fd1ca35990afd0f831ddc1a62a037330"
   },
   ".github/workflows/census.yml": {
-    "mtime": 1792987031.067445,
-    "ast_hash": "b65a67d3f8a310b5a2ccb688b345e547",
+    "mtime": 1793232666.550389,
+    "ast_hash": "dd8d86288617bc91cafa5bc748b1c5ed",
     "semantic_hash": ""
   },
   "docs/01-project-tree.md": {
-    "mtime": 1792988296.03775,
-    "ast_hash": "aa03a33666d95928ec07adecd8b6a339",
+    "mtime": 1793216367.627387,
+    "ast_hash": "b6664eccc491ad5b084dd8fe9af7244d",
     "semantic_hash": ""
   },
   "docs/audits/08-deep-audit.md": {
@@ -190,8 +190,8 @@
     "semantic_hash": "5649bcfa5bdf18d842374e96d6113a76"
   },
   "docs/method/07-testing-strategy.md": {
-    "mtime": 1792988301.2433033,
-    "ast_hash": "608d9af4f6c990640f4d1b5063feeb9f",
+    "mtime": 1793216378.2184799,
+    "ast_hash": "504fcd9a4107d86222d9da0147a6cec5",
     "semantic_hash": ""
   },
   "docs/registers/02-defect-register.md": {
@@ -205,14 +205,14 @@
     "semantic_hash": ""
   },
   "docs/registers/04-handoff.md": {
-    "mtime": 1792988587.6556308,
-    "ast_hash": "af1a4fb0ed7c086b0a1b5307d9469d67",
+    "mtime": 1793233186.9643612,
+    "ast_hash": "a3d82f402ed6afa772a90c2c0e7387d5",
     "semantic_hash": ""
   },
   "docs/roadmap/05-remediation-roadmap.md": {
-    "mtime": 1792825787.0,
-    "ast_hash": "906e9e3dd96b7e291eb64cfea697f347",
-    "semantic_hash": "906e9e3dd96b7e291eb64cfea697f347"
+    "mtime": 1793215791.591795,
+    "ast_hash": "ad268ce7b22ecad57f910f78773d5b43",
+    "semantic_hash": ""
   },
   "docs/roadmap/06-rsvp-feature-plan.md": {
     "mtime": 1792376029.0,
@@ -290,8 +290,8 @@
     "semantic_hash": "a0995b5f9423685ea63017b0af234aa2"
   },
   "AsterismaV1.0/Core/DataStore3.swift": {
-    "mtime": 1792899568.0,
-    "ast_hash": "a7fe7f9e244096c0d0378a445093359b",
+    "mtime": 1793230048.6446476,
+    "ast_hash": "4623e055e3db703deb044abde0da5ee3",
     "semantic_hash": ""
   },
   "AsterismaV1.0/Core/DesignGrid.swift": {
@@ -320,9 +320,9 @@
     "semantic_hash": "d325538aaf60542cbf5c4a04e4a4ec50"
   },
   "AsterismaV1.0/Core/SentinelEngine.swift": {
-    "mtime": 1792825179.0,
-    "ast_hash": "b00b1661d5e85e9361f436c39badc48a",
-    "semantic_hash": "b00b1661d5e85e9361f436c39badc48a"
+    "mtime": 1793210517.5669842,
+    "ast_hash": "ca61a878534689b789dc0988d536a878",
+    "semantic_hash": ""
   },
   "AsterismaV1.0/Core/SharedTextUtilities.swift": {
     "mtime": 1792825179.0,
@@ -330,9 +330,9 @@
     "semantic_hash": "08d8de8d7496914542f34320b071ac98"
   },
   "AsterismaV1.0/Core/Storage/LibraryDatabase.swift": {
-    "mtime": 1792825179.0,
-    "ast_hash": "cef214e385b7c171bc92e9d61171c0e7",
-    "semantic_hash": "cef214e385b7c171bc92e9d61171c0e7"
+    "mtime": 1793229478.8370123,
+    "ast_hash": "a0163d8070606043baca42061ca854ec",
+    "semantic_hash": ""
   },
   "AsterismaV1.0/Engines/AnalyticsEngine.swift": {
     "mtime": 1792825179.0,
@@ -440,14 +440,14 @@
     "semantic_hash": "32d415f7cc810e5c3d9d1dc8b3c6b8d8"
   },
   "AsterismaV1.0/Features/DeveloperConsole/SentinelPaneView.swift": {
-    "mtime": 1792825179.0,
-    "ast_hash": "b39cbddccd614855c047501b23a2ba42",
-    "semantic_hash": "b39cbddccd614855c047501b23a2ba42"
+    "mtime": 1793212466.0742972,
+    "ast_hash": "713a78827b2c5a1ea04efa055362269d",
+    "semantic_hash": ""
   },
   "AsterismaV1.0/Features/DeveloperConsole/SentinelReportCardView.swift": {
-    "mtime": 1792825179.0,
-    "ast_hash": "906a98ff65114a89e5875897cd5ce7a8",
-    "semantic_hash": "906a98ff65114a89e5875897cd5ce7a8"
+    "mtime": 1793210032.6279497,
+    "ast_hash": "8d5aeb7643a6461623dedadaacf892a8",
+    "semantic_hash": ""
   },
   "AsterismaV1.0/Features/Discovery/BookDiscoveryView.swift": {
     "mtime": 1792825179.0,
@@ -600,9 +600,9 @@
     "semantic_hash": "8a73db9332f97bf67ed40202830a78b2"
   },
   "AsterismaV1.0/Features/Goals/SettingsRootView.swift": {
-    "mtime": 1792825179.0,
-    "ast_hash": "6836f6b47feb895abad63fe02811eb6c",
-    "semantic_hash": "6836f6b47feb895abad63fe02811eb6c"
+    "mtime": 1793212448.967912,
+    "ast_hash": "1018cf01f130784fdaad450217fbc5d0",
+    "semantic_hash": ""
   },
   "AsterismaV1.0/Features/Insights/InsightEngine.swift": {
     "mtime": 1792825179.0,
@@ -1045,8 +1045,8 @@
     "semantic_hash": ""
   },
   "docs/MILESTONES.md": {
-    "mtime": 1792988420.6931827,
-    "ast_hash": "3b75dc9ced562d31d1182b12f5ff314b",
+    "mtime": 1793216387.2533927,
+    "ast_hash": "820f449a360bd38d6316639f3f8bd08a",
     "semantic_hash": ""
   },
   "docs/design/READER-POLISH-2026-10-25.md": {
@@ -1085,13 +1085,13 @@
     "semantic_hash": ""
   },
   "AsterismaV1.0/App/AsterismaApp.swift": {
-    "mtime": 1792898258.0,
-    "ast_hash": "2c00f4ee3a093d1690033dbc7ad5168a",
+    "mtime": 1793231195.451254,
+    "ast_hash": "c68527e395c58f379bc642f48e63e3d5",
     "semantic_hash": ""
   },
   "AsterismaV1.0/App/NewContentView.swift": {
-    "mtime": 1792920989.0,
-    "ast_hash": "70fa5319e64de061d638d6e485e40ac6",
+    "mtime": 1793212619.3649094,
+    "ast_hash": "d10f5ae6e429a9401a95acd75ab78090",
     "semantic_hash": ""
   },
   "AsterismaV1.0Tests/App/BedrockBaselineTests.swift": {
@@ -1352,6 +1352,416 @@
   "docs/reorganization/AV1-ROR-EXECUTION-2026-10-26.md": {
     "mtime": 1792988498.408363,
     "ast_hash": "dab6e8d52cca2393b94ed8d81c312b05",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/App/LibraryHealthCoordinator.swift": {
+    "mtime": 1793231040.7201164,
+    "ast_hash": "290f86163c31d488bf873ef4e84dade2",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/App/LibraryHealthIntegration.swift": {
+    "mtime": 1793231146.6052995,
+    "ast_hash": "a72fcbf929372219c2469e21bb0a6329",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibraryBackupCatalog.swift": {
+    "mtime": 1793230031.8517816,
+    "ast_hash": "bd25fc11d5266eb8ddc11fc0aaf99849",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibraryBackupVerifier.swift": {
+    "mtime": 1793230040.8621957,
+    "ast_hash": "201cb76622a5f191294150fd29ff0c91",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibraryDatabaseDoctor.swift": {
+    "mtime": 1793229840.8706825,
+    "ast_hash": "55ebc76e1d3390a5d9e412537c40b682",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibraryIncident.swift": {
+    "mtime": 1793229677.9506435,
+    "ast_hash": "99767cef31d303139ec4375746cf9dab",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibraryIncidentStore.swift": {
+    "mtime": 1793229703.9588866,
+    "ast_hash": "6343270f0ee334c3b16f50b3f60670c4",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibraryLogicalRebuilder.swift": {
+    "mtime": 1793230435.0115843,
+    "ast_hash": "d2b2a72675bc3a190d401a59fcd81a54",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibraryRecoveryGate.swift": {
+    "mtime": 1793231063.305944,
+    "ast_hash": "90d63ab1e6f60e5669b9bc47c7db399b",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibraryRecoveryIO.swift": {
+    "mtime": 1793230111.3150642,
+    "ast_hash": "98777201b99fa8041ac48f0e10be55f4",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibraryRecoveryPlanner.swift": {
+    "mtime": 1793230476.7899518,
+    "ast_hash": "c2a64d9fdf1beb63be67c6e6df352ec4",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibraryRecoveryService.swift": {
+    "mtime": 1793229986.2830012,
+    "ast_hash": "78d90e8b13c025d70d7cbe4f1b9c62a8",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibraryRecoveryVerifier.swift": {
+    "mtime": 1793230141.0120137,
+    "ast_hash": "ac4eb1094ddb9e84caf4a990f99f17e2",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibraryRowRepairService.swift": {
+    "mtime": 1793230695.5247018,
+    "ast_hash": "fe8127a56b80b72d0ecedb2258629141",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibraryStorePreserver.swift": {
+    "mtime": 1793229980.9600322,
+    "ast_hash": "611da5f7f491cb97f4da174cd9ba73c3",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/LibraryRecovery/LibrarySwapCoordinator.swift": {
+    "mtime": 1793230210.6492157,
+    "ast_hash": "68aa6bc072f4afa4dff6ff5cfc467fd9",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/Generated/SentinelSurface.generated.swift": {
+    "mtime": 1793232546.2062173,
+    "ast_hash": "3f43a672ede4cb36be090fba16839176",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelConfiguration.swift": {
+    "mtime": 1793210999.3642995,
+    "ast_hash": "b4f220d99343ca09397bb74f750272d3",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelDataBridgeV2.swift": {
+    "mtime": 1793231151.2152143,
+    "ast_hash": "0b9572cbd9fc996ff56c3ac34b54b157",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelDiagnostics.swift": {
+    "mtime": 1793231025.2577693,
+    "ast_hash": "024ce5b2943a83b605b78e7dee459121",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelDomain.swift": {
+    "mtime": 1793211367.8073857,
+    "ast_hash": "06035334c71d3116be643a68dd47a2a5",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelEnvironment.swift": {
+    "mtime": 1793211767.681454,
+    "ast_hash": "ccdd9ea603dfe8212af17aac9eb6436d",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelIssueStore.swift": {
+    "mtime": 1793211651.7644448,
+    "ast_hash": "7d2c200186fec5e4f11f0706d0f2a428",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelJournal.swift": {
+    "mtime": 1793230845.7419384,
+    "ast_hash": "0ec51ef3d83fe64de0fbeca30fe23595",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelNotification.swift": {
+    "mtime": 1793214020.8252318,
+    "ast_hash": "4bd420f01a4002d0b7c9a83a393ec3a1",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelProbeCatalog.swift": {
+    "mtime": 1793232609.9292014,
+    "ast_hash": "733b8ca66bbbeece5b14b2ff27a6c63d",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelProbeSupport.swift": {
+    "mtime": 1793211762.558853,
+    "ast_hash": "1c2bb3029807ae22ba0d55ca7e283741",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelProbesFiles.swift": {
+    "mtime": 1793213320.048462,
+    "ast_hash": "2d2ac66927e5043b7be5b18e72309cd8",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelProbesGoals.swift": {
+    "mtime": 1793212173.18879,
+    "ast_hash": "645de4631dff6ce59a794523b5870279",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelProbesLibrary.swift": {
+    "mtime": 1793213118.8506885,
+    "ast_hash": "c47063934563054e7224fa3234007405",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelProbesSelf.swift": {
+    "mtime": 1793212141.2367187,
+    "ast_hash": "d24476f346b963425f136549fd1ab3c9",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelProbesStorage.swift": {
+    "mtime": 1793213118.8514395,
+    "ast_hash": "ac612920499f11f90d065f40a8b524cb",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelProbesSubsystems.swift": {
+    "mtime": 1793217273.1426542,
+    "ast_hash": "fe49ccec2b64e9c73cbd84dbdb9d4c9a",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelProbesSurface.swift": {
+    "mtime": 1793232637.4729671,
+    "ast_hash": "2a422107cd469c38bfbb9041fcb3f555",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelRepair.swift": {
+    "mtime": 1793212500.9894943,
+    "ast_hash": "723d49c48c8f162df1665d89c28f6b56",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelRepairCatalog.swift": {
+    "mtime": 1793211623.5627441,
+    "ast_hash": "9450895a67df6b66df8acf433e727d10",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelRules.swift": {
+    "mtime": 1793211100.5405188,
+    "ast_hash": "5a07c9065af611fbb292437bbe4fe3a1",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelRuntime.swift": {
+    "mtime": 1793231137.7978075,
+    "ast_hash": "a7c43ee7c7506888fd8031852bd5c278",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelSnapshot.swift": {
+    "mtime": 1793232693.283109,
+    "ast_hash": "69b3189f853b764749ca5b0f885035a6",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Sentinel/SentinelSurfaceCoverage.swift": {
+    "mtime": 1793232569.8892853,
+    "ast_hash": "2198d61c6e0c16852450e3e3862cb5a8",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Storage/LibraryRecoveryContracts.swift": {
+    "mtime": 1793229887.0530646,
+    "ast_hash": "0e61af09b47ef6dfa6d3a2230d4e0589",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Core/Storage/LibrarySnapshot.swift": {
+    "mtime": 1793230269.8163245,
+    "ast_hash": "92dc3b18f65cb093745c0a6ae573af63",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Features/LibraryRecovery/LibraryRecoveryView.swift": {
+    "mtime": 1793231176.189238,
+    "ast_hash": "de56ea9f912a268766c3e6f9831db411",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Features/Sentinel/SentinelHealthCenterView.swift": {
+    "mtime": 1793231190.6393993,
+    "ast_hash": "48a36b3aea817df80e9d01d8b3de7370",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0/Features/Sentinel/SentinelViewModel.swift": {
+    "mtime": 1793231200.5703552,
+    "ast_hash": "13d848ff68a04efded4b87facefb70fd",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/LibraryBackupCatalogTests.swift": {
+    "mtime": 1793230061.5573292,
+    "ast_hash": "18d70642d98553579b217e389dfe2b36",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/LibraryIncidentTests.swift": {
+    "mtime": 1793229733.0610502,
+    "ast_hash": "28cf34ac17aecfdebdc53638668b708c",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/LibraryPreservationTests.swift": {
+    "mtime": 1793229943.786028,
+    "ast_hash": "bcabcd2dce0f0e49afaadbb8a807ff07",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/LibraryRebuildAndRowRepairTests.swift": {
+    "mtime": 1793230643.809038,
+    "ast_hash": "795bb8e22eca6264e3e04b863c98d9ad",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/LibraryRecoveryFlowTests.swift": {
+    "mtime": 1793230367.4249756,
+    "ast_hash": "1dea38ca872fcff8a4ed92f9a3a25b81",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/LibraryRecoveryGateTests.swift": {
+    "mtime": 1793231333.047041,
+    "ast_hash": "9f2b20803bf4d4b317443daac45aa794",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/LibrarySnapshotTests.swift": {
+    "mtime": 1793229575.7133892,
+    "ast_hash": "4bdd019257dcb80432a771567503dd93",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/LibrarySwapTests.swift": {
+    "mtime": 1793230162.926356,
+    "ast_hash": "c98f29b2bad793266279a9cc783eba64",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SQLiteLoadIntegrityTests.swift": {
+    "mtime": 1792996847.856384,
+    "ast_hash": "3fbf166fec9d82dfb2cdd9a38cb2eeea",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SentinelCatalogTests.swift": {
+    "mtime": 1793232613.240551,
+    "ast_hash": "2eabbac51ec62c11a1dcbdd70b7ccc9e",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SentinelDiagnoserTests.swift": {
+    "mtime": 1793211249.5763664,
+    "ast_hash": "7881032af3d37809486248ea127f4fe4",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SentinelDomainTests.swift": {
+    "mtime": 1793211374.3596363,
+    "ast_hash": "050d0a30a1703a001837d812f23c877a",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SentinelLaunchAndRepairTests.swift": {
+    "mtime": 1793216944.0957322,
+    "ast_hash": "9bf44f32bfd3f8293a835478260a7a0f",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SentinelPersistenceTests.swift": {
+    "mtime": 1793211420.285053,
+    "ast_hash": "f680db834657972580b566a74df813da",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SentinelRuntimeTests.swift": {
+    "mtime": 1793213869.485861,
+    "ast_hash": "47c78711d723f78592dcf8174a2df99d",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SentinelSG0Tests.swift": {
+    "mtime": 1793210540.3630857,
+    "ast_hash": "b1bd0e3a89e43dcabc8910eeb7f7cc1d",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SentinelSurfaceTests.swift": {
+    "mtime": 1793232757.024473,
+    "ast_hash": "2dafeb7f7c89ef9bdb6dc8ca13c03a67",
+    "semantic_hash": ""
+  },
+  "AsterismaV1.0Tests/Core/SentinelTestSupport.swift": {
+    "mtime": 1793212808.1060581,
+    "ast_hash": "49525c1769b0c4caf19efd626dc4e53e",
+    "semantic_hash": ""
+  },
+  "scripts/sentinel-surface.py": {
+    "mtime": 1793232542.7519698,
+    "ast_hash": "37ef3fa38152f7598017afde55627a60",
+    "semantic_hash": ""
+  },
+  "scripts/verify-sentinel-surface.sh": {
+    "mtime": 1793232662.8647242,
+    "ast_hash": "111e4e0ee4e4f4acd88cb3709977264a",
+    "semantic_hash": ""
+  },
+  "AGENTS.md": {
+    "mtime": 1793233096.0283024,
+    "ast_hash": "80b9598d0de5dd6197c40f3fdbcd058c",
+    "semantic_hash": ""
+  },
+  "DBappends.md": {
+    "mtime": 1793233186.9661887,
+    "ast_hash": "b7590d56875322d0b5bcd4917592dd92",
+    "semantic_hash": ""
+  },
+  "docs/audits/12-sentinel-v2-tranche-2026-10-28.md": {
+    "mtime": 1793233186.9666047,
+    "ast_hash": "cacdf17b0476d697358aa98e0d44c6fb",
+    "semantic_hash": ""
+  },
+  "docs/integration/MIRAGE-DEEP-DIVE-2026-10-28.md": {
+    "mtime": 1793205236.0310118,
+    "ast_hash": "c6494107205f033d4beedd95b6716642",
+    "semantic_hash": ""
+  },
+  "docs/plans/library-recovery/G6.md": {
+    "mtime": 1793231626.0596585,
+    "ast_hash": "0ed6aac404f5c6f2143cdf1c0634d4c3",
+    "semantic_hash": ""
+  },
+  "docs/plans/sentinel/SENTINEL-ROADWORK.md": {
+    "mtime": 1793215806.3374221,
+    "ast_hash": "230907687d47c9e7670997add4d35f29",
+    "semantic_hash": ""
+  },
+  "docs/plans/sentinel/gates/README.md": {
+    "mtime": 1793233186.9678023,
+    "ast_hash": "bd6ecdeba350bd90fe127a9191029d37",
+    "semantic_hash": ""
+  },
+  "docs/plans/sentinel/gates/SG0.md": {
+    "mtime": 1793233186.969028,
+    "ast_hash": "4b2e60e8850e885fe9c4c47817d488dc",
+    "semantic_hash": ""
+  },
+  "docs/plans/sentinel/gates/SG1.md": {
+    "mtime": 1793233186.9687274,
+    "ast_hash": "fe85d6c5b1c2f3fd77ba8fd258a82663",
+    "semantic_hash": ""
+  },
+  "docs/plans/sentinel/gates/SG2.md": {
+    "mtime": 1793233186.9707081,
+    "ast_hash": "25d46d77ce338ee5fe9e4690bd239848",
+    "semantic_hash": ""
+  },
+  "docs/plans/sentinel/gates/SG3.md": {
+    "mtime": 1793233186.9671953,
+    "ast_hash": "bcd46a5fd2a711c15c37eeb6fc71c546",
+    "semantic_hash": ""
+  },
+  "docs/plans/sentinel/gates/SG4.md": {
+    "mtime": 1793233186.9715817,
+    "ast_hash": "e49fdbcb5cefd925dca9420b09ce0ffb",
+    "semantic_hash": ""
+  },
+  "docs/plans/sentinel/gates/SG5.md": {
+    "mtime": 1793233186.9696236,
+    "ast_hash": "e17cac791d37bbe4998cc32f44882f1d",
+    "semantic_hash": ""
+  },
+  "docs/plans/sentinel/gates/SG6.md": {
+    "mtime": 1793233186.9703305,
+    "ast_hash": "321809fd92b9eaa91667bf013efae907",
+    "semantic_hash": ""
+  },
+  "docs/plans/sentinel/gates/SG7.md": {
+    "mtime": 1793233186.9683585,
+    "ast_hash": "98133c19a308c23ce50eb7928d482bd5",
+    "semantic_hash": ""
+  },
+  "docs/plans/sentinel/gates/SG8.md": {
+    "mtime": 1793233186.971128,
+    "ast_hash": "2f4a014db10e3b0e5ae753c4469ef1bb",
+    "semantic_hash": ""
+  },
+  "docs/plans/sentinel/gates/census-2026-10-28.md": {
+    "mtime": 1793233186.9698966,
+    "ast_hash": "35d93306bb54b6006920e0450610a0af",
     "semantic_hash": ""
   }
 }

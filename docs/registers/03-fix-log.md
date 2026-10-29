@@ -349,3 +349,15 @@ Gatekeeper-rejection expectation were re-verified by `scripts/package-release.sh
 **Supersession:** this ready package supersedes the `a8ebf2ec…` polish
 candidate for owner retesting. Reader behavior is unchanged; the only app-code
 change is the `nonisolated` concurrency annotation.
+
+## Stage S — SG8 surface coverage and repository hygiene (2026-10-28)
+
+| Item | What changed | Verification |
+|---|---|---|
+| S-001 | `SQL-016` contract-checks every table in a source-generated manifest (existence, readability, primary key) | 11 surface pins; full census green |
+| S-002 | `SELF-011` raises a required gap when a family loses its registered owner | Removal of `SQL-016` produces 15 required gaps in test |
+| S-003 | `scripts/sentinel-surface.py` generates the surface catalog; CI freshness gate runs before the census | Simulated new table/preference made `--check` exit 1; restored check exit 0 |
+| S-004 | Published history rewritten to remove AI co-author trailers from five commits | Trees byte-identical; GitHub contributors API now lists only the owner |
+| S-005 | Build junk removed: `.DS_Store` files and the stale 84 MB `dist/` output | `git status --ignored` shows no build directory left |
+| S-006 | Graphify refreshed from the new code | 7,510 nodes · 19,023 edges · 369 communities; HTML retired at the 5,000-node limit |
+| S-007 | Sentinel catalog grew to 140 probes / 58 required; local census 432 tests / 671 runs / 9 skipped / 0 failed | `./scripts/census.sh --unit-only` passed; Debug and Release builds succeeded |

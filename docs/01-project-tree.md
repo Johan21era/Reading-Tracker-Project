@@ -23,9 +23,9 @@ This is a map of every file and folder in the project, organized so you can find
 | `AsterismaV1.0.entitlements` | Permissions the app asks macOS for (sandbox, user-selected files, location) |
 | `AsterismaV1.0-Info.plist` | App settings such as its name, icon, and location description |
 | `scripts/` | Census, benchmark, test-isolation, runtime staging, icon, and release-package scripts |
-| `dist/` | Locally built release packages (gitignored); the final signed ready zip is kept here |
+| `dist/` | Generated release packages (gitignored, rebuilt by `scripts/package-release.sh`); the stale local build was removed on 2026-10-28 |
 | `.mirage-runtime/` | Local staged Mirage runtime (gitignored; required for a fresh build) |
-| `graphify-out/` | Generated knowledge graph, report, and interactive HTML (refreshed 2026-10-28; current counts in `GRAPH_REPORT.md`) |
+| `graphify-out/` | Generated knowledge graph and report (refreshed 2026-10-28: 7,510 nodes / 19,023 edges; interactive HTML omitted because the graph exceeds the 5,000-node visualizer limit) |
 | `.gitignore` | Tells Git which files to ignore (build junk, user settings, etc.) |
 
 ---

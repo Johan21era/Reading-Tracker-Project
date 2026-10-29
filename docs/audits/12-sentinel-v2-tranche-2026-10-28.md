@@ -8,8 +8,13 @@
 
 **Branch:** `main`
 **Base commit:** `6099e4e`
-**Tree state at verification:** committed in `40bc922`; GitHub `census` green at `6aecdc3` and `2f40a43`
+**Tree state at verification:** committed in `16d6d16`; GitHub `census` green at `bed710a` and `310b9d3`
 **Decision:** SG0–SG6 recorded with evidence; **SG7 is HOLD** on the criteria listed below.
+
+> **Postscript (SG8, 2026-10-28).** The catalog now carries **140 probes / 58
+> required** after `SQL-016` and `SELF-011`, plus a source-derived surface
+> manifest (15 tables, 8 preferences, 5 notification names) enforced by a CI
+> freshness gate. SG7's holds are unchanged. See [SG8](../plans/sentinel/gates/SG8.md).
 
 ---
 
