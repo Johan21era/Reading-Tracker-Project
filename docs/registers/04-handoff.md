@@ -193,8 +193,8 @@ dragging at 2560×1440 / DPR 2 (was 46.5 fps); warm reopen is 256–340 ms versu
 WebKit with no console errors and no network requests. The app code was not
 touched, so no Xcode build or census was rerun for this stage.
 
-**Next:** owner visual check of `graph-3d-full.html` and `graph.html`, then
-the pending commit/push gate from the close-out protocol.
+**Next:** owner visual check of `graph-3d-full.html` and `graph.html`; the
+work is committed and pushed (`c2c669d`).
 `graph-3d-full.html` stays local and must be rebuilt after any graph refresh;
 `graph-3d.html` is retired.
 
@@ -220,15 +220,15 @@ this handoff.
 
 **Verified:** `python3 scripts/comprehension-bench.py --validate-only` passes
 (30 facts, 12 overview facts, all anchors in bounds); `--mode all` exits 0 with
-the gate above. The new CI step is the same `--validate-only` command and passes
-locally; the GitHub run awaits the push approval. No Swift file moved, so the
-unit census was not rerun for this docs/scripts pass — record that as a skip,
-not a pass.
+the gate above. Commit `c2c669d` is pushed; GitHub census run `40811182851` is
+green in 3m26s, including the new index-freshness step and the full unit census
+(432 tests / 671 runs / 9 skips / 0 failures).
 
 **Cold-reader trial:** 3 dispatch attempts, ~85 s (valid brief), ~245 s (invalid
 — the worker summarized the session instead of reading), ~48 s (valid brief).
 Spawned workers inherit this conversation, which is why run 2 failed; the
 repeatable context-free measurement is the fresh-process harness.
 
-**Next:** commit/push approvals; keep `docs/INDEX.md` anchors current and rerun
+**Next:** owner visual checks; refresh graphify and the full 3D view so the new
+files appear in the graph; keep `docs/INDEX.md` anchors current and rerun
 `--mode all` after any edit above an indexed line.

@@ -444,7 +444,7 @@ with a gate that fails on drift. Two new artifacts and one CI step:
 | V-003 | Six harder questions added after the first pass (notification key, CI run id, erase-data action, snapshot counts, generator flag, data root) to stop the bank from matching only the rows it was written beside | Repeated 30-question runs: **344–352×**, byte ratio 0.20, **100%**, 0 fallbacks; three anchors were wrong on the way (CI line, retired-3D line, data-root line) and the gate caught each one |
 | V-004 | Full-context scan test: 246 tracked files vs four entry documents (README, INDEX, handoff, MILESTONES) | naive **74.6 ms / 3,121,726 B / 246 files**; indexed **0.8 ms / 62,819 B / 4 files**; **97.2×**, coverage 100%, byte ratio 0.02 |
 | V-005 | Cold-reader defect: README said 138 checks / 56 required, while the SG8 catalog receipt says 140 / 58. README lines 41 and 106 corrected to 140 / 58; the 138 figure remains only in the historical milestone/gate prose. | Found by the cold-reader brief, confirmed against `docs/registers/04-handoff.md:25` and `03-fix-log.md` S-007, then corrected |
-| V-006 | CI: `census.yml` gains a “Comprehension index freshness” step running `python3 scripts/comprehension-bench.py --validate-only` between the surface gate and the unit census; `AGENTS.md` local mirror lists the same three steps | The step passes locally (`--validate-only`, 30 facts, 12 overview facts, all anchors in bounds); the GitHub run itself awaits the commit/push gate |
+| V-006 | CI: `census.yml` gains a “Comprehension index freshness” step running `python3 scripts/comprehension-bench.py --validate-only` between the surface gate and the unit census; `AGENTS.md` local mirror lists the same three steps | GitHub run `40811182851` on `c2c669d`: green in 3m26s, with the new step before a passing unit census |
 
 **Gate definition (calibrated, not advisory):** one-hop accuracy 100%, zero
 grep fallbacks, indexed median ≤ 25 ms and ≤ 2 linked files, ≥ 4× faster than
@@ -458,6 +458,10 @@ indexed **0.8 ms / 62.8–63.3 KB / 4 files** — **97.2–97.8×**, coverage 10
 The gate passed on the command's own exit status each time; the earlier
 24-question build measured 48.7 ms / 26,907 B / 88% before the index, which is
 the baseline row above.
+
+**Push receipt:** commit `c2c669d` (13 files, +2,529/−1,190) pushed to
+`origin/main`; census run `40811182851` succeeded, so the index-freshness step
+has now executed on a GitHub runner exactly as the workflow declares it.
 
 **Cold-reader trial:** three dispatch attempts with the same brief prompt,
 timed from dispatch to report. Run 1 produced a 400-word, 12-citation brief in
