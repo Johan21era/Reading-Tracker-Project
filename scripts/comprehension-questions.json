@@ -1,0 +1,260 @@
+{
+  "version": 1,
+  "description": "Cold-retrieval bank for scripts/comprehension-bench.py. Every `answer` must match inside `path`; the harness validates that before timing anything. Questions are deliberately niche and their answers are not duplicated in docs/INDEX.md — the index may only point at the owning file.",
+  "facts": [
+    {
+      "id": "bundle-id",
+      "question": "What bundle identifier does the main app target use?",
+      "answer": "johan\\.Reading-Tracker",
+      "path": "AsterismaV1.0.xcodeproj/project.pbxproj"
+    },
+    {
+      "id": "mirage-key",
+      "question": "Which user-defaults key switches the Mirage feature off?",
+      "answer": "\"mirage\\.enabled\"",
+      "path": "AsterismaV1.0/Features/Mirage/MirageSettings.swift"
+    },
+    {
+      "id": "sentinel-key",
+      "question": "Which defaults key gates the Sentinel engine?",
+      "answer": "\"sentinel\\.enabled\"",
+      "path": "AsterismaV1.0/Core/SentinelEngine.swift"
+    },
+    {
+      "id": "repair-key",
+      "question": "Which defaults key allows Sentinel repairs?",
+      "answer": "\"sentinel\\.allowRepair\"",
+      "path": "AsterismaV1.0/Core/SentinelEngine.swift"
+    },
+    {
+      "id": "interval-key",
+      "question": "Which defaults key sets the Sentinel interval in minutes?",
+      "answer": "\"sentinel\\.intervalMinutes\"",
+      "path": "AsterismaV1.0/Core/SentinelEngine.swift"
+    },
+    {
+      "id": "surface-probe",
+      "question": "Which probe ID contract-checks every table in the surface manifest?",
+      "answer": "SQL-016",
+      "path": "AsterismaV1.0/Core/Sentinel/SentinelProbesSurface.swift"
+    },
+    {
+      "id": "owner-probe",
+      "question": "Which probe ID requires every required surface to have a registered owner?",
+      "answer": "SELF-011",
+      "path": "AsterismaV1.0/Core/Sentinel/SentinelProbesSurface.swift"
+    },
+    {
+      "id": "surface-gate",
+      "question": "Which script fails CI when the Sentinel surface manifest is stale?",
+      "answer": "verify-sentinel-surface\\.sh",
+      "path": "AGENTS.md"
+    },
+    {
+      "id": "catalog-count",
+      "question": "How many probes are in the Sentinel catalog now?",
+      "answer": "140 probes",
+      "path": "docs/registers/04-handoff.md"
+    },
+    {
+      "id": "ready-hash",
+      "question": "What is the SHA-256 of the ready package?",
+      "answer": "786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643",
+      "path": "docs/registers/04-handoff.md"
+    },
+    {
+      "id": "ready-tag",
+      "question": "Which git tag marks the ready package?",
+      "answer": "asterisma-v1\\.0-ready-2026-10-26",
+      "path": "README.md"
+    },
+    {
+      "id": "ci-runner",
+      "question": "Which GitHub Actions runner image runs the census?",
+      "answer": "macos-26",
+      "path": ".github/workflows/census.yml"
+    },
+    {
+      "id": "ci-xcode",
+      "question": "Which Xcode version does CI use?",
+      "answer": "Xcode 26\\.6",
+      "path": ".github/workflows/census.yml"
+    },
+    {
+      "id": "graph-nodes",
+      "question": "How many nodes are in the full 3D graph view?",
+      "answer": "7,510",
+      "path": "README.md"
+    },
+    {
+      "id": "graph-edges",
+      "question": "How many edges are in the full 3D graph view?",
+      "answer": "19,023",
+      "path": "README.md"
+    },
+    {
+      "id": "journal-mode",
+      "question": "Which SQLite journal mode does the live library store use?",
+      "answer": "journal_mode = WAL",
+      "path": "AsterismaV1.0/Core/Storage/LibraryDatabase.swift"
+    },
+    {
+      "id": "pool-type",
+      "question": "Which GRDB connection type backs the live library store?",
+      "answer": "let pool: DatabasePool",
+      "path": "AsterismaV1.0/Core/Storage/LibraryDatabase.swift"
+    },
+    {
+      "id": "rebuild-type",
+      "question": "Which type carries the Phase 5 library rebuild result?",
+      "answer": "LibraryRebuildResult",
+      "path": "AsterismaV1.0/Core/LibraryRecovery/LibraryLogicalRebuilder.swift"
+    },
+    {
+      "id": "recovery-gate",
+      "question": "Which enum defines the recovery gate's operational mode?",
+      "answer": "LibraryOperationalMode",
+      "path": "AsterismaV1.0/Core/LibraryRecovery/LibraryRecoveryGate.swift"
+    },
+    {
+      "id": "root-view",
+      "question": "Which SwiftUI file declares the app's root content view?",
+      "answer": "NewContentView",
+      "path": "AsterismaV1.0/App/NewContentView.swift"
+    },
+    {
+      "id": "census-command",
+      "question": "What command runs the local unit-only census?",
+      "answer": "census\\.sh --unit-only",
+      "path": "AGENTS.md"
+    },
+    {
+      "id": "census-counts",
+      "question": "How many tests and runs did the last local unit census record?",
+      "answer": "432 tests / 671 runs",
+      "path": "docs/registers/04-handoff.md"
+    },
+    {
+      "id": "retired-3d",
+      "question": "Which 3D graph file was retired on 2026-10-29?",
+      "answer": "graph-3d\\.html",
+      "path": "AGENTS.md"
+    },
+    {
+      "id": "appearance-test",
+      "question": "Which test file covers reader appearance settings?",
+      "answer": "ReaderAppearanceTests",
+      "path": "AsterismaV1.0Tests/Reader/ReaderAppearanceTests.swift"
+    },
+    {
+      "id": "notification-key",
+      "question": "Which defaults key records that Sentinel notification permission was requested?",
+      "answer": "sentinel\\.notification\\.requested",
+      "path": "AsterismaV1.0/Core/Sentinel/SentinelNotification.swift"
+    },
+    {
+      "id": "ci-run-id",
+      "question": "Which CI run id verified the Sentinel v2 tranche?",
+      "answer": "40758619365",
+      "path": "docs/registers/04-handoff.md"
+    },
+    {
+      "id": "erase-data",
+      "question": "Which menu action erases the library and all data for a clean test session?",
+      "answer": "Erase Library & Data",
+      "path": "README.md"
+    },
+    {
+      "id": "snapshot-counts",
+      "question": "Which struct lists the library tables and their count key paths?",
+      "answer": "LibraryTableCounts",
+      "path": "AsterismaV1.0/Core/Storage/LibrarySnapshot.swift"
+    },
+    {
+      "id": "graph-check-flag",
+      "question": "Which flag makes the 3D graph generator verify outputs without writing?",
+      "answer": "--check",
+      "path": "scripts/build-graph-3d.py"
+    },
+    {
+      "id": "data-root",
+      "question": "Which file defines the app's data root directory name?",
+      "answer": "dataDirectoryName = \"Asterisma\"",
+      "path": "AsterismaV1.0/Core/AppIdentity.swift"
+    }
+  ],
+  "overview": [
+    {
+      "id": "platform",
+      "label": "macOS reading tracker for EPUB and PDF",
+      "answer": "EPUB[^\\n]*PDF|PDF[^\\n]*EPUB",
+      "canonical": ["README.md"]
+    },
+    {
+      "id": "storage",
+      "label": "SQLite via GRDB",
+      "answer": "GRDB",
+      "canonical": ["README.md", "AsterismaV1.0/Core/Storage/LibraryDatabase.swift"]
+    },
+    {
+      "id": "sentinel",
+      "label": "Sentinel catalog size",
+      "answer": "140 probes",
+      "canonical": ["docs/registers/04-handoff.md"]
+    },
+    {
+      "id": "release",
+      "label": "Ready release tag",
+      "answer": "asterisma-v1\\.0-ready-2026-10-26",
+      "canonical": ["README.md", "docs/registers/04-handoff.md"]
+    },
+    {
+      "id": "census",
+      "label": "Unit census counts",
+      "answer": "432 tests / 671 runs",
+      "canonical": ["docs/registers/04-handoff.md"]
+    },
+    {
+      "id": "ci",
+      "label": "CI runner",
+      "answer": "macos-26",
+      "canonical": [".github/workflows/census.yml"]
+    },
+    {
+      "id": "mirage",
+      "label": "Mirage toggle",
+      "answer": "mirage\\.enabled",
+      "canonical": ["README.md", "AsterismaV1.0/Features/Mirage/MirageSettings.swift"]
+    },
+    {
+      "id": "recovery",
+      "label": "Library recovery phases",
+      "answer": "Library Recovery|library recovery",
+      "canonical": ["docs/registers/04-handoff.md"]
+    },
+    {
+      "id": "graph",
+      "label": "Full 3D graph counts",
+      "answer": "7,510",
+      "canonical": ["README.md"]
+    },
+    {
+      "id": "appearance",
+      "label": "Reader appearance presets",
+      "answer": "Appearance",
+      "canonical": ["README.md", "docs/design/READER-POLISH-2026-10-25.md"]
+    },
+    {
+      "id": "next",
+      "label": "Next acceptance gate",
+      "answer": "owner visual retest",
+      "canonical": ["README.md", "docs/registers/04-handoff.md"]
+    },
+    {
+      "id": "backlog",
+      "label": "Remaining polish backlog",
+      "answer": "bookmarks",
+      "canonical": ["docs/registers/04-handoff.md", "README.md"]
+    }
+  ]
+}

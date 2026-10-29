@@ -4,19 +4,15 @@
 The output is a single HTML file: embedded graph data, embedded renderer, no
 CDN, no server, no network calls. Open it with:
 
-    open graphify-out/graph-3d.html
+    open graphify-out/graph-3d-full.html
 
-Two views are available:
-
-    community  one node per graphify community (the fast, readable default)
-    full       every graph node (7,510 nodes / 19,023 edges at the time of the
-               first build)
+This is the only 3D view: every graph node (7,510 nodes / 19,023 edges at the
+time of the first build). The aggregated community view was retired on
+2026-10-29 — `graphify-out/graph.html` is the 2D community export.
 
 Examples:
 
     python3 scripts/build-graph-3d.py
-    python3 scripts/build-graph-3d.py --mode community
-    python3 scripts/build-graph-3d.py --mode full
     python3 scripts/build-graph-3d.py --check
 """
 
@@ -54,10 +50,7 @@ PALETTE = [
     "#BAB0AC",
 ]
 
-OUTPUT_NAMES = {
-    "community": "graph-3d.html",
-    "full": "graph-3d-full.html",
-}
+OUTPUT_NAME = "graph-3d-full.html"
 
 
 def sha256_file(path: Path) -> str:
@@ -110,133 +103,6 @@ def load_graph(graph_path: Path, labels_path: Path) -> tuple[list[dict], list[di
         node_degrees[target] += 1
 
     return nodes, links, labels, node_degrees, graph
-
-
-def community_view(
-    nodes: list[dict],
-    links: list[dict],
-    labels: dict[int, str],
-    node_degrees: collections.Counter[str],
-    graph: dict,
-    meta: dict,
-) -> dict:
-    node_community: dict[str, int] = {}
-    communities: dict[int, dict] = {}
-
-    for node in nodes:
-        cid = node.get("community")
-        if cid is None:
-            continue
-        try:
-            cid = int(cid)
-        except (TypeError, ValueError):
-            continue
-        node_community[str(node.get("id"))] = cid
-        if cid not in communities:
-            communities[cid] = {
-                "cid": cid,
-                "members": [],
-            }
-        communities[cid]["members"].append(node)
-
-    pair_counts: collections.Counter[tuple[int, int]] = collections.Counter()
-    cross_incident: collections.Counter[int] = collections.Counter()
-    neighbours: dict[int, set[int]] = {cid: set() for cid in communities}
-    internal: collections.Counter[int] = collections.Counter()
-
-    for link in links:
-        source = node_id(link.get("source"))
-        target = node_id(link.get("target"))
-        if source is None or target is None:
-            continue
-        a = node_community.get(source)
-        b = node_community.get(target)
-        if a is None or b is None:
-            continue
-        if a == b:
-            internal[a] += 1
-            continue
-        pair_counts[(min(a, b), max(a, b))] += 1
-        cross_incident[a] += 1
-        cross_incident[b] += 1
-        neighbours[a].add(b)
-        neighbours[b].add(a)
-
-    view_nodes: list[dict] = []
-    for cid in sorted(communities):
-        members = communities[cid]["members"]
-        label = labels.get(cid)
-        if not label:
-            label = str(members[0].get("community_name") or f"Community {cid}")
-        degree = len(neighbours[cid])
-        top = sorted(
-            members,
-            key=lambda item: (
-                0 if item.get("source_file") else 1,
-                -node_degrees.get(str(item.get("id")), 0),
-                str(item.get("label") or ""),
-            ),
-        )[:8]
-        top_members = [
-            {
-                "label": str(member.get("label") or member.get("id")),
-                "degree": int(node_degrees.get(str(member.get("id")), 0)),
-                "file": str(member.get("source_file") or ""),
-                "loc": str(member.get("source_location") or ""),
-            }
-            for member in top
-        ]
-        view_nodes.append(
-            {
-                "id": f"c{cid}",
-                "cid": cid,
-                "label": label,
-                "community": cid,
-                "communityName": label,
-                "color": PALETTE[cid % len(PALETTE)],
-                "members": len(members),
-                "degree": degree,
-                "internal": int(internal[cid]),
-                "external": int(cross_incident[cid]),
-                "val": round(1.0 + math.sqrt(len(members)) * 0.8 + math.sqrt(degree) * 0.45, 2),
-                "type": "community",
-                "top": top_members,
-            }
-        )
-
-    view_links = [
-        {
-            "source": f"c{a}",
-            "target": f"c{b}",
-            "relation": f"{count} cross-community edges",
-            "confidence": "AGGREGATED",
-            "weight": count,
-            # Orientation matches graphify's 2D aggregate edge; it is not a
-            # semantic direction, but it keeps the Arrows toggle meaningful.
-            "directed": True,
-        }
-        for (a, b), count in sorted(pair_counts.items())
-    ]
-
-    payload = {
-        "mode": "community",
-        "title": "Graphify 3D — AsterismaV1.0 community view",
-        "subtitle": (
-            f"{len(view_nodes):,} communities · {len(nodes):,} nodes · "
-            f"{len(view_links):,} cross-community edges"
-        ),
-        "stats": {
-            "sourceNodes": len(nodes),
-            "sourceLinks": len(links),
-            "communities": len(view_nodes),
-            "viewNodes": len(view_nodes),
-            "viewLinks": len(view_links),
-        },
-        "meta": dict(meta),
-        "nodes": view_nodes,
-        "links": view_links,
-    }
-    return payload
 
 
 def full_view(
@@ -360,7 +226,6 @@ def write_atomic(path: Path, content: str) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--mode", choices=("community", "full", "both"), default="both")
     parser.add_argument("--graph", type=Path, default=DEFAULT_GRAPH)
     parser.add_argument("--labels", type=Path, default=DEFAULT_LABELS)
     parser.add_argument("--out-dir", type=Path, default=GRAPHIFY_OUT)
@@ -398,35 +263,25 @@ def main(argv: list[str] | None = None) -> int:
         ),
     }
 
-    modes = ("community", "full") if args.mode == "both" else (args.mode,)
-    failures = 0
-    for mode in modes:
-        if mode == "community":
-            payload = community_view(nodes, links, labels, node_degrees, graph, meta)
-        else:
-            payload = full_view(nodes, links, labels, node_degrees, graph, meta)
-        output = build_html(payload, template, library, license_text)
-        destination = args.out_dir / OUTPUT_NAMES[mode]
-        if args.check:
-            if not destination.exists():
-                print(f"MISSING {destination}")
-                failures += 1
-            elif destination.read_text(encoding="utf-8") != output:
-                print(f"STALE   {destination}")
-                failures += 1
-            else:
-                print(f"ok      {destination}")
-        else:
-            write_atomic(destination, output)
-            print(
-                f"wrote   {destination}  "
-                f"({len(payload['nodes']):,} nodes / {len(payload['links']):,} links, "
-                f"{len(output) / (1024 * 1024):.2f} MiB)"
-            )
+    payload = full_view(nodes, links, labels, node_degrees, graph, meta)
+    output = build_html(payload, template, library, license_text)
+    destination = args.out_dir / OUTPUT_NAME
+    if args.check:
+        if not destination.exists():
+            print(f"MISSING {destination}", file=sys.stderr)
+            return 1
+        if destination.read_text(encoding="utf-8") != output:
+            print(f"STALE   {destination}", file=sys.stderr)
+            return 1
+        print(f"ok      {destination}")
+        return 0
 
-    if args.check and failures:
-        print(f"{failures} file(s) out of date; run: python3 scripts/build-graph-3d.py", file=sys.stderr)
-        return 1
+    write_atomic(destination, output)
+    print(
+        f"wrote   {destination}  "
+        f"({len(payload['nodes']):,} nodes / {len(payload['links']):,} links, "
+        f"{len(output) / (1024 * 1024):.2f} MiB)"
+    )
     return 0
 
 

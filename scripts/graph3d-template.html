@@ -288,6 +288,30 @@
     text-align: right;
     white-space: pre-line;
   }
+  .tip {
+    position: fixed;
+    z-index: 4;
+    max-width: 340px;
+    padding: 7px 10px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(9, 14, 25, .96);
+    color: var(--text);
+    font-size: 11.5px;
+    line-height: 1.4;
+    pointer-events: none;
+    transform: translate(-50%, calc(-100% - 16px));
+    white-space: nowrap;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .45);
+  }
+  .tip[hidden] { display: none; }
+  .tip .tip-sub {
+    display: block;
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 10px;
+    text-overflow: ellipsis;
+  }
   .about {
     position: fixed;
     left: 18px;
@@ -331,6 +355,7 @@
     padding: 24px;
     background: #070b14;
   }
+  .fallback[hidden] { display: none; }
   .fallback-card {
     max-width: 540px;
     padding: 22px;
@@ -397,7 +422,8 @@
   <div id="inspectorBody"></div>
 </aside>
 
-<div class="hint">Drag to orbit &middot; scroll to zoom &middot; click a node</div>
+<div class="tip" id="tip" hidden></div>
+<div class="hint">Drag to orbit in any direction &middot; right-drag to pan &middot; scroll to zoom &middot; arrow keys orbit &middot; click a node</div>
 <div class="stats" id="stats"></div>
 
 <details class="about">
@@ -449,12 +475,42 @@
   var graph = null;
   var arrowsOn = mode === 'community';
   var selectedId = null;
+  var hoveredId = null;
   var fitDone = false;
   var loadingDone = false;
+  var linkBatch = null;
+  var nodeMesh = null;
+  var nodeHalo = null;
+  var highlightMesh = null;
+  var highlightData = null;
+  var nodeUniforms = null;
+  var highlightUniforms = null;
+  var graphLayer = null;
+  var finalizeTimer = null;
+  var finalized = false;
+  var layoutLocked = false;
+  var positionById = Object.create(null);
+  var pressedKeys = Object.create(null);
   var nodeById = Object.create(null);
   var adjacency = Object.create(null);
   var searchItems = [];
   var communities = [];
+  var mountedAt = (window.performance && performance.now) ? performance.now() : Date.now();
+  var camera = {
+    up: null,
+    yawVelocity: 0,
+    pitchVelocity: 0,
+    zoomPending: 0,
+    pointer: { x: 0, y: 0, inside: false },
+    dragging: false,
+    panning: false,
+    moved: 0,
+    lastX: 0,
+    lastY: 0,
+    trail: [],
+    fly: null,
+    pickFrame: 0
+  };
 
   $('subtitle').textContent = payload.subtitle || '';
   $('arrows').setAttribute('aria-pressed', arrowsOn ? 'true' : 'false');
@@ -492,54 +548,51 @@
   }
 
   try {
-    graph = new ForceGraph3D()($('graph'))
+    var cachedLayout = applyLayoutCache(rawNodes);
+    graph = ForceGraph3D({
+      controlType: 'orbit',
+      rendererConfig: { antialias: true, alpha: false, powerPreference: 'high-performance' }
+    })($('graph'))
       .backgroundColor('#070b14')
       .showNavInfo(false)
+      .enableNodeDrag(false)
+      .enablePointerInteraction(false)
       .nodeId('id')
       .nodeLabel(function (node) { return node.label || node.id; })
-      .nodeVal(function (node) { return node.val || 1; })
+      .nodeVal(nodeSizeValue)
       .nodeColor(function (node) { return node.color || '#8ab4f8'; })
-      .nodeOpacity(mode === 'community' ? 0.92 : 0.84)
-      .nodeResolution(mode === 'community' ? 10 : 5)
+      .nodeOpacity(1)
+      .nodeResolution(4)
       .linkSource('source')
       .linkTarget('target')
       .linkColor(function (link) { return linkColor(link); })
-      .linkOpacity(mode === 'community' ? 0.3 : 0.12)
+      .linkOpacity(mode === 'community' ? 0.55 : 0.12)
       .linkWidth(function (link) { return linkWidth(link); })
       .linkDirectionalArrowLength(function (link) { return arrowsOn && link.directed !== false ? 4 : 0; })
       .linkDirectionalArrowRelPos(1)
       .linkDirectionalArrowColor(function (link) { return linkColor(link); })
       .linkLabel(function (link) { return link.relation || ''; })
-      .onNodeClick(selectNode)
-      .onNodeHover(function (node) {
-        $('graph').style.cursor = node ? 'pointer' : 'grab';
-      })
-      .onBackgroundClick(clearSelection)
-      .cooldownTicks(mode === 'community' ? 150 : 40)
-      .warmupTicks(mode === 'community' ? 40 : 20)
+      .cooldownTicks(cachedLayout ? 0 : (mode === 'community' ? 220 : 400))
+      .cooldownTime(cachedLayout ? 0 : (mode === 'community' ? 1500 : 1500))
+      .warmupTicks(cachedLayout ? 0 : (mode === 'community' ? 20 : 10))
       .graphData(cloneData({ nodes: rawNodes, links: rawLinks }));
 
-    graph.d3Force('charge').strength(mode === 'community' ? -95 : -12);
-    graph.d3Force('link').distance(mode === 'community' ? 44 : 12);
+    // Communities with no cross-community edges have no links to hold them in;
+    // full repulsion flings them into a far shell that wrecks the framing.
+    graph.d3Force('charge').strength(mode === 'community'
+      ? function (node) { return (node.degree || 0) > 0 ? -42 : -8; }
+      : -12);
+    graph.d3Force('link').distance(mode === 'community' ? 34 : 12);
     graph.width(window.innerWidth).height(window.innerHeight);
 
-    graph.onEngineStop(function () {
-      if (fitDone) return;
-      fitDone = true;
-      graph.zoomToFit(700, 45);
-      hideLoading();
-    });
+    installCamera();
 
-    window.setTimeout(hideLoading, mode === 'community' ? 3000 : 5000);
-    window.setTimeout(function () {
-      if (!fitDone) {
-        fitDone = true;
-        graph.zoomToFit(700, 45);
-      }
-    }, 1800);
+    graph.onEngineStop(function () { scheduleFinalize(220); });
+    scheduleFinalize(cachedLayout ? 120 : 2600);
 
     window.addEventListener('resize', function () {
       graph.width(window.innerWidth).height(window.innerHeight);
+      syncViewport();
     });
 
     window.__graph3d = {
@@ -567,7 +620,35 @@
       },
       isolate: isolateSelected,
       reset: resetView,
-      getArrows: function () { return arrowsOn; }
+      getArrows: function () { return arrowsOn; },
+      cameraState: function () {
+        var view = graph.camera();
+        return {
+          position: view.position.toArray(),
+          up: view.up.toArray(),
+          target: graph.controls().target.toArray()
+        };
+      },
+      orbit: function (yaw, pitch) {
+        applyOrbit(Number(yaw) || 0, Number(pitch) || 0);
+        return graph.camera().up.toArray();
+      },
+      hoverAt: function (x, y) {
+        var node = pickNode(x, y);
+        setHover(node);
+        return node ? node.id : null;
+      },
+      stats: function () {
+        var renderer = graph.renderer();
+        return {
+          calls: renderer.info.render.calls,
+          triangles: renderer.info.render.triangles,
+          lines: renderer.info.render.lines,
+          meshes: renderer.info.memory.geometries,
+          layoutCached: cachedLayout === true,
+          ms: Math.round(((window.performance && performance.now()) ? performance.now() : Date.now()) - mountedAt)
+        };
+      }
     };
 
     console.info('[graphify 3d] ' + mode + ' view ready: ' + rawNodes.length + ' nodes, ' + rawLinks.length + ' links');
@@ -578,6 +659,1101 @@
 
   function idOf(value) {
     return value && typeof value === 'object' ? value.id : value;
+  }
+
+  function nodeSizeValue(node) {
+    var value = Math.max(1, Number(node.val) || 1);
+    return Math.round(value * 4) / 4;
+  }
+
+  function scheduleFinalize(delay) {
+    finalized = false;
+    if (finalizeTimer !== null) window.clearTimeout(finalizeTimer);
+    finalizeTimer = window.setTimeout(function () {
+      finalizeTimer = null;
+      finalizeView();
+    }, delay);
+  }
+
+  function finalizeView() {
+    if (finalized || !graph) return;
+    finalized = true;
+    var engine = typeof graph.forceEngine === 'function' ? graph.forceEngine() : null;
+    if (engine && engine.stop) engine.stop();
+    buildLinkBatch();
+    buildNodeLayer();
+    if (!layoutLocked) {
+      if (!nodeMesh) {
+        scheduleFinalize(200);
+        return;
+      }
+      var captured = 0;
+      graph.graphData().nodes.forEach(function (node) {
+        if (typeof node.x === 'number' && typeof node.y === 'number' && typeof node.z === 'number') {
+          positionById[node.id] = { x: node.x, y: node.y, z: node.z };
+          captured += 1;
+        }
+      });
+      if (!captured) {
+        scheduleFinalize(200);
+        return;
+      }
+      layoutLocked = true;
+      compactIsolatedNodes();
+      if (mode === 'community') compressRadialTail();
+      graph.warmupTicks(0);
+      graph.cooldownTicks(0);
+      writeLayoutCache();
+    }
+    releaseGraphLayer();
+    if (!fitDone) {
+      fitDone = true;
+      frameAll(0);
+    }
+    hideLoading();
+  }
+
+  // Nodes with no edges have nothing to hold them in, so the repulsion pushes
+  // them into a far shell that shrinks the whole view. Pull only those back to
+  // a tidy halo around the connected core.
+  function compactIsolatedNodes() {
+    var nodes = graph.graphData().nodes;
+    if (nodes.length < 40) return;
+    var radii = [];
+    nodes.forEach(function (node) {
+      if ((node.degree || 0) > 0) radii.push(Math.sqrt(node.x * node.x + node.y * node.y + node.z * node.z));
+    });
+    if (radii.length < 8) return;
+    radii.sort(function (a, b) { return a - b; });
+    var core = radii[Math.floor(radii.length * 0.85)] || 1;
+    var shell = core * 1.35;
+    var index = 0;
+    nodes.forEach(function (node) {
+      if ((node.degree || 0) > 0) return;
+      index += 1;
+      var radius = Math.sqrt(node.x * node.x + node.y * node.y + node.z * node.z);
+      if (!radius) return;
+      var target = shell * (0.9 + 0.2 * ((index % 11) / 10));
+      if (radius <= target) return;
+      var scale = target / radius;
+      node.x *= scale;
+      node.y *= scale;
+      node.z *= scale;
+    });
+  }
+
+  // Community layouts leave a long, sparse tail of lightly connected
+  // communities. Squeezing that tail toward the core keeps the whole network
+  // legible at the default framing instead of a tiny blob in a wide starfield.
+  function compressRadialTail() {
+    var nodes = graph.graphData().nodes;
+    if (nodes.length < 40) return;
+    var radii = [];
+    nodes.forEach(function (node) {
+      radii.push(Math.sqrt(node.x * node.x + node.y * node.y + node.z * node.z));
+    });
+    radii.sort(function (a, b) { return a - b; });
+    var core = radii[Math.floor(radii.length * 0.55)] || 1;
+    nodes.forEach(function (node) {
+      var radius = Math.sqrt(node.x * node.x + node.y * node.y + node.z * node.z);
+      if (!radius || radius <= core) return;
+      var scale = (core + (radius - core) * 0.45) / radius;
+      node.x *= scale;
+      node.y *= scale;
+      node.z *= scale;
+    });
+  }
+
+  function frameAll(duration) {
+    if (!graph) return;
+    var nodes = graph.graphData().nodes;
+    if (!nodes.length) return;
+    var cx = 0;
+    var cy = 0;
+    var cz = 0;
+    nodes.forEach(function (node) {
+      cx += node.x || 0;
+      cy += node.y || 0;
+      cz += node.z || 0;
+    });
+    cx /= nodes.length;
+    cy /= nodes.length;
+    cz /= nodes.length;
+    var distances = nodes.map(function (node) {
+      var dx = (node.x || 0) - cx;
+      var dy = (node.y || 0) - cy;
+      var dz = (node.z || 0) - cz;
+      return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    }).sort(function (a, b) { return a - b; });
+    var share = mode === 'full' ? 0.84 : 0.86;
+    var radius = distances[Math.floor(distances.length * share)] || 100;
+    var cameraObject = graph.camera();
+    var fov = (cameraObject.fov || 50) * Math.PI / 180;
+    var distance = Math.max(30, (radius / Math.sin(fov / 2)) * 1.02);
+    var target = graph.controls().target;
+    var origin = target.clone().set(cx, cy, cz);
+    var direction = cameraObject.position.clone().sub(target);
+    if (direction.lengthSq() < 1e-6) direction.set(0.35, 0.45, 1);
+    direction.normalize();
+    var destination = origin.clone().addScaledVector(direction, distance);
+    flyTo(destination, origin, target.clone().set(0, 1, 0), duration || 0);
+  }
+
+  function disposeBatchLater(geometry, material) {
+    var dispose = function () {
+      if (geometry) geometry.dispose();
+      if (material) material.dispose();
+    };
+    if (typeof window.requestIdleCallback === 'function') {
+      window.requestIdleCallback(dispose, { timeout: 4000 });
+    } else {
+      window.setTimeout(dispose, 1200);
+    }
+  }
+
+  function clearLinkBatch() {
+    if (linkBatch) {
+      if (linkBatch.parent) linkBatch.parent.remove(linkBatch);
+      disposeBatchLater(linkBatch.geometry, linkBatch.material);
+      linkBatch = null;
+    }
+    if (!graph) return;
+    var layer = findGraphLayer();
+    if (!layer) return;
+    layer.traverse(function (object) {
+      if (object.__linkBatchHidden) {
+        object.visible = true;
+        delete object.__linkBatchHidden;
+      }
+    });
+  }
+
+  function buildLinkBatch() {
+    if (linkBatch || !graph) return;
+    var layer = findGraphLayer();
+    if (!layer) return;
+    var sources = [];
+    layer.traverse(function (object) {
+      if (object.__graphObjType === 'link' && object.isLine && !object.isLineSegments && object.visible &&
+          object.geometry && object.geometry.attributes.position && object.material) {
+        sources.push(object);
+      }
+    });
+    if (!sources.length) return;
+
+    var template = sources[0];
+    var lineCtor = template.constructor;
+    var geometryCtor = template.geometry.constructor;
+    var attributeCtor = template.geometry.attributes.position.constructor;
+    var materialCtor = template.material.constructor;
+    var positions = new Float32Array(sources.length * 6);
+    var colors = new Float32Array(sources.length * 6);
+    var offset = 0;
+    sources.forEach(function (object) {
+      var array = object.geometry.attributes.position.array;
+      var color = object.material.color;
+      positions[offset] = array[0];
+      positions[offset + 1] = array[1];
+      positions[offset + 2] = array[2];
+      positions[offset + 3] = array[3];
+      positions[offset + 4] = array[4];
+      positions[offset + 5] = array[5];
+      colors[offset] = color.r;
+      colors[offset + 1] = color.g;
+      colors[offset + 2] = color.b;
+      colors[offset + 3] = color.r;
+      colors[offset + 4] = color.g;
+      colors[offset + 5] = color.b;
+      offset += 6;
+    });
+
+    var geometry = new geometryCtor();
+    geometry.setAttribute('position', new attributeCtor(positions, 3));
+    geometry.setAttribute('color', new attributeCtor(colors, 3));
+    geometry.computeBoundingSphere();
+    var material = new materialCtor({
+      vertexColors: true,
+      transparent: true,
+      opacity: template.material.opacity,
+      depthWrite: template.material.depthWrite
+    });
+    material.color.setRGB(1, 1, 1);
+
+    var batch = new lineCtor(geometry, material);
+    batch.isLineSegments = true;
+    batch.type = 'LineSegments';
+    batch.frustumCulled = false;
+    batch.renderOrder = 10;
+    batch.__graphObjType = 'linkBatch';
+    graph.scene().add(batch);
+    sources.forEach(function (object) {
+      object.visible = false;
+      object.__linkBatchHidden = true;
+    });
+    linkBatch = batch;
+  }
+
+  // ----- graph layer management -------------------------------------------
+  // 3d-force-graph keeps every node mesh and every link line in one Group.
+  // That Group is detached once the merged render layers are built, so the
+  // per-frame render traversal only sees a handful of objects.
+
+  function findGraphLayer() {
+    if (graphLayer) return graphLayer;
+    if (!graph) return null;
+    var scene = graph.scene();
+    for (var i = 0; i < scene.children.length; i += 1) {
+      var child = scene.children[i];
+      if (child && child.type === 'Group' && child.children && child.children.length) {
+        graphLayer = child;
+        return graphLayer;
+      }
+    }
+    return null;
+  }
+
+  function attachGraphLayer() {
+    var layer = findGraphLayer();
+    if (layer && !layer.parent && graph) graph.scene().add(layer);
+  }
+
+  function detachGraphLayer() {
+    var layer = findGraphLayer();
+    if (layer && layer.parent) layer.parent.remove(layer);
+  }
+
+  // Community mode keeps its links as cylinders inside the layer, so the layer
+  // must stay in the scene there. Hiding the node meshes is enough to avoid
+  // drawing the graph twice.
+  function hideNodeMeshes() {
+    var layer = findGraphLayer();
+    if (!layer) return;
+    layer.traverse(function (object) {
+      if (object.__graphObjType === 'node') {
+        object.visible = false;
+        object.__nodeMeshHidden = true;
+      }
+    });
+  }
+
+  function releaseGraphLayer() {
+    if (mode === 'community') hideNodeMeshes();
+    else detachGraphLayer();
+  }
+
+  function clearNodeLayer() {
+    var sharedGeometry = nodeMesh ? nodeMesh.geometry : null;
+    if (nodeMesh) {
+      if (nodeMesh.parent) nodeMesh.parent.remove(nodeMesh);
+      if (nodeMesh.material) disposeBatchLater(null, nodeMesh.material);
+      nodeMesh = null;
+    }
+    if (nodeHalo) {
+      if (nodeHalo.parent) nodeHalo.parent.remove(nodeHalo);
+      if (nodeHalo.material) disposeBatchLater(null, nodeHalo.material);
+      nodeHalo = null;
+    }
+    if (highlightMesh) {
+      if (highlightMesh.parent) highlightMesh.parent.remove(highlightMesh);
+      disposeBatchLater(highlightMesh.geometry, highlightMesh.material);
+      highlightMesh = null;
+    }
+    if (sharedGeometry) disposeBatchLater(sharedGeometry, null);
+    highlightData = null;
+    hoveredId = null;
+    $('tip').hidden = true;
+  }
+
+  function nodeRadius(node) {
+    var scale = mode === 'community' ? 5 : 4;
+    return Math.cbrt(Math.max(0, Number(node && node.val) || 1)) * scale;
+  }
+
+  function parseColor(value) {
+    var text = String(value || '').trim();
+    if (text.charAt(0) === '#') {
+      if (text.length === 4) {
+        return [
+          parseInt(text.charAt(1) + text.charAt(1), 16) / 255,
+          parseInt(text.charAt(2) + text.charAt(2), 16) / 255,
+          parseInt(text.charAt(3) + text.charAt(3), 16) / 255
+        ];
+      }
+      if (text.length >= 7) {
+        return [
+          parseInt(text.slice(1, 3), 16) / 255,
+          parseInt(text.slice(3, 5), 16) / 255,
+          parseInt(text.slice(5, 7), 16) / 255
+        ];
+      }
+    }
+    return [0.54, 0.7, 0.96];
+  }
+
+  // ----- shared impostor shaders ------------------------------------------
+  // Each node is a camera-facing quad shaded as a mathematically perfect
+  // sphere. 7,510 nodes then cost 30,040 vertices and 15,020 triangles per
+  // frame instead of the millions of triangles a real sphere mesh costs.
+
+  var IMPOSTOR_VERTEX = [
+    'attribute vec3 aCenter;',
+    'attribute vec3 aColor;',
+    'attribute float aRadius;',
+    'attribute float aDepth;',
+    'uniform float uViewportHeight;',
+    'uniform float uPadPx;',
+    'varying vec2 vLocal;',
+    'varying vec3 vTint;',
+    'varying float vRadiusPx;',
+    'void main() {',
+    '  vec4 centerView = modelViewMatrix * vec4(aCenter, 1.0);',
+    '  float depth = max(0.001, -centerView.z);',
+    '  float pixelScale = 0.5 * uViewportHeight * projectionMatrix[1][1];',
+    '  float radiusPx = max(0.35, aRadius * pixelScale / depth);',
+    '  float pad = 1.0 + uPadPx / radiusPx;',
+    '  vec4 mvPosition = centerView;',
+    '  mvPosition.xy += position.xy * aRadius * pad;',
+    '  mvPosition.z += aDepth * aRadius;',
+    '  vLocal = position.xy * pad;',
+    '  vTint = aColor;',
+    '  vRadiusPx = radiusPx;',
+    '  gl_Position = projectionMatrix * mvPosition;',
+    '}'
+  ].join('\n');
+
+  var IMPOSTOR_FRAGMENT = [
+    'varying vec2 vLocal;',
+    'varying vec3 vTint;',
+    'varying float vRadiusPx;',
+    'void main() {',
+    '  float r = length(vLocal);',
+    '  float pixelUnit = 1.0 / max(vRadiusPx, 0.6);',
+    '  float coverage = 1.0 - smoothstep(1.0 - 0.75 * pixelUnit, 1.0, r);',
+    '  if (coverage <= 0.004) discard;',
+    '  float detail = smoothstep(1.6, 5.5, vRadiusPx);',
+    '  vec3 normal = vec3(vLocal, sqrt(max(0.0, 1.0 - min(1.0, r * r))));',
+    '  vec3 lightDirection = normalize(vec3(0.42, 0.62, 0.66));',
+    '  vec3 halfway = normalize(lightDirection + vec3(0.0, 0.0, 1.0));',
+    '  float wrap = dot(normal, lightDirection) * 0.5 + 0.5;',
+    '  float specular = pow(max(dot(normal, halfway), 0.0), 42.0) * detail;',
+    '  float rim = pow(1.0 - normal.z, 2.8) * (0.3 + 0.7 * detail);',
+    '  vec3 color = vTint * (0.46 + 0.72 * wrap);',
+    '  color += vec3(0.20, 0.33, 0.56) * rim * 0.45;',
+    '  color += vec3(1.0) * specular * 0.60;',
+    '  color *= mix(0.72, 1.0, smoothstep(0.0, 0.22, normal.z));',
+    '  gl_FragColor = vec4(min(color, vec3(1.0)), coverage);',
+    '}'
+  ].join('\n');
+
+  var HALO_FRAGMENT = [
+    'varying vec2 vLocal;',
+    'varying vec3 vTint;',
+    'varying float vRadiusPx;',
+    'void main() {',
+    '  float r = length(vLocal);',
+    '  float pixelUnit = 1.0 / max(vRadiusPx, 0.6);',
+    '  float outer = 1.0 - smoothstep(1.0, 1.0 + 2.2 * pixelUnit, r);',
+    '  float inner = smoothstep(0.25, 1.0, r);',
+    '  float alpha = outer * inner * inner * 0.22 * smoothstep(1.4, 4.5, vRadiusPx);',
+    '  if (alpha < 0.004) discard;',
+    '  gl_FragColor = vec4(mix(vTint, vec3(1.0), 0.26), alpha);',
+    '}'
+  ].join('\n');
+
+  var HIGHLIGHT_VERTEX = [
+    'attribute vec3 aCenter;',
+    'attribute vec3 aColor;',
+    'attribute float aRadius;',
+    'attribute float aDepth;',
+    'attribute float aStrength;',
+    'uniform float uViewportHeight;',
+    'uniform float uPadPx;',
+    'varying vec2 vLocal;',
+    'varying vec3 vTint;',
+    'varying float vRadiusPx;',
+    'varying float vStrength;',
+    'void main() {',
+    '  vec4 centerView = modelViewMatrix * vec4(aCenter, 1.0);',
+    '  float depth = max(0.001, -centerView.z);',
+    '  float pixelScale = 0.5 * uViewportHeight * projectionMatrix[1][1];',
+    '  float radiusPx = max(0.35, aRadius * pixelScale / depth);',
+    '  float pad = 1.0 + uPadPx / radiusPx;',
+    '  vec4 mvPosition = centerView;',
+    '  mvPosition.xy += position.xy * aRadius * pad;',
+    '  mvPosition.z += aDepth * aRadius;',
+    '  vLocal = position.xy * pad;',
+    '  vTint = aColor;',
+    '  vRadiusPx = radiusPx;',
+    '  vStrength = aStrength;',
+    '  gl_Position = projectionMatrix * mvPosition;',
+    '}'
+  ].join('\n');
+
+  var HIGHLIGHT_FRAGMENT = [
+    'varying vec2 vLocal;',
+    'varying vec3 vTint;',
+    'varying float vRadiusPx;',
+    'varying float vStrength;',
+    'void main() {',
+    '  if (vStrength <= 0.002) discard;',
+    '  float r = length(vLocal);',
+    '  float pixelUnit = 1.0 / max(vRadiusPx, 0.6);',
+    '  float distanceToRing = (r - 1.18) / (1.35 * pixelUnit);',
+    '  float ring = exp(-(distanceToRing * distanceToRing));',
+    '  float alpha = ring * vStrength;',
+    '  if (alpha < 0.004) discard;',
+    '  gl_FragColor = vec4(mix(vTint, vec3(1.0), 0.42), alpha);',
+    '}'
+  ].join('\n');
+
+  function makeImpostorMaterial(MaterialCtor, kind, shared) {
+    var material = new MaterialCtor({
+      transparent: true,
+      opacity: 1,
+      depthWrite: kind === 'body',
+      depthTest: true,
+      vertexColors: false,
+      fog: false
+    });
+    material.color.setRGB(1, 1, 1);
+    material.blending = kind === 'body' ? 1 : 2;
+    var uniforms = {
+      uViewportHeight: shared.uViewportHeight,
+      uPadPx: { value: kind === 'body' ? 1.6 : (kind === 'halo' ? 3.0 : 6.0) }
+    };
+    material.onBeforeCompile = function (shader) {
+      shader.uniforms.uViewportHeight = uniforms.uViewportHeight;
+      shader.uniforms.uPadPx = uniforms.uPadPx;
+      if (kind === 'highlight') {
+        shader.vertexShader = HIGHLIGHT_VERTEX;
+        shader.fragmentShader = HIGHLIGHT_FRAGMENT;
+      } else {
+        shader.vertexShader = IMPOSTOR_VERTEX;
+        shader.fragmentShader = kind === 'body' ? IMPOSTOR_FRAGMENT : HALO_FRAGMENT;
+      }
+    };
+    material.customProgramCacheKey = function () { return 'graphify3d-impostor-' + kind; };
+    return material;
+  }
+
+  var DISC_SEGMENTS = 10;
+  var DISC_RADII = [0, 0.55, 1.052]; // outer ring circumscribes the unit circle
+  var discShape = null;
+
+  function discVertices() {
+    var vertices = [{ x: 0, y: 0, z: 1 }];
+    for (var ring = 1; ring < DISC_RADII.length; ring += 1) {
+      var radius = DISC_RADII[ring];
+      var depth = Math.sqrt(Math.max(0, 1 - Math.min(1, radius * radius)));
+      for (var segment = 0; segment < DISC_SEGMENTS; segment += 1) {
+        var angle = (segment / DISC_SEGMENTS) * Math.PI * 2;
+        vertices.push({
+          x: Math.cos(angle) * radius,
+          y: Math.sin(angle) * radius,
+          z: depth
+        });
+      }
+    }
+    return vertices;
+  }
+
+  function discIndices() {
+    var indices = [];
+    for (var ring = 1; ring < DISC_RADII.length - 1; ring += 1) {
+      var innerBase = 1 + (ring - 1) * DISC_SEGMENTS;
+      var outerBase = 1 + ring * DISC_SEGMENTS;
+      for (var segment = 0; segment < DISC_SEGMENTS; segment += 1) {
+        var next = (segment + 1) % DISC_SEGMENTS;
+        if (ring === 1) indices.push(0, innerBase + segment, innerBase + next);
+        indices.push(
+          innerBase + segment, outerBase + segment, outerBase + next,
+          innerBase + segment, outerBase + next, innerBase + next
+        );
+      }
+    }
+    return indices;
+  }
+
+  function getDiscShape() {
+    if (!discShape) {
+      discShape = { vertices: discVertices(), indices: discIndices() };
+    }
+    return discShape;
+  }
+
+  function buildNodeLayer() {
+    if (!graph || nodeMesh) return;
+    var nodes = graph.graphData().nodes;
+    if (!nodes.length) return;
+    var layer = findGraphLayer();
+    if (!layer) return;
+    var sample = null;
+    layer.traverse(function (object) {
+      if (!sample && object.__graphObjType === 'node' && object.geometry && object.material) sample = object;
+    });
+    if (!sample) return;
+
+    var GeometryCtor = Object.getPrototypeOf(sample.geometry.constructor.prototype).constructor;
+    var AttributeCtor = sample.geometry.attributes.position.constructor;
+    var BufferAttributeCtor = Object.getPrototypeOf(AttributeCtor.prototype).constructor;
+    var MeshCtor = sample.constructor;
+    var MaterialCtor = sample.material.constructor;
+
+    var shape = getDiscShape();
+    var perNode = shape.vertices.length;
+    var count = nodes.length;
+    var total = count * perNode;
+    var positions = new Float32Array(total * 3);
+    var depths = new Float32Array(total);
+    var centers = new Float32Array(total * 3);
+    var colors = new Float32Array(total * 3);
+    var radii = new Float32Array(total);
+    var IndexArray = total > 65535 ? Uint32Array : Uint16Array;
+    var indices = new IndexArray(count * shape.indices.length);
+
+    for (var index = 0; index < count; index += 1) {
+      var node = nodes[index];
+      var color = parseColor(node.color);
+      var radius = nodeRadius(node);
+      for (var vertexIndex = 0; vertexIndex < perNode; vertexIndex += 1) {
+        var vertex = index * perNode + vertexIndex;
+        var point = shape.vertices[vertexIndex];
+        positions[vertex * 3] = point.x;
+        positions[vertex * 3 + 1] = point.y;
+        positions[vertex * 3 + 2] = 0;
+        depths[vertex] = point.z;
+        centers[vertex * 3] = node.x || 0;
+        centers[vertex * 3 + 1] = node.y || 0;
+        centers[vertex * 3 + 2] = node.z || 0;
+        colors[vertex * 3] = color[0];
+        colors[vertex * 3 + 1] = color[1];
+        colors[vertex * 3 + 2] = color[2];
+        radii[vertex] = radius;
+      }
+      for (var position = 0; position < shape.indices.length; position += 1) {
+        indices[index * shape.indices.length + position] = shape.indices[position] + index * perNode;
+      }
+    }
+
+    var geometry = new GeometryCtor();
+    geometry.setAttribute('position', new AttributeCtor(positions, 3));
+    geometry.setAttribute('aDepth', new AttributeCtor(depths, 1));
+    geometry.setAttribute('aCenter', new AttributeCtor(centers, 3));
+    geometry.setAttribute('aColor', new AttributeCtor(colors, 3));
+    geometry.setAttribute('aRadius', new AttributeCtor(radii, 1));
+    geometry.setIndex(new BufferAttributeCtor(indices, 1));
+    geometry.computeBoundingSphere();
+
+    nodeUniforms = { uViewportHeight: { value: 1 } };
+    var body = new MeshCtor(geometry, makeImpostorMaterial(MaterialCtor, 'body', nodeUniforms));
+    var halo = new MeshCtor(geometry, makeImpostorMaterial(MaterialCtor, 'halo', nodeUniforms));
+    [body, halo].forEach(function (mesh, order) {
+      mesh.frustumCulled = false;
+      mesh.raycast = function () {};
+      mesh.renderOrder = 20 + order;
+      graph.scene().add(mesh);
+    });
+    nodeMesh = body;
+    nodeHalo = halo;
+
+    buildHighlightMesh(MeshCtor, MaterialCtor, GeometryCtor, AttributeCtor, BufferAttributeCtor);
+    syncViewport();
+  }
+
+  function buildHighlightMesh(MeshCtor, MaterialCtor, GeometryCtor, AttributeCtor, BufferAttributeCtor) {
+    var shape = getDiscShape();
+    var perNode = shape.vertices.length;
+    var slots = 2;
+    var total = slots * perNode;
+    var positions = new Float32Array(total * 3);
+    var depths = new Float32Array(total);
+    var centers = new Float32Array(total * 3);
+    var colors = new Float32Array(total * 3);
+    var radii = new Float32Array(total);
+    var strengths = new Float32Array(total);
+    var IndexArray = total > 65535 ? Uint32Array : Uint16Array;
+    var indices = new IndexArray(slots * shape.indices.length);
+    for (var slot = 0; slot < slots; slot += 1) {
+      for (var vertexIndex = 0; vertexIndex < perNode; vertexIndex += 1) {
+        var vertex = slot * perNode + vertexIndex;
+        positions[vertex * 3] = shape.vertices[vertexIndex].x;
+        positions[vertex * 3 + 1] = shape.vertices[vertexIndex].y;
+        positions[vertex * 3 + 2] = 0;
+        depths[vertex] = shape.vertices[vertexIndex].z;
+      }
+      for (var position = 0; position < shape.indices.length; position += 1) {
+        indices[slot * shape.indices.length + position] = shape.indices[position] + slot * perNode;
+      }
+    }
+    var geometry = new GeometryCtor();
+    geometry.setAttribute('position', new AttributeCtor(positions, 3));
+    geometry.setAttribute('aDepth', new AttributeCtor(depths, 1));
+    geometry.setAttribute('aCenter', new AttributeCtor(centers, 3));
+    geometry.setAttribute('aColor', new AttributeCtor(colors, 3));
+    geometry.setAttribute('aRadius', new AttributeCtor(radii, 1));
+    geometry.setAttribute('aStrength', new AttributeCtor(strengths, 1));
+    geometry.setIndex(new BufferAttributeCtor(indices, 1));
+    geometry.computeBoundingSphere();
+
+    var material = makeImpostorMaterial(MaterialCtor, 'highlight', nodeUniforms);
+    highlightMesh = new MeshCtor(geometry, material);
+    highlightMesh.frustumCulled = false;
+    highlightMesh.raycast = function () {};
+    highlightMesh.renderOrder = 22;
+    graph.scene().add(highlightMesh);
+    highlightData = {
+      hover: null,
+      selected: selectedId ? findLiveNode(selectedId) : null
+    };
+    updateHighlight();
+  }
+
+  function findLiveNode(id) {
+    if (!graph) return null;
+    var nodes = graph.graphData().nodes;
+    for (var i = 0; i < nodes.length; i += 1) {
+      if (nodes[i].id === id) return nodes[i];
+    }
+    return null;
+  }
+
+  function updateHighlight() {
+    if (!highlightMesh || !highlightData) return;
+    var attributes = highlightMesh.geometry.attributes;
+    var perNode = getDiscShape().vertices.length;
+    var slots = [highlightData.hover, highlightData.selected];
+    for (var slot = 0; slot < slots.length; slot += 1) {
+      var node = slots[slot];
+      var color = node ? parseColor(node.color) : [1, 1, 1];
+      var radius = node ? nodeRadius(node) : 1;
+      var strength = node ? (slot === 0 ? 0.5 : 0.85) : 0;
+      for (var vertexIndex = 0; vertexIndex < perNode; vertexIndex += 1) {
+        var vertex = slot * perNode + vertexIndex;
+        attributes.aCenter.array[vertex * 3] = node ? node.x || 0 : 0;
+        attributes.aCenter.array[vertex * 3 + 1] = node ? node.y || 0 : 0;
+        attributes.aCenter.array[vertex * 3 + 2] = node ? node.z || 0 : 0;
+        attributes.aColor.array[vertex * 3] = color[0];
+        attributes.aColor.array[vertex * 3 + 1] = color[1];
+        attributes.aColor.array[vertex * 3 + 2] = color[2];
+        attributes.aRadius.array[vertex] = radius;
+        attributes.aStrength.array[vertex] = strength;
+      }
+    }
+    attributes.aCenter.needsUpdate = true;
+    attributes.aColor.needsUpdate = true;
+    attributes.aRadius.needsUpdate = true;
+    attributes.aStrength.needsUpdate = true;
+  }
+
+  function syncViewport() {
+    if (!graph) return;
+    var height = graph.renderer().domElement.height || 1;
+    if (nodeUniforms && nodeUniforms.uViewportHeight) nodeUniforms.uViewportHeight.value = height;
+  }
+
+  // ----- 360° camera -------------------------------------------------------
+  // The stock OrbitControls clamps polar angle at the poles, which is the wall
+  // you hit when dragging past the top or bottom. This controller rotates the
+  // camera position *and* its up vector by the same quaternion, so the view can
+  // keep tumbling through the pole and all the way around, forever.
+
+  function now() {
+    return (window.performance && performance.now) ? performance.now() : Date.now();
+  }
+
+  function installCamera() {
+    var cameraObject = graph.camera();
+    var controls = graph.controls();
+    if (!cameraObject || !controls) return;
+    camera.up = cameraObject.up.clone();
+    if (typeof controls.dispose === 'function') controls.dispose();
+    controls.enabled = true;
+    controls.update = function (delta) { cameraTick(delta); };
+    var element = graph.renderer().domElement;
+    element.style.touchAction = 'none';
+    element.style.cursor = 'grab';
+    element.addEventListener('pointerdown', onPointerDown);
+    element.addEventListener('pointermove', onPointerMove);
+    element.addEventListener('pointerup', onPointerUp);
+    element.addEventListener('pointercancel', onPointerUp);
+    element.addEventListener('pointerleave', onPointerLeave);
+    element.addEventListener('wheel', onWheel, { passive: false });
+    element.addEventListener('contextmenu', function (event) { event.preventDefault(); });
+    syncViewport();
+  }
+
+  function cameraTick(delta) {
+    if (!graph) return;
+    var cameraObject = graph.camera();
+    var controls = graph.controls();
+    if (!cameraObject || !controls) return;
+    if (!camera.up) camera.up = cameraObject.up.clone();
+    var dt = Math.max(0.0005, Math.min(0.1, Number(delta) || 0.016));
+
+    if (camera.fly) {
+      stepFly(cameraObject, controls.target);
+    } else {
+      var boost = pressedKeys.Shift ? 2.4 : 1;
+      var yaw = camera.yawVelocity * dt;
+      var pitch = camera.pitchVelocity * dt;
+      if (pressedKeys.ArrowLeft) yaw += 1.45 * boost * dt;
+      if (pressedKeys.ArrowRight) yaw -= 1.45 * boost * dt;
+      if (pressedKeys.ArrowUp) pitch += 1.05 * boost * dt;
+      if (pressedKeys.ArrowDown) pitch -= 1.05 * boost * dt;
+      if (pressedKeys['+'] || pressedKeys['=']) camera.zoomPending -= 1.5 * boost * dt;
+      if (pressedKeys['-'] || pressedKeys['_']) camera.zoomPending += 1.5 * boost * dt;
+      if (yaw || pitch) applyOrbit(yaw, pitch);
+      var decay = Math.exp(-dt / 0.42);
+      camera.yawVelocity = Math.abs(camera.yawVelocity) < 0.0005 ? 0 : camera.yawVelocity * decay;
+      camera.pitchVelocity = Math.abs(camera.pitchVelocity) < 0.0005 ? 0 : camera.pitchVelocity * decay;
+      if (Math.abs(camera.zoomPending) > 0.0005) {
+        var step = camera.zoomPending * (1 - Math.exp(-dt / 0.06));
+        camera.zoomPending -= step;
+        dollyBy(Math.exp(step));
+      } else {
+        camera.zoomPending = 0;
+      }
+    }
+
+    cameraObject.up.copy(camera.up);
+    cameraObject.lookAt(controls.target);
+  }
+
+  function applyOrbit(yaw, pitch) {
+    if (!graph) return null;
+    var cameraObject = graph.camera();
+    var controls = graph.controls();
+    if (!cameraObject || !controls) return null;
+    if (!camera.up) camera.up = cameraObject.up.clone();
+    var target = controls.target;
+    var offset = cameraObject.position.clone().sub(target);
+    var distance = offset.length();
+    if (!distance) return null;
+    var direction = offset.clone().multiplyScalar(-1 / distance);
+    var right = direction.clone().cross(camera.up);
+    if (right.lengthSq() < 1e-10) return null;
+    right.normalize();
+    var quaternion = cameraObject.quaternion.clone();
+    var yawQuaternion = cameraObject.quaternion.clone().setFromAxisAngle(camera.up, yaw);
+    var pitchQuaternion = cameraObject.quaternion.clone().setFromAxisAngle(right, pitch);
+    quaternion.copy(yawQuaternion).multiply(pitchQuaternion);
+    offset.applyQuaternion(quaternion);
+    camera.up.applyQuaternion(quaternion).normalize();
+    cameraObject.position.copy(target).add(offset);
+    cameraObject.up.copy(camera.up);
+    cameraObject.lookAt(target);
+    return camera.up.toArray();
+  }
+
+  function dollyBy(factor) {
+    if (!graph) return;
+    var cameraObject = graph.camera();
+    var target = graph.controls().target;
+    var offset = cameraObject.position.clone().sub(target);
+    var distance = offset.length();
+    if (!distance) return;
+    var next = Math.max(14, Math.min(16000, distance * factor));
+    offset.setLength(next);
+    cameraObject.position.copy(target).add(offset);
+  }
+
+  function panBy(dx, dy) {
+    if (!graph) return;
+    var cameraObject = graph.camera();
+    var target = graph.controls().target;
+    var offset = cameraObject.position.clone().sub(target);
+    var distance = offset.length() || 1;
+    var element = graph.renderer().domElement;
+    var fov = (cameraObject.fov || 50) * Math.PI / 180;
+    var perPixel = (2 * distance * Math.tan(fov / 2)) / Math.max(1, element.clientHeight);
+    var forward = offset.clone().multiplyScalar(-1 / distance);
+    var right = forward.clone().cross(camera.up);
+    if (right.lengthSq() < 1e-10) return;
+    right.normalize();
+    var shift = right.multiplyScalar(-dx * perPixel);
+    shift.addScaledVector(camera.up, dy * perPixel);
+    target.add(shift);
+    cameraObject.position.add(shift);
+    cameraObject.lookAt(target);
+  }
+
+  function flyTo(position, target, up, duration) {
+    if (!graph) return;
+    var cameraObject = graph.camera();
+    var controls = graph.controls();
+    if (!cameraObject || !controls) return;
+    if (!camera.up) camera.up = cameraObject.up.clone();
+    var milliseconds = Math.max(0, Number(duration) || 0);
+    if (!milliseconds) {
+      camera.fly = null;
+      controls.target.copy(target);
+      cameraObject.position.copy(position);
+      camera.up.copy(up);
+      if (camera.up.lengthSq() < 1e-8) camera.up.set(0, 1, 0);
+      camera.up.normalize();
+      cameraObject.up.copy(camera.up);
+      cameraObject.lookAt(controls.target);
+      return;
+    }
+    camera.fly = {
+      start: now(),
+      ms: milliseconds,
+      fromPosition: cameraObject.position.clone(),
+      toPosition: position.clone(),
+      fromTarget: controls.target.clone(),
+      toTarget: target.clone(),
+      fromUp: camera.up.clone(),
+      toUp: up.clone()
+    };
+  }
+
+  function stepFly(cameraObject, target) {
+    var fly = camera.fly;
+    var progress = Math.min(1, (now() - fly.start) / fly.ms);
+    var eased = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+    cameraObject.position.lerpVectors(fly.fromPosition, fly.toPosition, eased);
+    camera.up.lerpVectors(fly.fromUp, fly.toUp, eased);
+    if (camera.up.lengthSq() < 1e-8) camera.up.copy(fly.toUp);
+    camera.up.normalize();
+    target.lerpVectors(fly.fromTarget, fly.toTarget, eased);
+    if (progress >= 1) camera.fly = null;
+  }
+
+  function onPointerDown(event) {
+    if (!graph) return;
+    var element = graph.renderer().domElement;
+    camera.fly = null;
+    camera.moved = 0;
+    camera.lastX = event.clientX;
+    camera.lastY = event.clientY;
+    camera.downButton = event.button;
+    camera.trail = [{ t: now(), x: event.clientX, y: event.clientY }];
+    camera.yawVelocity = 0;
+    camera.pitchVelocity = 0;
+    var wantsPan = event.button === 2 || event.button === 1 || event.shiftKey || event.altKey;
+    if (event.button !== 0 && !wantsPan) return;
+    camera.dragging = !wantsPan;
+    camera.panning = wantsPan;
+    if (element.setPointerCapture) {
+      try { element.setPointerCapture(event.pointerId); } catch (err) {}
+    }
+    element.style.cursor = 'grabbing';
+    $('tip').hidden = true;
+    event.preventDefault();
+  }
+
+  function onPointerMove(event) {
+    if (!graph) return;
+    var element = graph.renderer().domElement;
+    var rect = element.getBoundingClientRect();
+    camera.pointer.x = event.clientX - rect.left;
+    camera.pointer.y = event.clientY - rect.top;
+    camera.pointer.clientX = event.clientX;
+    camera.pointer.clientY = event.clientY;
+    if (!camera.dragging && !camera.panning) {
+      requestHover();
+      return;
+    }
+    var dx = event.clientX - camera.lastX;
+    var dy = event.clientY - camera.lastY;
+    camera.lastX = event.clientX;
+    camera.lastY = event.clientY;
+    camera.moved += Math.abs(dx) + Math.abs(dy);
+    if (camera.dragging) {
+      applyOrbit(-dx * 0.0042, -dy * 0.0042);
+      var stamp = now();
+      camera.trail.push({ t: stamp, x: event.clientX, y: event.clientY });
+      while (camera.trail.length > 2 && stamp - camera.trail[0].t > 130) camera.trail.shift();
+    } else {
+      panBy(dx, dy);
+    }
+  }
+
+  function onPointerUp(event) {
+    if (!graph) return;
+    var element = graph.renderer().domElement;
+    var wasDragging = camera.dragging;
+    var moved = camera.moved;
+    var button = camera.downButton;
+    if (wasDragging && camera.trail.length > 1) {
+      var first = camera.trail[0];
+      var last = camera.trail[camera.trail.length - 1];
+      var span = Math.max(20, last.t - first.t);
+      camera.yawVelocity = -((last.x - first.x) / span) * 4.2 * 0.75;
+      camera.pitchVelocity = -((last.y - first.y) / span) * 4.2 * 0.75;
+    }
+    camera.dragging = false;
+    camera.panning = false;
+    camera.trail = [];
+    if (element.releasePointerCapture && element.hasPointerCapture && element.hasPointerCapture(event.pointerId)) {
+      try { element.releasePointerCapture(event.pointerId); } catch (err) {}
+    }
+    element.style.cursor = camera.pointer.inside ? 'grab' : 'grab';
+    if (moved < 7 && button === 0) {
+      var node = pickNode(camera.pointer.x, camera.pointer.y);
+      if (node) selectNode(node);
+      else clearSelection();
+    }
+    requestHover();
+  }
+
+  function onPointerLeave() {
+    camera.pointer.inside = false;
+    setHover(null);
+  }
+
+  function onWheel(event) {
+    if (!graph) return;
+    event.preventDefault();
+    var unit = event.deltaMode === 1 ? 16 : (event.deltaMode === 2 ? window.innerHeight : 1);
+    var delta = event.deltaY * unit;
+    if (event.ctrlKey) delta *= 2.6;
+    camera.zoomPending += Math.max(-240, Math.min(240, delta)) * 0.0019;
+    camera.zoomPending = Math.max(-1.5, Math.min(1.5, camera.zoomPending));
+  }
+
+  // ----- hover picking -----------------------------------------------------
+  // Raycasting 7,510 meshes on every pointer move is what made hovering feel
+  // heavy. Projecting all node centres into screen space is far cheaper and
+  // gives exact pixel tolerances.
+
+  var pickScratch = { vector: null, matrix: null };
+
+  function requestHover() {
+    if (!graph || camera.pickFrame) return;
+    camera.pickFrame = window.requestAnimationFrame(function () {
+      camera.pickFrame = 0;
+      if (camera.dragging || camera.panning) return;
+      setHover(pickNode(camera.pointer.x, camera.pointer.y));
+    });
+  }
+
+  function pickNode(x, y) {
+    if (!graph) return null;
+    var nodes = graph.graphData().nodes;
+    if (!nodes.length) return null;
+    var cameraObject = graph.camera();
+    var element = graph.renderer().domElement;
+    var width = element.clientWidth;
+    var height = element.clientHeight;
+    if (!width || !height) return null;
+    cameraObject.updateMatrixWorld();
+    if (!pickScratch.vector) pickScratch.vector = cameraObject.position.clone();
+    if (!pickScratch.matrix) pickScratch.matrix = cameraObject.projectionMatrix.clone();
+    var matrix = pickScratch.matrix;
+    matrix.copy(cameraObject.projectionMatrix).multiply(cameraObject.matrixWorldInverse);
+    var scale = 0.5 * height * cameraObject.projectionMatrix.elements[5];
+    var vector = pickScratch.vector;
+    var best = null;
+    var bestScore = Infinity;
+    for (var i = 0; i < nodes.length; i += 1) {
+      var node = nodes[i];
+      vector.set(node.x || 0, node.y || 0, node.z || 0);
+      var depth = cameraObject.position.distanceTo(vector);
+      vector.applyMatrix4(matrix);
+      if (vector.z < -1 || vector.z > 1) continue;
+      var screenX = (vector.x * 0.5 + 0.5) * width;
+      var screenY = (-vector.y * 0.5 + 0.5) * height;
+      var dx = screenX - x;
+      var dy = screenY - y;
+      var radiusPx = Math.max(1.5, nodeRadius(node) * scale / Math.max(1, depth));
+      var tolerance = Math.max(7, radiusPx * 0.95);
+      var squared = dx * dx + dy * dy;
+      if (squared > tolerance * tolerance) continue;
+      if (squared < bestScore) {
+        bestScore = squared;
+        best = node;
+      }
+    }
+    return best;
+  }
+
+  function setHover(node) {
+    var id = node ? node.id : null;
+    if (id === hoveredId) {
+      if (node) positionTip(node);
+      return;
+    }
+    hoveredId = id;
+    if (highlightData) highlightData.hover = node || null;
+    if (node) positionTip(node);
+    else $('tip').hidden = true;
+    if (graph) {
+      graph.renderer().domElement.style.cursor = node ? 'pointer' : (camera.dragging || camera.panning ? 'grabbing' : 'grab');
+    }
+    updateHighlight();
+  }
+
+  function positionTip(node) {
+    var tip = $('tip');
+    var subtitle = mode === 'community'
+      ? formatNumber(node.members) + ' members · ' + formatNumber(node.internal) + ' internal edges'
+      : (node.communityName || '') + (node.file ? ' · ' + node.file : '');
+    tip.innerHTML = '<span>' + esc(node.label || node.id) + '</span><span class="tip-sub">' + esc(subtitle) + '</span>';
+    tip.hidden = false;
+    tip.style.left = camera.pointer.clientX + 'px';
+    tip.style.top = camera.pointer.clientY + 'px';
+  }
+
+  // ----- layout cache ------------------------------------------------------
+  // The force layout is the expensive part of opening the page. Once it has
+  // settled, the coordinates are stored locally and reused on the next open,
+  // so repeat visits skip the simulation entirely.
+
+  function layoutCacheKey() {
+    var meta = payload.meta || {};
+    return 'graphify3d.layout.' + (meta.sourceSha256 || 'unknown') + '.' + mode;
+  }
+
+  function hashNodes(nodes) {
+    var hash = 2166136261;
+    for (var i = 0; i < nodes.length; i += 1) {
+      var id = String(nodes[i].id);
+      for (var j = 0; j < id.length; j += 1) {
+        hash ^= id.charCodeAt(j);
+        hash = Math.imul(hash, 16777619);
+      }
+      hash ^= 59;
+      hash = Math.imul(hash, 16777619);
+    }
+    return hash >>> 0;
+  }
+
+  function applyLayoutCache(nodes) {
+    try {
+      var raw = window.localStorage.getItem(layoutCacheKey());
+      if (!raw) return false;
+      var saved = JSON.parse(raw);
+      if (!saved || saved.count !== nodes.length || saved.hash !== hashNodes(nodes)) return false;
+      if (!saved.pos || saved.pos.length !== nodes.length * 3) return false;
+      for (var i = 0; i < nodes.length; i += 1) {
+        nodes[i].x = saved.pos[i * 3];
+        nodes[i].y = saved.pos[i * 3 + 1];
+        nodes[i].z = saved.pos[i * 3 + 2];
+      }
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function writeLayoutCache() {
+    try {
+      var nodes = graph.graphData().nodes;
+      var positions = new Array(nodes.length * 3);
+      for (var i = 0; i < nodes.length; i += 1) {
+        positions[i * 3] = Math.round((nodes[i].x || 0) * 100) / 100;
+        positions[i * 3 + 1] = Math.round((nodes[i].y || 0) * 100) / 100;
+        positions[i * 3 + 2] = Math.round((nodes[i].z || 0) * 100) / 100;
+      }
+      window.localStorage.setItem(layoutCacheKey(), JSON.stringify({
+        count: nodes.length,
+        hash: hashNodes(nodes),
+        pos: positions
+      }));
+    } catch (err) {
+      // localStorage is not always available for file:// pages; recomputing is fine.
+    }
   }
 
   function formatNumber(value) {
@@ -681,11 +1857,16 @@
     var links = rawLinks.filter(function (l) {
       return keep[idOf(l.source)] && keep[idOf(l.target)];
     });
+    attachGraphLayer();
+    clearLinkBatch();
+    clearNodeLayer();
+    fitDone = false;
     graph.graphData(cloneData({ nodes: nodes, links: links }));
+    scheduleFinalize(900);
     selectedId = null;
     $('inspector').hidden = true;
     $('isolate').disabled = true;
-    window.setTimeout(function () { graph.zoomToFit(600, 50); }, 120);
+    $('tip').hidden = true;
   }
 
   function wireUi() {
@@ -713,6 +1894,41 @@
       if (!$('communityFilter').value) resetView();
       else focusCommunity($('communityFilter').value);
     });
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+    window.addEventListener('blur', clearKeyboard);
+  }
+
+  function isTypingTarget(target) {
+    return !!(target && target.closest && target.closest('input, textarea, select, [contenteditable="true"]'));
+  }
+
+  function onKeyDown(event) {
+    if (event.key === 'Shift') {
+      pressedKeys.Shift = true;
+      return;
+    }
+    if (isTypingTarget(event.target)) return;
+    var key = event.key;
+    var handled = key === 'ArrowLeft' || key === 'ArrowRight' || key === 'ArrowUp' || key === 'ArrowDown' ||
+      key === '+' || key === '=' || key === '-' || key === '_';
+    if (!handled) return;
+    event.preventDefault();
+    pressedKeys[key] = true;
+    camera.yawVelocity = 0;
+    camera.pitchVelocity = 0;
+  }
+
+  function onKeyUp(event) {
+    if (event.key === 'Shift') {
+      delete pressedKeys.Shift;
+      return;
+    }
+    delete pressedKeys[event.key];
+  }
+
+  function clearKeyboard() {
+    pressedKeys = Object.create(null);
   }
 
   function onSearchInput() {
@@ -770,19 +1986,21 @@
 
   function selectNode(node) {
     selectedId = node.id;
+    if (highlightData) highlightData.selected = node;
+    updateHighlight();
     $('isolate').disabled = false;
     showInspector(node);
     focusCamera(node);
   }
 
   function focusCamera(node) {
-    var distance = mode === 'community' ? 150 : 60;
-    var x = node.x || 0;
-    var y = node.y || 0;
-    var z = node.z || 0;
-    var radius = Math.max(1, Math.sqrt(x * x + y * y + z * z));
-    var ratio = 1 + distance / radius;
-    graph.cameraPosition({ x: x * ratio, y: y * ratio, z: z * ratio }, node, 900);
+    if (!graph) return;
+    var target = graph.controls().target.clone().set(node.x || 0, node.y || 0, node.z || 0);
+    var cameraObject = graph.camera();
+    var offset = cameraObject.position.clone().sub(graph.controls().target);
+    var distance = Math.max(mode === 'community' ? 42 : 26, Math.min(offset.length(), 320));
+    offset.setLength(distance);
+    flyTo(target.clone().add(offset), target, camera.up.clone(), 720);
   }
 
   function showInspector(node) {
@@ -837,7 +2055,8 @@
     $('isolate').disabled = true;
     $('isolate').classList.remove('active');
     $('isolate').textContent = 'Isolate';
-    if (graph) graph.graphData().nodes.forEach(function (node) { node.__selected = false; });
+    if (highlightData) highlightData.selected = null;
+    updateHighlight();
   }
 
   function isolateSelected() {
@@ -862,15 +2081,25 @@
     var links = rawLinks.filter(function (link) {
       return keep[idOf(link.source)] && keep[idOf(link.target)];
     });
+    attachGraphLayer();
+    clearLinkBatch();
+    clearNodeLayer();
+    fitDone = false;
     graph.graphData(cloneData({ nodes: nodes, links: links }));
+    scheduleFinalize(900);
     $('isolate').textContent = 'Isolated ' + depth + ' hop' + (depth === 1 ? '' : 's');
     $('isolate').classList.add('active');
-    window.setTimeout(function () { graph.zoomToFit(600, 50); }, 120);
   }
 
   function resetView() {
     if (!graph) return;
+    attachGraphLayer();
+    clearLinkBatch();
+    clearNodeLayer();
+    fitDone = false;
+    camera.up = graph.camera().up.clone().set(0, 1, 0);
     graph.graphData(cloneData({ nodes: rawNodes, links: rawLinks }));
+    scheduleFinalize(900);
     selectedId = null;
     $('inspector').hidden = true;
     $('isolate').disabled = true;
@@ -879,7 +2108,6 @@
     $('communityFilter').value = '';
     $('search').value = '';
     hideResults();
-    graph.zoomToFit(700, 45);
   }
 
   function linkColor(link) {
@@ -894,12 +2122,21 @@
   }
 
   function linkWidth(link) {
-    if (mode === 'community') return Math.max(0.4, Math.min(3, Math.log2((link.weight || 1) + 1)));
+    if (mode === 'community') return Math.max(0.9, Math.min(4, Math.log2((link.weight || 1) + 1)));
     return 0;
   }
 
   function cloneData(data) {
-    return JSON.parse(JSON.stringify(data));
+    var copy = JSON.parse(JSON.stringify(data));
+    copy.nodes.forEach(function (node) {
+      var position = positionById[node.id];
+      if (position) {
+        node.x = position.x;
+        node.y = position.y;
+        node.z = position.z;
+      }
+    });
+    return copy;
   }
 
   function hasWebGL() {

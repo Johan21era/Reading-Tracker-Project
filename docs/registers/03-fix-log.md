@@ -370,3 +370,109 @@ change is the `nonisolated` concurrency annotation.
 | S-009 | Refreshed the stale GitHub homepage contributor cache with a temporary same-SHA default branch | Sidebar lists 1 contributor (`Johan21era`); temp branch deleted; default branch restored to `main` |
 | S-010 | Generated the missing `graph.html` from the existing graph; the 7,510-node graph auto-aggregated to 369 community nodes / 1,372 cross-community edges | 435 KB; browser preview renders one canvas; `graph.json`/`GRAPH_REPORT.md`/`manifest.json`/`.graphify_labels.json` hashes unchanged |
 | S-011 | Added a deterministic offline 3D graph export: `scripts/build-graph-3d.py`, a vendored `3d-force-graph` 1.80.0 bundle with its MIT notice, and `graphify-out/graph-3d.html` (community) plus a gitignored full-node view | `--check` matches both outputs; Playwright rendered 369 nodes / 1,372 links and 7,510 / 19,023 with zero console errors after the favicon fix; full view sends only the document request; source/renderer hashes embedded instead of a timestamp |
+| S-012 | 3D views made usable on a double-click in Safari: `[hidden]` now wins over the layout `display: grid` | WebKit `file://` load shows the canvas, `#fallback` computed `display: none`; the card had been covering a working WebGL canvas |
+| S-013 | 3D render and navigation rework (quality, feel, full-sphere orbit) | See Stage T |
+
+## Stage T — 3D graph render and navigation rework (2026-10-29)
+
+Scope: the three owner follow-ups on the 3D graph views — sharper nodes, calmer
+pointer feel with arrow keys, and an unrestricted orbit with far less per-frame
+work. All changes are in `scripts/graph3d-template.html`; both outputs were
+regenerated from `graphify-out/graph.json`.
+
+| Item | What changed | Verification |
+|---|---|---|
+| T-001 | Node bodies, halos, and highlights are drawn by analytic impostor quads instead of per-node sphere/ring instances | Full view: 5,949,312 → 450,660 triangles, 4 draw calls; community view keeps 369 nodes / 1,372 links on the same impostor path |
+| T-002 | A coarse depth shell occludes links behind node bodies, so links no longer bleed through the balls | Visual check at close range in Chromium and WebKit; body/halo radii scale with distance instead of growing into discs |
+| T-003 | Orbit pitch is no longer clamped by the stock controller; the camera traverses the full sphere and flips its up vector at the poles | 260 pitch steps of π/48 (5.4π total): camera radius held at 1740.1, worst step dot product 0.9979, no lock-up; 240 yaw steps: 0.0000 up-vector drift |
+| T-004 | Drag and zoom are normalized to viewport size and device pixel ratio, with damped rotate/zoom and arrow-key orbiting (Shift boosts) | Same drag distance turns the same visual angle at 1× and 2× DPR; arrow keys change yaw/pitch at every orientation |
+| T-005 | The settled layout is cached in `localStorage` and restored on reopen | Full view cache 159,669 bytes; warm first interactive frame 256–340 ms vs 2,817 ms cold |
+| T-006 | Frame pacing: idle **59.3–60 fps** (p95 18 ms), drag **59.6 fps** (p95 18 ms), versus 54.3 idle / 46.5 drag (p95 26–29 ms) before | Playwright in Chromium, 2560×1440 at DPR 2 with MSAA; community view also 60 fps |
+
+**Verification commands:** `python3 scripts/build-graph-3d.py` then
+`python3 scripts/build-graph-3d.py --check` — `ok` for both outputs (1.86 MiB
+community, 7.71 MiB full). Hover, click-to-select, isolate, and reset were
+exercised in the browser on both views with zero console errors and no external
+requests. Arrow keys were measured on the shipped community file: yaw and pitch
+both moved, camera radius stayed 964.2, no console errors.
+
+**Output hashes:** `graph-3d.html`
+`5eb179e77f55d0ff38d87dd8bd14b033c6a31c5fb3f2f2f4910642bde7a7495d`;
+`graph-3d-full.html`
+`ab9a19b6407b2a703d80c302701938f71d86a8c74f393f8927619f8265f67971`.
+
+**Limitations:** the community view's cross-community links are still
+`Line2` meshes, so it carries roughly 2.7k draw calls — fast on this machine
+but more per-frame CPU than the full view's 4. Frame-rate figures are from
+Chromium at DPR 2 on this Mac; Safari was verified for correctness (WebGL,
+both views, `file://`), not benchmarked. The full view remains gitignored and
+must be rebuilt locally.
+
+### Repository policy (same session)
+
+`AGENTS.md` gained a **CI gate** section: before calling a code task complete,
+run `./scripts/verify-sentinel-surface.sh` and `./scripts/census.sh --unit-only`;
+after an approved push, watch `census.yml` and keep fixing until the run is
+green, never by skipping or weakening a check.
+
+## Stage U — single 3D view (2026-10-29)
+
+| Item | What changed | Verification |
+|---|---|---|
+| U-001 | Deleted `graphify-out/graph-3d.html` (369-node community view, 1.86 MiB, tracked) at owner request; the full-node view is now the only 3D export | File removed from disk and git index; `graph.html` (2D) and `graph-3d-full.html` remain |
+| U-002 | `scripts/build-graph-3d.py` no longer takes `--mode`; it builds, writes, and checks only `graph-3d-full.html` (−127 lines, the `community_view` builder and the multi-output loop) | `python3 -m py_compile` clean; `--check` → `ok` for the single output; no `community_view` / `--mode` references left |
+| U-003 | `.gitignore` no longer un-ignores `graph-3d.html`; the full view keeps its ignore entry with the new single-view wording | `git status --ignored` shows no community 3D file; rebuild writes only the full view |
+
+**Rebuild receipt:** `python3 scripts/build-graph-3d.py` wrote
+`graphify-out/graph-3d-full.html` (7,510 nodes / 19,023 links, 7.71 MiB);
+`--check` returned `ok`. Hash unchanged from Stage T:
+`ab9a19b6407b2a703d80c302701938f71d86a8c74f393f8927619f8265f67971`.
+
+**Supersedes:** Stage T's T-001/T-006 rows, its output-hash list, and the
+S-011/S-013 records still describe the deleted community view; that is the
+historical record. From this stage on, one 3D page is generated and kept.
+
+## Stage V — one-hop retrieval index and the cold-reader gate (2026-10-29)
+
+Goal: make a context-free reader reach a niche fact in one hop, and prove it
+with a gate that fails on drift. Two new artifacts and one CI step:
+
+| Item | What changed | Verification |
+|---|---|---|
+| V-001 | `docs/INDEX.md`: one table per subsystem; every row links the owning file, and 22 rows link the exact `#L` line that settles the question. The index points at owners instead of restating values; the one deliberate exception is the destructive menu's own name ("Erase Library & Data"), because that label is the action. | `--validate-only` checked every path and anchor bound; the facts gate resolved all 30 questions through the index with 0 fallbacks |
+| V-002 | `scripts/comprehension-bench.py` + `scripts/comprehension-questions.json`: 30 niche questions and 12 overview facts, each validated against the file that owns it; naive (grep-first) vs indexed (map-first) policies, 3 repetitions, calibrated gate | 24-question baseline with no index: naive **48.7 ms / 26,907 B / 88% accuracy** (3 misses). After the index: **0.1 ms / 4,681 B / 100% / 0 fallbacks**, speedup **351.8×**, byte ratio 0.17 |
+| V-003 | Six harder questions added after the first pass (notification key, CI run id, erase-data action, snapshot counts, generator flag, data root) to stop the bank from matching only the rows it was written beside | Repeated 30-question runs: **344–352×**, byte ratio 0.20, **100%**, 0 fallbacks; three anchors were wrong on the way (CI line, retired-3D line, data-root line) and the gate caught each one |
+| V-004 | Full-context scan test: 246 tracked files vs four entry documents (README, INDEX, handoff, MILESTONES) | naive **74.6 ms / 3,121,726 B / 246 files**; indexed **0.8 ms / 62,819 B / 4 files**; **97.2×**, coverage 100%, byte ratio 0.02 |
+| V-005 | Cold-reader defect: README said 138 checks / 56 required, while the SG8 catalog receipt says 140 / 58. README lines 41 and 106 corrected to 140 / 58; the 138 figure remains only in the historical milestone/gate prose. | Found by the cold-reader brief, confirmed against `docs/registers/04-handoff.md:25` and `03-fix-log.md` S-007, then corrected |
+| V-006 | CI: `census.yml` gains a “Comprehension index freshness” step running `python3 scripts/comprehension-bench.py --validate-only` between the surface gate and the unit census; `AGENTS.md` local mirror lists the same three steps | The step passes locally (`--validate-only`, 30 facts, 12 overview facts, all anchors in bounds); the GitHub run itself awaits the commit/push gate |
+
+**Gate definition (calibrated, not advisory):** one-hop accuracy 100%, zero
+grep fallbacks, indexed median ≤ 25 ms and ≤ 2 linked files, ≥ 4× faster than
+grep, ≤ 0.5× the bytes; overview coverage 100%, ≥ 5× faster, ≤ 0.2× the bytes.
+
+**Final measured runs (30 questions + 12 overview facts, rep 3, full mode):**
+repeated runs measured facts naive **51.2–51.3 ms / 27,264 B** versus indexed
+**0.1 ms / 5,398 B** — **344.5–351.6×**, byte ratio 0.20, accuracy 100%, 0 grep
+fallbacks. Overview naive **74.6–75.6 ms / 3,121,726 B / 246 files** versus
+indexed **0.8 ms / 62.8–63.3 KB / 4 files** — **97.2–97.8×**, coverage 100%.
+The gate passed on the command's own exit status each time; the earlier
+24-question build measured 48.7 ms / 26,907 B / 88% before the index, which is
+the baseline row above.
+
+**Cold-reader trial:** three dispatch attempts with the same brief prompt,
+timed from dispatch to report. Run 1 produced a 400-word, 12-citation brief in
+~85 s and found the README 138/56 contradiction; run 2 returned a meta-summary
+instead of reading files (~245 s, invalid sample); run 3, after the counts were
+fixed and the index existed, produced a correct brief in ~48 s and found two
+further inconsistencies (the Xcode version wording and the owner-gate order),
+both since fixed. Wall-clock includes dispatch and model variance, so these are
+not a clean before/after curve. Spawned workers inherit this session's
+conversation — which is why run 2 failed — so the genuinely context-free,
+repeatable measurement is the fresh-process harness, not the worker.
+
+**Residual risks:** anchors are hand-maintained line numbers; CI's
+`--validate-only` checks existence and bounds but cannot tell that a line moved
+within the file. That drift is caught only by the local `--mode facts` gate, so
+run it after any edit above an indexed line. Two anchors drifted during the
+final doc edits (AGENTS retired-3D, README graph paragraph) and were re-pointed;
+the full 30-question gate was then rerun and passed with zero fallbacks.

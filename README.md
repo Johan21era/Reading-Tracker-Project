@@ -38,7 +38,7 @@
 - **Night-sky ambience** — a starfield background that tracks real time of day, weather, and location
 - **Mirage analysis (optional, opt-in per gesture)** — for an imported EPUB, an explicit "Analyze with Mirage" gesture sends that single book to a separately-owned analysis engine and wires the results to your reading state; the engine keeps its own ledger and never writes RT's store (see §3.5)
 
-There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for stress-testing with **16 deterministic fake reader personas**, and a built-in **Sentinel** watchdog that scans 138 checks across 15 data domains, verifies and snapshots every repair, and explains what happened while you were away. The Release Health Center (⌘⇧H) is the full surface.
+There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for stress-testing with **16 deterministic fake reader personas**, and a built-in **Sentinel** watchdog that scans 140 checks across 15 data domains, verifies and snapshots every repair, and explains what happened while you were away. The Release Health Center (⌘⇧H) is the full surface.
 
 ---
 
@@ -48,7 +48,7 @@ There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for st
 |---|---|
 | **What it is** | A sandboxed macOS AppKit/SwiftUI app for tracking your reading — plus the integrated Mirage companion engine (optional feature) |
 | **Language** | Swift 5 mode, SwiftUI + AppKit only |
-| **Build config** | `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, `SWIFT_APPROACHABLE_CONCURRENCY = YES`, deployment target macOS 26.5, Xcode 27.1 |
+| **Build config** | `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, `SWIFT_APPROACHABLE_CONCURRENCY = YES`, deployment target macOS 26.5, Xcode 27.1 locally; CI pins Xcode 26.6 |
 | **Dependencies** | Exactly one Swift dependency: ZIPFoundation 0.9.20 (SPM, pinned via `Package.resolved` — used for unzipping EPUBs). Mirage ships as a self-contained bundled runtime (its own Python interpreter), not a Swift dependency |
 | **App size** | 144 app files · 57,139 raw LOC (counted directly — not estimated) |
 | **Tests** | **432 tests / 671 runs · 9 skips · 0 failures** in the local unit census (2026-10-28, after SG8); CI runs the surface-freshness gate before the census |
@@ -103,7 +103,7 @@ Writes go through `PersistenceWriter` on a serial utility queue behind a debounc
 
 | Surface | Reality in the current tranche |
 |---|---|
-| **Probes** | **138** deterministic checks across **15 domains** (library, sessions, goals, collections, database, backups, files, weather, audio, behavior, Mirage, app state, Sentinel itself, security, capacity). 56 are required; the rest are optional deep checks |
+| **Probes** | **140** deterministic checks across **15 domains** (library, sessions, goals, collections, database, backups, files, weather, audio, behavior, Mirage, app state, Sentinel itself, security, capacity). 58 are required; the rest are optional deep checks |
 | **Repairs** | **25** implemented plans with preview, safety snapshot, generation/subject re-read, verification, rollback, and undo. R3 recovery is never one-click; auto-fix is R1-only and opt-in |
 | **Surfaces** | Launch report card; **Release Health Center** (⌘⇧H: Overview, Issues, History, Checks, Settings); Settings ▸ Sentinel; Developer Console pane in Debug |
 | **Classifier** | Persistent issue store with fingerprints, owner/contributor evidence, lifecycle (open, acknowledged, snoozed, ignored, resolved), regression detection, and root-cause diagnoses |
@@ -153,7 +153,7 @@ The audit-era **NEW-DE-1 … NEW-DE-8 punch list was fixed and pinned** during B
 
 | # | Item | Why it matters | Estimate |
 |---|------|----------------|----------|
-| 0 | **Sentinel owner acceptance + SG7** | The tranche is shipped and gate-evidenced; the ten manual owner scenarios, v1 removal, and localization still block SG7. | One focused session |
+| 0 | **Owner acceptance — Library Recovery G6 first, then Sentinel SG7** | The G6 nine-step script on a copied library is the first gate; the ten manual Sentinel scenarios, v1 removal, and localization block SG7 after it. | One focused session each |
 | 1 | **Distribution readiness** | The build is ad-hoc signed, not notarized, so first launch needs right-click → Open. Public/friend distribution needs Developer ID signing and notarization. The bundle ID is still `johan.Reading-Tracker` for MVP container compatibility; changing it needs a dedicated container migration. | Signing/account setup + migration session |
 | 2 | **Swift 6 strict concurrency** | Flipping to Swift 6 produced 148 actor-isolation errors; the project stays in Swift 5 mode until those surfaces are fixed. | Multi-session arc |
 | 3 | **Reader selection highlights/quotes** | Notes, tags, page anchors, and collections work; EPUB/PDF text-selection highlighting is not wired. | 1–2 sessions |
@@ -178,6 +178,7 @@ Every deeper document has its own numbered ID and plain-English introduction. St
 ```text
 README.md                                    ← you are here
 docs/
+├── INDEX.md                                 One-hop lookup: question → exact file/line (start here)
 ├── 01-project-tree.md                       Where every file lives
 ├── registers/                               Living truth
 │   ├── 02-defect-register.md                Everything known to be broken or risky
@@ -219,7 +220,7 @@ docs/
 
 Campaign bookkeeping note: the root copies `merge-log.md` and `RT_Mirage_Codebase_Merge_Playbook.md` are the owner's personal kept snapshots — canonical, versioned copies live in `docs/integration/` and move forward there; the root copies are frozen at the campaign's close.
 
-**If you are new to the project,** read `docs/registers/04-handoff.md` next — it answers what was done, why, and what comes next in order.
+**If you are new to the project,** read `docs/INDEX.md` first when you have a specific question, then `docs/registers/04-handoff.md` — it answers what was done, why, and what comes next in order. The index is verified by `scripts/comprehension-bench.py`, which fails on a stale path or anchor.
 
 ---
 
@@ -280,18 +281,19 @@ The package is ad-hoc signed, not notarized. First launch on another Mac require
 `graphify-out/graph.html` is the 2D vis-network export and loads its renderer from unpkg. The 3D export is fully self-contained — no CDN, server, or network request:
 
 ```bash
-open graphify-out/graph-3d.html
+open graphify-out/graph-3d-full.html
 ```
 
-Rebuild both views from `graphify-out/graph.json` at any time (Python standard library only):
+Rebuild it from `graphify-out/graph.json` at any time (Python standard library only):
 
 ```bash
-python3 scripts/build-graph-3d.py                 # community + full
-python3 scripts/build-graph-3d.py --mode community
-python3 scripts/build-graph-3d.py --check         # fail if an output is stale
+python3 scripts/build-graph-3d.py                 # full node-level view
+python3 scripts/build-graph-3d.py --check         # fail if the output is stale
 ```
 
-`graph-3d.html` is the community view (369 nodes / 1,372 aggregated edges, ~1.8 MB, tracked). `graph-3d-full.html` is the node-level view (7,510 nodes / 19,023 edges, ~7.7 MB, generated locally and gitignored). Both embed `3d-force-graph` 1.80.0 with its MIT notice; the renderer is vendored under `scripts/vendor/`, and the page template is `scripts/graph3d-template.html`. `--check` is deterministic because the generator embeds the source and renderer hashes, not a build timestamp.
+`graph-3d-full.html` is the only 3D view: all 7,510 nodes / 19,023 edges, ~7.7 MB, generated locally and gitignored. `graph.html` remains the 2D community export. The 3D page embeds `3d-force-graph` 1.80.0 with its MIT notice; the renderer is vendored under `scripts/vendor/`, and the page template is `scripts/graph3d-template.html`. `--check` is deterministic because the generator embeds the source and renderer hashes, not a build timestamp. The aggregated community view (`graph-3d.html`) was retired on 2026-10-29.
+
+The 3D view orbits a full 360° in pitch and yaw (the camera flips its up vector at the poles), the arrow keys drive the same rotation, and the settled layout is cached locally, so a reopen is interactive in a few hundred milliseconds instead of replaying the force simulation.
 
 ### Testing reset
 

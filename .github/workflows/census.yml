@@ -27,6 +27,12 @@ jobs:
         # generated catalog, so this is the inventory half of auto-coverage.
         run: ./scripts/verify-sentinel-surface.sh
 
+      - name: Comprehension index freshness
+        # Every path and #L anchor in docs/INDEX.md must still exist, and every
+        # bank answer must still be present in the file that owns it. This is
+        # deterministic and reads no network; it does not run the timing gate.
+        run: python3 scripts/comprehension-bench.py --validate-only
+
       - name: Unit census (green = merge-presence receipt)
         shell: bash
         run: |

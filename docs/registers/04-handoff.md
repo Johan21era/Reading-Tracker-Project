@@ -170,3 +170,65 @@ ready package. If accepted, record owner acceptance and promote milestone 004
 from candidate to accepted. Then resume the polish backlog: in-book search,
 bookmarks/highlights, vertical scroll, per-theme settings, library shelf/grid,
 and the accessibility/responsive matrix.
+
+---
+
+## Session close — 2026-10-29 (3D graph views)
+
+**Delivered:** the offline 3D views now open on a double-click in Safari
+(the `[hidden]` fallback card was covering the canvas), orbit a full sphere in
+both axes, pan with the arrow keys, and render through analytic node impostors
+with a cached layout. Implementation is entirely in
+`scripts/graph3d-template.html`; details and measurements are in
+`docs/registers/03-fix-log.md` Stage T.
+
+**Verification:** `python3 scripts/build-graph-3d.py --check` returns `ok` for
+`graph-3d-full.html` (7.71 MiB,
+`ab9a19b6407b2a703d80c302701938f71d86a8c74f393f8927619f8265f67971`); the
+community 3D view was deleted in the same session, so the generator now emits
+one page. The full
+view dropped from 5,949,312 to 450,660 triangles and now holds 59.6 fps while
+dragging at 2560×1440 / DPR 2 (was 46.5 fps); warm reopen is 256–340 ms versus
+2,817 ms cold. Hover, select, isolate, and reset were exercised in Chromium and
+WebKit with no console errors and no network requests. The app code was not
+touched, so no Xcode build or census was rerun for this stage.
+
+**Next:** owner visual check of `graph-3d-full.html` and `graph.html`, then
+the pending commit/push gate from the close-out protocol.
+`graph-3d-full.html` stays local and must be rebuilt after any graph refresh;
+`graph-3d.html` is retired.
+
+---
+
+## Session close — 2026-10-29 (one-hop retrieval)
+
+**Delivered:** `docs/INDEX.md` (question → exact file/line, no duplicated
+answers), `scripts/comprehension-bench.py` with a 30-question niche bank and a
+12-fact overview bank, and a CI “Comprehension index freshness” step.
+
+**Measured (30 questions + 12 overview facts, 3 reps):** facts naive
+**51.2–51.3 ms / 27,264 B** versus indexed **0.1 ms / 5,398 B** —
+**344–352×**, accuracy 100%, 0 grep fallbacks; the pre-index 24-question
+baseline was 48.7 ms / 26,907 B / 88%. Overview: 246 files / 3.12 MB /
+74.6–75.6 ms versus 4 documents / ~63 KB / 0.8 ms — **≈97×**, coverage 100%.
+
+**Defects fixed:** README claimed 138 checks / 56 required; the SG8 receipt
+says 140 / 58 (both README lines corrected, historical prose left alone). The
+build-config row now says Xcode 27.1 locally / CI pins 26.6, and the README
+open-work table now puts Library Recovery G6 ahead of Sentinel SG7, matching
+this handoff.
+
+**Verified:** `python3 scripts/comprehension-bench.py --validate-only` passes
+(30 facts, 12 overview facts, all anchors in bounds); `--mode all` exits 0 with
+the gate above. The new CI step is the same `--validate-only` command and passes
+locally; the GitHub run awaits the push approval. No Swift file moved, so the
+unit census was not rerun for this docs/scripts pass — record that as a skip,
+not a pass.
+
+**Cold-reader trial:** 3 dispatch attempts, ~85 s (valid brief), ~245 s (invalid
+— the worker summarized the session instead of reading), ~48 s (valid brief).
+Spawned workers inherit this conversation, which is why run 2 failed; the
+repeatable context-free measurement is the fresh-process harness.
+
+**Next:** commit/push approvals; keep `docs/INDEX.md` anchors current and rerun
+`--mode all` after any edit above an indexed line.

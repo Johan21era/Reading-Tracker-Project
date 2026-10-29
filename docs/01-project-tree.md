@@ -14,6 +14,7 @@ This is a map of every file and folder in the project, organized so you can find
 |---|---|
 | `README.md` | The front door — start here |
 | `docs/` | All project documentation (registers, roadmap, audit, history, the Mirage integration campaign, etc.) |
+| `docs/INDEX.md` | The one-hop lookup: a question maps to the exact file (and line) that owns it |
 | `RT_Mirage_Codebase_Merge_Playbook.md` | Owner's kept snapshot of the merge playbook (tracked canon: `docs/integration/` — ignored here by `.gitignore`) |
 | `merge-log.md` | Owner's kept snapshot of the campaign log (tracked canon: `docs/integration/merge-log.md` — ignored here by `.gitignore`) |
 | `AsterismaV1.0/` | The actual app code — every Swift file that makes the app work |
@@ -22,10 +23,10 @@ This is a map of every file and folder in the project, organized so you can find
 | `AsterismaV1.0.xcodeproj/` | The Xcode project file (do not edit by hand) |
 | `AsterismaV1.0.entitlements` | Permissions the app asks macOS for (sandbox, user-selected files, location) |
 | `AsterismaV1.0-Info.plist` | App settings such as its name, icon, and location description |
-| `scripts/` | Census, benchmark, test-isolation, runtime staging, icon, release-package, and 3D-graph build scripts (`build-graph-3d.py` + vendored renderer) |
+| `scripts/` | Census, benchmark, test-isolation, runtime staging, icon, release-package, 3D-graph build (`build-graph-3d.py` + vendored renderer), and the cold-retrieval harness (`comprehension-bench.py` + its question bank) |
 | `dist/` | Generated release packages (gitignored, rebuilt by `scripts/package-release.sh`); the stale local build was removed on 2026-10-28 |
 | `.mirage-runtime/` | Local staged Mirage runtime (gitignored; required for a fresh build) |
-| `graphify-out/` | Generated knowledge graph, 2D community HTML, offline 3D community HTML, and report (refreshed 2026-10-28: 7,510 nodes / 19,023 edges; `graph.html` and `graph-3d.html` show 369 community nodes because the full graph exceeds the 5,000-node node-level limit; `graph-3d-full.html` is the generated-local 7,510-node view) |
+| `graphify-out/` | Generated knowledge graph, 2D community HTML, offline full-node 3D HTML, and report (refreshed 2026-10-28: 7,510 nodes / 19,023 edges; `graph.html` shows 369 aggregated community nodes because the full graph exceeds the 5,000-node 2D limit; `graph-3d-full.html` is the generated-local 7,510-node 3D view and the only 3D export — `graph-3d.html` was retired 2026-10-29) |
 | `.gitignore` | Tells Git which files to ignore (build junk, user settings, etc.) |
 
 ---
@@ -37,6 +38,7 @@ Every documentation file begins with a number so you can read them in order:
 | File | Number | What it is | Who should read it |
 |---|---|---|---|
 | `README.md` | 00 | Project overview and front door | Everyone, first |
+| `docs/INDEX.md` | — | One-hop lookup: question → exact file/line | Everyone with a specific question |
 | `docs/01-project-tree.md` | 01 | This file — where everything lives | Everyone |
 | `docs/registers/02-defect-register.md` | 02 | Everything known to be broken or risky | Anyone who wants to fix bugs |
 | `docs/registers/03-fix-log.md` | 03 | Everything that has been fixed, with proof | Anyone who wants to understand the history |
@@ -98,7 +100,7 @@ This folder contains every Swift file that makes the app run. They are grouped b
 
 These are automated checks that run without you having to click anything. Each test is named after the specific bug or behavior it guards. If a test ever starts failing, that is an early warning that something broke.
 
-As of 2026-10-28: 57 Swift files in the unit-test target, **379 test functions in 79 suites**, and **1,024 passing cases with 9 environment/live-integration skips**. The target remains grouped by responsibility (`App`, `Behavior`, `Core`, `DeveloperConsole`, `Environment`, `Library`, `Mirage`, `Reader`, plus Sentinel domain/runtime/catalog/persistence suites). Sentinel alone contributes 151 test functions, including 414 parameterized per-probe contract cases (clean install, determinism, privacy) across the 138-probe registry. The 9 skips are opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo. UI tests remain placeholder launch stubs and are not part of the deterministic merge receipt. See `docs/method/07-testing-strategy.md` for how to engage them.
+As of 2026-10-28: 57 Swift files in the unit-test target, **379 test functions in 79 suites**, and **1,024 passing cases with 9 environment/live-integration skips**. The target remains grouped by responsibility (`App`, `Behavior`, `Core`, `DeveloperConsole`, `Environment`, `Library`, `Mirage`, `Reader`, plus Sentinel domain/runtime/catalog/persistence suites). Sentinel alone contributes 151 test functions, including 414 parameterized per-probe contract cases (clean install, determinism, privacy) across the 140-probe registry. The 9 skips are opt-in gates: 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo. UI tests remain placeholder launch stubs and are not part of the deterministic merge receipt. See `docs/method/07-testing-strategy.md` for how to engage them.
 
 ---
 
