@@ -86,7 +86,7 @@ CI runner alignment is complete (2026-10-26): `census` runs on `macos-26` / Xcod
 
 ## What should the next person know to start instantly?
 
-**Baseline:** `main` carries the original release merge at `aba8aa4` plus the owner-accepted reader build, the preservation-first repository reorganization, CI hardening, the Sentinel v2 first tranche (`6099e4e`), and SG8 (`29dd4f6`); ready tag `asterisma-v1.0-ready-2026-10-26`, release tag `asterisma-v1.0-mvp`. Latest local unit census (2026-10-28, after SG8): **432 tests / 671 runs / 9 skipped / 0 failed**; Release build exit 0; test isolation byte-identical. The generated `dist/` package was removed during the 2026-10-28 artifact cleanup; rebuild with `scripts/package-release.sh`. The last documented package SHA-256 is `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`. Canonical census numbers come from `xcrun xcresulttool get test-results summary`; Sentinel evidence is indexed in `docs/plans/sentinel/gates/README.md`.
+**Baseline:** `main` carries the original release merge at `aba8aa4` plus the owner-accepted reader build, the preservation-first repository reorganization, CI hardening, the Sentinel v2 first tranche (`6099e4e`), and SG8 (`29dd4f6`); ready tag `asterisma-v1.0-ready-2026-10-26`, release tag `asterisma-v1.0-mvp`. Latest local unit census (2026-10-29, after SG8): **432 tests / 671 runs / 9 skipped / 0 failed**; Release build exit 0; test isolation byte-identical. The generated `dist/` package was removed during the 2026-10-28 artifact cleanup; rebuild with `scripts/package-release.sh`. The last documented package SHA-256 is `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`. Canonical census numbers come from `xcrun xcresulttool get test-results summary`; Sentinel evidence is indexed in `docs/plans/sentinel/gates/README.md`.
 
 > **History note (2026-10-28):** `main` was rewritten to remove AI co-author trailers from five commits. Trees are byte-identical. Remapped SHAs: `40bc922`→`16d6d16`, `fd524cd`→`5a369e9`, `6aecdc3`→`bed710a`, `2f40a43`→`310b9d3`, `ae4ee36`→`76e8a23`. A local-only `backup/pre-attribution-rewrite` branch may hold the old objects; it is not pushed and is safe to delete.
 
@@ -261,13 +261,12 @@ errors, and no external requests.
 `b4b587be9aaead322d42581f0a44a7e35bf939e7`; the surface-freshness,
 comprehension-index, and unit-census steps are all green.
 
-**Docs:** the close-out audit covers every Markdown file edited this session
-(README, AGENTS, project tree, INDEX, fix log, handoff, testing method,
-remediation roadmap) plus the new ledger. The remaining tracked Markdown files
-are deferred for the full sweep with the reason recorded in
-`docs/registers/05-doc-audit.md`; that sweep is the first documentation task of
-the next session.
+**Docs:** the full **83-file Markdown sweep is complete**: 13 current documents
+PASS, 68 dated receipts REVIEW with disclosed skips, and the generated graph
+report SKIPPED; all 417 path claims resolve. The per-file table, evidence, and
+skip register are in `docs/registers/05-doc-audit.md`.
 
-**Next:** owner visual check of `graph-3d-full.html` and `graph.html`; run the
-full Markdown sweep; keep the index anchors current; refresh the graph again
-after the next batch of doc edits if the node counts matter for a receipt.
+**Next:** owner visual check of `graph-3d-full.html` and `graph.html`; keep the
+index anchors current; refresh the graph again after the next batch of doc edits
+if the node counts matter for a receipt. A new full sweep belongs with the next
+release, not an ordinary edit.

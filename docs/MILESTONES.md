@@ -306,6 +306,7 @@ This is the **first tranche**, not the 700-probe ceiling. The SG7 gate is
 - Release build: exit 0
 - Test isolation: `TEST ISOLATION OK — real app-support data is byte-identical.`
 - Census artifact: `rt-census-20261028-152733.xcresult`
+- **Postscript (SG8, 2026-10-28):** the catalog grew to **140 probes / 58 required**; the post-SG8 census is **432 tests / 671 runs / 9 skipped / 0 failed**. The 138 / 379 figures above are the SG7 snapshot this milestone records.
 
 ### Next
 

@@ -2,7 +2,7 @@
 
 > **TL;DR** — AsterismaV1.0 is a macOS reading-tracker app written entirely in Swift/SwiftUI. You import your PDF and EPUB books, read them inside the app, and it quietly records everything: per-page reading speed, time of day, live weather, and the app you were using just before opening the book. As of the October 2026 merge campaign, it also carries **Mirage** — a separately-owned companion engine for EPUB analysis, integrated behind a typed one-way boundary.
 
-> **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. The full gate record lives in `docs/plans/bedrock/`. Current local census (2026-10-28, after SG8): **432 tests / 671 runs, 9 skips, 0 failures** on macOS 26.6.1 / Xcode 26.6; CI also runs the surface-manifest freshness gate before the census.
+> **Bedrock update (2026-10-24):** the app now runs on a **GRDB/SQLite summary store** (JSON migrated to `.migrated`, load **5.06 ms** vs 493.7 ms), weather uses **Open-Meteo** with no WeatherKit entitlement, Mirage is **embedded and signed**, Behavior Context V3 is wired with an Advanced Context window, and real EPUB imports populate genre/series/word count. The full gate record lives in `docs/plans/bedrock/`. Current local census (2026-10-29, after SG8): **432 tests / 671 runs, 9 skips, 0 failures** on macOS 26.6.1 / Xcode 26.6; CI also runs the surface-manifest freshness gate before the census.
 
 > **Release status (2026-10-26):** `AsterismaV1.0` remains merged to `main` at `aba8aa4` (release commit `6da2d81`, tag `asterisma-v1.0-mvp`). The owner accepted the full reader workflow on the `asterisma-v1.0-ux-audit-2` build. The ready tree adds the Apple Books-style Appearance panel, the preservation-first repository reorganization, and green CI hardening; app code is `1c88ae5`, tagged `asterisma-v1.0-ready-2026-10-26`. Package: `dist/AsterismaV1.0-1.0-arm64.zip`, SHA-256 `786832c8049e38ebe03d6220ae0a39b3a0005b010bdce4675e440cea65ef4643`. It is ad-hoc signed, not notarized; first launch requires right-click → Open. Owner visual retest of the Appearance panel and book plate remains the next acceptance gate.
 
@@ -51,7 +51,7 @@ There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for st
 | **Build config** | `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, `SWIFT_APPROACHABLE_CONCURRENCY = YES`, deployment target macOS 26.5, Xcode 27.1 locally; CI pins Xcode 26.6 |
 | **Dependencies** | Exactly one Swift dependency: ZIPFoundation 0.9.20 (SPM, pinned via `Package.resolved` — used for unzipping EPUBs). Mirage ships as a self-contained bundled runtime (its own Python interpreter), not a Swift dependency |
 | **App size** | 166 Swift files · 62,452 raw lines (55,177 non-blank) — counted from the tree on 2026-10-29 |
-| **Tests** | **432 tests / 671 runs · 9 skips · 0 failures** in the local unit census (2026-10-28, after SG8); CI runs the surface-freshness gate before the census |
+| **Tests** | **432 tests / 671 runs · 9 skips · 0 failures** in the local unit census (2026-10-29, after SG8); CI runs the surface-freshness gate before the census |
 | **How it is tested** | Swift Testing (`@Suite` / `@Test` / `#expect`) — not XCTest |
 | **History** | ~30 working sessions (Jun–Oct 2026), 45+ commits, then the **RT–Mirage merge campaign** (Oct 2026): the 8-PR integration ladder PR-1…PR-8, closed with owner signatures; then the **Bedrock / AsterismaV1.0 release** (2026-10-24) |
 | **Where your data lives** | Sandbox container: `~/Library/Containers/johan.Reading-Tracker/Data/Library/Application Support/Asterisma/` (see §3) — plus Mirage's own stratum (§3.5) |
@@ -138,7 +138,7 @@ The full campaign of record — playbook, ADR register (ADR-2…ADR-8, ADR-12), 
 Checked directly against the working tree on 2026-10-28 — not inherited from an old note:
 
 - ✅ `xcodebuild build` (Debug and Release, default DerivedData) → **BUILD SUCCEEDED**
-- ✅ Local unit census (2026-10-28, after SG8): **432 tests / 671 runs / 9 skipped / 0 failed**, Release build exit 0. Evidence: [SG8 gate](docs/plans/sentinel/gates/SG8.md). The 9 skips are 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo. CI runs `scripts/verify-sentinel-surface.sh` before the census, so a stale surface manifest fails the run. UI tests remain placeholder launch stubs and are excluded from the deterministic unit receipt.
+- ✅ Local unit census (2026-10-29, after SG8): **432 tests / 671 runs / 9 skipped / 0 failed**, Release build exit 0. Evidence: [SG8 gate](docs/plans/sentinel/gates/SG8.md). The 9 skips are 4 Mirage real-engine, 1 benchmark, 2 real-library SQLite parity, and 2 live Open-Meteo. CI runs `scripts/verify-sentinel-surface.sh` before the census, so a stale surface manifest fails the run. UI tests remain placeholder launch stubs and are excluded from the deterministic unit receipt.
 - ✅ Rebrand verified live: app/product/display name **AsterismaV1.0**, Swift module `AsterismaV1_0`, and data root migrated to `Application Support/Asterisma/`.
 - ✅ Live library after the owner’s erase/reset and reading sessions: **1 book / 3 sessions / 77 page timings**.
 - ✅ Release packaging is reproducible with `scripts/package-release.sh`; generated `dist/` output is no longer retained in the working tree (removed during the 2026-10-28 artifact cleanup). The last documented package SHA-256 remains in the handoff and fix log as a historical receipt.
@@ -163,7 +163,7 @@ The audit-era **NEW-DE-1 … NEW-DE-8 punch list was fixed and pinned** during B
 | 7 | **Remaining dead code** | Some zero-caller fragments remain after G7's −1,157-line sweep. | 3–5 h |
 | 8 | **Mirage era — standing items** | TB-M0 observation cadence; a perf-budget report; the engine-side backup-surface gap. The packaged app-embed exercise is now done (runtime embedded and signed). | Process, not code |
 
-CI runner alignment is complete (2026-10-26): the workflow runs on `macos-26` / Xcode 26.6 and the latest `census` run is green.
+CI runner alignment is complete (2026-10-26): the workflow runs on `macos-26` / Xcode 26.6 and the latest `census` run (`40813891217`, 2026-10-29) is green.
 
 The full defect register remains the source of truth for the F-series items; the old NEW-DE block is historical and should not be read as still open.
 

@@ -9,7 +9,7 @@
 | **Date** | 2026-10-28 |
 | **Baseline commit** | `29dd4f6` |
 | **Baseline tests** | 432 tests · 671 runs · 9 skipped · 0 failed |
-| **Baseline Sentinel** | 140 probes · 15 domains · 25 repairs · 173 Sentinel tests |
+| **Baseline Sentinel** | 140 probes · 15 domains · 25 repairs · 162 `@Test` functions in Sentinel-named test files |
 | **Scope** | macOS app, SQLite library, existing Sentinel v2, new Library Recovery subsystem |
 | **Out of scope** | Automatic structural repair, automatic data deletion, privacy-leak detection, cloud backup, iOS |
 
@@ -1118,7 +1118,7 @@ Every cross-actor call is explicit `await`. No `Task.detached` inside Recovery w
 
 | File | Responsibility |
 |---|---|
-| `AsterismaV1.0/Core/LibraryRecovery/LibraryRecoveryContracts.swift` | protocols, enums, safe types shared with Sentinel |
+| `AsterismaV1.0/Core/Storage/LibraryRecoveryContracts.swift` | protocols, enums, safe types shared with Sentinel |
 | `.../LibraryIncident.swift` | `LibraryIncident`, triggers, evidence, state |
 | `.../LibraryIncidentStore.swift` | atomic incident JSON read/write, scan, index |
 | `.../LibraryStoreFingerprint.swift` | hashing, table counts, metadata |
@@ -1166,7 +1166,7 @@ No `project.pbxproj` edit is needed: the project uses `PBXFileSystemSynchronized
 
 | File | Focus |
 |---|---|
-| `AsterismaV1.0Tests/Core/LibraryRecoveryStateMachineTests.swift` | transitions, guards, terminal states |
+| `AsterismaV1.0Tests/Core/LibraryRecoveryGateTests.swift`, `AsterismaV1.0Tests/Core/LibraryRecoveryFlowTests.swift` | transitions, guards, terminal states |
 | `.../LibraryIncidentStoreTests.swift` | atomic write, tolerant decode, interrupted scan |
 | `.../LibraryStorePreserverTests.swift` | clone/copy, hash, sidecars, failure |
 | `.../LibraryDatabaseDoctorTests.swift` | corrupt fixtures, read-only, diagnosis |
@@ -3411,7 +3411,7 @@ No phase requires a schema migration of the library tables. The recovery data is
 | `docs/registers/04-handoff.md` | Record the new subsystem, gates, and open decisions |
 | `docs/plans/sentinel/gates/README.md` | Add Library Recovery gates; clarify Sentinel gate status is unchanged |
 | `docs/plans/sentinel/SENTINEL-ROADWORK.md` | Add a cross-reference, not a rewrite; Recovery is a separate program |
-| `docs/integration/adr/ADR-13-library-recovery.md` | New ADR for the permanent refusals and the coordinator boundary |
+| an ADR for library recovery (not written; documentation gap) | Permanent refusals and the coordinator boundary |
 | `docs/registers/02-defect-register.md` | Add H-1…H-10 with status |
 | `docs/audits/` | Add a recovery audit after G4 and G6 |
 

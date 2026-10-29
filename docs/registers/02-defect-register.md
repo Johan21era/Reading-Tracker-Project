@@ -12,7 +12,7 @@ This is the project's master list of everything known to be broken, risky, or mi
 
 > **Bedrock supersession (2026-10-24):** the audit-era NEW-DE-1…NEW-DE-8 punch list is now fixed and pinned (achievements, writer ordering, crash window, cache day bucket, onboarding, spatial covers, RSVP cancellation, weather honesty). Several F-series rows were already fixed in the audit/phase-1/2 logs; this register's “Open defects” block is historical and should be read with `docs/plans/bedrock/gates/` and `03-fix-log.md`. Do not treat every F-row as still open.
 
-> **AsterismaV1.0 release (2026-10-24):** the release candidate was accepted, merged to `main` at `aba8aa4`, tagged `asterisma-v1.0-mvp`, and pushed. The last complete merged-worktree census at that boundary was **218/0/9**. The 2026-10-25 polish work added `ReaderAppearanceTests` (**5/5**); its UI-inclusive rerun was blocked by the macOS UI-test automation bootstrap. That baseline is now historical: the deterministic unit census is green at **229 tests / 10 deliberate skips / 0 failures** on macOS 26 / Xcode 26.6 (see CI-001). Remaining open work is tracked in `README.md` §5 and `docs/registers/04-handoff.md`.
+> **AsterismaV1.0 release (2026-10-24):** the release candidate was accepted, merged to `main` at `aba8aa4`, tagged `asterisma-v1.0-mvp`, and pushed. The last complete merged-worktree census at that boundary was **218/0/9**. The 2026-10-25 polish work added `ReaderAppearanceTests` (**5/5**); its UI-inclusive rerun was blocked by the macOS UI-test automation bootstrap. That baseline is now historical: at the 2026-10-26 CI boundary the census was **229 tests / 10 deliberate skips / 0 failures**; the current local census is **432 tests / 671 runs / 9 skipped / 0 failed** (2026-10-29). Remaining open work is tracked in `README.md` §5 and `docs/registers/04-handoff.md`.
 
 > **CI-001 — GitHub census runner mismatch (fixed 2026-10-26):** the workflow used `macos-14` / Xcode 15.4, which cannot open the project's objectVersion 77. The runner is now `macos-26` / Xcode 26.6. A subsequent Xcode 26.6 concurrency diagnostic on the Open-Meteo safe-subscript helper was fixed by marking the subscript `nonisolated`. GitHub run `40266848038` is green: 229 tests, 10 deliberate skips, 0 failures. UI placeholders are excluded from the deterministic CI unit receipt.
 
@@ -220,7 +220,7 @@ Verified as unreachable from the running app today:
 **Mirage-era standing constraints that touch this register's future work** (from the merge playbook, unchanged):
 - Never unify Mirage's store with RT's; the `Features/Mirage/` band is Mirage-owned outside RT's defect ledger.
 - One sidecar lifecycle per gesture; the census receipts (M-014…M-028) are the enforcement evidence.
-- The old rectify table row "test header says 16/16" is historical — the AsterismaV1.0 standing census is now **229 tests / 10 deliberate skips / 0 failures** on CI, with **220 passed / 0 failed / 9 skipped** locally (see `07-testing-strategy.md`).
+- The old rectify table row "test header says 16/16" is historical — the current census is **432 tests / 671 runs / 9 skipped / 0 failed** locally; the 2026-10-26 CI boundary was **229 tests / 10 deliberate skips / 0 failures** (see `07-testing-strategy.md`).
 
 ---
 

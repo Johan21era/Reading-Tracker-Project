@@ -5,9 +5,11 @@
 | **Document ID** | MIRAGE-DEEP-DIVE-2026-10-28 |
 | **Status** | Final synthesis of the 2026-10 deep-dive arc; supersedes no prior record, consolidates the deep-dive evidence |
 | **Scope** | RT ↔ Mirage integration band + Mirage engine runtime (`.mirage-runtime/mirage-runtime` staged bundle ↔ `/Users/johanrembeci/Desktop/MirageV1.0` canonical checkout) |
-| **Governing documents** | `docs/integration/RT_Mirage_Codebase_Merge_Playbook.md` · ADR-2…ADR-8, ADR-12 · `docs/integration/merge-log.md` · `docs/integration/final-acceptance-2026-10-18.md` · `docs/product_era_plan.md` (P18–P23) · `docs/problems.md` (P-001…P-028) · `docs/12-owner-test-authority.md` |
+| **Governing documents** | `docs/integration/RT_Mirage_Codebase_Merge_Playbook.md` · ADR-2…ADR-8, ADR-12 · `docs/integration/merge-log.md` · `docs/integration/final-acceptance-2026-10-18.md` · docs/product_era_plan.md (P18–P23) · docs/problems.md (P-001…P-028) · `docs/12-owner-test-authority.md` |
 | **Author / date** | Engineering investigation session, 2026-10-28 (final deep-dive pass) |
 | **Evidence-class legend** | **[V]** = verified today by inspection/artifact on disk · **[S]** = session-phase observation from today's debugging cycles (log or artifact *not retained*; repeatable by procedure) · **[U]** = unverified hypothesis/unknown |
+
+> **Path rule.** The product-era plan and problems register named in the table belong to the MirageV1.0 checkout, not this repository; they are plain text. Only paths under this repository are backticked.
 
 ---
 
@@ -41,7 +43,7 @@ path — it is on the **frontier of honesty and trust**:
    more stoplist entries. P-005 was re-scoped (graded-cohort claim tp 475/479 ≈ 1.0 modulo cited rows).
 2. **Trust hardening (P18) is the named engineering-debt queue** — all six verified items from the 2026-10-17 deep audit
    remain open: `POST /command` Origin gap, SSE queue bounds, commit-before-delta window, chain-order-on-timestamp,
-   Linux `rss_mb` misread, vacuous `ALLOWED_DISPLAY_STATUSES` gate. Plan: `docs/product_era_plan.md` §P18.
+   Linux `rss_mb` misread, vacuous `ALLOWED_DISPLAY_STATUSES` gate. Plan: docs/product_era_plan.md §P18.
 3. **A new finding was just confirmed in the dispatcher:** the NDJSON command dispatcher (`api/service.py`,
    `run_command`) carries **two** `import_epub` branches with divergent return shapes (set-membership branch at line ~827
    vs standalone branch at ~920) and divergent payload handling (`title_guess` accepted only in the first). Latent
@@ -74,8 +76,8 @@ the coming weeks, in owner-gated order.
 - **Engine suite:** 316 Python + 3 Rust tests green at v1.0.0 (deep-dive re-run 2026-10-28: `Ran 316 tests … OK`, ~5.0 s).
   Caveat recorded: suite must be discovered with `-t .` (bare `-s tests` hits `ImportError: Start directory is not importable`).
   Interpreter caveat: pinned runtime is CPython 3.12.7; deep-dive used system Python 3.14.
-- **Census (deterministic unit receipt):** GitHub CI run `40266848038` green — **229 tests / 10 deliberate skips / 0 failures**
-  (macOS 26 / Xcode 26.6; CI-001 fix). Local unit census with staged Mirage runtime: **220 passed / 0 failed / 9 skipped**.
+- **Census (deterministic unit receipt):** GitHub CI run `40266848038` was green on 2026-10-26 — **229 tests / 10 deliberate skips / 0 failures**
+  (macOS 26 / Xcode 26.6; CI-001 fix). Local unit census with staged Mirage runtime: **220 passed / 0 failed / 9 skipped** (both figures are the 2026-10-26 snapshot; the 2026-10-28 post-SG8 local census is **432 tests / 671 runs / 9 skipped / 0 failed**).
   Opt-in gates: 4 Mirage real-engine, 1 bundled-runtime (CI only), 1 benchmark, 2 real-library SQLite parity, 2 live Open-Meteo.
 - **UI tests:** placeholder launch stubs — not part of the deterministic CI merge receipt.
 
@@ -140,7 +142,7 @@ MirageCursor, MirageStatusSurface, MirageAnalysisSheetView, MirageAppImportMount
 
 1. **Mechanical runtime green:** 316 Python + 3 Rust tests OK (~5 s); deep-dive re-verified.
 2. **Calibration on graded cohort (P7/P8/P9/P28):** entities tp retention **234/234 (1.0)**, claims **475/479 (1.0 modulo the
-   4-row cited below-surface register)**, fp suppression **0.589 / 0.401** (`docs/artifacts/p28/calibration.json`).
+   4-row cited below-surface register)**, fp suppression **0.589 / 0.401** (docs/artifacts/p28/calibration.json).
    Effective reader-facing precision on the hardest 14 books: ~31% entities, ~45% claims.
 3. **Performance envelope (P4 mitigated, measured):** peak RSS **~211 MB of 8,192 MB**; 10k units analyze **5.18 s**;
    projection p95 **0.15 s**; page-turn **~0.39 s median**. Budget respected with ~39× headroom.
@@ -179,7 +181,7 @@ real-reader measurement; confidence thresholds/scheduler weights; text-based PDF
 5. Linux `MemoryBudget.rss_mb` misclassification.
 6. Vacuous `ALLOWED_DISPLAY_STATUSES` gate (set mirrors enum; rejection currently dead).
 
-Plan: `docs/product_era_plan.md` §P18 (~1–2 days; keep all 316 tests green; add pins).
+Plan: docs/product_era_plan.md §P18 (~1–2 days; keep all 316 tests green; add pins).
 
 ### 5.3 NEW deep-dive finding — dispatcher duplicate `import_epub` branches
 
@@ -250,9 +252,9 @@ Per `docs/12-owner-test-authority.md` and `docs/method/07-testing-strategy.md`:
 ## 9. References and Source Links
 
 - `docs/integration/RT_Mirage_Codebase_Merge_Playbook.md`, `docs/integration/merge-log.md`, `docs/integration/final-acceptance-2026-10-18.md`
-- `docs/integration/adr/ADR-2…ADR-8`, `ADR-12-titanium-bridge-charter.md`
+- docs/integration/adr/ADR-2…ADR-8, `ADR-12-titanium-bridge-charter.md`
 - `docs/integration/tib/TB-M0-gate-plan.md`, `docs/integration/tib/observe-ledger.md`
-- `docs/product_era_plan.md` (P18–P23), `docs/problems.md` (P-001…P-028), `docs/12-owner-test-authority.md`
+- docs/product_era_plan.md (P18–P23), docs/problems.md (P-001…P-028), `docs/12-owner-test-authority.md`
 - `/Users/johanrembeci/Desktop/MirageV1.0/src/miragev10/` (engine), `/Users/johanrembeci/Desktop/AsterismaV1.0/Features/Mirage/` (RT band)
 - `/Users/johanrembeci/Desktop/AsterismaV1.0/docs/owner-test-results/2026-10-24-session-1.md` (F1–F3 owner findings)
 

@@ -7,6 +7,8 @@
 > 🖥️ **Part 2 — MirageV1.0** · a local-first, spoiler-safe literary knowledge graph (Python + a Rust core)
 >
 > *The original wording is preserved word-for-word — this pass only repaired copy-paste mangling (shattered tables, mid-word line breaks, stray formatting characters) and added the cover, cheat sheet, and table of contents for easy navigation.*
+>
+> **Path rule.** Part 2 is the MirageV1.0 README. Its paths belong to that separate repository and are plain text here; only paths under this repository are backticked.
 
 ---
 
@@ -20,7 +22,7 @@
 | **Stack** | Swift/SwiftUI only · macOS deployment target 26.5 · exactly 1 dependency (ZIPFoundation, pinned) | Python stdlib-first core + SQLite ledger (`ledger@0.0.10`) · reference Rust core (demoted per ADR-0002) |
 | **Size & proof** | 120 Swift files · 39,900 raw LOC · 108 `@Test` functions (~160+ executed with parameterization) | 316 Python tests + 3 Rust tests, all green |
 | **Status (Oct 2026)** | Building & fully tested · October audit: 13 new defects + 4 release blockers open (§5) | v1.0.0 product era opened (2026-10-17) · readiness 99/100 · last robustness point bound to the day-2 real library |
-| **Look here first** | [§5 Open findings](#rt-5) · [`docs/audits/08-deep-audit.md`](#rt-8) | [Current status](#mv-status) · [`docs/literary_intelligence_mission_statement.md`](#mv-docs) |
+| **Look here first** | [§5 Open findings](#rt-5) · [`docs/audits/08-deep-audit.md`](#rt-8) | [Current status](#mv-status) · [docs/literary_intelligence_mission_statement.md](#mv-docs) |
 
 ---
 
@@ -226,7 +228,7 @@ Runtime data lives under `~/Library/Application Support/johan.Reading-Tracker/` 
 
 > MirageV1.0 is the Literary Intelligence Engine (MIE): a local-first, spoiler-safe literary knowledge graph that should answer complex reader questions without reducing a book to a plot summary.
 
-**The normative source of truth is** `docs/literary_intelligence_mission_statement.md`.
+**The normative source of truth is** docs/literary_intelligence_mission_statement.md.
 
 ---
 
@@ -234,15 +236,15 @@ Runtime data lives under `~/Library/Application Support/johan.Reading-Tracker/` 
 
 ## Current status
 
-**V1.0 — product era opened (2026-10-17, tag v1.0.0):** the project is declared out of its MVP-freeze phase. Distribution/branding is now miragev10 (package `miragev10`, wheel `miragev10-1.0.0-py3-none-any.whl`, product name MirageV1.0); the CLI command stays `mirage`. The engineering state is unchanged from the MVP freeze and its §21 evidence stands (`docs/p17-record.md`): suite reverified green at the rename — 316 Python + 3 Rust; the final robustness point is still bound to the day-2 real library (user standing directive), bound, not skipped. The product/usage phase plan is `docs/product_era_plan.md`.
+**V1.0 — product era opened (2026-10-17, tag v1.0.0):** the project is declared out of its MVP-freeze phase. Distribution/branding is now miragev10 (package `miragev10`, wheel `miragev10-1.0.0-py3-none-any.whl`, product name MirageV1.0); the CLI command stays `mirage`. The engineering state is unchanged from the MVP freeze and its §21 evidence stands (docs/p17-record.md): suite reverified green at the rename — 316 Python + 3 Rust; the final robustness point is still bound to the day-2 real library (user standing directive), bound, not skipped. The product/usage phase plan is docs/product_era_plan.md.
 
-**MVP freeze v0.1.0-mvp (2026-10-17, tagged):** all eight §21 MVP-success requirements proven on the freeze commit (`docs/p17-record.md`), release notes supersede rc1 honestly. The engine is cohort-calibrated: 14 adversarial books hand-graded end-to-end (E-043: 1,427 entity + 1,414 claim rows), then the P-028 upgrade batch closed behind a published calibration harness (E-044) — graded tp retention 234/234 entities, 475/479 claims (1.0 modulo a four-row cited below-surface register), false-positive suppression 0.589/0.401, gate rc 0. Post-freeze housekeeping (per the user's standing compaction directive): superseded-generation ledgers are zipped in place; answer keys stay loose. Readiness 99/100 in the plan rubric — the last robustness point is bound to the day-2 real library (user standing directive), bound, not skipped.
+**MVP freeze v0.1.0-mvp (2026-10-17, tagged):** all eight §21 MVP-success requirements proven on the freeze commit (docs/p17-record.md), release notes supersede rc1 honestly. The engine is cohort-calibrated: 14 adversarial books hand-graded end-to-end (E-043: 1,427 entity + 1,414 claim rows), then the P-028 upgrade batch closed behind a published calibration harness (E-044) — graded tp retention 234/234 entities, 475/479 claims (1.0 modulo a four-row cited below-surface register), false-positive suppression 0.589/0.401, gate rc 0. Post-freeze housekeeping (per the user's standing compaction directive): superseded-generation ledgers are zipped in place; answer keys stay loose. Readiness 99/100 in the plan rubric — the last robustness point is bound to the day-2 real library (user standing directive), bound, not skipped.
 
 **The project has:**
 
 - typed domain contracts and enums (`src/miragev10/domain/`)
 - a versioned SQLite ledger of truth (`ledger@0.0.10`, migrations m0001–m0016) with append-only claim history, CHECK-constrained vocabularies, and crash-safe transactions
-- stdlib EPUB ingestion with security guards and content-hash unit identity (proven on a 63-real-book sweep, `docs/artifacts/p7/`)
+- stdlib EPUB ingestion with security guards and content-hash unit identity (proven on a 63-real-book sweep, docs/artifacts/p7/)
 - incremental, idempotent analysis: cursor-scoped `analyze_edition` with screening cache and no-change outcomes (I-INC1)
 - heuristic extraction with entity typing, speaker attribution, per-claim epistemic status, and an explicit Stage E candidate/accepted gate
 - exact identity resolution wired into the pipeline; evidence-gated identity merges
@@ -251,8 +253,8 @@ Runtime data lives under `~/Library/Application Support/johan.Reading-Tracker/` 
 - the D-010 corrections overlay: audited, append-only, reversible user suggestions that can never become book truth (P12)
 - embeddable surfaces: Python API (`MirageService`), CLI (`mirage`), unified NDJSON serve/sidecar protocol, and the local-only browser UI (`mirage --serve-web`)
 - a reference Rust core (`crates/mirage-core`; demoted per ADR-0002)
-- 316 Python tests + 3 Rust tests; extraction quality harness (`scripts/evaluate.py`), benchmark harness (`scripts/benchmark.py`), torture-MD converter/runner (`scripts/round4_torture.py`), cohort calibration harness (`scripts/p28_calibration.py`)
-- · roadmap: `docs/completion_plan.md` · performance records: `docs/eng-perf-001-record.md` · `docs/eng-perf-002-record.md` · tree: `docs/tree.md`
+- 316 Python tests + 3 Rust tests; extraction quality harness (scripts/evaluate.py), benchmark harness (scripts/benchmark.py), torture-MD converter/runner (scripts/round4_torture.py), cohort calibration harness (scripts/p28_calibration.py)
+- · roadmap: docs/completion_plan.md · performance records: docs/eng-perf-001-record.md · docs/eng-perf-002-record.md · tree: docs/tree.md
 
 ---
 
@@ -299,7 +301,7 @@ mirage --db mirage.sqlite3 --series-breakdown "Trilogia Verba"
 mirage --serve --db mirage.sqlite3
 ```
 
-No network is used at runtime: the install drill runs the whole flow under socket denial (`scripts/p13_install_drill.sh`), and the engine paths open no sockets at all.
+No network is used at runtime: the install drill runs the whole flow under socket denial (scripts/p13_install_drill.sh), and the engine paths open no sockets at all.
 
 ---
 
@@ -326,7 +328,7 @@ No network is used at runtime: the install drill runs the whole flow under socke
 | `corpus/books` | Labeled evaluation corpus with gold annotations (§44) |
 | `docs` | Normative doctrine, ADRs, registers, plans, testing, timeline |
 | `examples` | Sidecar embedder example |
-| `experiments` | Emergency scratch only; durable records live in `docs/testing.md` |
+| `experiments` | Emergency scratch only; durable records live in docs/testing.md |
 | `scripts` | `evaluate.py` (quality harness), `benchmark.py` (perf harness), `round4_torture.py` (torture-MD converter/runner) |
 | `sql` | Future migration helper scripts |
 | `src/miragev10` | Python domain, storage, ingestion, extraction, pipeline, query, API, CLI |
@@ -387,7 +389,7 @@ MirageV1.0 is intentionally packaged as a program and library. Reader or e-reade
 - **CLI:** `python -m miragev10 ...`
 - **Optional sidecar:** `examples/mirage_sidecar.py mirage.sqlite3`
 
-See `docs/embedding.md` for lifecycle, command names, and the embedder command boundary.
+See docs/embedding.md for lifecycle, command names, and the embedder command boundary.
 
 ---
 
@@ -410,18 +412,18 @@ Current verified counts:
 
 ## Documentation index
 
-See `docs/README.md`.
+See docs/README.md.
 
 **Key files:**
 
-- Doctrine: `docs/literary_intelligence_mission_statement.md`
-- Defects/risks: `docs/problems.md`
-- Fix-only log: `docs/fixlog.md`
-- Timeline: `docs/timeline.md`
-- Test report: `docs/testing.md`
-- Research: `docs/ideas_conceptual.md`
-- Plan: `docs/execution_plan_heuristic_only.md`
-- ADR-0001: `docs/adr/ADR-0001-epub-first-ingestion-and-deterministic-defaults.md`
+- Doctrine: docs/literary_intelligence_mission_statement.md
+- Defects/risks: docs/problems.md
+- Fix-only log: docs/fixlog.md
+- Timeline: docs/timeline.md
+- Test report: docs/testing.md
+- Research: docs/ideas_conceptual.md
+- Plan: docs/execution_plan_heuristic_only.md
+- ADR-0001: docs/adr/ADR-0001-epub-first-ingestion-and-deterministic-defaults.md
 
 ---
 
@@ -429,7 +431,7 @@ See `docs/README.md`.
 
 ## Graph and audit outputs
 
-A structural code-graph audit (AST extraction plus a documentation-corpus scan, no external API calls) summarized 595 nodes, 1,345 edges, and 31 communities. The execution roadmap toward MVP is `docs/completion_plan.md`. `codegraph-out/` is treated as a transient artifact and is ignored; durable findings belong in `docs/testing.md`.
+A structural code-graph audit (AST extraction plus a documentation-corpus scan, no external API calls) summarized 595 nodes, 1,345 edges, and 31 communities. The execution roadmap toward MVP is docs/completion_plan.md. `codegraph-out/` is treated as a transient artifact and is ignored; durable findings belong in docs/testing.md.
 
 ---
 

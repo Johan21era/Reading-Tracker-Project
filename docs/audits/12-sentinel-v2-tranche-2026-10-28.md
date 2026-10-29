@@ -4,14 +4,16 @@
 > It supersedes every “eight probes / four repairs” description in older docs.
 > The program ceiling remains the 700-probe / 120-domain / 350-repair target in
 > [SENTINEL-ROADWORK.md](../plans/sentinel/SENTINEL-ROADWORK.md); this tranche ships
-> **138 probes / 15 domains / 25 repairs**.
+> **138 probes / 15 domains / 25 repairs at SG7**; the SG8 postscript below adds two generic probes.
 
 **Branch:** `main`
 **Base commit:** `6099e4e`
 **Tree state at verification:** committed in `16d6d16`; GitHub `census` green at `bed710a` and `310b9d3`
 **Decision:** SG0–SG6 recorded with evidence; **SG7 is HOLD** on the criteria listed below.
 
-> **Postscript (SG8, 2026-10-28).** The catalog now carries **140 probes / 58
+> **Postscript (SG8, 2026-10-28).** The post-SG8 census is **432 tests / 671
+> runs / 9 skipped / 0 failed**; the 379 / 1,024 table below is the SG7
+> snapshot. The catalog now carries **140 probes / 58
 > required** after `SQL-016` and `SELF-011`, plus a source-derived surface
 > manifest (15 tables, 8 preferences, 5 notification names) enforced by a CI
 > freshness gate. SG7's holds are unchanged. See [SG8](../plans/sentinel/gates/SG8.md).

@@ -1,6 +1,12 @@
 # 11 · Completion & Health Report (2026-10-24)
 
 > **Historical snapshot.** Several release-readiness findings below were fixed after this report, including the CI runner, shared scheme, package entitlements, and Mirage embedding. For current state see `README.md` §4 and `docs/registers/04-handoff.md`; the GitHub unit census is green on macOS 26 / Xcode 26.6.
+>
+> **Historical line numbers.** The `file:line` references below describe the
+> 2026-10-24 tree. They are retained as the audit's evidence; use the owning
+> file, not the line number, for current work. The two defect-register ranges
+> and the testing-strategy pointer that no longer contained their subjects were
+> replaced with plain file references on 2026-10-29.
 
 **Scope:** the entire `Reading Tracker Main` folder — all 114 app Swift files, 34 test files, all docs, the graphify output, a live Debug build, a live full test run, the built `.app` bundle, and the real sandbox data store on this Mac.
 
@@ -175,7 +181,7 @@ Fixing the top four removes **68% of the remaining gap**. That is where the leve
 | 17 | **Notifications are placeholder-scored** | `IntelligentNotificationEngine.swift:207` sets `sessionFit = 1.0`; `:216` has a TODO to thread real recommendation/estimation signals. | Notification targeting is partially decorative. |
 | 18 | **Release readiness** | AppIcon set has no images and the built app has **no `Assets.car`**; `.github/workflows/census.yml:13` uses `macos-14` while the target is macOS 26.5; there is **no shared `.xcscheme` or `.xctestplan`**; `ENABLE_USER_SELECTED_FILES=readonly` coexists with a read-write entitlement; signing is “Sign to Run Locally”; deployment target is 26.5. | Cannot ship as-is; CI on a fresh clone is not reproducible; the icon/entitlement/signing work is external to the code. |
 | 19 | **Test gaps and test isolation** | Only **45.2% of app bytes** are referenced by any test type; UI tests are four template methods; no tests for DataMaturity, Insights, Reports, Importer, Readers, Audio, Discovery, Notifications, or live BCE. `SentinelPinsTests.swift:51/73/90` writes to the **real** Sentinel journal (we saw it during our run); `CoverStorePinsTests.swift:84/93` writes through `CoverStore.shared` into the real covers dir; `AnalyticsCachePinsTests.swift:96–103` is vacuous; `LibraryCollectionTests.swift:80` is `#expect(true)`. | The green census is a strong regression net for the layers it covers, but it is not a general quality gate; tests also mutate real app-support state. |
-| 20 | **Documentation drift** | `docs/registers/02-defect-register.md:30–157` still lists F-01…F-13 as “Open defects” although `03-fix-log.md:95–104` says they are fixed; `README.md:46/117` says Mirage ships inside the app; `AnalyticsEngine.swift:20–28` says “no such cache exists” while `AnalyticsCache.swift` exists; `LibraryExplorerView2.swift:29–31` says “not yet wired” although `NewContentView.swift:479–494` wires it; `AnnualReportData2.swift` header says 10 slides, the view has 9; README says 192 tests, actual 193. | A future session can waste hours trusting the wrong document. The docs are excellent but need a truth pass. |
+| 20 | **Documentation drift** | `docs/registers/02-defect-register.md` still lists F-01…F-13 as “Open defects” although `03-fix-log.md:95–104` says they are fixed; `README.md:46/117` says Mirage ships inside the app; `AnalyticsEngine.swift:20–28` says “no such cache exists” while `AnalyticsCache.swift` exists; `LibraryExplorerView2.swift:29–31` says “not yet wired” although `NewContentView.swift:479–494` wires it; `AnnualReportData2.swift` header says 10 slides, the view has 9; README says 192 tests, actual 193. | A future session can waste hours trusting the wrong document. The docs are excellent but need a truth pass. |
 
 ### P2 — housekeeping and data hygiene
 
@@ -306,13 +312,13 @@ The docs are a genuine asset — 97,007 words, numbered, cross-referenced, with 
 
 | Document | Claim | Reality |
 |---|---|---|
-| `docs/registers/02-defect-register.md:30–157` | F-01…F-13 are “Open defects — what is broken right now” | `03-fix-log.md:95–104` says F-01…F-05/F-07 are fixed; the audit says all but F-13(d) are fixed |
+| `docs/registers/02-defect-register.md` | F-01…F-13 are “Open defects — what is broken right now” | `03-fix-log.md:95–104` says F-01…F-05/F-07 are fixed; the audit says all but F-13(d) are fixed |
 | `README.md:46,117` | Mirage ships inside the app as a bundled runtime | Built app has no `mirage-runtime`; acceptance lists app-embed as a delta |
 | `Engines/AnalyticsEngine.swift:20–28` | “No such cache type or mechanism exists” | `Core/AnalyticsCache.swift` exists and is used |
 | `Features/Library/LibraryExplorerView2.swift:29–31` | Explorer is “not yet wired into NewContentView” | `NewContentView.swift:479–494` presents it |
 | `Features/Reports/AnnualReportData2.swift` header | 10 slides including audio | `AnnualReportView.swift:46` has `totalSlides = 9`; no audio slide |
-| `README.md:48` / `docs/method/07-testing-strategy.md:18` | 192 `@Test` functions | 193 |
-| `docs/registers/02-defect-register.md:191–199` | Environment/Spatial/Import Intelligence unwired | All three are wired in `NewContentView` / `ContentView` |
+| `README.md` / `docs/method/07-testing-strategy.md` | 192 `@Test` functions (at the 2026-10-24 audit) | 193 |
+| `docs/registers/02-defect-register.md` | Environment/Spatial/Import Intelligence unwired | All three are wired in `NewContentView` / `ContentView` |
 
 **Recommendation:** do a 2–4 h “truth pass” before the next feature session. The docs are too valuable to let drift; a future session will trust them.
 

@@ -1886,7 +1886,7 @@ A wave is complete only when all of the following are true:
 | `privacyClass` | `library-metadata` | Drives redaction and export |
 | `fixtureTier` | `small`, `scale`, `corrupt` | Prevents fixtures that only prove the happy path |
 | `repairBinding` | `REP-007` or `report-only` | No orphan repairs, no silent non-action |
-| `docsPath` | `docs/sentinel/rules/ses-002.md` | Docs-truth test target |
+| `docsPath` | `docs/sentinel/rules/<rule-id>.md` | Docs-truth test target |
 | `status` | `shipped`, `wave-3`, `blocked` | One source of truth for coverage |
 
 A registry test asserts that every one of the 120 records has all nine fields and that the wave totals equal the table above. That test is what keeps this atlas from drifting into decoration.
@@ -3201,7 +3201,7 @@ During Phase 1–3:
 
 ### 14.5 Documentation as part of the system
 
-- Every rule ID has a page in `docs/sentinel/rules/` with invariant, evidence, repair, verification, copy, and test.
+- Every rule ID has a page in the future Sentinel rules directory with invariant, evidence, repair, verification, copy, and test.
 - Every repair ID has a page with preconditions, API, rollback, and test.
 - The Health Center "Technical details" links to the local doc anchor where possible (or shows the same content).
 - The README's Sentinel section is generated from a small manifest, not hand-maintained.
@@ -3565,7 +3565,7 @@ This is a multi-quarter program, not a weekend. Phase 0 and Phase 1 alone delive
 
 ### 16.2 Gate receipts
 
-Every gate produces a receipt file under `docs/plans/sentinel/gates/SGx.md` with:
+Every gate produces a receipt file under `docs/plans/sentinel/gates/SG<number>.md` with:
 
 - date, branch, commit;
 - census numbers and `.xcresult` path;
@@ -3822,7 +3822,7 @@ SentinelRule
   required
 ```
 
-A docs-truth test asserts that every rule has all keys in the String Catalog and a matching entry in `docs/sentinel/rules/`.
+A docs-truth test asserts that every rule has all keys in the String Catalog and a matching entry in the future Sentinel rules directory.
 
 ### G. What to delete or rename in the current code
 

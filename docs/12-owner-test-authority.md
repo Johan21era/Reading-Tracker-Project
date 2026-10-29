@@ -116,7 +116,7 @@ local snapshots, make sure Time Machine or an external backup covers the live
 ## How results are recorded
 
 1. Copy `docs/owner-test-results/TEMPLATE.md` to
-   `docs/owner-test-results/YYYY-MM-DD-session-N.md`.
+   `docs/owner-test-results/<date>-session-<n>.md`.
 2. Record the build tested, launch method, macOS version, data counts before and
    after, each test, expected vs actual, verdict, and evidence.
 3. Commit the result file.

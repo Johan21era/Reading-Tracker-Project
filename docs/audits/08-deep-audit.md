@@ -8,7 +8,7 @@
 > same-day documentation reorganization they now live as: `docs/registers/02-defect-register.md`,
 > `docs/registers/03-fix-log.md`, `docs/registers/04-handoff.md`, `docs/history/{09-final-traces.md, 10-profiler-fix.md,
 > LAST_DEFEAT_demo_profiles.txt, freeze.txt, diagnostics-2026-08-26.txt}`, `docs/01-project-tree.md`.
-> Read any bare root-level doc reference below as its `docs/…` equivalent.
+> Read any bare root-level doc reference below as its `docs/` equivalent.
 
 ---
 
