@@ -21,6 +21,12 @@ jobs:
           xcodebuild -version
           xcodebuild -showsdks | tail -12
 
+      - name: Sentinel surface manifest freshness
+        # A feature that adds a table, preference, or notification without
+        # regenerating the manifest fails here. SQL-016 and SELF-011 consume the
+        # generated catalog, so this is the inventory half of auto-coverage.
+        run: ./scripts/verify-sentinel-surface.sh
+
       - name: Unit census (green = merge-presence receipt)
         shell: bash
         run: |

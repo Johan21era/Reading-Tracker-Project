@@ -33,6 +33,18 @@ nonisolated enum SentinelJournalEvent: String, Codable, CaseIterable, Sendable {
     case repairFailed
     case repairUndone
     case migration
+    // Phase 6 — recovery boundary. No probes run while suspended.
+    case sentinelSuspended
+    case sentinelResumed
+    case recoveryVerified
+    /// Forward compatibility (P6-4): a build that does not know an event must
+    /// count it as unknown, never as a corrupt line.
+    case unknown
+
+    init(from decoder: Decoder) throws {
+        let raw = try decoder.singleValueContainer().decode(String.self)
+        self = Self(rawValue: raw) ?? .unknown
+    }
 }
 
 nonisolated struct SentinelJournalEntry: Codable, Hashable, Sendable {
@@ -49,6 +61,9 @@ nonisolated struct SentinelJournalEntry: Codable, Hashable, Sendable {
     var rootCauseKey: String?
     var titleKey: String?
     var repairID: String?
+    /// Set only on recovery-boundary events. The incident id is opaque and
+    /// contains no path.
+    var incidentID: String?
     var counts: [String: Int]
     /// Static, rule-owned note. Never user text.
     var note: String?
@@ -67,6 +82,7 @@ nonisolated struct SentinelJournalEntry: Codable, Hashable, Sendable {
         rootCauseKey: String? = nil,
         titleKey: String? = nil,
         repairID: String? = nil,
+        incidentID: String? = nil,
         counts: [String: Int] = [:],
         note: String? = nil
     ) {
@@ -83,6 +99,7 @@ nonisolated struct SentinelJournalEntry: Codable, Hashable, Sendable {
         self.rootCauseKey = rootCauseKey
         self.titleKey = titleKey
         self.repairID = repairID
+        self.incidentID = incidentID
         self.counts = counts
         self.note = note
     }

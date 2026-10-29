@@ -8,7 +8,7 @@
 import Foundation
 
 nonisolated enum SentinelDiagnostics {
-    static let schemaVersion = 1
+    static let schemaVersion = 2
 
     struct Document: Codable {
         var schemaVersion: Int
@@ -22,6 +22,18 @@ nonisolated enum SentinelDiagnostics {
         var issues: [IssueRow]
         var repairs: [RepairRow]
         var probes: [ProbeRow]
+        /// Added in schema 2 (P6-5). Optional so a schema-1 reader still
+        /// decodes the file.
+        var recovery: RecoveryRow?
+    }
+
+    /// Gate state only. Incident ids, receipt ids, hashes, and counts belong to
+    /// the Recovery support summary, never to this bundle.
+    struct RecoveryRow: Codable {
+        var mode: String
+        var suspensionReason: String?
+        var lastCycleTrigger: String?
+        var lastCycleHadError: Bool
     }
 
     struct Registry: Codable {
@@ -63,7 +75,43 @@ nonisolated enum SentinelDiagnostics {
         appVersion: String,
         now: Date = Date()
     ) -> Document {
-        Document(
+        let recovery = RecoveryRow(
+            mode: state.operationalMode.isSuspended ? "suspended" : "normal",
+            suspensionReason: state.operationalMode.suspensionReason?.rawValue,
+            lastCycleTrigger: state.lastCycle.trigger.rawValue,
+            lastCycleHadError: state.lastCycle.error != nil)
+
+        let issueRows: [IssueRow] = state.issues.map { issue in
+            IssueRow(
+                fingerprint: issue.fingerprint,
+                ruleID: issue.ruleID.rawValue,
+                domain: issue.domain.rawValue,
+                severity: issue.severity.rawValue,
+                status: issue.status.rawValue,
+                occurrenceCount: issue.occurrenceCount,
+                firstSeen: issue.firstSeen,
+                lastSeen: issue.lastSeen,
+                evidenceCount: issue.evidence.count)
+        }
+
+        let repairRows: [RepairRow] = state.repairs.map { record in
+            RepairRow(
+                repairID: record.repairID,
+                status: record.status.rawValue,
+                appliedAt: record.appliedAt,
+                ruleIDs: record.ruleIDs)
+        }
+
+        let probeRows: [ProbeRow] = state.probes.map { result in
+            ProbeRow(
+                probeID: result.probeID,
+                ruleID: result.ruleID.rawValue,
+                status: result.status.rawValue,
+                durationMilliseconds: Int((result.duration * 1000).rounded()),
+                findingCount: result.findings.count)
+        }
+
+        return Document(
             schemaVersion: schemaVersion,
             generatedAt: now,
             appVersion: appVersion,
@@ -76,33 +124,10 @@ nonisolated enum SentinelDiagnostics {
                 domains: SentinelProbeCatalog.domainCount,
                 repairs: SentinelRepairCatalog.implementedIDs.count,
                 required: SentinelProbeCatalog.requiredCount),
-            issues: state.issues.map { issue in
-                IssueRow(
-                    fingerprint: issue.fingerprint,
-                    ruleID: issue.ruleID.rawValue,
-                    domain: issue.domain.rawValue,
-                    severity: issue.severity.rawValue,
-                    status: issue.status.rawValue,
-                    occurrenceCount: issue.occurrenceCount,
-                    firstSeen: issue.firstSeen,
-                    lastSeen: issue.lastSeen,
-                    evidenceCount: issue.evidence.count)
-            },
-            repairs: state.repairs.map { record in
-                RepairRow(
-                    repairID: record.repairID,
-                    status: record.status.rawValue,
-                    appliedAt: record.appliedAt,
-                    ruleIDs: record.ruleIDs)
-            },
-            probes: state.probes.map { result in
-                ProbeRow(
-                    probeID: result.probeID,
-                    ruleID: result.ruleID.rawValue,
-                    status: result.status.rawValue,
-                    durationMilliseconds: Int((result.duration * 1000).rounded()),
-                    findingCount: result.findings.count)
-            })
+            issues: issueRows,
+            repairs: repairRows,
+            probes: probeRows,
+            recovery: recovery)
     }
 
     static func export(

@@ -185,6 +185,7 @@ struct AsterismaApp: App {
         // SG4: Sentinel Health Center — a real Release surface, not a Debug toy.
         Window("Sentinel Health", id: SentinelHealthCenterWindowID.id) {
             SentinelHealthCenterView()
+                .environmentObject(dataStore)
                 .frame(minWidth: 860, minHeight: 640)
         }
         .defaultSize(width: 980, height: 720)

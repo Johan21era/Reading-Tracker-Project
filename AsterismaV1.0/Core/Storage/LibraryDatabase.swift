@@ -566,14 +566,13 @@ nonisolated final class LibraryDatabase: @unchecked Sendable {
         try pool.close()
     }
 
-    /// Consistent file snapshot for rotation. Checkpoints WAL first, then
-    /// copies the main database while no write transaction is open.
-    func backup(to destination: URL) throws {
-        try pool.writeWithoutTransaction { db in
-            try db.execute(sql: "PRAGMA wal_checkpoint(TRUNCATE)")
-        }
-        try? FileManager.default.removeItem(at: destination)
-        try FileManager.default.copyItem(at: dbURL, to: destination)
+    /// Compatibility name for the one consistent snapshot API. The old
+    /// checkpoint-then-copy implementation is intentionally gone: a write that
+    /// landed after the checkpoint could be absent from the copied main file.
+    @available(*, deprecated, message: "Use makeConsistentSnapshot(to:)")
+    @discardableResult
+    func backup(to destination: URL) throws -> LibrarySnapshotManifest {
+        try makeConsistentSnapshot(to: destination)
     }
 
     /// True only when no books and no library state exist. Bootstrap uses this
@@ -594,5 +593,15 @@ nonisolated final class LibraryDatabase: @unchecked Sendable {
             let pageTimes = try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM page_times") ?? 0
             return (books, sessions, pageTimes)
         }
+    }
+
+    /// Read-only inspection for a snapshot that already exists on disk.
+    static func inspectSnapshot(
+        at url: URL,
+        fullIntegrity: Bool = false
+    ) throws -> LibrarySnapshotInspection {
+        let connection = try LibraryReadOnlyConnection(url: url)
+        defer { connection.close() }
+        return try connection.inspect(fullIntegrity: fullIntegrity)
     }
 }

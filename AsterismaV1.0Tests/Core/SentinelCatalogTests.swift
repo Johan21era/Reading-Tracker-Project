@@ -62,7 +62,7 @@ struct SentinelCatalogTests {
 
     @Test("The catalog is the full first tranche across all 15 domains")
     func catalogScale() {
-        #expect(SentinelProbeCatalog.descriptors.count == 138)
+        #expect(SentinelProbeCatalog.descriptors.count == 140)
         #expect(SentinelProbeCatalog.domainCount == 15)
         #expect(SentinelProbeCatalog.requiredCount >= 55)
         #expect(SentinelRepairCatalog.implementedIDs.count >= 25)

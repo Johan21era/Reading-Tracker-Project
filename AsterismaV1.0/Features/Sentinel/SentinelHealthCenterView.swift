@@ -17,6 +17,8 @@ import UniformTypeIdentifiers
 
 struct SentinelHealthCenterView: View {
     @StateObject private var model = SentinelViewModel()
+    @EnvironmentObject private var dataStore: DataStore
+    @State private var recovery: LibraryHealthCoordinator?
     @State private var tab: Tab = .overview
     @State private var configuration = SentinelConfiguration.default
     @State private var hasLoadedConfiguration = false
@@ -24,6 +26,7 @@ struct SentinelHealthCenterView: View {
     enum Tab: String, CaseIterable, Identifiable {
         case overview = "Overview"
         case issues = "Issues"
+        case recovery = "Recovery"
         case history = "History"
         case checks = "Checks"
         case settings = "Settings"
@@ -33,6 +36,10 @@ struct SentinelHealthCenterView: View {
     var body: some View {
         VStack(spacing: 0) {
             header
+            if model.state.operationalMode.isSuspended {
+                Divider()
+                suspensionBanner
+            }
             Divider()
             if let message = model.message {
                 messageBar(message)
@@ -41,6 +48,7 @@ struct SentinelHealthCenterView: View {
             TabView(selection: $tab) {
                 overviewTab.tabItem { Label("Overview", systemImage: "shield") }.tag(Tab.overview)
                 issuesTab.tabItem { Label("Issues", systemImage: "list.bullet.rectangle") }.tag(Tab.issues)
+                recoveryTab.tabItem { Label("Recovery", systemImage: "externaldrive.badge.exclamationmark") }.tag(Tab.recovery)
                 historyTab.tabItem { Label("History", systemImage: "clock.arrow.circlepath") }.tag(Tab.history)
                 checksTab.tabItem { Label("Checks", systemImage: "checklist") }.tag(Tab.checks)
                 settingsTab.tabItem { Label("Settings", systemImage: "gearshape") }.tag(Tab.settings)
@@ -52,6 +60,17 @@ struct SentinelHealthCenterView: View {
             await model.refresh()
             configuration = model.state.configuration
             hasLoadedConfiguration = true
+            // The main window normally starts recovery before this window can
+            // open. Starting here is idempotent and keeps the tab usable when
+            // the Health Center is opened first.
+            if recovery == nil {
+                if let existing = LibraryHealthIntegration.existing() {
+                    recovery = existing
+                } else if let root = AppIdentity.dataRootURL() {
+                    recovery = await LibraryHealthIntegration.start(
+                        dataStore: dataStore, dataRoot: root)
+                }
+            }
         }
         .onChange(of: model.state.configuration) { _, newValue in
             if !hasLoadedConfiguration { configuration = newValue }
@@ -105,6 +124,36 @@ struct SentinelHealthCenterView: View {
             .accessibilityHint("Runs the fast checks immediately")
         }
         .padding(18)
+    }
+
+    // MARK: - Recovery
+
+    @ViewBuilder
+    private var recoveryTab: some View {
+        if let recovery {
+            LibraryRecoveryView(coordinator: recovery)
+                .environmentObject(dataStore)
+        } else {
+            ContentUnavailableView(
+                "Recovery is unavailable",
+                systemImage: "externaldrive.badge.xmark",
+                description: Text("The recovery store could not be created, so no incident can be recorded. Your library file has not been touched."))
+        }
+    }
+
+    private var suspensionBanner: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "pause.circle.fill")
+                .foregroundStyle(.orange)
+            Text("Sentinel is paused while the library is in recovery. No probes or repairs run.")
+                .font(.callout)
+            Spacer()
+            Button("Open Recovery") { tab = .recovery }
+                .buttonStyle(.link)
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 8)
+        .background(.orange.opacity(0.10))
     }
 
     private func messageBar(_ message: String) -> some View {
@@ -467,6 +516,18 @@ struct SentinelHealthCenterView: View {
                             .toggleStyle(.checkbox)
                         }
                     }
+                    .padding(6)
+                }
+
+                GroupBox("Library recovery") {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("When the library database needs recovery, Sentinel pauses every probe and repair until the library reopens. After recovery it runs one full verification pass before resuming its schedule.")
+                            .font(.callout)
+                        Text("Recovery never runs automatically. Restores and rebuilds require a typed confirmation in the Recovery tab.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(6)
                 }
 

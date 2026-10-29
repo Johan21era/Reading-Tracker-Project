@@ -14,8 +14,9 @@ nonisolated enum SentinelProbeCatalog {
             + SentinelGoalProbes.all
             + SentinelStorageProbes.all
             + SentinelFileProbes.all
-            + SentinelSubsystemProbes.all
+            +        SentinelSubsystemProbes.all
             + SentinelSelfProbes.all
+            + SentinelSurfaceProbes.all
     }
 
     static var descriptors: [SentinelProbeDescriptor] {

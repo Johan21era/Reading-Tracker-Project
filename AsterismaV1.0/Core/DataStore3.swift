@@ -49,6 +49,11 @@ final class DataStore: ObservableObject {
 
     @Published private(set) var persistenceHealth: PersistenceStatus = .healthy
 
+    /// The single product-visible storage fact. Unlike `persistenceHealth`,
+    /// this is a state machine that recovery and Sentinel can reason about.
+    @Published private(set) var storageCondition: StorageCondition =
+        .healthy(engine: .json)
+
     /// G3B: JSON remains the default until the cutover gate. SQLite mode is
     /// exercised by tests and will become the default at G3C.
     enum StorageEngine: String {
@@ -58,6 +63,9 @@ final class DataStore: ObservableObject {
 
     private(set) var storageEngine: StorageEngine = .json
     private var database: LibraryDatabase?
+    private var databaseURL: URL?
+    private var recoveryFreezeToken: LibraryFreezeToken?
+    var isFrozenForRecovery: Bool { recoveryFreezeToken != nil }
     /// Set when the SQLite library could not be fully decoded. Ordinary writes
     /// stay paused so a partial in-memory library can never delete or overwrite
     /// records that still exist in the database.
@@ -197,16 +205,22 @@ final class DataStore: ObservableObject {
         }
 
         if requestedEngine == .sqlite {
-            let dbURL = databaseURL
+            let url = databaseURL
                 ?? self.fileURL.deletingLastPathComponent()
                     .appendingPathComponent("library.grdb.sqlite3")
-            if let db = try? LibraryDatabase(url: dbURL) {
+            self.databaseURL = url
+            if let db = try? LibraryDatabase(url: url) {
                 database = db
                 storageEngine = .sqlite
+                storageCondition = .healthy(engine: .sqlite)
             } else {
                 degradedDirectoryMessage = (degradedDirectoryMessage.map { $0 + " " } ?? "")
                     + "SQLite store could not be opened; using JSON."
                 persistenceHealth = .degraded(degradedDirectoryMessage!)
+                storageCondition = .degraded(
+                    engine: .json,
+                    code: "LR-001",
+                    message: "The SQLite store could not be opened; the app is using the legacy JSON library.")
             }
         }
 
@@ -326,6 +340,7 @@ final class DataStore: ObservableObject {
     /// Sentinel S2: a consistent pre-repair snapshot. Returns false if the
     /// snapshot could not be made; callers must then skip mutation entirely.
     func createSafetySnapshot() -> Bool {
+        guard !isFrozenForRecovery else { return false }
         guard storageEngine == .sqlite, let database else {
             // JSON mode retains its existing rotation path.
             LibraryArchiveManager.performAutoBackupIfNeeded(
@@ -338,13 +353,116 @@ final class DataStore: ObservableObject {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd_HHmmss"
         let dest = dir.appendingPathComponent(
-            "sentinel-pre-repair-\(formatter.string(from: Date())).sqlite3")
+            "sentinel-pre-repair-\(formatter.string(from: Date()))-\(UUID().uuidString.prefix(8)).sqlite3")
         do {
-            try dbWriteQueue.sync { try database.backup(to: dest) }
+            let manifest = try dbWriteQueue.sync {
+                try database.makeConsistentSnapshot(to: dest)
+            }
+            try LibraryBackupManifestStore.write(manifest, for: dest)
+            _ = LibraryBackupCatalog.prune(directory: dir)
             return true
         } catch {
             print("[DataStore] Sentinel safety snapshot failed: \(error)")
             return false
+        }
+    }
+
+    // MARK: - Recovery host (Phase 0 skeleton)
+
+    func currentStorageCondition() -> StorageCondition {
+        storageCondition
+    }
+
+    func liveDatabaseURL() -> URL? {
+        databaseURL
+    }
+
+    func memorySnapshotData() -> Data? {
+        let snapshot = LibraryMemorySnapshot(
+            schemaVersion: LibraryMemorySnapshot.currentSchemaVersion,
+            capturedAt: Date(),
+            books: books,
+            state: libraryState)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.sortedKeys]
+        return try? encoder.encode(snapshot)
+    }
+
+    /// Drain queued writes, close the only SQLite connection, and publish the
+    /// frozen state. The books stay in memory so the UI does not turn into an
+    /// empty library while diagnosis runs on a copy.
+    func freezeForRecovery(incidentID: String) async throws -> LibraryFreezeToken {
+        guard storageEngine == .sqlite else { throw LibraryRecoveryHostError.notSQLite }
+        guard recoveryFreezeToken == nil else { throw LibraryRecoveryHostError.alreadyFrozen }
+        guard let database, let databaseURL else { throw LibraryRecoveryHostError.noDatabaseURL }
+
+        saveTimer?.invalidate()
+        saveTimer = nil
+
+        do {
+            try dbWriteQueue.sync { try database.close() }
+        } catch {
+            throw LibraryRecoveryHostError.closeFailed(error.localizedDescription)
+        }
+
+        self.database = nil
+        let token = LibraryFreezeToken(
+            id: UUID().uuidString,
+            incidentID: incidentID,
+            engine: .sqlite,
+            databasePath: databaseURL.path,
+            createdAt: Date())
+        recoveryFreezeToken = token
+        storageCondition = .recovering(incidentID: incidentID)
+        return token
+    }
+
+    /// Reopen the live store after recovery. The in-memory library is replaced
+    /// only after both books and state decode successfully from the new file.
+    func reopenAfterRecovery(token: LibraryFreezeToken) async throws {
+        guard let active = recoveryFreezeToken else {
+            throw LibraryRecoveryHostError.notFrozen
+        }
+        guard active == token else { throw LibraryRecoveryHostError.tokenMismatch }
+        guard let databaseURL else { throw LibraryRecoveryHostError.noDatabaseURL }
+
+        do {
+            let fresh = try LibraryDatabase(url: databaseURL)
+            let loadedBooks = try fresh.loadBooks()
+            let loadedState = try fresh.loadState()
+            database = fresh
+            books = loadedBooks
+            libraryState = loadedState
+            storageEngine = .sqlite
+            sqliteLoadFailure = nil
+            recoveryFreezeToken = nil
+            persistenceHealth = .healthy
+            storageCondition = .healthy(engine: .sqlite)
+            scheduleSQLiteBackupIfNeeded(fresh)
+        } catch {
+            storageCondition = .readOnly(
+                engine: .sqlite,
+                code: "LR-020",
+                message: "The recovered store could not be verified; the app remains read-only.")
+            throw LibraryRecoveryHostError.reopenFailed(error.localizedDescription)
+        }
+    }
+
+    /// Checkpoint through the live pool, never through a second connection.
+    func performCheckpoint() async -> Bool {
+        guard storageEngine == .sqlite,
+              !isFrozenForRecovery,
+              let database else { return false }
+        return await withCheckedContinuation { continuation in
+            dbWriteQueue.async {
+                do {
+                    try database.checkpoint()
+                    continuation.resume(returning: true)
+                } catch {
+                    continuation.resume(returning: false)
+                }
+            }
         }
     }
 
@@ -716,6 +834,7 @@ final class DataStore: ObservableObject {
     /// G3B: SQLite summary load. Sessions arrive without per-page rows; the
     /// cached speed fields keep analytics exact.
     private func loadFromDatabase(_ db: LibraryDatabase) {
+        guard !isFrozenForRecovery else { return }
         do {
             // Decode both halves before publishing either: a state failure must
             // not leave a half-loaded library readable by the UI.
@@ -724,6 +843,7 @@ final class DataStore: ObservableObject {
             books = loadedBooks
             libraryState = loadedState
             sqliteLoadFailure = nil
+            storageCondition = .healthy(engine: .sqlite)
 
             let deduped = AchievementEngine.deduplicated(libraryState.earnedAchievements)
             if deduped.removed > 0 {
@@ -740,6 +860,10 @@ final class DataStore: ObservableObject {
             persistenceHealth = .degraded(
                 blockedSQLiteSaveMessage
                     ?? ("SQLite library could not be read. Existing records were left untouched."))
+            storageCondition = .readOnly(
+                engine: .sqlite,
+                code: "LR-002",
+                message: "The SQLite library could not be fully read. Saves are paused; existing records were left untouched.")
         }
     }
 
@@ -764,20 +888,10 @@ final class DataStore: ObservableObject {
             "library-\(formatter.string(from: Date())).sqlite3")
         Task.detached(priority: .utility) {
             do {
-                try db.backup(to: dest)
+                let manifest = try db.makeConsistentSnapshot(to: dest)
+                try LibraryBackupManifestStore.write(manifest, for: dest)
                 try? Data().write(to: marker, options: .atomic)
-                let files = (try? FileManager.default.contentsOfDirectory(
-                    at: dir, includingPropertiesForKeys: [.creationDateKey])) ?? []
-                let backups = files
-                    .filter { $0.pathExtension == "sqlite3" }
-                    .sorted { a, b in
-                        let da = (try? a.resourceValues(forKeys: [.creationDateKey]).creationDate) ?? .distantPast
-                        let db = (try? b.resourceValues(forKeys: [.creationDateKey]).creationDate) ?? .distantPast
-                        return da > db
-                    }
-                for stale in backups.dropFirst(10) {
-                    try? FileManager.default.removeItem(at: stale)
-                }
+                _ = LibraryBackupCatalog.prune(directory: dir)
             } catch {
                 print("[DataStore] SQLite backup failed: \(error)")
             }
@@ -874,6 +988,7 @@ final class DataStore: ObservableObject {
     /// Debounced save. Multiple rapid calls within 0.5s coalesce into one.
     func scheduleSave() {
         bumpEpoch() // FINAL TRACES #5: any mutation invalidates derived data
+        guard !isFrozenForRecovery else { return }
         if let message = blockedSQLiteSaveMessage {
             persistenceHealth = .degraded(message)
             return
@@ -899,6 +1014,7 @@ final class DataStore: ObservableObject {
     func saveImmediately() {
         saveTimer?.invalidate()
         saveTimer = nil
+        guard !isFrozenForRecovery else { return }
 
         if storageEngine == .sqlite, let database {
             if let message = blockedSQLiteSaveMessage {
@@ -912,9 +1028,14 @@ final class DataStore: ObservableObject {
                     try database.saveAll(books: booksSnapshot, state: stateSnapshot)
                 }
                 persistenceHealth = .healthy
+                storageCondition = .healthy(engine: .sqlite)
             } catch {
                 persistenceHealth = .degraded(
                     "Library could not be saved to SQLite: \(error.localizedDescription)")
+                storageCondition = .failed(
+                    engine: .sqlite,
+                    code: "LR-030",
+                    message: "The library could not be saved. Existing records were left untouched.")
                 #if DEBUG
                 consoleLastSaveError = error.localizedDescription
                 #endif
@@ -949,6 +1070,7 @@ final class DataStore: ObservableObject {
     /// 1-3+ s on main. The encode now happens inside the same detached task as
     /// the write; ordering is still strictly chained.
     private func save() {
+        guard !isFrozenForRecovery else { return }
         if storageEngine == .sqlite, let database {
             if let message = blockedSQLiteSaveMessage {
                 persistenceHealth = .degraded(message)
@@ -978,6 +1100,7 @@ final class DataStore: ObservableObject {
     }
 
     private func saveLibraryState() {
+        guard !isFrozenForRecovery else { return }
         if storageEngine == .sqlite {
             // SQLite writes books+state together; coalesce through the debounce.
             scheduleSave()
@@ -1031,12 +1154,21 @@ final class DataStore: ObservableObject {
     }
 
     private func markWriteSucceeded() {
+        guard !isFrozenForRecovery else { return }
         persistenceHealth = .healthy
+        if storageEngine == .sqlite {
+            storageCondition = .healthy(engine: .sqlite)
+        }
     }
 
     private func markWriteFailed(_ message: String, context: String) {
+        guard !isFrozenForRecovery else { return }
         print("[DataStore] \(context) save error: \(message)")
         persistenceHealth = .degraded("\(context) could not be saved: \(message)")
+        storageCondition = .failed(
+            engine: storageEngine == .sqlite ? .sqlite : .json,
+            code: "LR-031",
+            message: "\(context) could not be saved.")
         #if DEBUG
         consoleLastSaveError = message
         #endif
@@ -1049,6 +1181,10 @@ final class DataStore: ObservableObject {
         print("[DataStore] Corrupt file backed up to \(bakURL.path)")
     }
 }
+
+// MARK: - Recovery host
+
+extension DataStore: LibraryRecoveryHost {}
 
 // MARK: - Developer Console
 

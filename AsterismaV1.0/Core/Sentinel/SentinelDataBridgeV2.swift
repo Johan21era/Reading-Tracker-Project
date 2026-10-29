@@ -17,7 +17,6 @@
 
 import AppKit
 import Foundation
-import GRDB
 
 @MainActor
 final class LiveSentinelRepairBridge: SentinelRepairBridge {
@@ -128,21 +127,8 @@ final class LiveSentinelRepairBridge: SentinelRepairBridge {
     }
 
     func checkpointDatabase() async -> Bool {
-        guard let root = AppIdentity.dataRootURL() else { return false }
-        let url = root.appendingPathComponent("library.grdb.sqlite3")
-        guard fileManager.fileExists(atPath: url.path) else { return false }
-        do {
-            var config = Configuration()
-            config.busyMode = .timeout(2)
-            let queue = try DatabaseQueue(path: url.path, configuration: config)
-            defer { try? queue.close() }
-            try await queue.write { db in
-                try db.execute(sql: "PRAGMA wal_checkpoint(TRUNCATE)")
-            }
-            return true
-        } catch {
-            return false
-        }
+        guard let store else { return false }
+        return await store.performCheckpoint()
     }
 
     func writeCover(bookID: UUID, data: Data) async -> Bool {
@@ -183,11 +169,23 @@ enum SentinelAppIntegration {
         guard let root = AppIdentity.dataRootURL() else { return }
         started = true
 
+        // Recovery comes first: it may freeze the store before Sentinel ever
+        // probes, and it owns the gate Sentinel must respect.
+        let health = await LibraryHealthIntegration.start(
+            dataStore: dataStore, dataRoot: root)
+
         let runtime = SentinelRuntime.shared
         await runtime.open(dataRoot: root)
         let environment = await runtime.environment
         await runtime.setSnapshotProvider(.live(environment: environment))
         await runtime.setBridge(LiveSentinelRepairBridge(store: dataStore))
+        await runtime.setRecoveryGate(health)
+        await runtime.setCandidateSink { candidate in
+            await health?.handleSentinelCandidate(candidate)
+        }
+        health?.onRecoveryResolved = {
+            await runtime.runRecoveryVerification()
+        }
         await runtime.start()
     }
 

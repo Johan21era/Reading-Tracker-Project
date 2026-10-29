@@ -85,6 +85,10 @@ nonisolated struct SentinelSnapshot: @unchecked Sendable {
     var defaults: UserDefaults
     var isDebug: Bool
     var appVersion: String
+    /// Source-derived inventory captured with the snapshot. Injectable so a
+    /// test can prove that a surface added after the generator ran is visible
+    /// to SELF-011 without editing any probe.
+    var surfaceCatalog: SentinelSurfaceCatalog
 
     // MARK: Derived paths (all optional; probes must skip when absent)
 
@@ -189,7 +193,8 @@ nonisolated struct SentinelSnapshot: @unchecked Sendable {
             tempRoot: environment.tempRoot,
             defaults: defaults,
             isDebug: environment.isDebug,
-            appVersion: environment.appVersion)
+            appVersion: environment.appVersion,
+            surfaceCatalog: SentinelSurfaceRegistry.current)
     }
 
     /// Fixture initializer for tests and probe contract suites.
@@ -203,7 +208,8 @@ nonisolated struct SentinelSnapshot: @unchecked Sendable {
         defaults: UserDefaults = UserDefaults(suiteName: "sentinel.fixture") ?? .standard,
         appFlags: SentinelAppFlags = .empty,
         journalFacts: SentinelJournalFacts = .empty,
-        isDebug: Bool = true
+        isDebug: Bool = true,
+        surfaceCatalog: SentinelSurfaceCatalog = SentinelSurfaceRegistry.current
     ) -> SentinelSnapshot {
         SentinelSnapshot(
             generation: generation,
@@ -221,6 +227,7 @@ nonisolated struct SentinelSnapshot: @unchecked Sendable {
             tempRoot: FileManager.default.temporaryDirectory,
             defaults: defaults,
             isDebug: isDebug,
-            appVersion: "test")
+            appVersion: "test",
+            surfaceCatalog: surfaceCatalog)
     }
 }

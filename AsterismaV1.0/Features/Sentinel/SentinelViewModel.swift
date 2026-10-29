@@ -26,6 +26,16 @@ nonisolated enum SentinelLaunchCardBuilder {
         now: Date,
         allClearAlreadyShownToday: Bool
     ) -> SentinelLaunchSummary? {
+        // Recovery outranks every other card: nothing below it is meaningful
+        // while the store is frozen.
+        if state.operationalMode.isSuspended {
+            return SentinelLaunchSummary(
+                fixed: 0,
+                needsDecision: 0,
+                headline: "Library recovery is in progress. Sentinel is paused.",
+                band: .unknown)
+        }
+
         let cycle = state.lastCycle
         guard cycle.startedAt.timeIntervalSince1970 > 0 else { return nil }
 

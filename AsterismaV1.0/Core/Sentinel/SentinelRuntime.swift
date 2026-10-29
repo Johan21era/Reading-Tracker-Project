@@ -25,6 +25,9 @@ nonisolated enum SentinelCycleTrigger: String, Codable, Sendable {
     case manual
     case wake
     case repair
+    /// A complete verification run after the library leaves recovery. It is
+    /// never the first cycle of a normal launch.
+    case recovery
 }
 
 nonisolated enum SentinelCycleScope: String, Codable, Sendable {
@@ -118,6 +121,7 @@ nonisolated struct SentinelPublishedState: Sendable {
     var error: String?
     var probes: [SentinelProbeRunResult]
     var journalBytes: Int64
+    var operationalMode: LibraryOperationalMode
 
     static let empty = SentinelPublishedState(
         issues: [],
@@ -137,7 +141,8 @@ nonisolated struct SentinelPublishedState: Sendable {
         isOpen: false,
         error: nil,
         probes: [],
-        journalBytes: 0)
+        journalBytes: 0,
+        operationalMode: .normal)
 }
 
 // MARK: - Runtime
@@ -164,6 +169,9 @@ actor SentinelRuntime {
     private var paths: SentinelPaths?
     private var snapshotProvider: SentinelSnapshotProvider?
     private var bridge: (any SentinelRepairBridge)?
+    private var recoveryGate: (any SentinelRecoveryGate)?
+    private var candidateSink: (@Sendable (LibraryIncidentCandidate) async -> Void)?
+    private var lastObservedMode: LibraryOperationalMode = .normal
     private var schedulerTask: Task<Void, Never>?
     private var isCycleRunning = false
 
@@ -239,6 +247,29 @@ actor SentinelRuntime {
         self.bridge = bridge
     }
 
+    /// Recovery owns the gate. Sentinel may only read it.
+    func setRecoveryGate(_ gate: (any SentinelRecoveryGate)?) {
+        recoveryGate = gate
+        postUpdate()
+    }
+
+    /// Sentinel only nominates structural findings. The coordinator decides
+    /// whether a nomination becomes an incident.
+    func setCandidateSink(
+        _ sink: (@Sendable (LibraryIncidentCandidate) async -> Void)?
+    ) {
+        candidateSink = sink
+    }
+
+    func currentOperationalMode() async -> LibraryOperationalMode {
+        await operationalMode()
+    }
+
+    private func operationalMode() async -> LibraryOperationalMode {
+        guard let recoveryGate else { return .normal }
+        return await recoveryGate.operationalMode()
+    }
+
     func updateConfiguration(_ config: SentinelConfiguration) {
         configuration = config
         config.save(to: .standard)
@@ -302,6 +333,19 @@ actor SentinelRuntime {
         isCycleRunning = true
         defer { isCycleRunning = false }
 
+        // P6-1: recovery owns this window. A suspended cycle runs no probe and
+        // writes no cycle entry; it only records the boundary once.
+        let mode = await operationalMode()
+        if case let .suspended(reason) = mode {
+            noteModeTransition(to: mode, reason: reason)
+            lastReport = suspendedReport(
+                trigger: trigger, scope: scope, startedAt: startedAt,
+                startedUptime: startedUptime)
+            postUpdate()
+            return lastReport
+        }
+        noteModeTransition(to: mode, reason: nil)
+
         guard let provider = snapshotProvider else {
             lastError = "No snapshot source is attached."
             return failedReport(trigger: trigger, scope: scope, startedAt: startedAt,
@@ -353,7 +397,8 @@ actor SentinelRuntime {
         // Automatic repairs: only R1, only when the user chose auto-safe, and
         // only when a bridge exists. Any aborted generation check blocks them.
         var outcomes: [SentinelRepairOutcome] = []
-        if let bridge, !updatedIssues.isEmpty {
+        if let bridge, !updatedIssues.isEmpty,
+           await operationalMode() == .normal {
             let candidates = automaticCandidates(in: updatedIssues)
             if !candidates.isEmpty {
                 let fresh = await provider.capture(journalFacts())
@@ -386,6 +431,7 @@ actor SentinelRuntime {
         }
 
         issues = updatedIssues
+        await emitCandidates(from: updatedIssues)
         let health = SentinelHealthModel.compute(
             issues: updatedIssues,
             coverage: coverage,
@@ -417,6 +463,102 @@ actor SentinelRuntime {
             generation: snapshot.generation,
             error: nil)
         lastReport = report
+        postUpdate()
+        return report
+    }
+
+    /// Emits at most one candidate per promotable rule per cycle. The matrix
+    /// still filters severity and status, so this is safe to call broadly.
+    private func emitCandidates(from issues: [SentinelIssue]) async {
+        guard let candidateSink else { return }
+        var seen = Set<String>()
+        for issue in issues {
+            guard let candidate = SentinelIncidentPromotion.candidate(
+                from: issue, now: environment.now) else { continue }
+            let key = candidate.ruleID ?? candidate.kind.rawValue
+            guard seen.insert(key).inserted else { continue }
+            await candidateSink(candidate)
+        }
+    }
+
+    static let suspendedMessage =
+        "Sentinel is paused while the library is in recovery."
+
+    /// A suspended cycle is not a failure of the library and not a probe
+    /// result. It keeps the previous issues untouched and says why.
+    private func suspendedReport(
+        trigger: SentinelCycleTrigger,
+        scope: SentinelCycleScope,
+        startedAt: Date,
+        startedUptime: UInt64
+    ) -> SentinelCycleReport {
+        let duration = Double(DispatchTime.now().uptimeNanoseconds - startedUptime) / 1_000_000_000
+        return SentinelCycleReport(
+            cycleID: UUID().uuidString,
+            trigger: trigger,
+            scope: scope,
+            startedAt: startedAt,
+            duration: duration,
+            probeResults: [],
+            coverage: .empty,
+            opened: [],
+            resolved: [],
+            regressed: [],
+            repairs: [],
+            health: SentinelHealthModel.compute(
+                issues: issues, coverage: .empty, now: environment.now),
+            generation: lastReport.generation,
+            error: Self.suspendedMessage)
+    }
+
+    /// Records the boundary exactly once per transition. A cycle that keeps
+    /// being suspended does not append a line per attempt.
+    private func noteModeTransition(
+        to mode: LibraryOperationalMode,
+        reason: LibrarySuspensionReason?
+    ) {
+        guard mode != lastObservedMode else { return }
+        lastObservedMode = mode
+        switch mode {
+        case let .suspended(suspendedReason):
+            store?.record(SentinelJournalEntry(
+                sequence: nextSequence(),
+                event: .sentinelSuspended,
+                at: environment.now,
+                status: suspendedReason.rawValue,
+                counts: ["suspended": 1],
+                note: suspendedReason.messageKey))
+        case .normal:
+            store?.record(SentinelJournalEntry(
+                sequence: nextSequence(),
+                event: .sentinelResumed,
+                at: environment.now,
+                counts: ["suspended": 0]))
+        }
+    }
+
+    /// P6-3: after recovery resolves, run the full deep set, not a fast pass.
+    /// Refuses to run while the gate is still closed.
+    @discardableResult
+    func runRecoveryVerification() async -> SentinelCycleReport {
+        guard await operationalMode() == .normal else {
+            return suspendedReport(
+                trigger: .recovery, scope: .deep,
+                startedAt: environment.now,
+                startedUptime: DispatchTime.now().uptimeNanoseconds)
+        }
+        let report = await runCycle(trigger: .recovery, scope: .deep)
+        store?.record(SentinelJournalEntry(
+            sequence: nextSequence(),
+            event: .recoveryVerified,
+            at: environment.now,
+            cycleID: report.cycleID,
+            status: report.error == nil ? "completed" : "failed",
+            counts: [
+                "ran": report.coverage.ran,
+                "requiredMissing": report.coverage.requiredTotal - report.coverage.requiredRan,
+                "findings": report.probeResults.reduce(0) { $0 + $1.findings.count },
+            ]))
         postUpdate()
         return report
     }
@@ -590,6 +732,8 @@ actor SentinelRuntime {
     /// Re-runs the probes that own this rule against a fresh snapshot. A probe
     /// that cannot run means "not verified", never "fixed".
     func verify(rules: [SentinelRuleID], fingerprints: [String]) async -> Bool {
+        // A repair cannot be called verified while recovery owns the store.
+        guard await operationalMode() == .normal else { return false }
         guard let provider = snapshotProvider else { return false }
         let ruleSet = Set(rules)
         let verifyProbes = probes.filter { ruleSet.contains($0.descriptor.ruleID) }
@@ -616,6 +760,9 @@ actor SentinelRuntime {
     /// User-initiated repair from the Health Center. Explicit, previewed, and
     /// still verified.
     func repair(fingerprint: String) async -> SentinelRepairOutcome {
+        guard await operationalMode() == .normal else {
+            return .blocked("suspended", Self.suspendedMessage)
+        }
         guard let issue = issues.first(where: { $0.fingerprint == fingerprint }) else {
             return .blocked("unknown", "That issue no longer exists.")
         }
@@ -657,6 +804,7 @@ actor SentinelRuntime {
     }
 
     func previewRepair(fingerprint: String) async -> SentinelRepairPlan? {
+        guard await operationalMode() == .normal else { return nil }
         guard let issue = issues.first(where: { $0.fingerprint == fingerprint }),
               let metadata = ruleMetadata(for: issue),
               let provider = snapshotProvider,
@@ -667,6 +815,9 @@ actor SentinelRuntime {
     }
 
     func undoRepair(recordID: String) async -> SentinelRepairOutcome {
+        guard await operationalMode() == .normal else {
+            return .blocked("suspended", Self.suspendedMessage)
+        }
         guard let repairStore,
               let record = repairStore.records.first(where: { $0.id == recordID }) else {
             return .blocked("undo", "That repair record no longer exists.")
@@ -943,7 +1094,8 @@ actor SentinelRuntime {
 
     // MARK: - Published state
 
-    func publishedState() -> SentinelPublishedState {
+    func publishedState() async -> SentinelPublishedState {
+        let mode = await operationalMode()
         let journal = self.journal
         let read = journal?.readAll()
         let history = Array((read?.entries ?? []).suffix(100).reversed())
@@ -964,7 +1116,8 @@ actor SentinelRuntime {
             isOpen: isOpen,
             error: lastError,
             probes: lastReport.probeResults,
-            journalBytes: read?.entries.isEmpty == false ? (journal?.totalBytes() ?? 0) : (journal?.totalBytes() ?? 0))
+            journalBytes: read?.entries.isEmpty == false ? (journal?.totalBytes() ?? 0) : (journal?.totalBytes() ?? 0),
+            operationalMode: mode)
     }
 
     private func describe(_ outcome: SentinelIssueStore.LoadOutcome?) -> String {
