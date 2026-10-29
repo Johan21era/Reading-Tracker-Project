@@ -40,6 +40,7 @@ enum DeveloperConsoleWindowID {
 /// read it.
 enum DeveloperConsoleSection: String, CaseIterable, Identifiable, Hashable {
     case dashboard
+    case environment
     case sentinel
     case demoLab
     case subsystemExplorer
@@ -60,6 +61,7 @@ enum DeveloperConsoleSection: String, CaseIterable, Identifiable, Hashable {
     var displayName: String {
         switch self {
         case .dashboard: return "Dashboard"
+        case .environment: return "Environment Studio"
         case .sentinel: return "Sentinel"
         case .demoLab: return "Demo Profile Lab"
         case .subsystemExplorer: return "Subsystem Explorer"
@@ -80,6 +82,7 @@ enum DeveloperConsoleSection: String, CaseIterable, Identifiable, Hashable {
     var symbolName: String {
         switch self {
         case .dashboard: return "gauge.medium"
+        case .environment: return "sun.horizon"
         case .sentinel: return "shield.lefthalf.filled"
         case .demoLab: return "theatermasks"
         case .subsystemExplorer: return "square.stack.3d.up"
@@ -103,7 +106,7 @@ enum DeveloperConsoleSection: String, CaseIterable, Identifiable, Hashable {
     /// data it does not actually have yet.
     var isAvailable: Bool {
         switch self {
-        case .dashboard, .demoLab, .sentinel: return true
+        case .dashboard, .environment, .demoLab, .sentinel, .subsystemExplorer: return true
         default: return false
         }
     }
@@ -111,9 +114,10 @@ enum DeveloperConsoleSection: String, CaseIterable, Identifiable, Hashable {
     var plannedPhaseLabel: String {
         switch self {
         case .dashboard: return "Phase 2"
+        case .environment: return "Live"
         case .sentinel: return "Live"
         case .demoLab: return "Live QA"
-        case .subsystemExplorer: return "Phase 3"
+        case .subsystemExplorer: return "Live"
         case .eventTimeline: return "Phase 5"
         case .stateInspector: return "Phase 6"
         case .dependencyGraph: return "Phase 7"
@@ -165,6 +169,16 @@ enum ConsolePalette {
 
 struct DeveloperConsoleRootView: View {
     @State private var selectedSection: DeveloperConsoleSection? = .dashboard
+    @State private var query = ""
+
+    private var visibleSections: [DeveloperConsoleSection] {
+        let needle = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !needle.isEmpty else { return DeveloperConsoleSection.allCases }
+        return DeveloperConsoleSection.allCases.filter {
+            $0.displayName.localizedCaseInsensitiveContains(needle)
+                || $0.plannedPhaseLabel.localizedCaseInsensitiveContains(needle)
+        }
+    }
 
     var body: some View {
         NavigationSplitView {
@@ -178,22 +192,60 @@ struct DeveloperConsoleRootView: View {
     }
 
     private var sidebar: some View {
-        List(selection: $selectedSection) {
-            Section {
-                ForEach(DeveloperConsoleSection.allCases) { section in
-                    sidebarRow(section)
-                        .tag(section)
-                }
-            } header: {
-                Text("READING TRACKER — INTERNAL")
-                    .font(.system(.caption2, design: .monospaced))
+        VStack(spacing: 0) {
+            HStack(spacing: 6) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(.caption, design: .monospaced))
                     .foregroundStyle(ConsolePalette.textSecondary)
+                TextField("Find a pane…", text: $query)
+                    .textFieldStyle(.plain)
+                    .font(.system(.callout, design: .monospaced))
+                    .foregroundStyle(ConsolePalette.textPrimary)
+                if !query.isEmpty {
+                    Button { query = "" } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(ConsolePalette.textSecondary)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
+            .padding(8)
+            .background(ConsolePalette.panel)
+            .overlay(Rectangle().fill(ConsolePalette.border).frame(height: 1), alignment: .bottom)
+
+            List(selection: $selectedSection) {
+                let live = visibleSections.filter { $0.isAvailable }
+                let planned = visibleSections.filter { !$0.isAvailable }
+                if !live.isEmpty {
+                    Section {
+                        ForEach(live) { section in
+                            sidebarRow(section)
+                                .tag(section)
+                        }
+                    } header: {
+                        Text("LIVE")
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundStyle(ConsolePalette.textSecondary)
+                    }
+                }
+                if !planned.isEmpty {
+                    Section {
+                        ForEach(planned) { section in
+                            sidebarRow(section)
+                                .tag(section)
+                        }
+                    } header: {
+                        Text("PLANNED")
+                            .font(.system(.caption2, design: .monospaced))
+                            .foregroundStyle(ConsolePalette.textSecondary)
+                    }
+                }
+            }
+            .listStyle(.sidebar)
+            .scrollContentBackground(.hidden)
+            .background(ConsolePalette.panel)
         }
-        .listStyle(.sidebar)
-        .scrollContentBackground(.hidden)
-        .background(ConsolePalette.panel)
-        .navigationSplitViewColumnWidth(min: 220, ideal: 240)
+        .navigationSplitViewColumnWidth(min: 230, ideal: 250)
     }
 
     private func sidebarRow(_ section: DeveloperConsoleSection) -> some View {
@@ -203,7 +255,11 @@ struct DeveloperConsoleRootView: View {
             Text(section.displayName)
                 .font(.system(.body, design: .monospaced))
             Spacer()
-            if !section.isAvailable {
+            if section.isAvailable {
+                Circle()
+                    .fill(ConsolePalette.statusColor(.healthy))
+                    .frame(width: 5, height: 5)
+            } else {
                 Text(section.plannedPhaseLabel)
                     .font(.system(.caption2, design: .monospaced))
                     .foregroundStyle(ConsolePalette.textSecondary)
@@ -218,16 +274,19 @@ struct DeveloperConsoleRootView: View {
 
     @ViewBuilder
     private var detail: some View {
-        if let section = selectedSection, section != .dashboard {
-            if section == .demoLab {
-                DemoProfileLabView()
-            } else if section == .sentinel {
-                SentinelPaneView()
-            } else {
-                comingSoon(section)
-            }
-        } else {
+        switch selectedSection {
+        case .none, .some(.dashboard):
             DeveloperConsoleDashboardView()
+        case .some(.environment):
+            EnvironmentStudioView()
+        case .some(.subsystemExplorer):
+            SubsystemExplorerView()
+        case .some(.demoLab):
+            DemoProfileLabView()
+        case .some(.sentinel):
+            SentinelPaneView()
+        case .some(let section):
+            comingSoon(section)
         }
     }
 

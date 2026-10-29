@@ -51,6 +51,20 @@ struct EnvironmentState: Sendable, Equatable {
 
     var weatherModifier: WeatherEnvironmentModifier
 
+    /// The precipitation/atmosphere kind the background draws, derived from
+    /// the same weather signal (or a studio override). `.clear` draws nothing.
+    var weatherVisual: WeatherVisual
+
+    /// Fractional minutes since local midnight that produced this snapshot.
+    /// With a studio override this is the forced minute, not the wall clock.
+    var minuteOfDay: Double
+
+    /// A black veil above the gradient and below the content, sized from the
+    /// palette's own luminance. Morning/midday were bright enough that white
+    /// text and thin chrome disappeared; this keeps contrast without turning
+    /// the scene into a flat night.
+    var readabilityScrim: Double
+
     /// Sourced from real system accessibility settings by EnvironmentEngine,
     /// re-checked on the same periodic cadence as everything else — never
     /// read once and cached. No view in this feature should read
@@ -72,7 +86,21 @@ struct EnvironmentState: Sendable, Equatable {
         starVisibility: EnvironmentPalette.night.starVisibility,
         nightIntensity: EnvironmentPalette.night.nightIntensity,
         weatherModifier: .neutral,
+        weatherVisual: .clear,
+        minuteOfDay: 0,
+        readabilityScrim: 0,
         reducedMotion: false,
         reducedTransparency: false
     )
+
+    /// Perceived luminance of the rendered gradient (0 = black, 1 = white).
+    /// Used for the readability scrim and the studio readout.
+    var gradientLuminance: Double {
+        guard !backgroundGradient.isEmpty else { return 0 }
+        let total = backgroundGradient.reduce(0.0) { partial, stop in
+            let color = stop.color
+            return partial + color.red * 0.2126 + color.green * 0.7152 + color.blue * 0.0722
+        }
+        return total / Double(backgroundGradient.count)
+    }
 }

@@ -17,6 +17,17 @@ enum EnvironmentAnchorPeriod: String, CaseIterable, Sendable {
     case morning
     case midday
     case afternoon
+
+    /// Title-case label for the Debug studio's computed-state readout. The
+    /// renderer itself never shows this — it reads colors and weights only.
+    var displayName: String {
+        switch self {
+        case .night: return "Night"
+        case .morning: return "Morning"
+        case .midday: return "Midday"
+        case .afternoon: return "Afternoon"
+        }
+    }
 }
 
 /// Converts wall-clock time into fractional minutes-since-midnight — the

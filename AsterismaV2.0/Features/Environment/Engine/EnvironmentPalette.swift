@@ -18,6 +18,12 @@
 //  well-defined between any two snapshots — stop N always blends with
 //  stop N, never a different count/order to reconcile.
 //
+//  Owner feedback 2026-10-29: the morning, midday, and afternoon-reference
+//  snapshots were pale enough that white text and thin chrome vanished over
+//  them. Those three snapshots are now the SAME reference hues, deepened into
+//  their shadow range; the engine also adds a luminance-derived readability
+//  scrim on top, so contrast no longer depends on the wallpaper being dark.
+//
 
 import Foundation
 
@@ -96,13 +102,13 @@ enum EnvironmentPalette {
     /// than inventing a new, untraceable hex value.
     static let morningStart = EnvironmentPaletteSnapshot(
         gradientStops: [
-            EnvironmentGradientStop(color: EnvironmentColor(hex: "#9FC4DC"), location: 0.0),
-            EnvironmentGradientStop(color: EnvironmentColor(hex: "#F2D9A6"), location: 0.25),
-            EnvironmentGradientStop(color: EnvironmentColor(hex: "#F0B98F"), location: 0.5),
-            EnvironmentGradientStop(color: EnvironmentColor(hex: "#EFA491"), location: 0.75),
-            EnvironmentGradientStop(color: EnvironmentColor(hex: "#D3A6A8"), location: 1.0),
+            EnvironmentGradientStop(color: EnvironmentColor(hex: "#6F93AC"), location: 0.0),
+            EnvironmentGradientStop(color: EnvironmentColor(hex: "#C7A472"), location: 0.25),
+            EnvironmentGradientStop(color: EnvironmentColor(hex: "#B87C5A"), location: 0.5),
+            EnvironmentGradientStop(color: EnvironmentColor(hex: "#9E645C"), location: 0.75),
+            EnvironmentGradientStop(color: EnvironmentColor(hex: "#74505F"), location: 1.0),
         ],
-        ambientLightColor: EnvironmentColor(hex: "#F2D9A6"),
+        ambientLightColor: EnvironmentColor(hex: "#C7A472"),
         shadowIntensity: 0.15,
         blurIntensity: 0.2,
         atmosphericOpacity: 0.15,
@@ -119,9 +125,9 @@ enum EnvironmentPalette {
     /// `afternoonStart` below) since Part 5.5 defines Afternoon's start as
     /// exactly this meeting point, with no independent hex set of its own.
     static let midday: EnvironmentPaletteSnapshot = {
-        let slateBlue = EnvironmentColor(hex: "#6E85A0")
-        let warmGray = EnvironmentColor(hex: "#A9A296")
-        let softBeige = EnvironmentColor(hex: "#DCCFB8")
+        let slateBlue = EnvironmentColor(hex: "#4C6076")
+        let warmGray = EnvironmentColor(hex: "#6E726C")
+        let softBeige = EnvironmentColor(hex: "#9C907C")
         return EnvironmentPaletteSnapshot(
             gradientStops: [
                 EnvironmentGradientStop(color: slateBlue, location: 0.0),
@@ -148,13 +154,13 @@ enum EnvironmentPalette {
     /// 19:30, never its starting condition at 13:00.
     static let afternoonEnd = EnvironmentPaletteSnapshot(
         gradientStops: [
-            EnvironmentGradientStop(color: EnvironmentColor(hex: "#3C444C"), location: 0.0),
-            EnvironmentGradientStop(color: EnvironmentColor(hex: "#7C93AD"), location: 0.25),
-            EnvironmentGradientStop(color: EnvironmentColor(hex: "#F4F1EC"), location: 0.5),
-            EnvironmentGradientStop(color: EnvironmentColor(hex: "#F2C6C2"), location: 0.75),
-            EnvironmentGradientStop(color: EnvironmentColor(hex: "#C99C9A"), location: 1.0),
+            EnvironmentGradientStop(color: EnvironmentColor(hex: "#2C343C"), location: 0.0),
+            EnvironmentGradientStop(color: EnvironmentColor(hex: "#56697F"), location: 0.25),
+            EnvironmentGradientStop(color: EnvironmentColor(hex: "#B9B4AC"), location: 0.5),
+            EnvironmentGradientStop(color: EnvironmentColor(hex: "#C79C97"), location: 0.75),
+            EnvironmentGradientStop(color: EnvironmentColor(hex: "#8E6C6B"), location: 1.0),
         ],
-        ambientLightColor: EnvironmentColor(hex: "#F2C6C2"),
+        ambientLightColor: EnvironmentColor(hex: "#C79C97"),
         shadowIntensity: 0.7,
         blurIntensity: 0.5,
         atmosphericOpacity: 0.45,

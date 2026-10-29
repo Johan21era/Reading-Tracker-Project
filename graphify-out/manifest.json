@@ -1,7 +1,7 @@
 {
   "README.md": {
-    "mtime": 1793258359.161072,
-    "ast_hash": "83aeab3559fcef15f3f4679786c93afa",
+    "mtime": 1793259721.3572655,
+    "ast_hash": "41238e125a149acdbafb748f1b609655",
     "semantic_hash": ""
   },
   "docs/history/LAST_DEFEAT_demo_profiles.txt": {
@@ -45,8 +45,8 @@
     "semantic_hash": ""
   },
   "docs/01-project-tree.md": {
-    "mtime": 1793256944.4074607,
-    "ast_hash": "d7a20c6b9cea702ab823ebbbfd6bacfc",
+    "mtime": 1793259734.1480486,
+    "ast_hash": "014a56a640566b249d33bf02eea73079",
     "semantic_hash": ""
   },
   "docs/audits/08-deep-audit.md": {
@@ -190,8 +190,8 @@
     "semantic_hash": "5649bcfa5bdf18d842374e96d6113a76"
   },
   "docs/method/07-testing-strategy.md": {
-    "mtime": 1793258364.4180403,
-    "ast_hash": "a93e0b7b21cb1d824d0a66fc5b6075ca",
+    "mtime": 1793259881.2028415,
+    "ast_hash": "ec8feee097b76185af2a5512220a3449",
     "semantic_hash": ""
   },
   "docs/registers/02-defect-register.md": {
@@ -200,18 +200,18 @@
     "semantic_hash": ""
   },
   "docs/registers/03-fix-log.md": {
-    "mtime": 1793257170.7418518,
-    "ast_hash": "1dc9196af0c164425737631c413377ee",
+    "mtime": 1793260201.1066647,
+    "ast_hash": "47f0c42781556d5acd35a67d6284206c",
     "semantic_hash": ""
   },
   "docs/registers/04-handoff.md": {
-    "mtime": 1793256985.7892244,
-    "ast_hash": "49d75910053bd5bc53fa9234d4c0ea6a",
+    "mtime": 1793259925.336711,
+    "ast_hash": "a8325d6cf886063ca3b9f9bc08b57460",
     "semantic_hash": ""
   },
   "docs/roadmap/05-remediation-roadmap.md": {
-    "mtime": 1793258368.8967638,
-    "ast_hash": "857a63e5964310e5d4cc703ebab45254",
+    "mtime": 1793259941.2080786,
+    "ast_hash": "540ba43bbbc820943703c43c3f772b95",
     "semantic_hash": ""
   },
   "docs/roadmap/06-rsvp-feature-plan.md": {
@@ -370,8 +370,8 @@
     "semantic_hash": ""
   },
   "docs/MILESTONES.md": {
-    "mtime": 1793258388.285864,
-    "ast_hash": "e67866aaa0a2e590ad04d827a8010437",
+    "mtime": 1793260351.9437025,
+    "ast_hash": "49df0f3821daef446ded94db1e0fb388",
     "semantic_hash": ""
   },
   "docs/design/READER-POLISH-2026-10-25.md": {
@@ -540,8 +540,8 @@
     "semantic_hash": ""
   },
   "scripts/comprehension-questions.json": {
-    "mtime": 1793257043.5337617,
-    "ast_hash": "29eb0b69ffcecad0200d7a6a38ded8e8",
+    "mtime": 1793260058.256986,
+    "ast_hash": "4121a699ebafc5587cff41a4c61081ab",
     "semantic_hash": ""
   },
   "scripts/vendor/3d-force-graph-1.80.0.min.js": {
@@ -550,13 +550,13 @@
     "semantic_hash": ""
   },
   "docs/INDEX.md": {
-    "mtime": 1793257113.272268,
-    "ast_hash": "05b25d5c7e4e74afb59d6aa628caec75",
+    "mtime": 1793260047.734197,
+    "ast_hash": "9af2c8b6929e084c1599b464c04168d9",
     "semantic_hash": ""
   },
   "docs/registers/05-doc-audit.md": {
-    "mtime": 1793257243.4493341,
-    "ast_hash": "1686108424b2d992d39b8aed99be81b2",
+    "mtime": 1793260227.3356373,
+    "ast_hash": "080ab63947d4f54eaa386b1aa31c724e",
     "semantic_hash": ""
   },
   "scripts/graph3d-template.html": {
@@ -970,8 +970,8 @@
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/DeveloperConsole/DeveloperConsoleRootView.swift": {
-    "mtime": 1793247301.7687635,
-    "ast_hash": "8aea298f935564071383e7d956777ddf",
+    "mtime": 1793259230.3916352,
+    "ast_hash": "96919a5c60a6ee87e063fe7ee9e6d23f",
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/DeveloperConsole/DeveloperConsoleSystemMetrics.swift": {
@@ -1045,8 +1045,8 @@
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/Environment/Engine/EnvironmentAnchorPeriod.swift": {
-    "mtime": 1793247301.7721083,
-    "ast_hash": "62e968ccf1f093625b16a8f5b99d323f",
+    "mtime": 1793259368.375279,
+    "ast_hash": "7f7f804ddb6ece95751aaf6590f73763",
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/Environment/Engine/EnvironmentColor.swift": {
@@ -1055,8 +1055,8 @@
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/Environment/Engine/EnvironmentEngine2.swift": {
-    "mtime": 1792825179.0,
-    "ast_hash": "c5f762f738d72a7da358147564536076",
+    "mtime": 1793259579.2437153,
+    "ast_hash": "03aaf75ff8d3f1a5a5d93be111189f1d",
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/Environment/Engine/EnvironmentMath.swift": {
@@ -1065,18 +1065,18 @@
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/Environment/Engine/EnvironmentPalette.swift": {
-    "mtime": 1793247301.7728205,
-    "ast_hash": "72d1bdced756418acafe0b631be97274",
+    "mtime": 1793259122.2552466,
+    "ast_hash": "9af5dfd80bb6cc2aedcfc9d1d508a86a",
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/Environment/Engine/EnvironmentState.swift": {
-    "mtime": 1793247301.7729437,
-    "ast_hash": "368723ec377f2bb445cfa85dc0328749",
+    "mtime": 1793259109.6426241,
+    "ast_hash": "d50e41546f35c02089cd57d9292bb3d9",
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/Environment/EnvironmentBackgroundView2.swift": {
-    "mtime": 1792825179.0,
-    "ast_hash": "94f62f3b0047f1808cbf2623815116ee",
+    "mtime": 1793259570.1699247,
+    "ast_hash": "0935a9e67c6453b13eaa4dab6d6cc737",
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/Environment/Stars/ShootingStar.swift": {
@@ -1120,8 +1120,8 @@
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/Environment/Weather/WeatherEnvironmentModifier.swift": {
-    "mtime": 1792825179.0,
-    "ast_hash": "220e0e8588160bf84d2ec1a158fbafa7",
+    "mtime": 1793259588.125774,
+    "ast_hash": "27a7ef58307dba522c63f2962b235b59",
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/Environment/Weather/WeatherInsightPanel2.swift": {
@@ -1380,8 +1380,8 @@
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/Sentinel/SentinelHealthCenterView.swift": {
-    "mtime": 1793247301.784794,
-    "ast_hash": "31c5cbcc5eaa228a1d8e958fcaa48c0f",
+    "mtime": 1793259294.7421231,
+    "ast_hash": "ff2857379dafa3ca0db1d86f9aae3b0e",
     "semantic_hash": ""
   },
   "AsterismaV2.0/Features/Sentinel/SentinelViewModel.swift": {
@@ -1820,8 +1820,8 @@
     "semantic_hash": ""
   },
   "docs/design/UI-UX-OVERHAUL-2026-10-29.md": {
-    "mtime": 1793258376.4994912,
-    "ast_hash": "173d54355a69c7eb1bc8cf7e9c0b0a4b",
+    "mtime": 1793260189.22893,
+    "ast_hash": "f0a2148b31753ef9563b5045993c54ed",
     "semantic_hash": ""
   },
   "AsterismaV2.0/App/CommandPalette.swift": {
@@ -1887,6 +1887,31 @@
   "docs/integration/adr/ADR-13-mirage-warm-engine-and-library-scale.md": {
     "mtime": 1793256705.9219482,
     "ast_hash": "5956901ea455898ab8542d2c63362b7f",
+    "semantic_hash": ""
+  },
+  "AsterismaV2.0/Features/DeveloperConsole/EnvironmentStudioView.swift": {
+    "mtime": 1793259188.0394,
+    "ast_hash": "3ad077b7dd79dce858d4dea621e1411e",
+    "semantic_hash": ""
+  },
+  "AsterismaV2.0/Features/DeveloperConsole/SubsystemExplorerView.swift": {
+    "mtime": 1793259333.5576656,
+    "ast_hash": "fb86ce5559b6fed70546ce407676ff53",
+    "semantic_hash": ""
+  },
+  "AsterismaV2.0/Features/Environment/Weather/WeatherEffectView.swift": {
+    "mtime": 1793259101.2252247,
+    "ast_hash": "aa7a01b449f6bc76de65f9620d6a00ef",
+    "semantic_hash": ""
+  },
+  "AsterismaV2.0/Features/Environment/Weather/WeatherVisual.swift": {
+    "mtime": 1793259077.376984,
+    "ast_hash": "bf4748ec1e221e1f2b2a524af7d0fab2",
+    "semantic_hash": ""
+  },
+  "AsterismaV2.0Tests/Environment/EnvironmentWeatherVisualTests.swift": {
+    "mtime": 1793259412.5107133,
+    "ast_hash": "18f6a70df136d9fbe621802c77e828a6",
     "semantic_hash": ""
   }
 }

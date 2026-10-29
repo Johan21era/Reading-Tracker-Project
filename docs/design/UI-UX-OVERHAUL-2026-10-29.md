@@ -18,11 +18,12 @@ usability-tested.
 
 > **Later counts (2026-10-29):** the offline contract pass (Stage AB) recorded
 > 447 unit tests / 671 runs / 438 passed / 9 skipped / 0 failed, and the ADR-13
-> Mirage pass (Stage AE) raised the current totals to **459 unit tests / 671 runs
-> / 450 passed / 9 skipped / 0 failed** (93 suites). App source is now 175 Swift
-> files / 66,050 raw lines / 58,378 non-blank; the test folder is 71 Swift files.
-> The Stage Z figures above are the receipt for this UI tranche, not the current
-> repository totals.
+> Mirage pass (Stage AE) recorded 459 / 671 / 450 / 9 / 0 in 93 suites. The
+> environment/Sentinel/console pass (§9, Stage AH) moves the current totals to
+> **464 unit tests / 671 runs / 455 passed / 9 skipped / 0 failed** (94 suites).
+> App source is now 179 Swift files / 67,757 raw lines / 59,942 non-blank; the
+> test folder is 72 Swift files. The Stage Z figures above are the receipt for
+> the first UI tranche, not the current repository totals.
 
 The 9 skips are the repository's deliberate environment/history skips, not new
 UI-test skips. The app was launched once and its window was observed through
@@ -359,3 +360,81 @@ than increasing modal count.
    [READER-POLISH-2026-10-25.md](READER-POLISH-2026-10-25.md) Phase 2 on a real
    EPUB and PDF; its panels were not part of the shell tranche.
 5. Only then consider deleting the unreferenced spatial-library files.
+## 9. Third tranche — environment, Sentinel, and console navigation (2026-10-29)
+
+**Why this tranche:** the owner reported that the background was not live or
+flowing, that weather had no visual effect anywhere (including the Developer
+Console), that morning and afternoon were too bright to read over, and that
+Sentinel and the Developer Console were hard to navigate. This section records
+what was actually built; owner visual acceptance is still the gate.
+
+### 9.1 Environment liveness and weather
+
+| Change | Where | Behavior |
+|---|---|---|
+| Faster palette cadence | `AsterismaV2.0/Features/Environment/Engine/EnvironmentEngine2.swift` | The default recompute interval is 10 s (was 45 s). The palette is still eased on every tick; the shorter tick removes the visible jump between palette keyframes. |
+| Continuous atmosphere | `AsterismaV2.0/Features/Environment/Weather/WeatherEffectView.swift` (`LiveAtmosphereView`) | Two large radial glows drift on a 20 fps `TimelineView`, independent of the palette tick; reduced motion freezes them. |
+| Real weather layer | `AsterismaV2.0/Features/Environment/Weather/WeatherVisual.swift`, `WeatherEffectView.swift` | A snapshot is classified into clear, cloudy, fog, rain, heavy rain, snow, heavy snow, storm, or wind. Rain/heavy rain/storm draw slanted streaks, snow draws drifting flakes, fog draws banks, wind draws streaks, cloud cover draws a drifting shadow field, and storm adds a deterministic flash. `.clear` draws nothing. |
+| Full snapshot carried to the view | `AsterismaV2.0/Features/Environment/Weather/WeatherEnvironmentModifier.swift` | The read-only modifier now carries condition, precipitation, snowfall, visibility, wind, storm index, and capture time from the same recent SQLite snapshot that already drove the cloud-cover nudge. `visual` is derived from those values; a missing condition stays `.clear`. |
+| Deepened daytime palettes + veil | `AsterismaV2.0/Features/Environment/Engine/EnvironmentPalette.swift`, `EnvironmentState.swift`, `EnvironmentBackgroundView2.swift` | Morning, midday, and afternoon snapshots use the same reference hues in their shadow range. The engine computes a black readability scrim from gradient luminance, clamped to 0.04…0.42, and the background draws it above the gradient and below content. |
+| Studio overrides are Debug-only | `EnvironmentEngine2.swift` (`#if DEBUG`) | A stale studio key cannot repaint a Release launch; in Release the real clock and captured weather are always used. |
+
+The effect layer is deterministic: every streak/flake position is a pure
+function of elapsed time and a fixed per-index seed, so the same state renders
+the same frame and reduced motion can freeze it rather than disabling it.
+
+### 9.2 Developer Console navigation
+
+- The root sidebar now groups **LIVE** and **PLANNED** panes and has a filter
+  field over pane names and phase labels
+  (`DeveloperConsoleRootView.swift`).
+- **Environment Studio** (`EnvironmentStudioView.swift`) embeds the real
+  `EnvironmentBackgroundView` and the real engine. It can force any minute
+  (0–1439, presets for dawn/morning/noon/golden/dusk/night) and any weather kind
+  with an intensity slider, labels forced vs live values, shows the computed
+  clock, anchor blend, luminance, scrim, star visibility, and atmosphere, and
+  clears its overrides when the pane disappears.
+- **Subsystem Explorer** (`SubsystemExplorerView.swift`) lists every registered
+  subsystem with a status dot, filters by category, searches id, display name,
+  category, purpose, activity, status, warnings, errors, and metrics, and shows
+  a detail pane with purpose, activity, status meaning, metrics, warnings/errors,
+  and last update.
+
+### 9.3 Sentinel navigation
+
+`AsterismaV2.0/Features/Sentinel/SentinelHealthCenterView.swift` is now a
+`NavigationSplitView`:
+
+- the sidebar always shows the current band, headline, and coverage line, then
+  groups Overview/Issues under **Health**, Recovery under **Library**,
+  History/Checks under **Records**, and Settings under **Configure**;
+- issue and check counts are badges; **Check now** (⌘R) stays pinned at the
+  bottom with the last-check time;
+- the detail pane has a per-pane title, subtitle, a **Review N issues** shortcut,
+  and a **Full check** action;
+- Issues adds a search field over title, summary, domain, status, and rule id, a
+  severity filter, an `N of M` count, and **Next issue** (⌘]) that cycles the
+  filtered set without losing the selection.
+
+### 9.4 Receipts
+
+| Check | Command | Result |
+|---|---|---|
+| Focused environment tests | `xcodebuild test -project AsterismaV2.0.xcodeproj -scheme AsterismaV2.0 -configuration Debug -destination 'platform=macOS' -parallel-testing-enabled NO -only-testing:AsterismaV2.0Tests/EnvironmentWeatherVisualTests` | 5 tests passed, exit 0 |
+| Full unit census | `./scripts/census.sh --unit-only` | 464 tests / 94 suites / 671 runs / 455 passed / 9 skipped / 0 failed, exit 0; xcresult `rt-census-20261029-033957.xcresult` |
+| Surface manifest | `./scripts/verify-sentinel-surface.sh` | `sentinel-surface: OK — 15 tables, 8 defaults keys, 5 notification names`, exit 0 |
+| Index bank | `python3 scripts/comprehension-bench.py --validate-only` | `bank ok: 30 facts, 12 overview facts`, exit 0 |
+
+### 9.5 Limits
+
+- No owner visual acceptance yet, and no screenshot: the macOS screen-capture
+  permission was denied in the earlier UI tranche, and this tranche did not
+  retry it.
+- Live precipitation only appears when a real weather snapshot exists within the
+  six-hour lookback. The Environment Studio is the deterministic way to see every
+  kind.
+- The new Sentinel and console panes were compiled and their shared logic is
+  covered by the census, but no UI automation drives the sidebar, search fields,
+  or Next issue control.
+- The 3D/2D graph views and the remote CI run were not refreshed for this
+  tranche.

@@ -360,3 +360,57 @@ instead of a repeated cold start.
 
 Owner acceptance of the warm engine and batch flow, then persistence and
 restart resilience for the queue.
+
+## 008 — Live environment and navigable diagnostics (2026-10-29)
+
+**Date:** 2026-10-29
+**Census:** 464 tests / 94 suites / 671 runs / 455 passed / 9 skipped / 0 failed,
+exit 0 (`./scripts/census.sh --unit-only`, xcresult
+`rt-census-20261029-033957.xcresult`)
+
+### What happened
+
+The environment stopped being a still image between slow palette ticks, and the
+two diagnostic surfaces stopped being flat tab strips:
+
+- the palette engine recomputes every **10 s** (was 45 s), and a 20 fps
+  atmosphere layer drifts two ambient glows continuously;
+- a real weather layer draws rain, heavy rain, snow, heavy snow, fog, cloud
+  shadow, wind streaks, and a storm flash from the app's own captured snapshot;
+- morning, midday, and afternoon palettes were deepened into their shadow range,
+  and a luminance-derived readability veil (0.04 at night, capped at 0.42)
+  protects white text and thin chrome;
+- the Developer Console gained LIVE/PLANNED grouping, sidebar search, an
+  **Environment Studio** that forces any hour or weather kind against the real
+  renderer, and a searchable **Subsystem Explorer**;
+- the Sentinel Health Center became a persistent sidebar with a band/coverage
+  header, grouped destinations, issue search, severity filters, and a
+  ⌘] **Next issue** control.
+
+### Why it matters
+
+A reading environment has to feel alive without becoming distracting, and a
+broken state has to be diagnosable without hunting through tabs. This is the
+first tranche where weather is visible, the scene moves continuously, and the
+console can reproduce any environment state on demand.
+
+### What this does not mean
+
+- No owner visual acceptance and no screenshot; the macOS capture permission was
+  not retried.
+- Live precipitation needs a captured snapshot within the six-hour lookback; the
+  Environment Studio is the deterministic view.
+- Sentinel and console navigation is compile-verified only; no UI automation
+  drove the new controls.
+- Both graph views and remote CI were not refreshed at the milestone boundary.
+
+### Evidence
+
+- `docs/registers/03-fix-log.md` Stage AH.
+- `docs/design/UI-UX-OVERHAUL-2026-10-29.md` §9.
+- `AsterismaV2.0Tests/Environment/EnvironmentWeatherVisualTests.swift` — 5 pins.
+
+### Next
+
+Owner visual acceptance at morning, midday, and afternoon, plus a weather sweep
+in the Environment Studio; then UI automation for the two diagnostic surfaces.

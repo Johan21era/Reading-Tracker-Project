@@ -22,6 +22,10 @@ struct SentinelHealthCenterView: View {
     @State private var tab: Tab = .overview
     @State private var configuration = SentinelConfiguration.default
     @State private var hasLoadedConfiguration = false
+    @State private var issueQuery = ""
+    @State private var severityFilter: SeverityFilter = .all
+    @State private var checksQuery = ""
+    @State private var historyQuery = ""
 
     enum Tab: String, CaseIterable, Identifiable {
         case overview = "Overview"
@@ -31,31 +35,45 @@ struct SentinelHealthCenterView: View {
         case checks = "Checks"
         case settings = "Settings"
         var id: String { rawValue }
+
+        var symbolName: String {
+            switch self {
+            case .overview: return "shield"
+            case .issues: return "list.bullet.rectangle"
+            case .recovery: return "externaldrive.badge.exclamationmark"
+            case .history: return "clock.arrow.circlepath"
+            case .checks: return "checklist"
+            case .settings: return "gearshape"
+            }
+        }
+
+        var subtitle: String {
+            switch self {
+            case .overview: return "Health at a glance, coverage, and recent activity."
+            case .issues: return "What needs a decision, with filters and a next-issue control."
+            case .recovery: return "Verify, restore, or rebuild the library after damage."
+            case .history: return "Every repair and journal entry, newest first."
+            case .checks: return "Every probe, its budget, and what the last run found."
+            case .settings: return "Autonomy, cadence, quiet hours, domains, and diagnostics."
+            }
+        }
+    }
+
+    enum SeverityFilter: String, CaseIterable, Identifiable {
+        case all = "All"
+        case critical = "Critical"
+        case warning = "Warning"
+        case info = "Info"
+        var id: String { rawValue }
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            header
-            if model.state.operationalMode.isSuspended {
-                Divider()
-                suspensionBanner
-            }
-            Divider()
-            if let message = model.message {
-                messageBar(message)
-                Divider()
-            }
-            TabView(selection: $tab) {
-                overviewTab.tabItem { Label("Overview", systemImage: "shield") }.tag(Tab.overview)
-                issuesTab.tabItem { Label("Issues", systemImage: "list.bullet.rectangle") }.tag(Tab.issues)
-                recoveryTab.tabItem { Label("Recovery", systemImage: "externaldrive.badge.exclamationmark") }.tag(Tab.recovery)
-                historyTab.tabItem { Label("History", systemImage: "clock.arrow.circlepath") }.tag(Tab.history)
-                checksTab.tabItem { Label("Checks", systemImage: "checklist") }.tag(Tab.checks)
-                settingsTab.tabItem { Label("Settings", systemImage: "gearshape") }.tag(Tab.settings)
-            }
-            .padding(16)
+        NavigationSplitView {
+            sidebar
+        } detail: {
+            detailContainer
         }
-        .frame(minWidth: 860, minHeight: 640)
+        .frame(minWidth: 960, minHeight: 680)
         .task {
             await model.refresh()
             configuration = model.state.configuration
@@ -82,6 +100,157 @@ struct SentinelHealthCenterView: View {
             if let preview = model.preview {
                 repairPreview(preview)
             }
+        }
+    }
+
+    // MARK: - Sidebar navigation
+
+    private var sidebar: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 8) {
+                    Image(systemName: model.state.health.band.systemImage)
+                        .font(.title3)
+                        .foregroundStyle(model.bandColor)
+                    Text("Sentinel")
+                        .font(.headline)
+                    Spacer()
+                }
+                Text(model.state.health.band.displayName)
+                    .font(.callout.weight(.medium))
+                    .foregroundStyle(model.bandColor)
+                Text(model.state.health.headline)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(model.coverageLine)
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(14)
+
+            Divider()
+
+            List(selection: $tab) {
+                Section("Health") {
+                    sidebarRow(.overview, badge: nil)
+                    sidebarRow(.issues, badge: model.visibleIssues.isEmpty
+                               ? nil : "\(model.visibleIssues.count)")
+                }
+                Section("Library") {
+                    sidebarRow(.recovery, badge: nil)
+                }
+                Section("Records") {
+                    sidebarRow(.history, badge: nil)
+                    sidebarRow(.checks, badge: "\(model.registryCount)")
+                }
+                Section("Configure") {
+                    sidebarRow(.settings, badge: nil)
+                }
+            }
+            .listStyle(.sidebar)
+            .scrollContentBackground(.hidden)
+
+            Divider()
+
+            VStack(alignment: .leading, spacing: 8) {
+                Button {
+                    Task { await model.runCheck(scope: .fast) }
+                } label: {
+                    Label(model.isWorking ? "Checking…" : "Check now",
+                          systemImage: "arrow.clockwise")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .disabled(model.isWorking)
+                .keyboardShortcut("r", modifiers: .command)
+
+                if model.state.lastCycle.startedAt.timeIntervalSince1970 > 0 {
+                    Text("Last check \(model.state.lastCycle.startedAt.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
+            }
+            .padding(12)
+        }
+        .navigationSplitViewColumnWidth(min: 240, ideal: 265)
+    }
+
+    private func sidebarRow(_ item: Tab, badge: String?) -> some View {
+        HStack(spacing: 8) {
+            Label(item.rawValue, systemImage: item.symbolName)
+            Spacer()
+            if let badge {
+                Text(badge)
+                    .font(.caption2.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Capsule().fill(.quaternary.opacity(0.5)))
+            }
+        }
+        .tag(item)
+    }
+
+    private var detailContainer: some View {
+        VStack(spacing: 0) {
+            detailHeader
+            if model.state.operationalMode.isSuspended {
+                Divider()
+                suspensionBanner
+            }
+            if let message = model.message {
+                Divider()
+                messageBar(message)
+            }
+            Divider()
+            detailContent
+                .padding(18)
+        }
+        .background(.background)
+    }
+
+    private var detailHeader: some View {
+        HStack(alignment: .top, spacing: 12) {
+            VStack(alignment: .leading, spacing: 3) {
+                Text(tab.rawValue)
+                    .font(.title2.weight(.semibold))
+                Text(tab.subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if tab != .issues && !model.visibleIssues.isEmpty {
+                Button("Review \(model.visibleIssues.count) issue\(model.visibleIssues.count == 1 ? "" : "s")") {
+                    tab = .issues
+                }
+                .buttonStyle(.bordered)
+            }
+            if tab != .settings {
+                Button {
+                    Task { await model.runCheck(scope: .deep) }
+                } label: {
+                    Label("Full check", systemImage: "checklist.checked")
+                }
+                .disabled(model.isWorking)
+            }
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 14)
+    }
+
+    @ViewBuilder
+    private var detailContent: some View {
+        switch tab {
+        case .overview: overviewTab
+        case .issues: issuesTab
+        case .recovery: recoveryTab
+        case .history: historyTab
+        case .checks: checksTab
+        case .settings: settingsTab
         }
     }
 
@@ -275,35 +444,111 @@ struct SentinelHealthCenterView: View {
     // MARK: - Issues
 
     private var issuesTab: some View {
-        HSplitView {
-            List(selection: $model.selectedFingerprint) {
-                if model.sortedIssues.isEmpty {
-                    ContentUnavailableView(
-                        "Nothing needs you",
-                        systemImage: "checkmark.shield",
-                        description: Text(model.state.coverage.isComplete
-                                          ? "Every required check ran and found nothing to fix."
-                                          : "No issue is waiting, but coverage is incomplete — see Checks."))
+        VSplitView {
+            issueFilterBar
+            HSplitView {
+                List(selection: $model.selectedFingerprint) {
+                    if filteredIssues.isEmpty {
+                        ContentUnavailableView(
+                            model.sortedIssues.isEmpty ? "Nothing needs you" : "No match",
+                            systemImage: model.sortedIssues.isEmpty ? "checkmark.shield" : "line.3.horizontal.decrease.circle",
+                            description: Text(model.sortedIssues.isEmpty
+                                              ? (model.state.coverage.isComplete
+                                                 ? "Every required check ran and found nothing to fix."
+                                                 : "No issue is waiting, but coverage is incomplete — see Checks.")
+                                              : "No issue matches the current search and severity filter."))
+                    }
+                    ForEach(filteredIssues) { issue in
+                        issueRow(issue)
+                            .tag(issue.fingerprint)
+                    }
                 }
-                ForEach(model.sortedIssues) { issue in
-                    issueRow(issue)
-                        .tag(issue.fingerprint)
-                }
-            }
-            .frame(minWidth: 280, idealWidth: 320)
+                .frame(minWidth: 280, idealWidth: 330)
 
-            Group {
-                if let issue = model.selectedIssue {
-                    SentinelIssueDetailView(issue: issue, model: model)
-                } else {
-                    ContentUnavailableView(
-                        "Select an issue",
-                        systemImage: "sidebar.left",
-                        description: Text("Choose an item to see what it means and what can be done."))
+                Group {
+                    if let issue = model.selectedIssue {
+                        SentinelIssueDetailView(issue: issue, model: model)
+                    } else {
+                        ContentUnavailableView(
+                            "Select an issue",
+                            systemImage: "sidebar.left",
+                            description: Text("Choose an item to see what it means and what can be done."))
+                    }
+                }
+                .frame(minWidth: 420)
+            }
+        }
+    }
+
+    private var filteredIssues: [SentinelIssue] {
+        model.sortedIssues.filter { issue in
+            switch severityFilter {
+            case .all: break
+            case .critical: guard issue.severity == .critical else { return false }
+            case .warning: guard issue.severity == .warning else { return false }
+            case .info: guard issue.severity == .info else { return false }
+            }
+            let needle = issueQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !needle.isEmpty else { return true }
+            let haystack = [
+                model.copy(for: issue)?.title ?? "",
+                issue.safeSummary,
+                issue.domain.displayName,
+                issue.status.displayName,
+                issue.ruleID.rawValue,
+            ].joined(separator: "\n")
+            return haystack.localizedCaseInsensitiveContains(needle)
+        }
+    }
+
+    private var issueFilterBar: some View {
+        HStack(spacing: 10) {
+            HStack(spacing: 6) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                TextField("Search issues by title, domain, or rule…", text: $issueQuery)
+                    .textFieldStyle(.plain)
+                if !issueQuery.isEmpty {
+                    Button { issueQuery = "" } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
-            .frame(minWidth: 420)
+            .padding(7)
+            .background(RoundedRectangle(cornerRadius: 7).fill(.quaternary.opacity(0.35)))
+
+            Picker("Severity", selection: $severityFilter) {
+                ForEach(SeverityFilter.allCases) { filter in
+                    Text(filter.rawValue).tag(filter)
+                }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .frame(maxWidth: 320)
+
+            Button("Next issue") { selectNextIssue() }
+                .disabled(filteredIssues.count < 2)
+                .keyboardShortcut("]", modifiers: .command)
+
+            Text("\(filteredIssues.count) of \(model.sortedIssues.count)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .monospacedDigit()
         }
+    }
+
+    private func selectNextIssue() {
+        let issues = filteredIssues
+        guard !issues.isEmpty else { return }
+        guard let current = model.selectedFingerprint,
+              let index = issues.firstIndex(where: { $0.fingerprint == current })
+        else {
+            model.selectedFingerprint = issues.first?.fingerprint
+            return
+        }
+        model.selectedFingerprint = issues[(index + 1) % issues.count].fingerprint
     }
 
     private func issueRow(_ issue: SentinelIssue) -> some View {
@@ -333,8 +578,45 @@ struct SentinelHealthCenterView: View {
 
     // MARK: - History
 
+    private var filteredHistory: [SentinelJournalEntry] {
+        let needle = historyQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !needle.isEmpty else { return model.state.history }
+        return model.state.history.filter { entry in
+            [entry.event.rawValue, entry.ruleID ?? "", entry.note ?? "",
+             entry.fingerprint ?? ""]
+                .joined(separator: "\n")
+                .localizedCaseInsensitiveContains(needle)
+        }
+    }
+
+    private var filteredRepairs: [SentinelRepairRecord] {
+        let needle = historyQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !needle.isEmpty else { return model.state.repairs }
+        return model.state.repairs.filter { record in
+            [record.title, record.repairID, record.status.rawValue]
+                .joined(separator: "\n")
+                .localizedCaseInsensitiveContains(needle)
+        }
+    }
+
     private var historyTab: some View {
         VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 6) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                TextField("Filter repairs and journal entries…", text: $historyQuery)
+                    .textFieldStyle(.plain)
+                if !historyQuery.isEmpty {
+                    Button { historyQuery = "" } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(7)
+            .background(RoundedRectangle(cornerRadius: 7).fill(.quaternary.opacity(0.35)))
+
             Text("Repairs")
                 .font(.headline)
             if model.state.repairs.isEmpty {
@@ -342,7 +624,7 @@ struct SentinelHealthCenterView: View {
                     .foregroundStyle(.secondary)
             } else {
                 List {
-                    ForEach(model.state.repairs.reversed()) { record in
+                    ForEach(filteredRepairs.reversed()) { record in
                         HStack(spacing: 12) {
                             Image(systemName: repairStatusIcon(record.status))
                                 .foregroundStyle(repairStatusColor(record.status))
@@ -372,7 +654,7 @@ struct SentinelHealthCenterView: View {
             Text("Journal")
                 .font(.headline)
             List {
-                ForEach(model.state.history, id: \.sequence) { entry in
+                ForEach(filteredHistory, id: \.sequence) { entry in
                     historyRow(entry)
                 }
             }
@@ -404,6 +686,27 @@ struct SentinelHealthCenterView: View {
 
     // MARK: - Checks
 
+    private var filteredProbes: [SentinelProbeRunResult] {
+        let needle = checksQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !needle.isEmpty else { return model.probes }
+        return model.probes.filter { result in
+            let title = SentinelProbeCatalog.ruleMetadata[result.ruleID]?.title ?? result.ruleID.rawValue
+            let haystack = [result.probeID, result.domain.code, title, result.ruleID.rawValue,
+                            probeStatusWord(result.status)]
+                .joined(separator: "\n")
+            return haystack.localizedCaseInsensitiveContains(needle)
+        }
+    }
+
+    private func probeStatusWord(_ status: SentinelProbeStatus) -> String {
+        switch status {
+        case .completed: return "completed"
+        case .skipped: return "skipped"
+        case .failed: return "failed"
+        case .timedOut: return "timed out"
+        }
+    }
+
     private var checksTab: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -421,13 +724,29 @@ struct SentinelHealthCenterView: View {
                     .disabled(model.isWorking)
             }
 
+            HStack(spacing: 6) {
+                Image(systemName: "magnifyingglass")
+                    .foregroundStyle(.secondary)
+                TextField("Filter probes by id, domain, or outcome…", text: $checksQuery)
+                    .textFieldStyle(.plain)
+                if !checksQuery.isEmpty {
+                    Button { checksQuery = "" } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(7)
+            .background(RoundedRectangle(cornerRadius: 7).fill(.quaternary.opacity(0.35)))
+
             if model.probes.isEmpty {
                 ContentUnavailableView(
                     "No results yet",
                     systemImage: "checklist",
                     description: Text("Run a check to see each probe, its budget, and what it found."))
             } else {
-                List(model.probes, id: \.probeID) { result in
+                List(filteredProbes, id: \.probeID) { result in
                     HStack(spacing: 10) {
                         Image(systemName: probeStatusIcon(result.status))
                             .foregroundStyle(probeStatusColor(result.status))

@@ -17,7 +17,7 @@
 //    (WeatherKitService.swift:61-82): that method does a live WeatherKit
 //    network fetch AND writes a row to the session-attached SQLite store —
 //    wrong semantics (there is no reading session here) and unsafe to call
-//    every ~45s from an ambient background system.
+//    every 10 s from an ambient background system.
 //  VERIFIED (Phase A): WeatherSnapshot's real fields, from its own
 //    test-target constructor calls (WeatherKitService.swift:1220, 1342):
 //    `timestamp: Date`, `cloudCover: Double`, plus fields this file doesn't need.
@@ -31,7 +31,52 @@ struct WeatherEnvironmentModifier: Sendable, Equatable {
     /// snapshot is available — every effect below is then a no-op.
     var cloudCoverFraction: Double?
 
-    static let neutral = WeatherEnvironmentModifier(cloudCoverFraction: nil)
+    /// The rest of the captured snapshot, carried verbatim so the background's
+    /// precipitation layer can be derived from the SAME read that drives the
+    /// cloud-cover nudge. Nil on `.neutral` (no recent capture).
+    var condition: WeatherConditionCategory?
+    var precipitationMillimeters: Double
+    var snowfallMillimeters: Double
+    var visibilityKilometers: Double
+    var windSpeedKPH: Double
+    var stormActivityIndex: Double
+    var capturedAt: Date?
+
+    init(
+        cloudCoverFraction: Double? = nil,
+        condition: WeatherConditionCategory? = nil,
+        precipitationMillimeters: Double = 0,
+        snowfallMillimeters: Double = 0,
+        visibilityKilometers: Double = 12,
+        windSpeedKPH: Double = 0,
+        stormActivityIndex: Double = 0,
+        capturedAt: Date? = nil
+    ) {
+        self.cloudCoverFraction = cloudCoverFraction
+        self.condition = condition
+        self.precipitationMillimeters = precipitationMillimeters
+        self.snowfallMillimeters = snowfallMillimeters
+        self.visibilityKilometers = visibilityKilometers
+        self.windSpeedKPH = windSpeedKPH
+        self.stormActivityIndex = stormActivityIndex
+        self.capturedAt = capturedAt
+    }
+
+    /// The drawable weather layer. A missing condition stays `.clear` with
+    /// `isLive == false` — absence of a capture is not a weather claim.
+    var visual: WeatherVisual {
+        guard let condition else { return .clear }
+        return WeatherVisual.from(
+            condition: condition,
+            cloudCover: cloudCoverFraction ?? 0,
+            precipitationMM: precipitationMillimeters,
+            snowfallMM: snowfallMillimeters,
+            windKPH: windSpeedKPH,
+            visibilityKM: visibilityKilometers,
+            stormIndex: stormActivityIndex)
+    }
+
+    static let neutral = WeatherEnvironmentModifier()
 
     /// Caps every modifier at a 15-20% maximum influence over the
     /// time-of-day-driven values, per Part 8.
@@ -74,7 +119,15 @@ struct WeatherEnvironmentModifier: Sendable, Equatable {
             guard let latest = recent.max(by: { $0.timestamp < $1.timestamp }) else {
                 return .neutral
             }
-            return WeatherEnvironmentModifier(cloudCoverFraction: latest.cloudCover)
+            return WeatherEnvironmentModifier(
+                cloudCoverFraction: latest.cloudCover,
+                condition: latest.condition,
+                precipitationMillimeters: latest.precipitationMillimeters,
+                snowfallMillimeters: latest.snowfallMillimeters,
+                visibilityKilometers: latest.visibilityKilometers,
+                windSpeedKPH: latest.windSpeedKPH,
+                stormActivityIndex: latest.stormActivityIndex,
+                capturedAt: latest.timestamp)
         } catch {
             return .neutral
         }

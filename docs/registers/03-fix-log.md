@@ -914,3 +914,82 @@ answers now 8,045 / 20,093); generated `graphify-out/graph.json`,
 opened in a browser this stage (its vis-network renderer loads from unpkg and
 needs network access). No owner acceptance run, no UI interaction run, and no
 remote CI run before the commit; the workflow is watched after the pushed run.
+
+## Stage AH — Environment, Sentinel, and console UI overhaul (2026-10-29)
+
+**Goal:** make the environment actually move and show weather, restore
+readability over the bright daylight palettes, and give Sentinel and the
+Developer Console navigation that scales.
+
+| Item | What changed | Verification |
+|---|---|---|
+| AH-001 | The environment engine's default recompute cadence is **10 s** (was 45 s). Every palette blend is still eased, so the shorter tick removes the visible jump between keyframes instead of snapping. A new `LiveAtmosphereView` draws two large ambient glows on a 20 fps `TimelineView`, independent of the palette tick. Studio overrides now sit behind `#if DEBUG` in `EnvironmentEngine.recompute()`, so a stale debug key cannot repaint a Release launch. | Read-back of `AsterismaV2.0/Features/Environment/Engine/EnvironmentEngine2.swift` and `AsterismaV2.0/Features/Environment/EnvironmentBackgroundView2.swift`; Debug build succeeded inside the census run below. |
+| AH-002 | Added `WeatherVisual` (snapshot → clear/cloudy/fog/rain/heavyRain/snow/heavySnow/storm/wind, with intensity, wind, cloud, and live/forced provenance) and `WeatherEffectView` (deterministic rain streaks, snow, fog banks, cloud shadow, wind streaks, storm flash). `WeatherEnvironmentModifier` now carries the whole captured snapshot and exposes `visual`; a missing condition stays `.clear`. `.clear` draws nothing and reduced motion freezes the layer. | `WeatherVisual.from(...)` pins in `EnvironmentWeatherVisualTests`; read-back of both new files. |
+| AH-003 | Deepened the morning, midday, and afternoon reference snapshots into their shadow range and added a luminance-derived readability scrim (clamped 0.04…0.42) drawn above the gradient and below content. Morning/midday/afternoon no longer depend on pale wallpaper for contrast. | `brightPalettesCarryMoreScrimThanNight` asserts night ≤ 0.06, morning > 0.15, afternoon > night, and morning luminance > night luminance. |
+| AH-004 | Rebuilt the Sentinel Health Center as a `NavigationSplitView`: persistent band/headline/coverage header, grouped sidebar (Health, Library, Records, Configure) with issue/check badges, pinned **Check now** (⌘R), per-pane title/subtitle, **Review N issues** and **Full check** actions, issue search, severity filter, and **Next issue** (⌘]). | Debug build; read-back of `AsterismaV2.0/Features/Sentinel/SentinelHealthCenterView.swift`. No UI automation. |
+| AH-005 | Developer Console sidebar now groups LIVE and PLANNED panes and filters by name or phase. Added **Environment Studio** (real background + real engine; force any minute or weather kind, intensity, provenance, computed readout, reset, clear on disappear) and **Subsystem Explorer** (search over id/name/category/purpose/activity/status/warnings/errors/metrics, category filter, detail pane). | Debug build; read-back of `DeveloperConsoleRootView.swift`, `EnvironmentStudioView.swift`, and `SubsystemExplorerView.swift`. |
+| AH-006 | Added five deterministic environment tests covering the condition→visual mapping, the override store round-trip, forced time/weather reaching `EnvironmentState`, scrim ordering, and modifier provenance. | `xcodebuild test -project AsterismaV2.0.xcodeproj -scheme AsterismaV2.0 -configuration Debug -destination 'platform=macOS' -parallel-testing-enabled NO -only-testing:AsterismaV2.0Tests/EnvironmentWeatherVisualTests` → 5 tests in 1 suite passed, exit 0. |
+| AH-007 | Ran the local CI mirror after the changes. | `./scripts/verify-sentinel-surface.sh` → `sentinel-surface: OK — 15 tables, 8 defaults keys, 5 notification names`, exit 0. `python3 scripts/comprehension-bench.py --validate-only` → `bank ok: 30 facts, 12 overview facts`, exit 0. `./scripts/census.sh --unit-only` → **464 tests / 94 suites / 671 runs / 455 passed / 9 skipped / 0 failed**, exit 0 (`rt-census-20261029-033957.xcresult`). |
+
+**Changed files:** `AsterismaV2.0/Features/Environment/Engine/EnvironmentEngine2.swift`,
+`EnvironmentState.swift`, `EnvironmentPalette.swift`, `EnvironmentAnchorPeriod.swift`,
+`AsterismaV2.0/Features/Environment/EnvironmentBackgroundView2.swift`,
+`AsterismaV2.0/Features/Environment/Weather/WeatherEnvironmentModifier.swift`,
+new `Weather/WeatherVisual.swift`, new `Weather/WeatherEffectView.swift`,
+`AsterismaV2.0/Features/Sentinel/SentinelHealthCenterView.swift`,
+`AsterismaV2.0/Features/DeveloperConsole/DeveloperConsoleRootView.swift`,
+new `DeveloperConsole/EnvironmentStudioView.swift`, new
+`DeveloperConsole/SubsystemExplorerView.swift`, new
+`AsterismaV2.0Tests/Environment/EnvironmentWeatherVisualTests.swift`, plus
+`README.md`, `docs/01-project-tree.md`, `docs/INDEX.md`,
+`docs/design/UI-UX-OVERHAUL-2026-10-29.md`, `docs/registers/04-handoff.md`, and
+this log.
+
+**Limits:** no owner visual acceptance and no screenshot (the macOS capture
+permission was denied in the earlier UI tranche and was not retried). Live
+weather visuals need a real snapshot within the six-hour lookback; the studio is
+the deterministic way to inspect every kind. The Sentinel/console navigation is
+compile-verified only — no UI automation drove the sidebar, search fields, or
+Next issue. Both graphs and remote CI were not refreshed for this tranche.
+
+## Stage AI — Closeout Initiative after the environment/Sentinel/console pass (2026-10-29)
+
+**Goal:** run the named close-out sequence — documentation sweep, Markdown truth
+audit, checks and census, junk removal, both graph refreshes, then the
+commit/push gate.
+
+| Item | What changed | Verification |
+|---|---|---|
+| AI-001 | Documented the environment, Sentinel, and console work: `README.md`, `docs/01-project-tree.md`, `docs/INDEX.md`, `docs/MILESTONES.md` (new milestone 008), `docs/design/UI-UX-OVERHAUL-2026-10-29.md` §9, `docs/method/07-testing-strategy.md`, `docs/roadmap/05-remediation-roadmap.md`, `docs/registers/04-handoff.md`, and this log. | Counts re-derived: 179 app Swift files / 67,757 raw / 59,942 non-blank; 72 test files; 464 tests / 94 suites / 671 runs / 455 passed / 9 skipped / 0 failed. |
+| AI-002 | Junk audit. The inventory found no loose `.DS_Store`, `.xcresult`, `.profraw`, or `.playwright-cli` artifacts. Removed only regenerable graphify output: the dated 2026-10-29 backup directory created by this refresh (11,832 KiB) and the AST extractor cache directory (14,836 KiB). Both were deleted after their contents were superseded by the verified outputs below; their names are recorded here so the deletion is auditable. | `graphify-out` went **47,524 KiB → 20,856 KiB** (26,668 KiB, 26.0 MiB freed). Preserved `graph.json`, `graph.html`, `GRAPH_REPORT.md`, `manifest.json`, `.graphify_labels.json`, `cost.json`, `.graphify_python`, `.graphify_root`, the gitignored 3D page, `.mirage-runtime/` (48 MiB), `.obsidian/`, `.freebuff/`, lockfiles, and the ignored root `merge-log.md` (64 KiB; still not byte-identical to `docs/integration/merge-log.md`, so preserved as unknown). |
+| AI-003 | Rebuilt the code graph from the current tree (cold cache). | `graphify update . --force` exit 0 → **8,156 nodes / 20,371 edges / 389 communities**; 360 uncached files re-extracted. The same seven empty JSON inputs produced zero nodes and are named by the tool. `graphify export html` exit 0 → **389 community nodes / 1,435 cross-community edges**, 467,514 B. `python3 scripts/build-graph-3d.py` exit 0 → 8,579,333 B; `--check` → `ok`. |
+| AI-004 | Opened both generated views in headless Chromium (Playwright 1.64.1 driving the cached Chromium 1223 headless shell). | **3D, `file://`:** URL resolved to `graph-3d-full.html`, canvas **1280 × 720**, WebGL true, `performance.getEntriesByType('resource')` empty (zero off-origin HTTP), console line `[graphify 3d] full view ready: 8156 nodes, 20371 links`, no page errors. Four `GL Driver Message` performance warnings and one headless `CONTEXT_LOST_WEBGL` / restored pair were the only other console output. **2D:** canvas **1000 × 720**, vis-network loaded from `https://unpkg.com/vis-network@9.1.6/standalone/umd/vis-network.min.js`, no page errors and no failed requests; one informational improved-layout message. |
+| AI-005 | Ran the local CI mirror and the documentation checks after all edits. | `./scripts/verify-sentinel-surface.sh` → `sentinel-surface: OK — 15 tables, 8 defaults keys, 5 notification names`, exit 0. `python3 scripts/comprehension-bench.py --validate-only` → `bank ok: 30 facts, 12 overview facts`, exit 0. `python3 scripts/comprehension-bench.py --mode all` → `GATE PASSED`, 100% facts accuracy, 0 fallbacks, 244.3× median indexed speedup, 81.6× overview. `./scripts/census.sh --unit-only` → **464 / 94 / 671 / 455 / 9 / 0**, exit 0 (`rt-census-20261029-033957.xcresult`). `python3 scripts/audit-markdown.py` on every changed Markdown file → `OK`, exit 0. |
+
+**Artifact identity (2026-10-29, Stage AI):** `graph.json`
+`859e3a39151c26d504ca55352bcbe1b14e423a1d9f045d58bde0edd42501d9b4`
+(12,105,207 B); `graph.html`
+`acbc681c99e8f3aeb70e06dd35aeba99a8b992594c2536ff83b103d95d69f495`
+(467,514 B); `GRAPH_REPORT.md`
+`8bfde41a24c3920632d8267f1de8094a03bb24d0b19420a526d241c0c74a6ab5`
+(99,546 B); `manifest.json`
+`59a916c89867c14cf9cdfb89512e3e75e7df2bcb8c1bf84d7fc8c79effe7c0cb`
+(66,600 B); gitignored `graph-3d-full.html`
+`e423596ae1c5d1fe904cb87b5c97c22dc1e0a352104cb92352949bd5fc51d85b`
+(8,579,333 B).
+
+**Changed files:** the environment/Sentinel/console source and test files listed
+in Stage AH; generated `graphify-out/graph.json`, `graphify-out/graph.html`,
+`graphify-out/GRAPH_REPORT.md`, `graphify-out/manifest.json`; gitignored
+`graphify-out/graph-3d-full.html`; `README.md`, `docs/01-project-tree.md`,
+`docs/INDEX.md`, `docs/MILESTONES.md`,
+`docs/design/UI-UX-OVERHAUL-2026-10-29.md`,
+`docs/method/07-testing-strategy.md`, `docs/roadmap/05-remediation-roadmap.md`,
+`docs/registers/04-handoff.md`, `docs/registers/05-doc-audit.md`, and
+`scripts/comprehension-questions.json` (the census answer now reads 464).
+
+**Limits:** no owner visual acceptance and no screenshot of the native app. The
+headless Chromium run is a rendering/console check, not a human design review.
+The two removed directories are intentionally regenerable; the next `graphify
+update` will recreate its AST cache, and a forced refresh recreates a dated
+backup. Remote CI is watched only after the approved push.

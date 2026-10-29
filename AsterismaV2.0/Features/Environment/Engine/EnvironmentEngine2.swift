@@ -16,9 +16,11 @@
 //  Per Part 5.1/5.3: no view anywhere in this feature reads Date() or
 //  accessibility settings directly (AnchorClock.swift's comment documents
 //  the one exception: this file's own `now` closure), and interpolation is
-//  keyframe-based, recomputed on a slow (30-60s) cadence fully decoupled
-//  from per-frame animation (stars/shooting stars tick on their own
-//  TimelineView-driven cadence — see the Stars/ShootingStars folders).
+//  keyframe-based, recomputed on a 10 s cadence fully decoupled from
+//  per-frame animation (stars, atmosphere, and weather tick on their own
+//  TimelineView-driven cadence — see Stars/, Weather/WeatherEffectView.swift).
+//  The 10 s tick replaced the original 45 s one on 2026-10-29: at 45 s the
+//  background visibly jumped between palettes instead of flowing.
 //
 
 import Combine
@@ -34,15 +36,31 @@ final class EnvironmentEngine: ObservableObject {
     private let recomputeInterval: Duration
     private let calendar: Calendar
     private let now: () -> Date
+    private let overrideStore: EnvironmentOverrideStore
+    private let weatherProvider: @MainActor (Date) -> WeatherEnvironmentModifier
+    private let weatherCacheInterval: TimeInterval
+
+    // Weather is read-only but still a SQLite query; the palette tick is 10 s
+    // while a real capture only needs refreshing every few minutes.
+    private var cachedWeather: WeatherEnvironmentModifier = .neutral
+    private var weatherFetchedAt: Date?
 
     init(
-        recomputeInterval: Duration = .seconds(45),
+        recomputeInterval: Duration = .seconds(10),
         calendar: Calendar = .current,
-        now: @escaping () -> Date = { Date() }
+        now: @escaping () -> Date = { Date() },
+        overrideStore: EnvironmentOverrideStore = .standard,
+        weatherProvider: @escaping @MainActor (Date) -> WeatherEnvironmentModifier = { date in
+            WeatherEnvironmentModifier.currentBestEffort(referenceDate: date)
+        },
+        weatherCacheInterval: TimeInterval = 5 * 60
     ) {
         self.recomputeInterval = recomputeInterval
         self.calendar = calendar
         self.now = now
+        self.overrideStore = overrideStore
+        self.weatherProvider = weatherProvider
+        self.weatherCacheInterval = weatherCacheInterval
         recompute() // synchronous first value so the very first frame is already correct, not .fallback
 
         #if DEBUG
@@ -89,19 +107,35 @@ final class EnvironmentEngine: ObservableObject {
     // correctness — the `[weak self]` capture above already lets the loop
     // exit gracefully (via `guard let self else { return }`) once this
     // object is deallocated; it just may take up to one more sleep interval
-    // to notice, which is harmless for a 45s-cadence background loop.
+    // to notice, which is harmless for a 10 s-cadence background loop.
 
     // MARK: - Core computation
 
+    /// Recomputes immediately. The Debug Environment Studio calls this after
+    /// moving its time/weather sliders; nothing else needs it.
+    func refreshNow() {
+        recompute()
+    }
+
     private func recompute() {
-        let minute = AnchorClock.fractionalMinutesSinceMidnight(for: now(), calendar: calendar)
+        let reference = now()
+        #if DEBUG
+        // Studio overrides are a Debug-only affordance. A stale key left by a
+        // crashed debug session must never repaint a Release launch.
+        let minute = overrideStore.effectiveMinute(now: reference, calendar: calendar)
+        let visual = overrideStore.weatherOverride
+        #else
+        let minute = AnchorClock.fractionalMinutesSinceMidnight(
+            for: reference, calendar: calendar)
+        let visual: WeatherVisual? = nil
+        #endif
         let (paletteSnapshot, blend) = Self.interpolatedSnapshot(atMinute: minute)
 
-        let weather = WeatherEnvironmentModifier.currentBestEffort(referenceDate: now())
+        let weather = currentWeather(at: reference)
         let weatherModified = weather.apply(to: paletteSnapshot)
 
         // Part 11: "When reducedTransparency is true, reduce blurIntensity
-        // and atmosphericOpacity accordingly." Re-read every tick (same 45s
+        // and atmosphericOpacity accordingly." Re-read every tick (same 10 s
         // cadence as everything else in this function), never cached.
         let reducedTransparency = NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency
         let modified = Self.applyingReducedTransparency(reducedTransparency, to: weatherModified)
@@ -116,10 +150,40 @@ final class EnvironmentEngine: ObservableObject {
             starVisibility: modified.starVisibility,
             nightIntensity: modified.nightIntensity,
             weatherModifier: weather,
+            weatherVisual: visual ?? weather.visual,
+            minuteOfDay: minute,
+            readabilityScrim: Self.readabilityScrim(for: modified),
             reducedMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
             reducedTransparency: reducedTransparency
         )
 
+    }
+
+    /// Cached read-only weather. The studio's forced visual is applied by the
+    /// caller, not here — the modifier always describes the real capture so the
+    /// provenance label can say which one is on screen.
+    private func currentWeather(at date: Date) -> WeatherEnvironmentModifier {
+        if let fetchedAt = weatherFetchedAt,
+           date.timeIntervalSince(fetchedAt) < weatherCacheInterval {
+            return cachedWeather
+        }
+        let fresh = weatherProvider(date)
+        cachedWeather = fresh
+        weatherFetchedAt = date
+        return fresh
+    }
+
+    /// Luminance-derived veil. Night sits at the 0.04 floor; the deepened
+    /// morning arc lands around 0.25-0.30, which is enough for white text on
+    /// thin chrome without flattening the sunrise.
+    private static func readabilityScrim(for snapshot: EnvironmentPaletteSnapshot) -> Double {
+        guard !snapshot.gradientStops.isEmpty else { return 0.04 }
+        let luminance = snapshot.gradientStops.reduce(0.0) { partial, stop in
+            partial + stop.color.red * 0.2126
+                + stop.color.green * 0.7152
+                + stop.color.blue * 0.0722
+        } / Double(snapshot.gradientStops.count)
+        return min(0.42, max(0.04, (luminance - 0.16) * 0.85))
     }
 
     /// Part 11's reduced-transparency reduction. Scales blurIntensity and
@@ -210,7 +274,7 @@ extension EnvironmentEngine: DeveloperConsoleObservable {
             id: "environment-engine",
             displayName: "Environment Engine",
             category: .engine,
-            purpose: "Computes the time-of-day + weather-blended visual theme (background gradient, star visibility, etc.) for the Spatial Library feature, on a 45s recompute cadence."
+            purpose: "Computes the time-of-day + weather-blended visual theme (background gradient, star visibility, weather layer, readability scrim) on a 10 s recompute cadence; the effect layers animate at their own frame rate."
         )
     }
 
@@ -223,6 +287,11 @@ extension EnvironmentEngine: DeveloperConsoleObservable {
                 : "Instantiated, but start() has not been called — recompute loop is not running",
             lastUpdated: Date(),
             metrics: [
+                "Clock": String(format: "%02d:%02d", Int(state.minuteOfDay) / 60, Int(state.minuteOfDay) % 60),
+                "Weather": state.weatherVisual.kind.displayName
+                    + (state.weatherVisual.isLive ? " (live)" : " (forced/none)"),
+                "Gradient luminance": String(format: "%.2f", state.gradientLuminance),
+                "Readability scrim": String(format: "%.2f", state.readabilityScrim),
                 "Reduced motion": state.reducedMotion ? "Yes" : "No",
                 "Reduced transparency": state.reducedTransparency ? "Yes" : "No",
             ]

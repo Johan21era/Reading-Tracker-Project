@@ -16,7 +16,7 @@
 //  requirement is a SINGLE centralized EnvironmentState ("nothing renders
 //  its own opinion," Part 4) — LibraryExplorerView/SpatialLibraryView also
 //  need to read `reducedMotion` off the same instance this view renders
-//  from. Two independently-owned engines would each run their own 45s
+//  from. Two independently-owned engines would each run their own 10 s
 //  recompute loop against the same real clock/accessibility settings —
 //  not incorrect, but a silent duplicate-timer waste and a violation of
 //  "computed once by a centralized system." ContentView owns the single
@@ -27,7 +27,7 @@
 //  a default argument is re-evaluated on every call site that omits it,
 //  and SwiftUI reconstructs view values on most parent body re-evaluations
 //  — an inline default here would silently build a fresh engine (new
-//  45s timer, reset interpolation) on some unpredictable subset of
+//  10 s timer, reset interpolation) on some unpredictable subset of
 //  re-renders. @ObservedObject (unlike @StateObject) has no protection
 //  against that, so the caller must own and pass the same instance every
 //  time. See NewContentView.swift's `environmentEngine`.
@@ -67,6 +67,21 @@ struct EnvironmentBackgroundView: View {
                 // it's now anchored to the WINDOW geometry via DesignGrid and
                 // diffused past the corners so its boundary is imperceptible:
                 // atmosphere, not a competing surface.
+                // Readability veil (owner feedback 2026-10-29): the bright
+                // morning/midday palettes swallowed white text and thin chrome.
+                // The engine sizes this from the palette's own luminance, so
+                // night stays untouched and no view computes its own opinion.
+                Color.black.opacity(engine.state.readabilityScrim)
+
+                // Continuous ambience: two large, slow glows that drift over
+                // tens of seconds. Without this the background only moved when
+                // the 10 s palette tick landed, which read as a still image.
+                LiveAtmosphereView(
+                    ambientColor: engine.state.ambientLightColor.swiftUIColor,
+                    atmosphericOpacity: engine.state.atmosphericOpacity,
+                    reducedMotion: engine.state.reducedMotion
+                )
+
                 RadialGradient(
                     colors: [engine.state.ambientLightColor.swiftUIColor.opacity(DesignGrid.glowPeakOpacity), .clear],
                     center: .center,
@@ -89,9 +104,17 @@ struct EnvironmentBackgroundView: View {
                 )
 
                 ShootingStarView(shootingStar: shootingStarManager.active)
+
+                // Precipitation/atmosphere sits in front of the stars: a rainy
+                // night still shows its stars through the streaks, but the
+                // rain itself is unmistakably foreground.
+                WeatherEffectView(
+                    visual: engine.state.weatherVisual,
+                    reducedMotion: engine.state.reducedMotion
+                )
             }
             // Part 11: ambient/atmospheric motion belongs "on the scale of
-            // many seconds to minutes" — without this, each 45s recompute
+            // many seconds to minutes" — without this, each 10 s recompute
             // tick would snap to its new values instead of drifting into
             // them, which is exactly the abrupt transition Appendix A says
             // should never be observable. Ambient drift is also explicitly
@@ -125,7 +148,7 @@ struct EnvironmentBackgroundView: View {
     }
 
     private var ambientAnimation: Animation {
-        engine.state.reducedMotion ? .easeInOut(duration: 0.4) : .easeInOut(duration: 12)
+        engine.state.reducedMotion ? .easeInOut(duration: 0.4) : .easeInOut(duration: 10)
     }
 
     private func regenerateStarFieldIfNeeded(for size: CGSize) {

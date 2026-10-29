@@ -25,6 +25,8 @@
 | Library: unified grid/list, filters, selected-book dock | `AsterismaV2.0/Features/Library/LibraryBrowserView.swift#L1` | `docs/design/UI-UX-OVERHAUL-2026-10-29.md` |
 | UI/UX models, weighted scores, and two-tranche record | `docs/design/UI-UX-OVERHAUL-2026-10-29.md` | `docs/design/UX-BETA-AUDIT-2026-10-25.md` |
 | Reader customization: EPUB themes/fonts/size/brightness/mode, PDF layout/fit/RTL/gap | `docs/design/READER-POLISH-2026-10-25.md` | `AsterismaV2.0/Features/Reader/ReaderAppearance.swift`, `AsterismaV2.0/Features/Reader/PDFReaderSettings.swift` |
+| Environment: 10 s palette engine, drifting atmosphere, stars, live weather layer, readability scrim | `AsterismaV2.0/Features/Environment/Engine/EnvironmentEngine2.swift#L1` | `AsterismaV2.0/Features/Environment/Weather/WeatherEffectView.swift`, `docs/design/UI-UX-OVERHAUL-2026-10-29.md` |
+| Force any hour or weather kind and inspect the computed environment state | `AsterismaV2.0/Features/DeveloperConsole/EnvironmentStudioView.swift#L1` | `AsterismaV2.0/Features/Environment/Weather/WeatherVisual.swift` |
 | App identity: data root directory name, bundle identifier constants | `AsterismaV2.0/Core/AppIdentity.swift#L12` | `AsterismaV2.0/Core/RuntimeEnvironment.swift` |
 | Feature folders and the full file map | `docs/01-project-tree.md` | `AsterismaV2.0/Features/` |
 
@@ -46,6 +48,8 @@
 | Sentinel catalog size and the probe receipt | `docs/registers/04-handoff.md#L25` | `docs/plans/sentinel/gates/README.md` |
 | Library recovery: Phase 5 rebuild result, carries skipped rows | `AsterismaV2.0/Core/LibraryRecovery/LibraryLogicalRebuilder.swift#L11` | `docs/plans/library-recovery/G6.md` |
 | Recovery gate: enum defines the operational mode that suspends writes | `AsterismaV2.0/Core/LibraryRecovery/LibraryRecoveryGate.swift#L13` | `docs/plans/library-recovery/G6.md` |
+| Sentinel Health Center: sidebar destinations, issue search/filter, Next issue, Check now | `AsterismaV2.0/Features/Sentinel/SentinelHealthCenterView.swift#L1` | `AsterismaV2.0/Features/Sentinel/SentinelViewModel.swift` |
+| Developer Console: LIVE/PLANNED sidebar search, Environment Studio, Subsystem Explorer | `AsterismaV2.0/Features/DeveloperConsole/DeveloperConsoleRootView.swift#L1` | `AsterismaV2.0/Features/DeveloperConsole/SubsystemExplorerView.swift`, `AsterismaV2.0/Features/DeveloperConsole/EnvironmentStudioView.swift` |
 
 ## Data
 
@@ -58,12 +62,12 @@
 
 | If you need… | Read first | Then |
 |---|---|---|
-| Run the latest working tree: one stable build-and-launch command | `README.md#L237` | `scripts/run-latest.sh` |
-| Build and test commands: Debug build, test, and census summary | `README.md#L253` | `scripts/census.sh`, `AGENTS.md#L117` |
-| Release receipts: git tag, package SHA-256, last unit census tests/runs record | `docs/registers/04-handoff.md#L90` | `README.md#L7` |
-| CI receipts: last remote census run id, green Sentinel tranche | `docs/registers/04-handoff.md#L84` | `.github/workflows/census.yml` |
-| Clean test session: Erase Library & Data… menu action | `README.md#L315` | `docs/registers/04-handoff.md` |
-| Sentinel v2 tranche CI run id `40758619365` | `docs/registers/04-handoff.md#L84` | `.github/workflows/census.yml` |
+| Run the latest working tree: one stable build-and-launch command | `README.md#L238` | `scripts/run-latest.sh` |
+| Build and test commands: Debug build, test, and census summary | `README.md#L254` | `scripts/census.sh`, `AGENTS.md#L117` |
+| Release receipts: git tag, package SHA-256, last unit census tests/runs record | `docs/registers/04-handoff.md#L91` | `README.md#L7` |
+| CI receipts: last remote census run id, green Sentinel tranche | `docs/registers/04-handoff.md#L85` | `.github/workflows/census.yml` |
+| Clean test session: Erase Library & Data… menu action | `README.md#L316` | `docs/registers/04-handoff.md` |
+| Sentinel v2 tranche CI run id `40758619365` | `docs/registers/04-handoff.md#L85` | `.github/workflows/census.yml` |
 | CI workflow: GitHub Actions census runs on the runner image, Xcode version, test steps | `.github/workflows/census.yml#L10-L13` | `AGENTS.md` |
 
 ## Knowledge graph
@@ -74,7 +78,7 @@
 | 3D graph generator: verify outputs without writing, staleness flag | `scripts/build-graph-3d.py#L232` | `README.md` §6 |
 | Retired artifacts: the community 3D graph file removed 2026-10-29 | `AGENTS.md#L230` | `README.md#L308` |
 | Graph exclusions: the vendored 3D renderer is kept out of graph counts | `.graphifyignore#L1` | `README.md#L308`, `docs/01-project-tree.md` |
-| Graph refresh receipt: counts, excluded vendor nodes, artifact hashes, browser check | `docs/registers/03-fix-log.md` (Stage AC) | `README.md#L308` |
+| Graph refresh receipt: counts, excluded vendor nodes, artifact hashes, browser check | `docs/registers/03-fix-log.md` (Stage AI) | `README.md#L308` |
 
 ## Tests
 
@@ -83,6 +87,7 @@
 | Reader appearance tests: nine pins for themes, settings injection, brightness, PDF mapping, gap, and RTL | `AsterismaV2.0Tests/Reader/ReaderAppearanceTests.swift#L1` | `docs/design/READER-POLISH-2026-10-25.md` |
 | Offline contract: bounded discovery/weather sessions, cancellation, and network-free pins | `docs/registers/03-fix-log.md` (Stage AB) | `AsterismaV2.0Tests/Discovery/DiscoveryOfflineTests.swift#L1` |
 | Mirage ADR-13 pins: warm-session serialization, idle teardown, index reconciliation, batch cancel/retry | `AsterismaV2.0Tests/Mirage/MirageEngineServiceTests.swift#L1` | `AsterismaV2.0Tests/Mirage/MirageLibraryIndexTests.swift`, `AsterismaV2.0Tests/Mirage/MirageBatchAnalyzerTests.swift` |
+| Environment pins: condition→visual mapping, override store, forced clock/weather, scrim ordering | `AsterismaV2.0Tests/Environment/EnvironmentWeatherVisualTests.swift#L1` | `AsterismaV2.0/Features/Environment/Weather/WeatherVisual.swift` |
 
 ## Documentation evidence
 
@@ -90,7 +95,7 @@
 |---|---|---|
 | Markdown truth audit: evidence standard, weighted rubric, verdict rules | `AGENTS.md#L12` | `docs/registers/05-doc-audit.md` |
 | Markdown evidence collector: digests, paths, anchors, commands | `scripts/audit-markdown.py` | `docs/registers/05-doc-audit.md` |
-| Current close-out receipt: offline contract, reader customization, graph refresh, and truth audit | `docs/registers/04-handoff.md` (2026-10-29 offline session) | `docs/registers/03-fix-log.md` (Stage AB) |
+| Current close-out receipt: environment/weather, Sentinel and console navigation, graph refresh, and truth audit | `docs/registers/04-handoff.md` (2026-10-29 baseline) | `docs/registers/03-fix-log.md` (Stage AI) |
 
 ## How this page is checked
 

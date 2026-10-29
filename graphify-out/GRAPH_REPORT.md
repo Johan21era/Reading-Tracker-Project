@@ -1,16 +1,16 @@
 # Graph Report - AsterismaV1.0  (2026-10-29)
 
 ## Corpus Check
-- 355 files · ~637,335 words
+- 360 files · ~648,782 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 8045 nodes · 20093 edges · 381 communities (362 shown, 19 thin omitted)
-- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 1297 edges (avg confidence: 0.8)
+- 8156 nodes · 20371 edges · 389 communities (371 shown, 18 thin omitted)
+- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 1316 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `fced0764`
+- Built from commit: `30779444`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -392,22 +392,30 @@
 - G1AnalyticsCachePinsTests
 - weatherLiveEnabled
 - 05 · Documentation audit ledger
+- SentinelPersistenceKind
 - Markdown truth audit (mandatory)
 - audit-markdown.py
+- SentinelReportCardView
+- PDFPageLayout
+- ReadingHUD
+- 9. Third tranche — environment, Sentinel, and console navigation (2026-10-29)
+- PDFFitMode
 - DiscoveryNetworking
 - Phase 1 shipped
+- Owner acceptance checklist
+- liveWeatherEnabled
 
 ## God Nodes (most connected - your core abstractions)
 1. `SentinelSnapshot` - 212 edges
-2. `Foundation` - 195 edges
+2. `Foundation` - 197 edges
 3. `RawFinding` - 168 edges
 4. `DataStore` - 167 edges
 5. `SentinelProbeV2` - 159 edges
 6. `SentinelSubject` - 147 edges
-7. `SentinelIssue` - 89 edges
+7. `SentinelIssue` - 90 edges
 8. `ReadingSession` - 75 edges
-9. `Equatable` - 73 edges
-10. `Testing` - 71 edges
+9. `Equatable` - 74 edges
+10. `Testing` - 72 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `privacyAcrossCatalog()` --calls--> `BookCollection`  [INFERRED]
@@ -424,39 +432,39 @@
 ## Import Cycles
 - None detected.
 
-## Communities (381 total, 19 thin omitted)
+## Communities (389 total, 18 thin omitted)
 
 ### Community 0 - "Behavior Context Engine2"
-Cohesion: 0.06
-Nodes (31): AnalyticsContextAdapter, BehaviorCategory, administrative, browsing, creative, development, entertainment, gaming (+23 more)
+Cohesion: 0.07
+Nodes (25): BehaviorContextAccessKitAdapter, BehaviorContextEngine, BehaviorEvidence, BookContextMetadata, BookModelAdapter, ContextAnalysisPipeline, ContextEvidenceChainBuilder, ContextWindow (+17 more)
 
 ### Community 1 - "Behavioral Category"
-Cohesion: 0.06
-Nodes (61): CodingKeys, backupID, code, fingerprint, incidentID, ruleID, type, LibraryDiagnosis (+53 more)
+Cohesion: 0.05
+Nodes (71): LibraryDiagnosis, LibraryEvidence, LibraryIncident, LibraryIncidentState, abandoned, awaitingDecision, detected, diagnosing (+63 more)
 
 ### Community 2 - "Sentinel Probes Library"
-Cohesion: 0.10
-Nodes (12): RawFinding, SentinelSubject, SentinelEnvironment, SentinelEnvironment, SentinelEnvironment, Book, SentinelProbeDescriptor, T (+4 more)
+Cohesion: 0.09
+Nodes (11): RawFinding, COL001DuplicateCollectionIDs, SentinelEnvironment, SentinelEnvironment, Book, SentinelProbeDescriptor, SentinelSnapshot, Set (+3 more)
 
 ### Community 3 - "Behavior Context Engine2 2"
-Cohesion: 0.04
-Nodes (57): bceAppendShannonEntropy(), BehavioralEnvironmentType, administrative, browsing, creative, development, entertainment, gaming (+49 more)
+Cohesion: 0.06
+Nodes (33): AdvancedSignificanceEngine, bceAppendShannonEntropy(), BehavioralDiversityAnalyzer, BehavioralDiversityMetrics, BehavioralDiversityProfileBuilder, Configuration, ContextTrendAnalyzer, ContextWindowPreset (+25 more)
 
 ### Community 4 - "Data Maturity Engine"
 Cohesion: 0.06
-Nodes (51): ClaimDecision, ClaimDisposition, blocked, displayableFull, displayableSoftened, ClaimRegistry, ClaimRequirement, ClaimRule (+43 more)
+Nodes (52): ClaimDecision, ClaimDisposition, blocked, displayableFull, displayableSoftened, ClaimRegistry, ClaimRequirement, ClaimRule (+44 more)
 
 ### Community 5 - "Sentinel Domain"
-Cohesion: 0.06
-Nodes (29): DataStore, PersistenceStatus, degraded, healthy, StorageEngine, json, sqlite, Book (+21 more)
+Cohesion: 0.09
+Nodes (21): LibraryState, DataStore, PersistenceStatus, degraded, healthy, StorageEngine, json, sqlite (+13 more)
 
 ### Community 6 - "Sentinel Probes Self"
-Cohesion: 0.06
-Nodes (39): AlwaysOpenRecoveryGate, LibraryOperationalMode, normal, suspended, LibrarySuspensionReason, incidentOpen, recoveryExecuting, recoveryVerifying (+31 more)
+Cohesion: 0.07
+Nodes (30): SentinelRecoveryGate, SentinelProbeRunResult, SentinelCycleReport, SentinelCycleScope, deep, fast, normal, SentinelCycleTrigger (+22 more)
 
 ### Community 7 - "Behavioral Category 2"
-Cohesion: 0.04
-Nodes (70): ActivityResumptionEvent, ApplicationBehaviorProfile, ApplicationDescriptor, ApplicationSessionReconstructor, ApplicationUsageSession, BehavioralArchive, BehavioralClock, BehavioralCompressionDescriptor (+62 more)
+Cohesion: 0.10
+Nodes (23): ActivityResumptionEvent, ApplicationBehaviorProfile, ApplicationDescriptor, BehavioralCorrelationGroup, BehavioralEventBatch, BehavioralReplayFrame, BehavioralSessionGap, ConnectivityEvent (+15 more)
 
 ### Community 8 - "New Content View"
 Cohesion: 0.20
@@ -464,110 +472,110 @@ Nodes (15): BookEstimationResult, ChapterEstimation, ConfidenceModel, Estimation
 
 ### Community 9 - "Sentinel Probes Subsystems"
 Cohesion: 0.08
-Nodes (32): AnalyticsConstants, AnalyticsEngine, AnalyticsPeriod, custom, thisMonth, thisWeek, thisYear, today (+24 more)
+Nodes (33): AnalyticsConstants, AnalyticsEngine, AnalyticsPeriod, custom, thisMonth, thisWeek, thisYear, today (+25 more)
 
 ### Community 10 - "Sentinel Journal"
 Cohesion: 0.03
-Nodes (102): FILE001BookFileMissing, FILE002StaleBookmark, FILE003DuplicateBookmarkTarget, FILE004OrphanCover, FILE006CorruptCover, FILE007SecurityScopeFailure, FILE008DataRootPermissions, FILE009FileTypeMismatch (+94 more)
+Nodes (125): FILE001BookFileMissing, FILE002StaleBookmark, FILE004OrphanCover, FILE005MissingCover, FILE006CorruptCover, FILE007SecurityScopeFailure, FILE008DataRootPermissions, FILE009FileTypeMismatch (+117 more)
 
 ### Community 11 - "Data Store3"
 Cohesion: 0.12
-Nodes (14): CoverStore, Bool, CGFloat, Data, NSImage, String, URL, UUID (+6 more)
+Nodes (13): CoverStore, Bool, CGFloat, Data, NSImage, String, URL, UUID (+5 more)
 
 ### Community 12 - "Text Extraction"
-Cohesion: 0.07
-Nodes (12): AppKit, AsterismaV2_0, G6EvidencePersistenceTests, SentinelDiagnosticsTests, liveWeatherEnabled(), Bool, LibraryMetadataPinsTests, MirageCursor (+4 more)
+Cohesion: 0.08
+Nodes (9): AsterismaV2_0, G6EvidencePersistenceTests, SentinelDiagnosticsTests, LibraryMetadataPinsTests, MirageCursor, EPUBReadingPositionTests, CoreLocation, Foundation (+1 more)
 
 ### Community 13 - "Sentinel Runtime"
-Cohesion: 0.08
-Nodes (36): APP001SelectedBookExists, APP003NotificationPermission, APP007TestStoreLeakage, AUD001AudioProfilesDecodable, AUD002DuplicateSessionProfiles, AUD003ImplausibleDuration, AUD004OrphanProfiles, AUD005UnboundedGrowth (+28 more)
+Cohesion: 0.09
+Nodes (25): SentinelSubject, SentinelEnvironment, SentinelEnvironment, subsystemsDate(), subsystemsJSONArray(), subsystemsJSONObject(), subsystemsMirageRoot(), Any (+17 more)
 
 ### Community 14 - "Mirage Status Surface"
-Cohesion: 0.06
-Nodes (35): Analyze, DeadlineEditorPane, MirageSettingsPane, RSVPSettingsPane, SentinelSettingsPane, SettingsRootView, Book, Bool (+27 more)
+Cohesion: 0.07
+Nodes (29): Analyze, DeadlineEditorPane, MirageSettingsPane, Book, Color, Date, Set, String (+21 more)
 
 ### Community 15 - "Analytics Engine"
 Cohesion: 0.07
-Nodes (39): SentinelRepairAction, checkpointDatabase, quarantineFile, rebuildIssueStore, replaceBook, replaceLibraryState, resetNotificationState, trimDebugJournal (+31 more)
+Nodes (40): SentinelRepairAction, checkpointDatabase, quarantineFile, rebuildIssueStore, replaceBook, replaceLibraryState, resetNotificationState, trimDebugJournal (+32 more)
 
 ### Community 16 - "Behavioral Category 3"
-Cohesion: 0.13
-Nodes (18): AudioSessionRecord, AudioAnnualReport, AudioConditionProfile, AudioCorrelation, AudioHourProfile, AudioInsight, AudioPredictiveContext, AudioReadingProfile (+10 more)
+Cohesion: 0.10
+Nodes (29): AudioCategory, ambientSoundscape, audioBook, music, podcast, silence, spokenWord, unknown (+21 more)
 
 ### Community 17 - "Book2"
-Cohesion: 0.11
-Nodes (23): MirageIdentityMapStore, JSONDecoder, JSONEncoder, URL, MirageFileStat, MirageIdentityState, linked, mapUnreadable (+15 more)
+Cohesion: 0.09
+Nodes (24): Bool, MirageIdentityMapStore, JSONDecoder, JSONEncoder, URL, MirageFileStat, MirageImportEnvironment, MirageImportFlow (+16 more)
 
 ### Community 18 - "Mirage Child Process"
-Cohesion: 0.05
-Nodes (41): MirageEngineSessionProtocol, MirageEngineService, MirageEngineServiceError, disabled, stopping, unavailable, MirageLibraryScanReport, MirageLibraryScanResult (+33 more)
+Cohesion: 0.08
+Nodes (24): AnyObject, MirageEngineSessionProtocol, MirageEngineService, CheckedContinuation, Date, MainActor, Never, T (+16 more)
 
 ### Community 19 - "Open Meteo Provider"
-Cohesion: 0.15
-Nodes (13): OpenMeteoProvider, CLLocation, Date, DateFormatter, TimeInterval, URLSession, OpenMeteoLiveSmokeTests, OpenMeteoProviderTests (+5 more)
+Cohesion: 0.07
+Nodes (39): ArchiveResponse, Array, CodingKeys, apparentTemperature, cloudCover, precipitation, pressureMsl, relativeHumidity2m (+31 more)
 
 ### Community 20 - "Library Database"
 Cohesion: 0.12
 Nodes (15): LibraryDatabase, LibraryDatabaseError, undecodableBook, undecodableLibraryState, Book, Bool, Database, JSONDecoder (+7 more)
 
 ### Community 21 - "Remediation Pins"
-Cohesion: 0.10
-Nodes (23): ISO8601DateFormatter, Envelope, ReadResult, SentinelJournalEntry, SentinelJournalV2, Bool, Data, Date (+15 more)
+Cohesion: 0.06
+Nodes (40): ISO8601DateFormatter, Envelope, ReadResult, SentinelJournalEntry, SentinelJournalEvent, coverage, cycle, issueClosed (+32 more)
 
 ### Community 22 - "New Year Transition"
 Cohesion: 0.07
 Nodes (30): CelebrationPhase, exiting, expanding, fullscreen, toast, CelebrationTimeline, DebugCelebrationBus, NewYearCelebrationOverlay (+22 more)
 
 ### Community 23 - "Data Integrity Validator"
-Cohesion: 0.12
-Nodes (11): SentinelIssueStatus, SentinelLaunchCardBuilder, SentinelLaunchSummary, SentinelViewModel, Bool, Color, Date, Int (+3 more)
+Cohesion: 0.08
+Nodes (20): SentinelCoverage, SentinelHealthBand, attention, critical, healthy, unknown, watch, SentinelHealthModel (+12 more)
 
 ### Community 24 - "Insight Engine"
-Cohesion: 0.07
-Nodes (36): SchemaVersion, v1, v2, v3, ReaderProfileAnalytics, Array, InsightEngine, InsightKind (+28 more)
+Cohesion: 0.08
+Nodes (32): ReaderProfileAnalytics, Array, InsightEngine, InsightKind, bestReadingTime, consistencyReward, difficultyMatch, drySpell (+24 more)
 
 ### Community 25 - "Mirage Import Flow"
 Cohesion: 0.07
-Nodes (39): Equatable, Self, MirageIdentityLinkKey, MirageIdentityMapFile, MirageIdentitySnapshot, MirageLibraryIndex, MirageLibraryIndexEntry, MirageLibraryIndexError (+31 more)
+Nodes (35): MirageIdentityMapFile, MirageIdentitySnapshot, MirageLibraryIndex, MirageLibraryIndexEntry, MirageLibraryIndexError, engineRefused, identityUnreadable, identityWriteFailed (+27 more)
 
 ### Community 26 - "Annual Report View"
-Cohesion: 0.09
-Nodes (26): AdvancedContextView, Double, String, AchievementsSlide, ActivityHeatmapView, AnnualReportView, Color, GoalsSlide (+18 more)
+Cohesion: 0.08
+Nodes (26): ContextInsightPanel, RoutineRow, Int, String, AchievementsSlide, ActivityHeatmapView, AnnualReportView, Color (+18 more)
 
 ### Community 27 - "Intelligent Notification Engine"
 Cohesion: 0.12
-Nodes (35): Book, BookCollection, BookFileType, epub, pdf, BookNote, Chapter, DailyActivity (+27 more)
+Nodes (34): Book, BookCollection, BookFileType, epub, pdf, BookNote, Chapter, DailyActivity (+26 more)
 
 ### Community 28 - "Sentinel Repair Catalog"
-Cohesion: 0.12
-Nodes (14): MirageJSONValue, array, bool, double, int, null, string, MirageWireEnvelope (+6 more)
+Cohesion: 0.07
+Nodes (33): Equatable, MirageEngineServiceError, disabled, stopping, unavailable, MirageLibraryScanReport, MirageLibraryScanResult, failure (+25 more)
 
 ### Community 29 - "PR4 defect analysis"
 Cohesion: 0.04
 Nodes (46): 10. Candidate Solutions and Technical Feasibility, 11. Recommended Remediation Plan, 12. Regression Testing and Verification Criteria, 13. Unresolved Questions, Blockers, and Evidence Gaps, 14. Prioritized Next Actions, 15. References and Source Links, 1. Executive Summary, 2.1 Scope boundaries (+38 more)
 
 ### Community 30 - "Weather Kit Service2"
-Cohesion: 0.11
-Nodes (18): WeatherProviding, EnvironmentalForecastInput, WeatherSnapshot, EnvironmentalSessionAssembler, ReadingSessionMetrics, Any, Bool, Date (+10 more)
+Cohesion: 0.06
+Nodes (31): WeatherProviding, DayPeriod, afternoon, dawn, evening, morning, night, EnvironmentalForecastInput (+23 more)
 
 ### Community 31 - "Weather Analysis Engine"
-Cohesion: 0.12
-Nodes (21): work, environment, MirageChildChannels, MirageOnceCloser, MirageProcessTransport, MirageTransportFailure, framingCorruption, oversizedLine (+13 more)
+Cohesion: 0.08
+Nodes (32): work, MirageBannerFault, notJSON, statusNotReady, MirageChildChannels, MirageJSONValue, MirageOnceCloser, MirageProcessLauncher (+24 more)
 
 ### Community 32 - "Annual Report Data2"
-Cohesion: 0.22
-Nodes (14): MirageSidecarSupervisor, MirageHandshakePinTests, CountingLauncher, LaunchCounter, makeMirageTestTempDir(), makeStubSupervisorConfig(), makeStubTransportConfig(), mirageTestHex() (+6 more)
+Cohesion: 0.06
+Nodes (50): MirageChildLauncher, MirageProtocolConstants, SemVer, Bool, Data, Int, String, Blocker (+42 more)
 
 ### Community 33 - "Mirage Sidecar Lifecycle"
-Cohesion: 0.23
-Nodes (10): SentinelIssue, SentinelRepairPlan, UInt64, SentinelRepairCatalog, Book, Bool, Date, Set (+2 more)
+Cohesion: 0.17
+Nodes (15): SentinelCopy, SentinelIssue, SentinelProbeCatalog, Int, SentinelProbeDescriptor, SentinelRepairPlan, UInt64, SentinelRepairCatalog (+7 more)
 
 ### Community 34 - "Reader Appearance"
-Cohesion: 0.05
-Nodes (37): Color, ReaderAppearance, ReaderBrightnessOverlay, ReaderColumnLayout, automatic, double, single, ReaderComfort (+29 more)
+Cohesion: 0.11
+Nodes (13): ReaderAppearance, ReaderThemePreset, bold, calm, focus, original, paper, quiet (+5 more)
 
 ### Community 35 - "Sentinel Configuration"
-Cohesion: 0.05
+Cohesion: 0.06
 Nodes (40): AchievementDefinition, AchievementKind, annualGoalMet, books10, books25, books5, books52, deepReader (+32 more)
 
 ### Community 36 - "Sentinel Probes Self 2"
@@ -575,8 +583,8 @@ Cohesion: 0.09
 Nodes (29): LibraryBackup, LibraryBackupCatalog, LibraryBackupCatalogError, failedToReadManifest, failedToWriteManifest, LibraryBackupManifestStore, LibraryBackupScan, LibraryBackupState (+21 more)
 
 ### Community 37 - "Musical Analysis Engine"
-Cohesion: 0.05
-Nodes (34): MirageAnalysisSheet, MirageStatusSection, Status, done, idle, running, Book, Color (+26 more)
+Cohesion: 0.04
+Nodes (42): MirageAnalysisSheet, MirageStatusSection, Status, done, idle, running, Book, Color (+34 more)
 
 ### Community 38 - "Sentinel Report Card"
 Cohesion: 0.33
@@ -587,76 +595,76 @@ Cohesion: 0.12
 Nodes (24): AnnualReportArchiveView, Bool, Int, analyticsPeriod(), AnnualReportData, AnnualReportGenerator, availableReportYears(), booksCompleted() (+16 more)
 
 ### Community 40 - "Demo Data Service"
-Cohesion: 0.27
-Nodes (7): DemoProfileLabView, PersonaDetail, PersonaRow, Bool, Content, String, Void
+Cohesion: 0.29
+Nodes (6): PersonaDetail, PersonaRow, Bool, Content, String, Void
 
 ### Community 41 - "Mirage Identity Map"
-Cohesion: 0.06
-Nodes (38): DataIntegrityValidator, Severity, error, repaired, warning, Book, Bool, Date (+30 more)
+Cohesion: 0.08
+Nodes (25): DataIntegrityValidator, SchemaVersion, v1, v2, v3, Severity, error, repaired (+17 more)
 
 ### Community 42 - "Mirage Runtime Locator"
 Cohesion: 0.11
 Nodes (17): MirageDevChannel, MirageRuntime, MirageRuntimeChannel, bundled, dev, MirageRuntimeLocator, MirageRuntimeManifest, MirageRuntimeResolution (+9 more)
 
 ### Community 43 - "Sentinel Data Bridge"
-Cohesion: 0.05
-Nodes (43): BehavioralAdvancedQuery, BehavioralCategorizer, BehavioralCategory, browsing, communication, creativeWork, development, education (+35 more)
+Cohesion: 0.09
+Nodes (23): BehavioralAdvancedQuery, BehavioralEventType, applicationActivated, applicationDeactivated, applicationLaunched, applicationTerminated, deviceSleep, deviceStateTransition (+15 more)
 
 ### Community 44 - "Predictive Recommendation Engine"
-Cohesion: 0.07
-Nodes (37): LibraryRecoveryIO, ProductionLibraryRecoveryIO, Bool, Data, Int64, String, URL, LibrarySwapCoordinator (+29 more)
+Cohesion: 0.11
+Nodes (31): LibraryRecoveryIO, LibrarySwapCoordinator, LibrarySwapError, backupMissing, failedAfterRollback, hashMismatch, intentExists, ioFailure (+23 more)
 
 ### Community 45 - "Mirage Protocol Conformance"
 Cohesion: 0.10
 Nodes (18): Fault, correlationFailure, envelopeShapeInvalid, responseUnparsable, MirageClient, Outcome, engineError, success (+10 more)
 
 ### Community 46 - "Mirage Status Surface 2"
-Cohesion: 0.08
-Nodes (37): CAP001LowDisk, CAP002DiskProjection, CAP003LibraryScale, CAP004BackupHeadroom, CAP005JournalGrowthRate, SEC001JournalPrivacy, SEC002WriteScope, SEC003SymlinkRejection (+29 more)
+Cohesion: 0.07
+Nodes (38): CAP001LowDisk, CAP002DiskProjection, CAP003LibraryScale, CAP004BackupHeadroom, CAP005JournalGrowthRate, SEC001JournalPrivacy, SEC002WriteScope, SEC003SymlinkRejection (+30 more)
 
 ### Community 47 - "merge log"
 Cohesion: 0.06
 Nodes (35): M-001 · Authorization record (supersedes §21.0 non-execution charter for this session), M-002 · Pinned source revisions (§6.1), M-003 · Environment tuple (§6.1, S6-ES-1), M-005 · Phase 0 governance record (§5) — CLOSED, M-006 · Custody & backup record (§4.3-3/4, S4-ES-5), M-007 · Command & baseline register (S4-ES-3 pre-op blocks; §6), M-008 · RT normative-document extraction — principal findings (Phase 1/2 evidence), M-009 · Mirage wire-protocol contract — principal findings (verification of §21.3 S2-ES-4 vs reality) (+27 more)
 
 ### Community 48 - "Sentinel View Model"
-Cohesion: 0.15
-Nodes (22): Decoder, BookDeadline, BookDeadlineStatus, GoalKind, annualBooks, bookDeadline, dailyPages, dailyTime (+14 more)
+Cohesion: 0.13
+Nodes (23): Decoder, BookDeadline, BookDeadlineStatus, GoalKind, annualBooks, bookDeadline, dailyPages, dailyTime (+15 more)
 
 ### Community 49 - "Sentinel Launch And"
-Cohesion: 0.09
-Nodes (18): StorageProbeFiles, Any, Bool, Date, Int64, SentinelEnvironment, String, URL (+10 more)
+Cohesion: 0.14
+Nodes (10): BAK001AnyBackupExists, BAK008PreRepairSnapshot, BAK009UndoAvailability, StorageProbeFiles, Any, Bool, Date, Int64 (+2 more)
 
 ### Community 50 - "Mirage App Import"
 Cohesion: 0.11
-Nodes (21): Channel, engineVerified, localMap, LinkState, linked, mapUnreadable, notImported, orphaned (+13 more)
+Nodes (22): Channel, engineVerified, localMap, LinkState, linked, mapUnreadable, notImported, orphaned (+14 more)
 
 ### Community 51 - "08 deep audit"
 Cohesion: 0.06
 Nodes (34): 08 · Deep Audit (Oct 2026), 0. TL;DR — the 60-second version, 10.1 Effort estimates for open work (session units — an "Ox session" ≈ one concentrated working session under your protocol; hours assume a fresh, project-familiar context), 10.2 Scale-performance estimates (monolith kept as-is), 10.3 Project-completion estimates (to "App Store ready", two scenarios), 10.4 Quality-fraction estimates (how much of the code is real vs ornament), 10.5 Test-suitability score (from the tests/config agent's weighted rubric), 10. Estimates (multiple bases, honest) (+26 more)
 
 ### Community 52 - "Audio Tracker Metadata2"
-Cohesion: 0.09
-Nodes (27): AudioSource, appleMusicApp, audiobooksApp, chromeBrowser, firefoxBrowser, iinaPlayer, podcastsApp, quickTimePlayer (+19 more)
+Cohesion: 0.06
+Nodes (48): AudioCharacteristics, AudioContextProfile, AudioSnapshot, AudioSource, appleMusicApp, audiobooksApp, chromeBrowser, firefoxBrowser (+40 more)
 
 ### Community 53 - "MILESTONES"
-Cohesion: 0.05
-Nodes (39): 001 — First successful EPUB import and read on a clean slate, 002 — RSVP speed reader survived deliberate abuse, 003 — Beta audit remediation accepted: the core reader works end to end, 004 — Reader appearance system and library polish (candidate), 005 — Repository reorganization, green remote CI, and a ready package, 006 — Sentinel v2 first tranche: 138 probes, 25 verified repairs, Release Health Center, 007 — Mirage becomes a warm, library-scale system (ADR-13), Evidence (+31 more)
+Cohesion: 0.04
+Nodes (45): 001 — First successful EPUB import and read on a clean slate, 002 — RSVP speed reader survived deliberate abuse, 003 — Beta audit remediation accepted: the core reader works end to end, 004 — Reader appearance system and library polish (candidate), 005 — Repository reorganization, green remote CI, and a ready package, 006 — Sentinel v2 first tranche: 138 probes, 25 verified repairs, Release Health Center, 007 — Mirage becomes a warm, library-scale system (ADR-13), 008 — Live environment and navigable diagnostics (2026-10-29) (+37 more)
 
 ### Community 54 - "Session Coordinator2"
-Cohesion: 0.12
-Nodes (12): App, AsterismaApp, SessionCoordinator, Bool, Date, Int, String, TimeInterval (+4 more)
+Cohesion: 0.10
+Nodes (15): App, AsterismaApp, Book, Bool, Int, UUID, SessionCoordinator, Bool (+7 more)
 
 ### Community 55 - "Cover Store"
-Cohesion: 0.09
-Nodes (35): AudioCategory, ambientSoundscape, audioBook, music, podcast, silence, spokenWord, unknown (+27 more)
+Cohesion: 0.06
+Nodes (26): ContextProfileKind, mostCommonPostReadingEnvironment, mostCommonPreReadingEnvironment, mostFrequentTransition, mostStableRoutine, ContextTrendDirection, decreasing, emerging (+18 more)
 
 ### Community 56 - "Library Archive Manager"
-Cohesion: 0.11
-Nodes (17): LibraryArchive, LibraryArchiveError, corruptArchive, emptyLibrary, LibraryArchiveManager, Book, Bool, Data (+9 more)
+Cohesion: 0.10
+Nodes (18): LibraryArchive, LibraryArchiveError, corruptArchive, emptyLibrary, LibraryArchiveManager, Book, Bool, Data (+10 more)
 
 ### Community 57 - "Musical Analysis Engine 2"
-Cohesion: 0.15
-Nodes (23): Array, coefficientOfVariation(), ConditionBucket, ConfidenceReport, CorrelationAccumulator, EnvironmentalBehaviorReport, EnvironmentalBehaviorSnapshot, EnvironmentalEvolutionFinding (+15 more)
+Cohesion: 0.13
+Nodes (22): Array, coefficientOfVariation(), ConfidenceReport, CorrelationAccumulator, EnvironmentalBehaviorReport, EnvironmentalBehaviorSnapshot, EnvironmentalCorrelation, EnvironmentalEvolutionFinding (+14 more)
 
 ### Community 58 - "Sentinel Probes Library 2"
 Cohesion: 0.10
@@ -667,24 +675,24 @@ Cohesion: 0.11
 Nodes (17): SentinelSubjectKind, achievement, backup, book, collection, cover, database, deadline (+9 more)
 
 ### Community 60 - "Book Importer"
-Cohesion: 0.11
-Nodes (24): ChapterIssue, ChapterRefinementEngine, DifficultyAnalyzer, ImportAnalyticsEngine, ImportAnalyticsReport, ImportDebugSnapshot, ImportIntelligenceFacade, ImportPlugin (+16 more)
+Cohesion: 0.16
+Nodes (18): ChapterIssue, ChapterRefinementEngine, DifficultyAnalyzer, ImportAnalyticsEngine, ImportAnalyticsReport, ImportDebugSnapshot, ImportIntelligenceFacade, ImportSuggestion (+10 more)
 
 ### Community 61 - "Sentinel Diagnoser"
 Cohesion: 0.15
-Nodes (13): WeatherConditionCategory, clear, cloudy, fog, heavyRain, heavySnow, mixed, partlyCloudy (+5 more)
+Nodes (18): DemoProfileLabView, Book, DemoBookSpec, DemoInstallSummary, DemoPersona, DemoProfileCatalog, SeededRNG, spec() (+10 more)
 
 ### Community 62 - "Reading Goal Manager2"
 Cohesion: 0.13
 Nodes (23): BookRecommendationScoreV3, PredictiveRecommendationEngineV3, RecommendationResultV3, sanityTestRecommendationEngine(), Book, Date, Double, Int (+15 more)
 
 ### Community 63 - "Sentinel Runtime 2"
-Cohesion: 0.10
-Nodes (15): MutableRecoveryGate, SES004OrphanActiveSession, LibraryRecoveryGateTests, URL, SentinelRuntimeTests, Boom, SentinelFailingProbe, sentinelOrphanBook() (+7 more)
+Cohesion: 0.11
+Nodes (12): MutableRecoveryGate, SES004OrphanActiveSession, LibraryRecoveryGateTests, URL, SentinelRuntimeTests, SentinelFailingProbe, sentinelOrphanBook(), SentinelSlowProbe (+4 more)
 
 ### Community 64 - "PDFReader View2"
-Cohesion: 0.14
-Nodes (11): Coordinator, ReaderPDFView, CGFloat, CGSize, Context, Coordinator, Timer, URL (+3 more)
+Cohesion: 0.27
+Nodes (4): ReaderPDFView, Context, URL, PDFView
 
 ### Community 65 - "RSVPPlayback Engine"
 Cohesion: 0.13
@@ -695,32 +703,32 @@ Cohesion: 0.06
 Nodes (31): 10. Documentation and graphify assessment, 11 · Completion & Health Report (2026-10-24), 11. Recommended next five sessions, 12. Appendix — methodology and caveats, 1. What was measured (not inherited from old notes), 2. The scoreboard, in plain English, 3. Completion by area (literal bytes, stated assumptions), 4. What is genuinely good (+23 more)
 
 ### Community 67 - "Book2 2"
-Cohesion: 0.13
-Nodes (11): LibraryHealthCoordinator, MainActor, String, URL, Void, LibraryHealthIntegration, URL, LibraryIncidentStateMachine (+3 more)
+Cohesion: 0.11
+Nodes (16): LibraryHealthCoordinator, MainActor, String, URL, Void, LibraryHealthIntegration, URL, LibraryIncidentStateMachine (+8 more)
 
 ### Community 68 - "BEDROCK MASTER PLAN"
 Cohesion: 0.06
 Nodes (30): 0. The decisions this plan is built on, 10. What I need from you now, 1. Definition of done, 2. Program shape and dependency graph, 3. Gate protocol (how you review), 4. Worktree and commit strategy, 5. Phase details, 6. Tonight’s execution envelope (+22 more)
 
 ### Community 69 - "Window Chrome Configurator"
-Cohesion: 0.13
-Nodes (17): Coordinator, KeyNavigationCommand, down, escape, left, returnKey, right, up (+9 more)
+Cohesion: 0.17
+Nodes (11): Coordinator, KeyNavigationConfigurator, Any, Bool, Context, Coordinator, WindowChromeConfigurator, WindowToolbarVisibility (+3 more)
 
 ### Community 70 - "Weather Kit Service2 2"
-Cohesion: 0.11
-Nodes (21): LocationError, permissionDenied, permissionPending, timeout, LocationProvider, StoreError, prepareFailed, writeFailed (+13 more)
+Cohesion: 0.10
+Nodes (22): LocationError, permissionDenied, permissionPending, timeout, LocationProvider, StoreError, prepareFailed, writeFailed (+14 more)
 
 ### Community 71 - "EPUBReader Screen"
 Cohesion: 0.06
 Nodes (24): ReadingGenre, biography, business, children, education, fantasy, fiction, historical (+16 more)
 
 ### Community 72 - "Sentinel Repair 2"
-Cohesion: 0.10
+Cohesion: 0.09
 Nodes (15): AppSection, goals, home, insights, library, ContentView, Book, Bool (+7 more)
 
 ### Community 73 - "Weather"
-Cohesion: 0.07
-Nodes (23): BehavioralDiversityAnalyzer, BehavioralDiversityProfileBuilder, ContextAnalysisPipeline, ContextCorrelationAnalyzer, ContextDistributionAnalyzer, ContextWindowPreset, custom, extended (+15 more)
+Cohesion: 0.12
+Nodes (17): DataMaturityContextV1Adapter, AdvancedRoutineDetector, BehavioralContextSummary, BehavioralRoutine, ContextCorrelationAnalyzer, ContextNarrative, ContextProfile, ContextTransition (+9 more)
 
 ### Community 74 - "Mirage Wire Types"
 Cohesion: 0.17
@@ -739,8 +747,8 @@ Cohesion: 0.11
 Nodes (21): CommandPaletteBook, CommandPaletteIndex, CommandPaletteItem, CommandPaletteTarget, addBook, book, discover, section (+13 more)
 
 ### Community 78 - "Sentinel Test Support"
-Cohesion: 0.10
-Nodes (20): ReadingBehaviorMetric, abandonmentLikelihood, bookLength, booksCompleted, chaptersCompleted, completionLikelihood, complexity, difficulty (+12 more)
+Cohesion: 0.06
+Nodes (34): ConditionBucket, ReadingBehaviorMetric, abandonmentLikelihood, bookLength, booksCompleted, chaptersCompleted, completionLikelihood, complexity (+26 more)
 
 ### Community 79 - "Twin READMES 2026"
 Cohesion: 0.07
@@ -748,11 +756,11 @@ Nodes (26): 1 · What it is, 2 · The numbers (validated by direct count, Oct 17
 
 ### Community 80 - "03 fix log"
 Cohesion: 0.05
-Nodes (38): 03 · Fix Log, Attempted & honestly reverted, Open / unresolved (Finality not reached), P5 — Five Production Features, P5-HOTFIX — App-freeze report, P6.5 — Sentinel transparency + render-safety fix, P6-HOTFIX — Demo Profile installs froze the app, P6-HOTFIX v2 — THE ACTUAL ROOT CAUSE (+30 more)
+Nodes (40): 03 · Fix Log, Attempted & honestly reverted, Open / unresolved (Finality not reached), P5 — Five Production Features, P5-HOTFIX — App-freeze report, P6.5 — Sentinel transparency + render-safety fix, P6-HOTFIX — Demo Profile installs froze the app, P6-HOTFIX v2 — THE ACTUAL ROOT CAUSE (+32 more)
 
 ### Community 81 - "Sentinel Issue Store"
-Cohesion: 0.16
-Nodes (12): AchievementEngine, Book, Bool, Int, UUID, Void, GoalStreakTests, RebindIdempotenceTests (+4 more)
+Cohesion: 0.20
+Nodes (9): AchievementEngine, Book, Bool, Int, UUID, Void, GoalStreakTests, Int (+1 more)
 
 ### Community 82 - "Achievement Engine2"
 Cohesion: 0.07
@@ -768,7 +776,7 @@ Nodes (27): CodingKeys, acknowledgedAt, attemptCount, confidence, debugDetail, d
 
 ### Community 85 - "Weather 2"
 Cohesion: 0.12
-Nodes (20): SentinelAppFlags, SentinelDefaultsKey, SentinelJournalFacts, SentinelPersistenceKind, degraded, healthy, unknown, Book (+12 more)
+Nodes (16): SentinelJournalFacts, Book, Bool, Date, Int, Int64, SentinelEnvironment, TimeInterval (+8 more)
 
 ### Community 86 - "MIRAGE DEEP DIVE"
 Cohesion: 0.08
@@ -779,36 +787,36 @@ Cohesion: 0.09
 Nodes (20): BookVisualState, RotationStyle, flat, threeDimensional, Bool, CGSize, Double, View (+12 more)
 
 ### Community 88 - "Sentinel Launch And 2"
-Cohesion: 0.15
-Nodes (9): SentinelFixtureBridge, Book, Bool, Data, Int64, String, UInt64, URL (+1 more)
+Cohesion: 0.14
+Nodes (10): SentinelFixtureBridge, Book, Bool, Data, Int64, String, TimeInterval, UInt64 (+2 more)
 
 ### Community 89 - "Sentinel Environment"
-Cohesion: 0.17
-Nodes (13): SentinelClock, SentinelEnvironment, SentinelPaths, SentinelTrace, Bool, Date, Int64, String (+5 more)
+Cohesion: 0.16
+Nodes (12): SentinelClock, SentinelEnvironment, SentinelPaths, SentinelTrace, Bool, Date, Int64, String (+4 more)
 
 ### Community 90 - "Behavior Context Engine2 3"
-Cohesion: 0.12
-Nodes (13): LibraryDatabaseDoctor, LibraryReadOnlyConnection, Bool, Database, Date, Int, String, URL (+5 more)
+Cohesion: 0.25
+Nodes (8): LibraryDatabaseDoctor, LibraryReadOnlyConnection, Bool, Database, Date, Int, String, URL
 
 ### Community 91 - "RT Mirage Codebase"
 Cohesion: 0.08
 Nodes (24): 21.0 Escalation metric, doctrine, and non-execution charter, 21.10 Escalation of §9 — Integration boundary as formally specified subsystem, 21.11 Escalation of §10 — Adapter algebra: identity, import, cursor, synchronization, 21.11b Escalation of §11 — Feature exposure, query experience, data controls, 21.12 Escalation of §12 — Security/privacy hard plane, 21.13 Escalation of §13 — Testing calculus, quality gates, and statistical sufficiency, 21.14 Escalation of §14 — Build/packaging/release engineering to artifact-custody grade, 21.15 Escalation of §15 — Rollback calculus, recovery rehearsal, operational handoff (+16 more)
 
 ### Community 92 - "Book2 3"
-Cohesion: 0.12
-Nodes (10): BehavioralExportEncoder, BehaviorContextAccessKit, Data, Encoder, NSObjectProtocol, NSRunningApplication, Timer, URL (+2 more)
+Cohesion: 0.15
+Nodes (8): BehavioralRetentionController, BehaviorContextAccessKit, NSObjectProtocol, NSRunningApplication, Timer, URL, ObserverLifecycleTests, Notification
 
 ### Community 93 - "Sentinel Domain 4"
-Cohesion: 0.11
-Nodes (11): AppIdentity, URL, LiveSentinelRepairBridge, Book, Bool, Int64, String, TimeInterval (+3 more)
+Cohesion: 0.08
+Nodes (15): AppIdentity, URL, RuntimeEnvironment, Bool, URL, LiveSentinelRepairBridge, Book, Bool (+7 more)
 
 ### Community 94 - "Developer Console Types"
-Cohesion: 0.14
+Cohesion: 0.15
 Nodes (14): LoadOutcome, empty, failed, loaded, rebuiltFromJournal, recoveredFromBackup, SentinelIssueStore, State (+6 more)
 
 ### Community 95 - "EPUBReader Screen 2"
-Cohesion: 0.14
-Nodes (17): Coordinator, EPUBChapterWebView, Context, Coordinator, Error, Int, String, URL (+9 more)
+Cohesion: 0.12
+Nodes (17): Coordinator, EPUBChapterWebView, Content, Context, Coordinator, Error, String, URL (+9 more)
 
 ### Community 96 - "Mirage Identity Drift"
 Cohesion: 0.19
@@ -819,24 +827,24 @@ Cohesion: 0.18
 Nodes (11): Asterisma v1.0 — Beta UX Audit & Remediation Register, Beta QA matrix, Candidate and ready-build references, Evidence and severity, Finding register, Fourth batch — reader & library polish, Product decisions still required, Ready close-out — 2026-10-26 (+3 more)
 
 ### Community 98 - "Sentinel Health Center"
-Cohesion: 0.25
-Nodes (10): Data, Fixture, mirageBooksListFixture(), MirageIdentityDriftTests, mirageReceiptFixture(), Bool, Data, Sendable (+2 more)
+Cohesion: 0.23
+Nodes (11): MirageSourceFingerprint, Data, Fixture, mirageBooksListFixture(), MirageIdentityDriftTests, mirageReceiptFixture(), Bool, Data (+3 more)
 
 ### Community 99 - "Sentinel Pins"
-Cohesion: 0.17
-Nodes (16): SQL016TableContract, cleanInstallIsQuiet(), damagedFixture(), descriptorContract(), determinism(), fastPassBudget(), Optional, privacyAcrossCatalog() (+8 more)
+Cohesion: 0.19
+Nodes (18): TestSentinelClock, SQL016TableContract, cleanInstallIsQuiet(), damagedFixture(), descriptorContract(), determinism(), fastPassBudget(), Optional (+10 more)
 
 ### Community 100 - "Shared Text Utilities"
 Cohesion: 0.19
 Nodes (13): decodeHTMLEntities(), decodeNumericEntities(), extractPlainSentences(), normalizeWhitespace(), ReadingComplexityHints, stripHTML(), Bool, Double (+5 more)
 
 ### Community 101 - "Audio Snapshot"
-Cohesion: 0.06
-Nodes (26): AdvancedRoutineDetector, AdvancedSignificanceEngine, BehavioralSignificanceClassification, dominantBehavior, incidentalNoise, moderateSignal, strongSignal, weakSignal (+18 more)
+Cohesion: 0.24
+Nodes (6): ContextContinuityAnalyzer, ContextContinuityType, continuous, isolatedReading, majorTransition, partialTransition
 
 ### Community 102 - "Behavior Context Engine2 4"
-Cohesion: 0.12
-Nodes (9): SentinelHealthCenterView, Color, Tab, checks, history, issues, overview, recovery (+1 more)
+Cohesion: 0.10
+Nodes (14): SentinelHealthCenterView, SeverityFilter, all, critical, info, warning, Color, Tab (+6 more)
 
 ### Community 103 - "Developer Console Root"
 Cohesion: 0.29
@@ -847,16 +855,16 @@ Cohesion: 0.09
 Nodes (22): 22.0 The contract — formal SLO and the four sub-guarantees, 22.10 The Bridge Ledger — audit trail and the answer machine, 22.11 Failure-mode compendium — typed error registry `TB-*`, 22.12 Drift, divergence, and anti-tamper — the vendored tree is read-only to everyone but the bridge, 22.13 Security threat model — the bridge is a code-injection channel, treat it like one, 22.14 Storms, skew, and pathological schedules, 22.15 Human controls — the DX surface, 22.16 Governance integration — ADR-12 and the doctrine collision, resolved (+14 more)
 
 ### Community 105 - "Sentinel Catalog"
-Cohesion: 0.10
-Nodes (12): SentinelFingerprint, SentinelRuleID, Encoder, SentinelProbeCatalog, Int, SentinelProbeDescriptor, SentinelIssueStatus, String (+4 more)
+Cohesion: 0.08
+Nodes (21): BehavioralEnvironmentType, administrative, browsing, creative, development, entertainment, gaming, idle (+13 more)
 
 ### Community 106 - "Sentinel Probes Files"
-Cohesion: 0.25
-Nodes (11): LibraryPreservationError, ioFailure, missingStore, preservedCopyExists, unverifiedCopy, LibraryStorePreserver, Bool, Data (+3 more)
+Cohesion: 0.16
+Nodes (19): PreservedFile, PreservedFileRole, main, manifest, memorySnapshot, shm, wal, PreservedStore (+11 more)
 
 ### Community 107 - "Book Importer 2"
-Cohesion: 0.09
-Nodes (29): SentinelRiskClass, r0, r1, r2, r3, SentinelDiagnoser, SentinelDiagnosisResult, SentinelProbeDescriptor (+21 more)
+Cohesion: 0.05
+Nodes (49): SentinelDomain, app, audio, backups, behavior, capacity, collections, database (+41 more)
 
 ### Community 108 - "10 profiler fix"
 Cohesion: 0.10
@@ -875,15 +883,15 @@ Cohesion: 0.10
 Nodes (21): 0. The brief, 17.1 Stop conditions, 17.2 What we will deliberately not do, 17. Risks and mitigations, 18. Open decisions for the owner, 3.1 The three promises, 3.2 Jobs to be done, 3.3 The trust equation (+13 more)
 
 ### Community 112 - "Sentinel Domain 5"
-Cohesion: 0.10
-Nodes (18): SentinelJournalEvent, coverage, cycle, issueClosed, issueOpened, issueUpdated, migration, probeSkipped (+10 more)
+Cohesion: 0.13
+Nodes (12): AnchorClock, Calendar, Date, Double, EnvironmentOverrideStore, Calendar, Date, Int (+4 more)
 
 ### Community 113 - "Weather Analysis Engine 3"
 Cohesion: 0.10
-Nodes (19): DeveloperConsoleRootView, DeveloperConsoleSection, architectureExplorer, dashboard, deadCode, demoLab, dependencyGraph, errorCenter (+11 more)
+Nodes (20): DeveloperConsoleRootView, DeveloperConsoleSection, architectureExplorer, dashboard, deadCode, demoLab, dependencyGraph, environment (+12 more)
 
 ### Community 114 - "Settings Root View"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (17): LibraryIncidentKind, backupVerificationFailed, databaseUnreadable, diskSpaceCritical, integrityCheckFailed, loadFailed, recordDecodeFailed, recoveryInterrupted (+9 more)
 
 ### Community 115 - "EPUBPackage"
@@ -915,27 +923,27 @@ Cohesion: 0.11
 Nodes (19): 8.11.1 How a wave spends its 94 probes, 8.11.2 Wave exit criteria, 8.11.3 What every subdomain record must declare, 8.11 The 120-subdomain atlas, APP — application state, AUD — audio, BAK — backups and recovery, BHV — behavior evidence (+11 more)
 
 ### Community 122 - "Sentinel Domain 6"
-Cohesion: 0.13
-Nodes (13): DayPeriod, afternoon, dawn, evening, morning, night, WeatherSnapshotNormaliser, Int (+5 more)
+Cohesion: 0.21
+Nodes (9): ApplicationUsageSession, BehavioralArchive, BehavioralEvent, BehavioralEventStore, BehavioralEvidenceBuffer, BehaviorEvidenceArchive, DeviceStateEvent, InactivityRecord (+1 more)
 
 ### Community 123 - "Musical Analysis Engine 3"
-Cohesion: 0.31
+Cohesion: 0.34
 Nodes (12): Document, IssueRow, ProbeRow, RecoveryRow, Registry, RepairRow, SentinelDiagnostics, Bool (+4 more)
 
 ### Community 124 - "Environment Engine2"
-Cohesion: 0.22
-Nodes (9): EnvironmentEngine, Bool, Calendar, Date, Never, Task, Void, EnvironmentEngineTests (+1 more)
+Cohesion: 0.17
+Nodes (11): EnvironmentEngine, Bool, Calendar, Date, MainActor, Never, Task, TimeInterval (+3 more)
 
 ### Community 125 - "Sentinel SG0"
-Cohesion: 0.15
-Nodes (10): SentinelEvidence, SentinelEvidenceSource, dataStore, fileSystem, sentinel, sqlite, subsystem, SentinelEnvironment (+2 more)
+Cohesion: 0.16
+Nodes (7): AnalyticsCachePinsTests, Book, String, URL, DataEraseTests, SQLiteDataStoreTests, URL
 
 ### Community 126 - "SENTINEL ROADWORK 4"
 Cohesion: 0.11
 Nodes (18): 12.1 Threat model, 12.2 Write confinement, 12.3 Snapshot and restore, 12.4 Verification matrix, 12.5 Privacy classes, 12.6 Sandbox and entitlements, 12.7 Defensive parsing, 12.8 Failure modes and user messaging (+10 more)
 
 ### Community 127 - "Shooting Star Manager"
-Cohesion: 0.24
+Cohesion: 0.23
 Nodes (8): book(), DiscoveryOfflineTests, offlineSession(), SlowProvider, StaticProvider, OnlineBook, String, URLSession
 
 ### Community 128 - "Analytics Cache"
@@ -943,19 +951,19 @@ Cohesion: 0.17
 Nodes (15): LibraryLogicalRebuilder, LibraryReadOnlyConnection, LibraryRebuildError, destinationExists, noRecoverablePayloads, rebuildFailed, unreadableSource, LibraryRebuildResult (+7 more)
 
 ### Community 129 - "Sentinel Engine 2"
-Cohesion: 0.11
-Nodes (20): BrowserLayout, grid, list, BrowserShelfFilter, all, favorites, finished, reading (+12 more)
+Cohesion: 0.14
+Nodes (16): BrowserLayout, grid, list, BrowserShelfFilter, all, favorites, finished, reading (+8 more)
 
 ### Community 130 - "Behavior Context Engine2 5"
 Cohesion: 0.14
 Nodes (19): LibraryRowRepairError, exportMissing, storeClosed, unsupportedTable, writeFailed, LibraryRowRepairReceipt, LibraryRowRepairService, Any (+11 more)
 
 ### Community 131 - "Sentinel Pane View"
-Cohesion: 0.05
-Nodes (43): SentinelCopy, SentinelCoverage, SentinelDiagnosis, SentinelFormat, SentinelHealthBand, attention, critical, healthy (+35 more)
+Cohesion: 0.06
+Nodes (36): SentinelDiagnosis, SentinelEvidence, SentinelEvidenceSource, dataStore, fileSystem, sentinel, sqlite, subsystem (+28 more)
 
 ### Community 132 - "Open Library Provider"
-Cohesion: 0.31
+Cohesion: 0.29
 Nodes (6): MirageIdentityMapContractTests, MirageIdentityMapEntry, MirageIdentityMapEntry, String, URL, UUID
 
 ### Community 133 - "SENTINEL ROADWORK 5"
@@ -971,8 +979,8 @@ Cohesion: 0.25
 Nodes (8): PersistenceWriter, CheckedContinuation, Never, String, Task, WriteResult, G1PersistenceWriterPinsTests, DispatchQueue
 
 ### Community 136 - "Environment Color"
-Cohesion: 0.14
-Nodes (8): Data, LibraryDatabase, URL, RuntimeEnvironment, Bool, URL, EarnedAchievement, Date
+Cohesion: 0.12
+Nodes (11): BehavioralReplayController, BehavioralSnapshot, BehavioralSnapshotStream, DeviceStateType, active, awake, inactive, locked (+3 more)
 
 ### Community 137 - "Reading Tracker UI"
 Cohesion: 0.16
@@ -983,40 +991,40 @@ Cohesion: 0.12
 Nodes (15): 06 · RSVP Feature Plan, 1. What is readrrr doing?, 2. How does it work?, 3. Why build this?, 4. How can we integrate it?, 5. Why is this plausible on this platform?, 6. What do we need to do, in order?, A. Suggested module layout (+7 more)
 
 ### Community 139 - "Sentinel Diagnostics"
-Cohesion: 0.15
-Nodes (9): FILE005MissingCover, FILE012BookFileModifiedAfterImport, SentinelFileProbeHelpers, Book, Bool, Data, String, URL (+1 more)
+Cohesion: 0.19
+Nodes (8): FILE003DuplicateBookmarkTarget, SentinelFileProbeHelpers, Book, Bool, Data, String, URL, UUID
 
 ### Community 140 - "Sentinel Domain 7"
-Cohesion: 0.13
-Nodes (15): LibraryIncidentScanResult, LibraryIncidentStore, LibraryIncidentStoreError, corruptIncident, ioFailure, receiptExists, unsupportedSchema, Data (+7 more)
+Cohesion: 0.12
+Nodes (16): LibraryIncidentScanResult, LibraryIncidentStore, LibraryIncidentStoreError, corruptIncident, ioFailure, receiptExists, unsupportedSchema, Data (+8 more)
 
 ### Community 141 - "Fatigue Analyzer"
 Cohesion: 0.27
 Nodes (7): AnalyticsCache, Signature, Book, Bool, Int, UInt64, ReadingStreak
 
 ### Community 142 - "Developer Console Dashboard"
-Cohesion: 0.12
-Nodes (18): Blocker, engineUnavailable, permanentDown, protocolIncompatible, describe(), MirageSidecarAttemptFailure, restartable, terminal (+10 more)
+Cohesion: 0.36
+Nodes (8): LiveAtmosphereView, Bool, CGSize, Color, Double, GraphicsContext, Int, WeatherEffectView
 
 ### Community 143 - "Environment Anchor Period"
 Cohesion: 0.15
 Nodes (12): 1. One warm, app-scoped session, 2. Lifecycle boundaries, 3. Cached library index, 4. Batch analysis is a sequencer, not a second execution path, 5. Ownership and persistence are unchanged, ADR-13 — Warm Mirage engine, cached library index, and batch analysis, Alternatives considered, Consequences (+4 more)
 
 ### Community 144 - "Weather Analysis Engine 4"
-Cohesion: 0.06
-Nodes (28): LibraryIncidentState, abandoned, awaitingDecision, detected, diagnosing, executing, failed, freezing (+20 more)
+Cohesion: 0.15
+Nodes (14): Key, Bool, Double, WeatherVisual, WeatherVisualKind, clear, cloudy, fog (+6 more)
 
 ### Community 145 - "Weather Insight Panel2"
 Cohesion: 0.06
-Nodes (26): SentinelReportCardView, Int, String, Void, OnlineBook, OnlineBookDetailView, OnlineBook, String (+18 more)
+Nodes (26): OnlineBook, OnlineBookDetailView, OnlineBook, String, OnlineBookRow, Color, OnlineBook, String (+18 more)
 
 ### Community 146 - "Spatial Navigator View2"
 Cohesion: 0.12
 Nodes (16): AudioFactor, albumIdentity, artistIdentity, audioCategory, audioSource, dayOfWeek, genreCategory, genreEnergy (+8 more)
 
 ### Community 147 - "Analytics Engine 2"
-Cohesion: 0.10
-Nodes (15): SentinelEngine, Bool, Int, Timer, URL, SentinelPinsTests, Book, Void (+7 more)
+Cohesion: 0.15
+Nodes (8): SentinelEngine, Bool, Int, Timer, UserDefaults, SentinelPinsTests, Book, Void
 
 ### Community 148 - "Design Grid"
 Cohesion: 0.26
@@ -1027,12 +1035,12 @@ Cohesion: 0.08
 Nodes (24): MirageIdentityMapEntry, MirageIdentityMapFile, MirageIdentityMapLoad, loaded, unreadable, MirageIdentityMapSchema, MirageIdentityMapTime, OrphanReason (+16 more)
 
 ### Community 150 - "Developer Console Registry"
-Cohesion: 0.24
+Cohesion: 0.27
 Nodes (6): BehavioralSessionGapAnalyzer, FatigueIndicatorAnalyzer, FatigueAnalyzerTests, Double, Int, UUID
 
 ### Community 151 - "Environment Math"
-Cohesion: 0.16
-Nodes (11): Animation, SeededGenerator, UInt64, EnvironmentBackgroundView, CGSize, StarField, CGSize, Double (+3 more)
+Cohesion: 0.20
+Nodes (6): ProductionLibraryRecoveryIO, Bool, Data, Int64, String, URL
 
 ### Community 152 - "09 final traces"
 Cohesion: 0.14
@@ -1043,48 +1051,48 @@ Cohesion: 0.14
 Nodes (14): 7.1 The issue, 7.2 Evidence, 7.3 Fingerprint, 7.3a.1 One invariant, one owner, 7.3a.2 Root-cause grouping is presentation, not identity, 7.3a.3 Rule versioning and mass reconciliation, 7.3a Ownership, root-cause grouping, and rule versioning, 7.4 Lifecycle (+6 more)
 
 ### Community 154 - "New Content View 2"
-Cohesion: 0.16
-Nodes (13): MirageBannerFault, notJSON, statusNotReady, MirageJSONValue, MirageProcessLauncher, MirageProcessTransportConfig, MiragePythonLocator, Any (+5 more)
+Cohesion: 0.15
+Nodes (12): Color, ReaderBrightnessOverlay, ReaderColumnLayout, automatic, double, single, ReaderComfort, ReaderPageTurnStyle (+4 more)
 
 ### Community 155 - "Audio Snapshot 2"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (15): RoutineCategory, activityAssociated, afternoonReading, emergingRoutine, entertainmentTransition, eveningReading, lateNightReading, learningTransition (+7 more)
 
 ### Community 156 - "Online Book"
-Cohesion: 0.20
-Nodes (9): DeveloperConsoleDashboardView, DeveloperConsoleKnownSubsystem, DeveloperConsoleKnownSubsystems, FlaggedItem, Bool, Color, String, ConsolePalette (+1 more)
+Cohesion: 0.22
+Nodes (7): SentinelSG0Tests, Book, Bool, Int, String, URL, UserDefaults
 
 ### Community 157 - "Online Book Discovery"
 Cohesion: 0.17
 Nodes (13): CodingKeys, authorName, coverI, isbn, key, title, OpenLibraryDocument, OpenLibraryProvider (+5 more)
 
 ### Community 158 - "Online Book Discovery 2"
-Cohesion: 0.09
-Nodes (19): SentinelDomain, app, audio, backups, behavior, capacity, collections, database (+11 more)
+Cohesion: 0.19
+Nodes (10): Coordinator, PDFReaderView, CGFloat, CGSize, Coordinator, Int, Timer, Void (+2 more)
 
 ### Community 159 - "Gutenberg Provider"
-Cohesion: 0.16
-Nodes (9): MirageStatusInventory, MirageJSONValue, EngineFixture, MirageStatusSurfaceTests, RecordingBooksListTransport, Data, MirageIdentityMapEntry, String (+1 more)
+Cohesion: 0.13
+Nodes (9): AlwaysOpenRecoveryGate, LibraryOperationalMode, normal, suspended, LibrarySuspensionReason, incidentOpen, recoveryExecuting, recoveryVerifying (+1 more)
 
 ### Community 160 - "Shooting Star View"
 Cohesion: 0.43
 Nodes (7): digest(), main(), Path, render(), scan(), swift_files(), swift_string_array()
 
 ### Community 161 - "Star Field View"
-Cohesion: 0.27
-Nodes (6): CorrelationRow, Bool, Color, String, WeatherInsightPanel, WeatherStatCard
+Cohesion: 0.15
+Nodes (14): SeasonalBucket, SeasonalPeriod, autumn, spring, summer, winter, SeasonalProfile, WeatherTrendReport (+6 more)
 
 ### Community 162 - "Book Importer 3"
 Cohesion: 0.12
-Nodes (7): Notification.Name, DesignGrid, CGFloat, Double, Combine, CoreGraphics, Network
+Nodes (7): AppKit, Notification.Name, SentinelAppIntegration, SentinelHealthCenterWindowID, Combine, Network, PDFKit
 
 ### Community 163 - "Mirage Feature Lifecycle"
 Cohesion: 0.18
 Nodes (11): SpatialNavigatorCard, Book, Bool, CGFloat, Void, SpatialNavigatorView, Book, Bool (+3 more)
 
 ### Community 164 - "READER POLISH 2026"
-Cohesion: 0.12
-Nodes (17): Deliberately still open, EPUB, EPUB, Library, Next polish phases, Owner acceptance checklist, PDF, PDF (+9 more)
+Cohesion: 0.15
+Nodes (13): Deliberately still open, EPUB, Next polish phases, PDF, Phase 1 session close (2026-10-25/26, historical), Phase 2 implemented — reader customization (2026-10-29), Phase 2 limits, Reader & Library Polish — 2026-10-25 (+5 more)
 
 ### Community 165 - "touchpoint inventory"
 Cohesion: 0.15
@@ -1119,24 +1127,24 @@ Cohesion: 0.15
 Nodes (13): 9.10 Never automatic, 9.11 Repair preview, 9.12 Repair receipts and undo, 9.1 What counts as a repair, 9.2 Repair classes, 9.3 The catalog, 9.4 Execution protocol, 9.5 Deep dive: REP-001 orphan session (+5 more)
 
 ### Community 173 - "Advanced Context View"
-Cohesion: 0.18
+Cohesion: 0.19
 Nodes (5): SentinelDataBridge, DemoRapidSwitchTests, Int, String, URL
 
 ### Community 174 - "Behavioral Category 4"
-Cohesion: 0.11
-Nodes (14): AnyObject, DeveloperConsoleObservable, DeveloperConsoleStaticObservable, NotificationScheduler, Bool, Date, Int, String (+6 more)
+Cohesion: 0.14
+Nodes (7): DeveloperConsoleObservable, SessionEventRouter, Book, Date, Int, Set, UUID
 
 ### Community 175 - "Weather Analysis Engine 5"
-Cohesion: 0.17
-Nodes (7): EnvironmentalCorrelation, EnvironmentalSessionRecord, WeatherAnalysisEngine, Date, Double, String, WeatherConfidencePinsTests
+Cohesion: 0.38
+Nodes (4): Date, Double, String, WeatherConfidencePinsTests
 
 ### Community 176 - "Library Filter State"
-Cohesion: 0.24
-Nodes (9): AudioBehaviorEvolution, Bool, BehaviorEvolutionState, evolving, lost, newBehavior, stable, strengthening (+1 more)
+Cohesion: 0.18
+Nodes (5): SentinelEnvironment, SentinelProbeDescriptor, TimeInterval, CryptoKit, GRDB
 
 ### Community 177 - "Weather Confidence Pins"
-Cohesion: 0.27
-Nodes (4): ContextInsightPanel, RoutineRow, Int, String
+Cohesion: 0.35
+Nodes (3): AdvancedContextView, Double, String
 
 ### Community 178 - "12 owner test"
 Cohesion: 0.17
@@ -1151,16 +1159,16 @@ Cohesion: 0.17
 Nodes (11): 10. Definition of success, 1. Scope and invariants, 2. Baseline and inventory, 3. Project and dependency analysis, 4. Target tree, 5. Relocation ledger, 6. Exception register — left in place deliberately, 7. Verification (+3 more)
 
 ### Community 181 - "Sentinel Data Bridge 2"
-Cohesion: 0.05
-Nodes (43): SentinelTrend, improving, new, persistent, regressed, repaired, worsening, InsightCategory (+35 more)
+Cohesion: 0.18
+Nodes (12): PDFReaderBackground, paper, slate, system, PDFReaderSettings, PDFReadingDirection, leftToRight, rightToLeft (+4 more)
 
 ### Community 182 - "Audio Snapshot 3"
-Cohesion: 0.11
-Nodes (20): ConsoleSubsystemCategory, engine, manager, model, pipeline, service, utility, view (+12 more)
+Cohesion: 0.06
+Nodes (38): DeveloperConsoleDashboardView, DeveloperConsoleKnownSubsystem, DeveloperConsoleKnownSubsystems, FlaggedItem, Bool, Color, String, ConsolePalette (+30 more)
 
 ### Community 183 - "Demo Profile Lab"
-Cohesion: 0.25
-Nodes (11): clamp(), IntelligentNotificationEngine, IntelligentNotificationResult, NotificationBehaviorProfile, NotificationConfidence, ReadingOpportunityWindow, Bool, Date (+3 more)
+Cohesion: 0.14
+Nodes (25): clamp(), IntelligentNotificationEngine, IntelligentNotificationResult, NotificationAnalytics, NotificationBehaviorProfile, NotificationCandidate, NotificationCategory, achievementMilestone (+17 more)
 
 ### Community 184 - "Library Collection"
 Cohesion: 0.27
@@ -1171,7 +1179,7 @@ Cohesion: 0.10
 Nodes (22): MirageCursor, absent, estimated, page, unit, MirageCursorGate, MirageCursorGateError, detailProbeRejected (+14 more)
 
 ### Community 186 - "07 testing strategy"
-Cohesion: 0.15
+Cohesion: 0.17
 Nodes (12): 07 · Testing Strategy, Engaging the opt-in suites, Example: the shape of a pin in this repo, House conventions (pinned by practice), Standing Mirage doctrine (same rules the code enforces), The Mirage integration band (added by the merge campaign), The offline contract band (2026-10-29), The reader customization band (2026-10-29) (+4 more)
 
 ### Community 187 - "Sentinel Engine 3"
@@ -1179,8 +1187,8 @@ Cohesion: 0.23
 Nodes (8): BookDiscoveryViewModel, Bool, Never, OnlineBook, String, Task, Void, NWPathMonitor
 
 ### Community 188 - "Audio Tracker Metadata2 2"
-Cohesion: 0.15
-Nodes (13): GutenbergProvider, GutendexAuthor, GutendexBook, GutendexFormats, GutendexResponse, Int, OnlineBook, String (+5 more)
+Cohesion: 0.22
+Nodes (12): CodingKeys, imageJPEG, GutenbergProvider, GutendexAuthor, GutendexBook, GutendexFormats, GutendexResponse, Int (+4 more)
 
 ### Community 189 - "Weather Environment Modifier"
 Cohesion: 0.15
@@ -1188,7 +1196,7 @@ Nodes (13): 1. The model, 2. Evidence and principles, 3. Diagnosis, 5. What ship
 
 ### Community 190 - "Weather Analysis Engine 6"
 Cohesion: 0.09
-Nodes (74): LibraryOrphanGroup, LibrarySnapshotInspection, DataMaturityAuthority, DataMaturityContextV1Adapter, BehavioralEvidenceSource, AdvancedRoutineAnalysis, AdvancedSignificanceAssessment, AnalyticsContextEnrichment (+66 more)
+Nodes (71): LibraryOrphanGroup, SentinelAppFlags, SentinelSurfaceGapReason, noOwner, ownerNotRegistered, LibrarySnapshotInspection, BehavioralEvidenceSource, AdvancedRoutineAnalysis (+63 more)
 
 ### Community 191 - "Mirage Cursor"
 Cohesion: 0.27
@@ -1199,8 +1207,8 @@ Cohesion: 0.22
 Nodes (9): ReadingWindow, afternoon, evening, morning, night, ReadingInsightsDashboard, Bool, Date (+1 more)
 
 ### Community 193 - "Session History View"
-Cohesion: 0.39
-Nodes (5): BehavioralEvidenceCursor, BehavioralEvidencePage, BehavioralPaginationEngine, Bool, T
+Cohesion: 0.11
+Nodes (14): ApplicationSessionReconstructor, BehavioralCompressionDescriptor, BehavioralEvidenceCursor, BehavioralEvidencePage, BehavioralIntegrityReport, BehavioralMetricsDescriptor, BehavioralPaginationEngine, BehavioralRetentionPolicy (+6 more)
 
 ### Community 194 - "Celebration Timeline"
 Cohesion: 0.26
@@ -1208,10 +1216,10 @@ Nodes (4): BehavioralEventJournal, BehavioralSequenceGenerator, SequencedBehavio
 
 ### Community 195 - "Remediation Pins 2"
 Cohesion: 0.23
-Nodes (8): ShootingStarManager, CGSize, ClosedRange, Double, MainActor, Never, Task, Void
+Nodes (6): BehavioralExportEncoder, Data, Decoder, Encoder, ThermalStateEvent, ProcessInfo
 
 ### Community 196 - "README 2"
-Cohesion: 0.25
+Cohesion: 0.23
 Nodes (4): Sentinel v2 tranche — census receipt (2026-10-28), Honest limitations carried across gates, Sentinel gate index, What "pass" means here
 
 ### Community 197 - "ADR 2 transport"
@@ -1248,23 +1256,23 @@ Nodes (12): EnvironmentalInsightCategory, abandonment, completion, consistency, 
 
 ### Community 205 - "Behavior Context Engine2 6"
 Cohesion: 0.15
-Nodes (11): AnchorClock, EnvironmentAnchorPeriod, afternoon, midday, morning, night, Calendar, Date (+3 more)
+Nodes (11): EnvironmentAnchorPeriod, afternoon, midday, morning, night, Double, Int, EnvironmentMath (+3 more)
 
 ### Community 206 - "Developer Console System"
 Cohesion: 0.19
-Nodes (11): PDFReaderScreen, PDFReaderView, Book, Bool, Content, Double, Int, Never (+3 more)
+Nodes (8): PDFReaderScreen, Book, Bool, Content, Double, Never, String, Task
 
 ### Community 207 - "Environment Math 2"
 Cohesion: 0.12
 Nodes (16): LibraryIncidentEvent, abandon, beginDiagnosis, beginFreeze, critical, diagnosisFailed, execute, executeFailed (+8 more)
 
 ### Community 208 - "Onboarding View"
-Cohesion: 0.43
-Nodes (5): NotificationAnalytics, NotificationCandidate, NotificationScoreBreakdown, Book, UUID
+Cohesion: 0.17
+Nodes (12): BehaviorCategory, administrative, browsing, creative, development, entertainment, gaming, idle (+4 more)
 
 ### Community 209 - "Mirage Identity Real"
-Cohesion: 0.33
-Nodes (7): MirageIdentityRealEngineImportTests, MirageImportFault, mirageZipFixtureDirectory(), Bool, String, URL, writeMinimalRealEpubFixture()
+Cohesion: 0.39
+Nodes (6): MirageImportFault, mirageZipFixtureDirectory(), Bool, String, URL, writeMinimalRealEpubFixture()
 
 ### Community 210 - "ADR 3 packaged"
 Cohesion: 0.22
@@ -1295,20 +1303,20 @@ Cohesion: 0.22
 Nodes (8): Acceptance checklist, Decision, Distribution, Gate G8 — Final acceptance / release candidate, Known deltas (must be read with acceptance), Owner-test fixes (post-acceptance), Release receipt, Rollback
 
 ### Community 217 - "Sentinel Probe Support"
-Cohesion: 0.28
-Nodes (4): OnboardingView, Book, Bool, String
+Cohesion: 0.10
+Nodes (11): GoalEditorPane, OnboardingView, Book, Bool, String, GoalPersistenceTests, RebindIdempotenceTests, Book (+3 more)
 
 ### Community 218 - "Sentinel Probes Storage"
-Cohesion: 0.13
-Nodes (15): EnvironmentalFactor, cloudCover, dayPeriod, feelsLikeTemperature, humidity, month, pressure, rain (+7 more)
+Cohesion: 0.05
+Nodes (43): SentinelTrend, improving, new, persistent, regressed, repaired, worsening, BehaviorEvolutionState (+35 more)
 
 ### Community 219 - "RSVPReader View"
-Cohesion: 0.18
-Nodes (10): Star, CGFloat, CGPoint, Double, UUID, StarFieldView, Bool, CGSize (+2 more)
+Cohesion: 0.11
+Nodes (18): SeededGenerator, UInt64, Star, CGFloat, CGPoint, Double, UUID, StarField (+10 more)
 
 ### Community 220 - "Schema Evolution"
-Cohesion: 0.17
-Nodes (9): TimeInterval, makeEvidence(), makeFinding(), makeIssue(), SentinelCorrelationTests, SentinelHealthTests, Date, Int (+1 more)
+Cohesion: 0.19
+Nodes (6): TimeInterval, makeIssue(), SentinelCorrelationTests, SentinelHealthTests, Date, Int
 
 ### Community 221 - "01 project tree"
 Cohesion: 0.25
@@ -1351,12 +1359,12 @@ Cohesion: 0.13
 Nodes (12): LibraryFilterState, ReadingStatusFilter, all, completed, inProgress, notStarted, Book, Bool (+4 more)
 
 ### Community 231 - "Goals Dashboard"
-Cohesion: 0.25
-Nodes (6): MirageProtocolConstants, SemVer, Bool, Data, Int, String
+Cohesion: 0.17
+Nodes (12): ReaderFontFamily, athelas, avenirNext, charter, georgia, iowan, newYork, original (+4 more)
 
 ### Community 232 - "Library Filter Sidebar"
-Cohesion: 0.36
-Nodes (5): LibraryRecoveryFlowTests, Book, Int, String, URL
+Cohesion: 0.29
+Nodes (4): BehavioralObservationWindow, BehavioralPartitionBuilder, BehavioralStoragePartition, BehavioralWindowCache
 
 ### Community 233 - "Adaptive Layout Tier"
 Cohesion: 0.24
@@ -1367,12 +1375,12 @@ Cohesion: 0.33
 Nodes (3): CelebrationTimelineTests, DismissalFlag, Bool
 
 ### Community 235 - "Mirage Cursor 3"
-Cohesion: 0.36
+Cohesion: 0.31
 Nodes (4): DeveloperConsoleSystemMetrics, Double, String, UInt64
 
 ### Community 236 - "SQLite Foundation"
-Cohesion: 0.21
-Nodes (10): ShootingStar, CGPoint, CGSize, Date, Double, UUID, ShootingStarView, CGSize (+2 more)
+Cohesion: 0.09
+Nodes (21): Animation, EnvironmentBackgroundView, CGSize, ShootingStar, CGPoint, CGSize, Date, Double (+13 more)
 
 ### Community 237 - "fullscreen surface audit"
 Cohesion: 0.20
@@ -1455,24 +1463,24 @@ Cohesion: 0.17
 Nodes (12): SentinelEvidenceKind, aggregate, boolean, bytes, count, coverage, duration, fileRef (+4 more)
 
 ### Community 257 - "Achievement Engine2 3"
-Cohesion: 0.09
-Nodes (21): JSONEncoder, LibraryFreezeToken, LibraryMemorySnapshot, LibraryRecoveryHostError, alreadyFrozen, closeFailed, noDatabaseURL, notFrozen (+13 more)
+Cohesion: 0.25
+Nodes (7): StorageCondition, degraded, failed, healthy, readOnly, recovering, Bool
 
 ### Community 258 - "Behavior Context Engine2 7"
 Cohesion: 0.13
 Nodes (16): SentinelSurfaceCatalog, SentinelSurfaceRegistry, Bool, Int, String, SentinelSurfaceEntry, SentinelSurfaceFamily, defaultsKey (+8 more)
 
 ### Community 259 - "Reading Goal Manager2 2"
-Cohesion: 0.19
-Nodes (5): DeveloperConsoleRegistry, DeveloperConsoleStaticEngineManifest, Int, String, T
+Cohesion: 0.24
+Nodes (6): DeveloperConsoleStaticObservable, DeveloperConsoleRegistry, DeveloperConsoleStaticEngineManifest, Int, String, T
 
 ### Community 260 - "EPUBPackage 2"
-Cohesion: 0.23
-Nodes (13): ArchiveResponse, Array, Current, CurrentResponse, Hourly, OpenMeteoError, malformedResponse, noHistoricalData (+5 more)
+Cohesion: 0.29
+Nodes (4): BehaviorEvidenceBuilder, Date, Double, Int
 
 ### Community 261 - "Non Gregorian Calendar"
-Cohesion: 0.07
-Nodes (33): AchievementDriftProbe, DeadlineOverdueProbe, DiskSpaceProbe, IntegrityProbe, OrphanedActiveSessionProbe, Outcome, autoFixed, detected (+25 more)
+Cohesion: 0.10
+Nodes (25): AchievementDriftProbe, DeadlineOverdueProbe, DiskSpaceProbe, IntegrityProbe, OrphanedActiveSessionProbe, Outcome, autoFixed, detected (+17 more)
 
 ### Community 262 - "Reader Appearance 2"
 Cohesion: 0.33
@@ -1551,12 +1559,12 @@ Cohesion: 0.60
 Nodes (5): lerp(), main(), radial_gradient(), rounded_mask(), star()
 
 ### Community 281 - "Runtime Environment"
-Cohesion: 0.22
-Nodes (6): LibraryState, SentinelRepairEquality, LibrarySnapshotTests, Book, Int, URL
+Cohesion: 0.15
+Nodes (12): LibraryRecoveryHostError, alreadyFrozen, closeFailed, noDatabaseURL, notFrozen, notSQLite, reopenFailed, tokenMismatch (+4 more)
 
 ### Community 282 - "Behavioral Category 5"
-Cohesion: 0.21
-Nodes (6): BookCoverCapture, CGFloat, NSImage, NSSize, PDFDocument, PDFOutline
+Cohesion: 0.23
+Nodes (5): BookCoverCapture, CGFloat, NSImage, PDFDocument, PDFOutline
 
 ### Community 283 - "Mirage Settings"
 Cohesion: 0.23
@@ -1607,11 +1615,11 @@ Cohesion: 0.29
 Nodes (3): SchemaEvolutionTests, JSONDecoder, JSONEncoder
 
 ### Community 295 - "Book Importer 4"
-Cohesion: 0.33
+Cohesion: 0.32
 Nodes (5): sqliteEnv(), SQLiteFoundationTests, LibraryDatabase, String, URL
 
 ### Community 296 - "G1 Correctness Pins"
-Cohesion: 0.67
+Cohesion: 0.52
 Nodes (5): contrastRatio(), linearChannel(), relativeLuminance(), Double, String
 
 ### Community 297 - "RT Mirage Codebase 21"
@@ -1627,12 +1635,12 @@ Cohesion: 0.09
 Nodes (23): AchievementToastView, BookEstimationView, LibrarySortMode, author, dateAddedAsc, dateAddedDesc, progress, recentlyRead (+15 more)
 
 ### Community 300 - "Reading Tracker"
-Cohesion: 0.17
+Cohesion: 0.18
 Nodes (12): Book, BookCoverThumbnail, Bool, CGFloat, NSImage, DeskStatCard, ReadingDeskView, Book (+4 more)
 
 ### Community 311 - ".sha256"
-Cohesion: 0.13
-Nodes (9): EPUBReaderScreen, Book, Bool, ClosedRange, Content, Double, Never, Task (+1 more)
+Cohesion: 0.15
+Nodes (9): EPUBReaderScreen, Book, Bool, ClosedRange, Double, Int, Never, Task (+1 more)
 
 ### Community 312 - "NotificationCandidate"
 Cohesion: 0.22
@@ -1651,56 +1659,56 @@ Cohesion: 0.29
 Nodes (6): RSVPPivotWordView, RSVPReaderView, Double, Int, String, Void
 
 ### Community 316 - "LibraryBackupState"
-Cohesion: 0.09
-Nodes (25): LibraryRecoveryVerifier, Date, URL, LibraryDatabase, LibraryFileSync, LibraryReadOnlyConnection, LibrarySnapshotError, destinationExists (+17 more)
+Cohesion: 0.08
+Nodes (28): LibraryRecoveryVerifier, Date, URL, LibraryDatabase, LibraryFileSync, LibraryReadOnlyConnection, LibrarySnapshotError, destinationExists (+20 more)
 
 ### Community 317 - "LibraryIncidentState"
 Cohesion: 0.40
 Nodes (3): MirageSettings, MirageSettingsCopy, Bool
 
 ### Community 318 - "LibraryTrigger"
-Cohesion: 0.20
+Cohesion: 0.24
 Nodes (7): EnvironmentState, Bool, Double, Date, Double, TimeInterval, WeatherEnvironmentModifier
 
 ### Community 319 - "InsightKind"
-Cohesion: 0.27
-Nodes (12): CodingKeys, apparentTemperature, cloudCover, precipitation, pressureMsl, relativeHumidity2m, snowfall, temperature2m (+4 more)
+Cohesion: 0.33
+Nodes (5): EnvironmentStudioView, Content, Double, Int, String
 
 ### Community 320 - "ContextInsightPanel"
-Cohesion: 0.27
-Nodes (7): BehavioralObserverDiagnostics, BehavioralObserverHealth, active, degraded, failed, inactive, BehavioralObserverStatus
+Cohesion: 0.05
+Nodes (38): Int64, SentinelProbeStatus, completed, failed, skipped, timedOut, BehavioralCategorizer, BehavioralCategory (+30 more)
 
 ### Community 321 - "25. Appendices"
 Cohesion: 0.15
 Nodes (13): 25. Appendices, Appendix A — Type glossary, Appendix B — File-by-file change map, Appendix C — State transition detail, Appendix D — Recovery option detail, Appendix E — Test matrix, Appendix F — Manual commands, Appendix G — Owner acceptance scenarios (+5 more)
 
 ### Community 322 - "SentinelEvidenceKind"
-Cohesion: 0.20
-Nodes (10): CorrelationLifecycle, declining, emerging, persistent, recurring, seasonal, stable, strengthening (+2 more)
+Cohesion: 0.22
+Nodes (6): RSVPSettingsPane, SentinelSettingsPane, SettingsRootView, Bool, Double, WeatherSettingsPane
 
 ### Community 323 - "BehavioralSnapshot"
-Cohesion: 0.39
-Nodes (4): EnvironmentMath, ClosedRange, Double, Double
+Cohesion: 0.28
+Nodes (8): LibraryFreezeToken, LibraryMemorySnapshot, LibraryStorageEngineKind, json, sqlite, Book, Date, Int
 
 ### Community 324 - "ImportError"
-Cohesion: 0.17
-Nodes (9): AdaptiveLayoutTier, floatingCluster, fullSpatialNavigator, shallowPerspective, Int, SpatialLibraryView, Book, Bool (+1 more)
+Cohesion: 0.29
+Nodes (5): AdaptiveLayoutTier, floatingCluster, fullSpatialNavigator, shallowPerspective, Int
 
 ### Community 325 - "weatherLiveEnabled"
-Cohesion: 0.38
-Nodes (3): MirageSidecarLifecycleTests, Data, String
+Cohesion: 0.25
+Nodes (4): DesignGrid, CGFloat, Double, CoreGraphics
 
 ### Community 326 - "5. Domain model"
 Cohesion: 0.17
 Nodes (12): 5.10 Error taxonomy, 5.11 Counters, 5.1 Type map, 5.2 Incident, 5.3 State machine, 5.4 Evidence and privacy, 5.5 Store fingerprint, 5.6 Preserved store (+4 more)
 
 ### Community 327 - "SentinelReportCardView"
-Cohesion: 0.31
-Nodes (7): MirageChildLauncher, Configuration, async, Bool, TimeInterval, URL, Void
+Cohesion: 0.25
+Nodes (8): InsightCategory, behaviorShift, distractionPattern, genrePreference, optimalEnvironment, preferredSoundtrack, silenceAdvantage, temporalPattern
 
 ### Community 328 - "CodingKey"
-Cohesion: 0.22
-Nodes (9): NotificationCategory, achievementMilestone, chapterCompletion, completionEncouragement, inactivityRecovery, momentumReinforcement, readingOpportunity, sessionContinuation (+1 more)
+Cohesion: 0.29
+Nodes (6): ImportPlugin, ImportPluginManager, ImportWarningLevel, critical, info, warning
 
 ### Community 329 - "18. Concurrency, durability, and crash safety"
 Cohesion: 0.18
@@ -1779,8 +1787,8 @@ Cohesion: 0.29
 Nodes (7): Catalog delta, Gate SG8 — Auto-extending surface coverage, New files, Next increments (ordered), Verification, What this does and does not guarantee, What this gate adds
 
 ### Community 348 - "CodingKey"
-Cohesion: 0.29
-Nodes (7): CodingKeys, id, thermalState, timestamp, CodingKeys, imageJPEG, CodingKey
+Cohesion: 0.07
+Nodes (24): BehavioralClock, BehavioralEventDeduplicator, BehavioralEvidencePersistence, BehavioralMetricsGenerator, BehavioralOrderingNormalizer, BehavioralReplaySpeed, accelerated, immediate (+16 more)
 
 ### Community 349 - "GoalKind"
 Cohesion: 0.50
@@ -1827,8 +1835,8 @@ Cohesion: 0.25
 Nodes (8): 1. Documentation sweep, 2. Junk-artifact audit and safe removal, 3. Graph refresh, 4. Owner verification gate: commit and push, Closeout Initiative (large-task close-out protocol), Exit criteria, Order (do not reorder), Trigger
 
 ### Community 360 - "BehavioralReplaySpeed"
-Cohesion: 0.50
-Nodes (4): BehavioralReplaySpeed, accelerated, immediate, realtime
+Cohesion: 0.29
+Nodes (4): OfflineURLProtocol, Bool, URLProtocol, URLRequest
 
 ### Community 361 - "1. Why this exists"
 Cohesion: 0.40
@@ -1839,12 +1847,16 @@ Cohesion: 0.40
 Nodes (5): 7.1 New files, 7.2 Modified files, 7.3 New test files, 7.4 Naming rules, 7. File and module layout
 
 ### Community 363 - ".get"
-Cohesion: 0.50
-Nodes (3): badStatus, Data, URL
+Cohesion: 0.29
+Nodes (7): CodingKeys, backupID, code, fingerprint, incidentID, ruleID, type
 
 ### Community 364 - "Repository instructions"
 Cohesion: 0.11
-Nodes (18): Audit 2026-10-29 — full sweep (all 83 tracked Markdown files), Defects fixed during the full sweep, Documentation consistency re-audit (2026-10-29), Full-sweep anchor correction, Full-sweep evidence, Full-sweep supersession, Mirage ADR-13 close-out re-audit (2026-10-29), Next audit (+10 more)
+Nodes (19): Audit 2026-10-29 — full sweep (all 83 tracked Markdown files), Closeout Initiative re-audit (2026-10-29), Defects fixed during the full sweep, Documentation consistency re-audit (2026-10-29), Full-sweep anchor correction, Full-sweep evidence, Full-sweep supersession, Mirage ADR-13 close-out re-audit (2026-10-29) (+11 more)
+
+### Community 365 - "SentinelReportCardView"
+Cohesion: 0.29
+Nodes (7): KeyNavigationCommand, down, escape, left, returnKey, right, up
 
 ### Community 366 - "Audit 2026-10-29 — close-out (graph refresh)"
 Cohesion: 0.25
@@ -1854,17 +1866,45 @@ Nodes (8): Audit 2026-10-29 — close-out (graph refresh), Defects fixed during 
 Cohesion: 0.17
 Nodes (11): Build, test, release, Data, Defaults and feature switches, Documentation evidence, Health: Sentinel and recovery, How this page is checked, Index — where to look first, Knowledge graph (+3 more)
 
+### Community 369 - "G1GoalMergeTests"
+Cohesion: 0.33
+Nodes (4): CI gate: GitHub Actions is the source of truth, Commit attribution, If CI returns an error, Repository instructions
+
 ### Community 376 - "05 · Documentation audit ledger"
-Cohesion: 0.22
+Cohesion: 0.29
 Nodes (7): 05 · Documentation audit ledger, Audit 2026-10-29 — session close (3D graph + one-hop retrieval), Defects fixed during this audit, Evidence bundle, Next audit, Open findings for the full sweep, Skipped register (plain English)
 
+### Community 377 - "SentinelPersistenceKind"
+Cohesion: 0.33
+Nodes (5): SentinelDefaultsKey, SentinelPersistenceKind, degraded, healthy, unknown
+
 ### Community 378 - "Markdown truth audit (mandatory)"
-Cohesion: 0.20
-Nodes (10): CI gate: GitHub Actions is the source of truth, Commit attribution, Evidence standard (byte level), If CI returns an error, Markdown truth audit (mandatory), Output (required, append-only), Repository instructions, The one rule (+2 more)
+Cohesion: 0.33
+Nodes (6): Evidence standard (byte level), Markdown truth audit (mandatory), Output (required, append-only), The one rule, Weighted rubric (100 points), When
 
 ### Community 379 - "audit-markdown.py"
 Cohesion: 0.52
 Nodes (6): audit(), bash_commands(), main(), repository_path(), resolve(), tracked_markdown()
+
+### Community 380 - "SentinelReportCardView"
+Cohesion: 0.53
+Nodes (4): SentinelReportCardView, Int, String, Void
+
+### Community 381 - "PDFPageLayout"
+Cohesion: 0.33
+Nodes (6): PDFPageLayout, continuous, facing, facingContinuous, single, PDFDisplayMode
+
+### Community 382 - "ReadingHUD"
+Cohesion: 0.33
+Nodes (4): ReadingHUD, Book, String, TimeInterval
+
+### Community 383 - "9. Third tranche — environment, Sentinel, and console navigation (2026-10-29)"
+Cohesion: 0.33
+Nodes (6): 9.1 Environment liveness and weather, 9.2 Developer Console navigation, 9.3 Sentinel navigation, 9.4 Receipts, 9.5 Limits, 9. Third tranche — environment, Sentinel, and console navigation (2026-10-29)
+
+### Community 384 - "PDFFitMode"
+Cohesion: 0.40
+Nodes (5): PDFFitMode, actual, height, page, width
 
 ### Community 385 - "DiscoveryNetworking"
 Cohesion: 0.50
@@ -1874,25 +1914,29 @@ Nodes (3): DiscoveryNetworking, TimeInterval, URLSession
 Cohesion: 0.50
 Nodes (4): Appearance panel, Library polish, Phase 1 shipped, Reader chrome
 
+### Community 387 - "Owner acceptance checklist"
+Cohesion: 0.50
+Nodes (4): EPUB, Library, Owner acceptance checklist, PDF
+
 ## Knowledge Gaps
-- **2347 isolated node(s):** `home`, `library`, `insights`, `goals`, `section` (+2342 more)
+- **2376 isolated node(s):** `home`, `library`, `insights`, `goals`, `section` (+2371 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **18 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Foundation` connect `Text Extraction` to `Behavior Context Engine2`, `Behavioral Category`, `Data Maturity Engine`, `Sentinel Domain`, `Sentinel Probes Self`, `Behavioral Category 2`, `New Content View`, `Sentinel Probes Subsystems`, `Sentinel Journal`, `Sentinel Runtime`, `Mirage Status Surface`, `Analytics Engine`, `Behavioral Category 3`, `Book2`, `Mirage Child Process`, `Remediation Pins`, `Data Integrity Validator`, `Insight Engine`, `Mirage Import Flow`, `Intelligent Notification Engine`, `Sentinel Repair Catalog`, `Annual Report Data2`, `Mirage Sidecar Lifecycle`, `Reader Appearance`, `Sentinel Configuration`, `Sentinel Probes Self 2`, `Musical Analysis Engine`, `Weather Analysis Engine 2`, `Mirage Identity Map`, `Mirage Runtime Locator`, `Predictive Recommendation Engine`, `Mirage Protocol Conformance`, `Mirage Status Surface 2`, `Sentinel View Model`, `Mirage App Import`, `Audio Tracker Metadata2`, `Cover Store`, `Library Archive Manager`, `Musical Analysis Engine 2`, `Sentinel Probes Library 2`, `Book Importer`, `Reading Goal Manager2`, `Sentinel Runtime 2`, `RSVPPlayback Engine`, `Book2 2`, `Weather Kit Service2 2`, `Mirage Wire Types`, `Book Visual State`, `Mirage Sidecar Supervisor`, `Weather 2`, `Sentinel Environment`, `Behavior Context Engine2 3`, `Sentinel Domain 4`, `Developer Console Types`, `Sentinel Health Center`, `Sentinel Pins`, `Shared Text Utilities`, `Sentinel Catalog`, `Sentinel Probes Files`, `Book Importer 2`, `Settings Root View`, `EPUBPackage`, `Sentinel Notification`, `Musical Analysis Engine 3`, `Shooting Star Manager`, `Analytics Cache`, `Sentinel Pane View`, `Persistence Writer`, `Environment Color`, `Sentinel Domain 7`, `Fatigue Analyzer`, `Developer Console Dashboard`, `Design Grid`, `Achievement Engine2 2`, `Environment Math`, `New Content View 2`, `Online Book Discovery`, `Book Importer 3`, `Advanced Context View`, `Behavioral Category 4`, `Sentinel Data Bridge 2`, `Audio Snapshot 3`, `Demo Profile Lab`, `Library Collection`, `Mirage Spoiler Probe`, `Audio Tracker Metadata2 2`, `Weather Analysis Engine 6`, `Behavior Context Engine2 6`, `Mirage Identity Real`, `RSVPReader View`, `Book Discovery View`, `Mirage Cursor 2`, `Achievement Engine2 3`, `Behavior Context Engine2 7`, `Reading Goal Manager2 2`, `EPUBPackage 2`, `Non Gregorian Calendar`, `Mirage Settings`, `G1 Correctness Pins`, `Reading Tracker`, `LibraryBackupState`, `LibraryIncidentState`, `LibraryTrigger`, `ImportError`, `SentinelReportCardView`, `LibraryRecoveryPlanner.swift`, `DiscoveryNetworking`?**
-  _High betweenness centrality (0.111) - this node is a cross-community bridge._
-- **Why does `DataStore` connect `Sentinel Domain` to `Achievement Engine2 3`, `Reading Goal Manager2 2`, `Non Gregorian Calendar`, `Sentinel Probes Self`, `Persistence Writer`, `Environment Color`, `Sentinel Probes Subsystems`, `Data Store3`, `Mirage Status Surface`, `Weather Insight Panel2`, `Analytics Engine 2`, `Runtime Environment`, `Intelligent Notification Engine`, `Star Field View`, `Sentinel Configuration`, `05 remediation roadmap 2`, `Weather Analysis Engine 2`, `Demo Data Service`, `Mirage Identity Map`, `Book Importer 4`, `Reading Tracker`, `Advanced Context View`, `Behavioral Category 4`, `Weather Analysis Engine 5`, `Sentinel View Model`, `Session Coordinator2`, `Cover Store`, `Audio Snapshot 3`, `Library Archive Manager`, `.sha256`, `Reading Goal Manager2`, `Mirage Protocol Constants`, `Book2 2`, `EPUBReader Screen`, `Sentinel Repair 2`, `ConfidenceLevel`, `Sentinel Issue Store`, `Weather 2`, `Sentinel Probe Support`, `Sentinel Domain 4`, `Behavior Context Engine2 4`, `Developer Console Root`, `Library Filter Sidebar`, `Adaptive Layout Tier`, `Book Discovery View`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
-- **Why does `SentinelSnapshot` connect `Sentinel Probes Library` to `Mirage Sidecar Lifecycle`, `Behavior Context Engine2 7`, `Sentinel Pane View`, `Sentinel Pins`, `Sentinel Probes Self`, `Sentinel Journal`, `Sentinel Diagnostics`, `Sentinel Runtime`, `Mirage Status Surface 2`, `Sentinel Launch And`, `Sentinel Runtime 2`, `Weather 2`, `Runtime Environment`, `Sentinel SG0`, `Weather Analysis Engine 6`, `Mirage Cursor`?**
+- **Why does `Foundation` connect `Text Extraction` to `Behavioral Category`, `Data Maturity Engine`, `Sentinel Domain`, `Sentinel Probes Self`, `New Content View`, `Sentinel Probes Subsystems`, `Sentinel Journal`, `Mirage Status Surface`, `Analytics Engine`, `Behavioral Category 3`, `Book2`, `Mirage Child Process`, `Open Meteo Provider`, `Remediation Pins`, `Data Integrity Validator`, `Insight Engine`, `Mirage Import Flow`, `Intelligent Notification Engine`, `Sentinel Repair Catalog`, `Weather Analysis Engine`, `Annual Report Data2`, `Mirage Sidecar Lifecycle`, `Sentinel Configuration`, `Sentinel Probes Self 2`, `Musical Analysis Engine`, `Weather Analysis Engine 2`, `Mirage Identity Map`, `Mirage Runtime Locator`, `Predictive Recommendation Engine`, `Mirage Protocol Conformance`, `Mirage Status Surface 2`, `Sentinel View Model`, `Mirage App Import`, `Audio Tracker Metadata2`, `Library Archive Manager`, `Musical Analysis Engine 2`, `Sentinel Probes Library 2`, `Book Importer`, `Sentinel Diagnoser`, `Reading Goal Manager2`, `Sentinel Runtime 2`, `RSVPPlayback Engine`, `Book2 2`, `Weather Kit Service2 2`, `Mirage Wire Types`, `Book Visual State`, `Mirage Sidecar Supervisor`, `Sentinel Environment`, `Behavior Context Engine2 3`, `Sentinel Domain 4`, `Developer Console Types`, `Sentinel Health Center`, `Sentinel Pins`, `Shared Text Utilities`, `Sentinel Probes Files`, `Book Importer 2`, `Sentinel Domain 5`, `Settings Root View`, `EPUBPackage`, `Sentinel Notification`, `Musical Analysis Engine 3`, `Analytics Cache`, `Sentinel Pane View`, `Open Library Provider`, `Persistence Writer`, `Sentinel Domain 7`, `Fatigue Analyzer`, `Weather Analysis Engine 4`, `Design Grid`, `Achievement Engine2 2`, `Environment Math`, `New Content View 2`, `Online Book Discovery`, `Book Importer 3`, `Advanced Context View`, `Behavioral Category 4`, `Library Filter State`, `Audio Snapshot 3`, `Demo Profile Lab`, `Library Collection`, `Mirage Spoiler Probe`, `Audio Tracker Metadata2 2`, `Weather Analysis Engine 6`, `Behavior Context Engine2 6`, `Mirage Identity Real`, `RSVPReader View`, `Book Discovery View`, `Mirage Cursor 2`, `Mirage Cursor 3`, `Behavior Context Engine2 7`, `Reading Goal Manager2 2`, `EPUBPackage 2`, `Non Gregorian Calendar`, `Mirage Settings`, `Book Importer 4`, `G1 Correctness Pins`, `LibraryBackupState`, `LibraryIncidentState`, `LibraryTrigger`, `BehavioralSnapshot`, `ImportError`, `weatherLiveEnabled`, `CodingKey`, `LibraryRecoveryPlanner.swift`, `G1AnalyticsCachePinsTests`, `SentinelPersistenceKind`, `DiscoveryNetworking`?**
+  _High betweenness centrality (0.119) - this node is a cross-community bridge._
+- **Why does `DataStore` connect `Sentinel Domain` to `Achievement Engine2 3`, `Non Gregorian Calendar`, `Sentinel Probes Self`, `Persistence Writer`, `Sentinel Probes Subsystems`, `Data Store3`, `Mirage Status Surface`, `Analytics Engine 2`, `Runtime Environment`, `Online Book`, `Star Field View`, `Sentinel Configuration`, `05 remediation roadmap 2`, `Weather Analysis Engine 2`, `Book Importer 4`, `Mirage Identity Map`, `Reading Tracker`, `Advanced Context View`, `Behavioral Category 4`, `Sentinel View Model`, `Audio Tracker Metadata2`, `Session Coordinator2`, `Audio Snapshot 3`, `Library Archive Manager`, `Musical Analysis Engine 2`, `.sha256`, `Sentinel Diagnoser`, `Reading Goal Manager2`, `ContextInsightPanel`, `Mirage Protocol Constants`, `SentinelEvidenceKind`, `Book2 2`, `BehavioralSnapshot`, `EPUBReader Screen`, `Sentinel Repair 2`, `ConfidenceLevel`, `Weather 2`, `Sentinel Probe Support`, `Sentinel Domain 4`, `Behavior Context Engine2 4`, `Developer Console Root`, `Book Discovery View`, `Adaptive Layout Tier`, `Sentinel SG0`, `ReadingHUD`?**
+  _High betweenness centrality (0.047) - this node is a cross-community bridge._
+- **Why does `SentinelSnapshot` connect `Sentinel Probes Library` to `ContextInsightPanel`, `Mirage Sidecar Lifecycle`, `Behavior Context Engine2 7`, `Sentinel Pins`, `Sentinel Domain`, `Sentinel Probes Self`, `Sentinel Journal`, `Sentinel Diagnostics`, `Sentinel Runtime`, `Mirage Status Surface 2`, `Sentinel Launch And`, `Weather 2`, `SentinelPersistenceKind`, `Sentinel Runtime 2`, `Weather Analysis Engine 6`, `Mirage Cursor`?**
   _High betweenness centrality (0.029) - this node is a cross-community bridge._
 - **What connects `home`, `library`, `insights` to the rest of the system?**
-  _2347 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _2376 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Behavior Context Engine2` be split into smaller, more focused modules?**
-  _Cohesion score 0.060285563194077206 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06836158192090395 - nodes in this community are weakly interconnected._
 - **Should `Behavioral Category` be split into smaller, more focused modules?**
-  _Cohesion score 0.06298076923076923 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.04673807205452775 - nodes in this community are weakly interconnected._
 - **Should `Sentinel Probes Library` be split into smaller, more focused modules?**
-  _Cohesion score 0.09501630181648812 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09299895506792058 - nodes in this community are weakly interconnected._
