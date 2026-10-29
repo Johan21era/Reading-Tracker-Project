@@ -23,9 +23,12 @@ dist/
 graphify-out/**
 !graphify-out/graph.json
 !graphify-out/graph.html
+!graphify-out/graph-3d.html
 !graphify-out/GRAPH_REPORT.md
 !graphify-out/manifest.json
 !graphify-out/cost.json
+# graph-3d-full.html is generated on demand (~7.7 MB) and stays local
+graphify-out/graph-3d-full.html
 
 # Owner's kept campaign snapshots (frozen at close; canonical, moving copies live in docs/integration/)
 /merge-log.md

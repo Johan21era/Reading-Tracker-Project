@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23070b14'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%237dd3fc'/%3E%3C/svg%3E">
+<title>%%TITLE%%</title>
+<style>
+  :root {
+    --bg: #070b14;
+    --panel: rgba(10, 16, 28, .9);
+    --line: rgba(148, 163, 184, .18);
+    --text: #e5edf8;
+    --muted: #93a4bd;
+    --accent: #7dd3fc;
+    --accent-2: #a78bfa;
+    --good: #34d399;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 35%, #101b31 0%, #070b14 55%, #04070d 100%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+  }
+  #graph { position: fixed; inset: 0; }
+  #graph canvas { display: block; }
+
+  .hud {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    right: 18px;
+    z-index: 3;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    pointer-events: none;
+  }
+  .hud > * { pointer-events: auto; }
+  .brand {
+    min-width: 300px;
+    max-width: 440px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(10, 16, 28, .94), rgba(8, 13, 24, .82));
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .35);
+    backdrop-filter: blur(14px);
+  }
+  .eyebrow {
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin: 5px 0 4px;
+    font-size: 18px;
+    line-height: 1.2;
+    letter-spacing: -.02em;
+  }
+  #subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    max-width: 580px;
+  }
+  #search {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    outline: none;
+    background: rgba(10, 16, 28, .92);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .25);
+  }
+  #search:focus {
+    border-color: rgba(125, 211, 252, .55);
+    box-shadow: 0 0 0 3px rgba(125, 211, 252, .12), 0 18px 50px rgba(0, 0, 0, .25);
+  }
+  .results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    max-height: 330px;
+    overflow: auto;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(9, 14, 25, .98);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .5);
+  }
+  .result {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    padding: 9px 12px;
+    border: 0;
+    border-bottom: 1px solid rgba(148, 163, 184, .08);
+    background: none;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+  }
+  .result:hover, .result:focus {
+    outline: none;
+    background: rgba(125, 211, 252, .08);
+  }
+  .result .r-label { font-size: 12px; }
+  .result .r-sub { color: var(--muted); font-size: 10px; }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button, select { font: inherit; }
+  .actions button, .panel button {
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(15, 23, 42, .88);
+    color: var(--text);
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .actions button:hover, .panel button:hover { border-color: rgba(125, 211, 252, .45); }
+  .actions button[aria-pressed="false"] { opacity: .55; }
+  .actions select {
+    padding: 9px 8px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(15, 23, 42, .88);
+    color: var(--text);
+    font-size: 12px;
+  }
+  .actions button.active { border-color: rgba(52, 211, 153, .55); color: #bbf7d0; }
+
+  .panel {
+    position: fixed;
+    z-index: 3;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(10, 16, 28, .95), rgba(8, 13, 24, .88));
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .42);
+    backdrop-filter: blur(14px);
+  }
+  .legend {
+    top: 150px;
+    left: 18px;
+    width: 250px;
+    max-height: calc(100vh - 220px);
+    overflow: auto;
+    padding: 14px;
+  }
+  .legend h2 {
+    margin: 0 0 10px;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .legend select {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: #0b1220;
+    color: var(--text);
+    font-size: 12px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    color: #c8d5e8;
+    font-size: 11.5px;
+  }
+  .legend-item .swatch {
+    flex: 0 0 auto;
+    width: 9px;
+    height: 9px;
+    border-radius: 3px;
+    box-shadow: 0 0 10px currentColor;
+  }
+  .legend-item .count {
+    margin-left: auto;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .muted { color: var(--muted); font-size: 11px; line-height: 1.45; }
+
+  .inspector {
+    top: 150px;
+    right: 18px;
+    width: 340px;
+    max-height: calc(100vh - 220px);
+    overflow: auto;
+    padding: 16px;
+  }
+  .inspector h2 {
+    margin: 6px 0 8px;
+    font-size: 16px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  .inspector h3 {
+    margin: 14px 0 6px;
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .inspector p {
+    margin: 5px 0;
+    color: #c8d5e8;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .inspector code {
+    padding: 1px 4px;
+    border: 1px solid rgba(148, 163, 184, .16);
+    border-radius: 4px;
+    background: rgba(148, 163, 184, .08);
+    font-size: 10.5px;
+    overflow-wrap: anywhere;
+  }
+  .inspector ul { margin: 0; padding: 0; list-style: none; }
+  .inspector li {
+    display: flex;
+    gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, .08);
+    color: #c8d5e8;
+    font-size: 11.5px;
+  }
+  .inspector li .rel { flex: 0 0 auto; color: var(--accent); font-size: 10px; }
+  .inspector li .conf { color: var(--muted); font-size: 9px; }
+  .inspector li .right { margin-left: auto; color: var(--muted); text-align: right; }
+  .inspector-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .close {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    padding: 4px 8px !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: var(--muted) !important;
+    font-size: 18px !important;
+  }
+
+  .hint {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    z-index: 3;
+    padding: 7px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(7, 11, 20, .78);
+    color: var(--muted);
+    font-size: 11px;
+    transform: translateX(-50%);
+    backdrop-filter: blur(8px);
+  }
+  .stats {
+    position: fixed;
+    right: 18px;
+    bottom: 16px;
+    z-index: 3;
+    color: var(--muted);
+    font-size: 10.5px;
+    line-height: 1.5;
+    text-align: right;
+    white-space: pre-line;
+  }
+  .about {
+    position: fixed;
+    left: 18px;
+    bottom: 14px;
+    z-index: 3;
+    max-width: 380px;
+    color: var(--muted);
+    font-size: 10px;
+  }
+  .about summary { cursor: pointer; }
+  .about pre {
+    max-height: 180px;
+    margin-top: 8px;
+    overflow: auto;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: rgba(9, 14, 25, .92);
+    white-space: pre-wrap;
+  }
+  .loading {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 50% 45%, #0e1729 0%, #070b14 60%);
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    transition: opacity .4s ease;
+  }
+  .loading.hidden { opacity: 0; pointer-events: none; }
+  .fallback {
+    position: fixed;
+    inset: 0;
+    z-index: 6;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: #070b14;
+  }
+  .fallback-card {
+    max-width: 540px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--panel);
+  }
+  .fallback-card h2 { margin: 0 0 8px; }
+  .fallback-card p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .fallback-card a { color: var(--accent); }
+
+  @media (max-width: 980px) {
+    .legend { display: none; }
+    .brand { min-width: 0; max-width: calc(100vw - 180px); }
+    .inspector { width: min(340px, calc(100vw - 36px)); }
+    .hint { display: none; }
+  }
+  @media (max-width: 640px) {
+    .hud { flex-direction: column; }
+    .brand { width: 100%; max-width: none; }
+    .search-wrap { width: 100%; max-width: none; }
+    .actions { width: 100%; }
+    .stats { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="graph"></div>
+
+<header class="hud">
+  <div class="brand">
+    <div class="eyebrow">GRAPHIFY · 3D</div>
+    <h1>%%TITLE%%</h1>
+    <p id="subtitle"></p>
+  </div>
+  <div class="search-wrap">
+    <input id="search" type="search" placeholder="Search…" autocomplete="off" spellcheck="false" aria-label="Search the graph">
+    <div id="results" class="results" hidden></div>
+  </div>
+  <div class="actions">
+    <button id="reset" type="button">Reset</button>
+    <button id="arrows" type="button" aria-pressed="true">Arrows</button>
+    <select id="depth" aria-label="Isolation depth">
+      <option value="1">1 hop</option>
+      <option value="2">2 hops</option>
+      <option value="3">3 hops</option>
+      <option value="4">4 hops</option>
+      <option value="5">5 hops</option>
+      <option value="6">6 hops</option>
+    </select>
+    <button id="isolate" type="button" disabled>Isolate</button>
+  </div>
+</header>
+
+<aside class="panel legend" aria-label="Communities">
+  <h2>Communities</h2>
+  <select id="communityFilter" aria-label="Focus a community"></select>
+  <div id="legendList"></div>
+  <p class="muted" id="legendMore"></p>
+</aside>
+
+<aside class="panel inspector" id="inspector" aria-live="polite" hidden>
+  <button id="closeInspector" class="close" type="button" aria-label="Close inspector">&times;</button>
+  <div id="inspectorBody"></div>
+</aside>
+
+<div class="hint">Drag to orbit &middot; scroll to zoom &middot; click a node</div>
+<div class="stats" id="stats"></div>
+
+<details class="about">
+  <summary>Build &amp; renderer license</summary>
+  <div id="aboutMeta" class="muted"></div>
+  <pre>%%LICENSE%%</pre>
+</details>
+
+<div class="loading" id="loading">Building 3D layout&hellip;</div>
+
+<div class="fallback" id="fallback" hidden>
+  <div class="fallback-card">
+    <div class="eyebrow">GRAPHIFY · 3D</div>
+    <h2>3D view unavailable</h2>
+    <p id="fallbackMessage">This browser could not initialize the WebGL renderer.</p>
+    <p>The 2D interactive view still works: <a href="graph.html">open graph.html</a>.</p>
+  </div>
+</div>
+
+<noscript>
+  <div class="fallback">
+    <div class="fallback-card">
+      <h2>JavaScript is required</h2>
+      <p>This page renders the graph with JavaScript and WebGL. Open <a href="graph.html">graph.html</a> for the 2D view.</p>
+    </div>
+  </div>
+</noscript>
+
+<script id="graph-data" type="application/json">%%GRAPH_DATA%%</script>
+<script>%%LIBRARY%%</script>
+<script>
+(function () {
+  'use strict';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var payload;
+  try {
+    payload = JSON.parse($('graph-data').textContent);
+  } catch (err) {
+    console.error('Could not parse embedded graph data', err);
+    showFatal('The embedded graph data could not be parsed.');
+    return;
+  }
+
+  var mode = payload.mode || 'community';
+  var stats = payload.stats || {};
+  var rawNodes = payload.nodes || [];
+  var rawLinks = payload.links || [];
+  var graph = null;
+  var arrowsOn = mode === 'community';
+  var selectedId = null;
+  var fitDone = false;
+  var loadingDone = false;
+  var nodeById = Object.create(null);
+  var adjacency = Object.create(null);
+  var searchItems = [];
+  var communities = [];
+
+  $('subtitle').textContent = payload.subtitle || '';
+  $('arrows').setAttribute('aria-pressed', arrowsOn ? 'true' : 'false');
+  $('aboutMeta').textContent = (payload.meta && payload.meta.note) || '';
+  $('stats').textContent = buildStatsText();
+  $('search').placeholder = mode === 'community'
+    ? 'Search communities or members…'
+    : 'Search ' + formatNumber(rawNodes.length) + ' nodes…';
+
+  rawNodes.forEach(function (node) {
+    nodeById[node.id] = node;
+  });
+  rawLinks.forEach(function (link) {
+    var source = idOf(link.source);
+    var target = idOf(link.target);
+    if (!adjacency[source]) adjacency[source] = [];
+    if (!adjacency[target]) adjacency[target] = [];
+    adjacency[source].push({ id: target, relation: link.relation || 'link', confidence: link.confidence || '' });
+    adjacency[target].push({ id: source, relation: link.relation || 'link', confidence: link.confidence || '' });
+  });
+
+  buildSearchIndex();
+  buildCommunities();
+  buildLegend();
+  buildCommunityMenu();
+  wireUi();
+
+  if (!hasWebGL()) {
+    showFatal('This browser could not create a WebGL context. Enable hardware acceleration or open the 2D view.');
+    return;
+  }
+  if (typeof ForceGraph3D !== 'function') {
+    showFatal('The embedded 3D renderer did not initialize.');
+    return;
+  }
+
+  try {
+    graph = new ForceGraph3D()($('graph'))
+      .backgroundColor('#070b14')
+      .showNavInfo(false)
+      .nodeId('id')
+      .nodeLabel(function (node) { return node.label || node.id; })
+      .nodeVal(function (node) { return node.val || 1; })
+      .nodeColor(function (node) { return node.color || '#8ab4f8'; })
+      .nodeOpacity(mode === 'community' ? 0.92 : 0.84)
+      .nodeResolution(mode === 'community' ? 10 : 5)
+      .linkSource('source')
+      .linkTarget('target')
+      .linkColor(function (link) { return linkColor(link); })
+      .linkOpacity(mode === 'community' ? 0.3 : 0.12)
+      .linkWidth(function (link) { return linkWidth(link); })
+      .linkDirectionalArrowLength(function (link) { return arrowsOn && link.directed !== false ? 4 : 0; })
+      .linkDirectionalArrowRelPos(1)
+      .linkDirectionalArrowColor(function (link) { return linkColor(link); })
+      .linkLabel(function (link) { return link.relation || ''; })
+      .onNodeClick(selectNode)
+      .onNodeHover(function (node) {
+        $('graph').style.cursor = node ? 'pointer' : 'grab';
+      })
+      .onBackgroundClick(clearSelection)
+      .cooldownTicks(mode === 'community' ? 150 : 40)
+      .warmupTicks(mode === 'community' ? 40 : 20)
+      .graphData(cloneData({ nodes: rawNodes, links: rawLinks }));
+
+    graph.d3Force('charge').strength(mode === 'community' ? -95 : -12);
+    graph.d3Force('link').distance(mode === 'community' ? 44 : 12);
+    graph.width(window.innerWidth).height(window.innerHeight);
+
+    graph.onEngineStop(function () {
+      if (fitDone) return;
+      fitDone = true;
+      graph.zoomToFit(700, 45);
+      hideLoading();
+    });
+
+    window.setTimeout(hideLoading, mode === 'community' ? 3000 : 5000);
+    window.setTimeout(function () {
+      if (!fitDone) {
+        fitDone = true;
+        graph.zoomToFit(700, 45);
+      }
+    }, 1800);
+
+    window.addEventListener('resize', function () {
+      graph.width(window.innerWidth).height(window.innerHeight);
+    });
+
+    window.__graph3d = {
+      graph: graph,
+      payload: payload,
+      rawData: { nodes: rawNodes, links: rawLinks },
+      counts: function () {
+        var data = graph.graphData();
+        return { nodes: data.nodes.length, links: data.links.length };
+      },
+      select: function (id) {
+        var node = graph.graphData().nodes.filter(function (n) { return n.id === id; })[0];
+        if (!node) return false;
+        selectNode(node);
+        return true;
+      },
+      focus: function (text) {
+        var needle = String(text || '').toLowerCase();
+        var node = graph.graphData().nodes.filter(function (n) {
+          return String(n.label || '').toLowerCase().indexOf(needle) >= 0;
+        })[0];
+        if (!node) return false;
+        selectNode(node);
+        return true;
+      },
+      isolate: isolateSelected,
+      reset: resetView,
+      getArrows: function () { return arrowsOn; }
+    };
+
+    console.info('[graphify 3d] ' + mode + ' view ready: ' + rawNodes.length + ' nodes, ' + rawLinks.length + ' links');
+  } catch (err) {
+    console.error('3D initialization failed', err);
+    showFatal('The 3D view failed to initialize: ' + (err && err.message ? err.message : String(err)));
+  }
+
+  function idOf(value) {
+    return value && typeof value === 'object' ? value.id : value;
+  }
+
+  function formatNumber(value) {
+    return Number(value || 0).toLocaleString();
+  }
+
+  function buildStatsText() {
+    if (mode === 'community') {
+      return formatNumber(stats.sourceNodes) + ' nodes → ' + formatNumber(stats.communities) + ' communities\n' +
+        formatNumber(stats.sourceLinks) + ' edges → ' + formatNumber(stats.viewLinks) + ' aggregated community links';
+    }
+    return formatNumber(stats.sourceNodes) + ' nodes · ' + formatNumber(stats.sourceLinks) + ' edges\n' +
+      formatNumber(stats.communities) + ' communities · full node-level view';
+  }
+
+  function buildSearchIndex() {
+    rawNodes.forEach(function (node) {
+      searchItems.push({
+        node: node,
+        label: node.label || node.id,
+        sub: mode === 'community'
+          ? formatNumber(node.members) + ' members'
+          : (node.communityName || '') + (node.file ? ' · ' + node.file : '')
+      });
+      if (mode === 'community' && node.top) {
+        node.top.forEach(function (member) {
+          searchItems.push({
+            node: node,
+            label: member.label,
+            sub: 'member of ' + (node.label || node.id)
+          });
+        });
+      }
+    });
+  }
+
+  function buildCommunities() {
+    var byCommunity = Object.create(null);
+    rawNodes.forEach(function (node) {
+      var key = String(node.community);
+      if (!byCommunity[key]) {
+        byCommunity[key] = {
+          id: key,
+          label: node.communityName || ('Community ' + key),
+          color: node.color || '#8ab4f8',
+          count: 0,
+          node: null
+        };
+      }
+      byCommunity[key].count += mode === 'community' ? (node.members || 1) : 1;
+      if (mode === 'community') byCommunity[key].node = node;
+    });
+    communities = Object.keys(byCommunity).map(function (key) { return byCommunity[key]; });
+    communities.sort(function (a, b) { return b.count - a.count; });
+  }
+
+  function buildCommunityMenu() {
+    var select = $('communityFilter');
+    var all = document.createElement('option');
+    all.value = '';
+    all.textContent = 'All communities';
+    select.appendChild(all);
+    communities.forEach(function (community) {
+      var option = document.createElement('option');
+      option.value = community.id;
+      option.textContent = community.label + ' (' + formatNumber(community.count) + ')';
+      select.appendChild(option);
+    });
+  }
+
+  function buildLegend() {
+    var list = $('legendList');
+    list.innerHTML = '';
+    communities.slice(0, 12).forEach(function (community) {
+      var row = document.createElement('div');
+      row.className = 'legend-item';
+      row.innerHTML = '<span class="swatch" style="background:' + esc(community.color) + ';color:' + esc(community.color) + '"></span>' +
+        '<span>' + esc(community.label) + '</span>' +
+        '<span class="count">' + formatNumber(community.count) + '</span>';
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', function () { focusCommunity(community.id); });
+      list.appendChild(row);
+    });
+    $('legendMore').textContent = communities.length > 12
+      ? 'and ' + formatNumber(communities.length - 12) + ' more — use the menu above.'
+      : '';
+  }
+
+  function focusCommunity(communityId) {
+    if (mode === 'community') {
+      var node = rawNodes.filter(function (n) { return String(n.community) === String(communityId); })[0];
+      if (node) {
+        var live = graph.graphData().nodes.filter(function (n) { return n.id === node.id; })[0];
+        if (live) selectNode(live);
+      }
+      return;
+    }
+    var nodes = rawNodes.filter(function (n) { return String(n.community) === String(communityId); });
+    var keep = Object.create(null);
+    nodes.forEach(function (n) { keep[n.id] = true; });
+    var links = rawLinks.filter(function (l) {
+      return keep[idOf(l.source)] && keep[idOf(l.target)];
+    });
+    graph.graphData(cloneData({ nodes: nodes, links: links }));
+    selectedId = null;
+    $('inspector').hidden = true;
+    $('isolate').disabled = true;
+    window.setTimeout(function () { graph.zoomToFit(600, 50); }, 120);
+  }
+
+  function wireUi() {
+    $('search').addEventListener('input', onSearchInput);
+    $('search').addEventListener('keydown', onSearchKey);
+    $('search').addEventListener('focus', function () {
+      if ($('search').value.trim()) onSearchInput();
+    });
+    document.addEventListener('click', function (event) {
+      if (!event.target.closest('.search-wrap')) hideResults();
+    });
+    $('reset').addEventListener('click', resetView);
+    $('arrows').addEventListener('click', function () {
+      arrowsOn = !arrowsOn;
+      $('arrows').setAttribute('aria-pressed', arrowsOn ? 'true' : 'false');
+      if (graph) {
+        graph.linkDirectionalArrowLength(function (link) {
+          return arrowsOn && link.directed !== false ? 4 : 0;
+        });
+      }
+    });
+    $('isolate').addEventListener('click', isolateSelected);
+    $('closeInspector').addEventListener('click', clearSelection);
+    $('communityFilter').addEventListener('change', function () {
+      if (!$('communityFilter').value) resetView();
+      else focusCommunity($('communityFilter').value);
+    });
+  }
+
+  function onSearchInput() {
+    var query = $('search').value.trim().toLowerCase();
+    var results = $('results');
+    if (!query) {
+      hideResults();
+      return;
+    }
+    var matches = [];
+    for (var i = 0; i < searchItems.length && matches.length < 16; i += 1) {
+      if (String(searchItems[i].label).toLowerCase().indexOf(query) >= 0) matches.push(searchItems[i]);
+    }
+    results.innerHTML = '';
+    if (!matches.length) {
+      var empty = document.createElement('div');
+      empty.className = 'result';
+      empty.innerHTML = '<span class="r-label">No matches</span>';
+      results.appendChild(empty);
+      results.hidden = false;
+      return;
+    }
+    matches.forEach(function (item) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'result';
+      button.innerHTML = '<span class="r-label">' + esc(item.label) + '</span><span class="r-sub">' + esc(item.sub) + '</span>';
+      button.addEventListener('click', function () {
+        $('search').value = item.label;
+        hideResults();
+        var live = graph.graphData().nodes.filter(function (n) { return n.id === item.node.id; })[0];
+        if (live) selectNode(live);
+      });
+      results.appendChild(button);
+    });
+    results.hidden = false;
+  }
+
+  function onSearchKey(event) {
+    if (event.key === 'Enter') {
+      var first = $('results').querySelector('.result');
+      if (first) first.click();
+    } else if (event.key === 'Escape') {
+      $('search').value = '';
+      hideResults();
+      $('search').blur();
+    }
+  }
+
+  function hideResults() {
+    var results = $('results');
+    results.hidden = true;
+    results.innerHTML = '';
+  }
+
+  function selectNode(node) {
+    selectedId = node.id;
+    $('isolate').disabled = false;
+    showInspector(node);
+    focusCamera(node);
+  }
+
+  function focusCamera(node) {
+    var distance = mode === 'community' ? 150 : 60;
+    var x = node.x || 0;
+    var y = node.y || 0;
+    var z = node.z || 0;
+    var radius = Math.max(1, Math.sqrt(x * x + y * y + z * z));
+    var ratio = 1 + distance / radius;
+    graph.cameraPosition({ x: x * ratio, y: y * ratio, z: z * ratio }, node, 900);
+  }
+
+  function showInspector(node) {
+    var body = $('inspectorBody');
+    var html = '<div class="eyebrow">' + (mode === 'community' ? 'COMMUNITY' : 'NODE') + '</div>';
+    html += '<h2>' + esc(node.label || node.id) + '</h2>';
+    if (mode === 'community') {
+      html += '<p>' + formatNumber(node.members) + ' member nodes · ' + formatNumber(node.internal) + ' internal edges · ' + formatNumber(node.external) + ' incident cross-community edges</p>';
+      html += '<h3>Top members</h3><ul>';
+      (node.top || []).forEach(function (member) {
+        html += '<li><span>' + esc(member.label) + '</span><span class="right">degree ' + formatNumber(member.degree) + '</span></li>';
+      });
+      html += '</ul>';
+      var neighbors = (adjacency[node.id] || []).slice(0, 12);
+      if (neighbors.length) {
+        html += '<h3>Connected communities</h3><ul>';
+        neighbors.forEach(function (neighbor) {
+          var other = nodeById[neighbor.id];
+          html += '<li><span>' + esc(other ? other.label : neighbor.id) + '</span><span class="right">' + esc(neighbor.relation) + '</span></li>';
+        });
+        html += '</ul>';
+      }
+    } else {
+      html += '<p>' + esc(node.communityName || ('Community ' + node.community)) + '</p>';
+      if (node.file) {
+        html += '<p>Source: <code>' + esc(node.file) + (node.loc ? ':' + esc(node.loc) : '') + '</code></p>';
+      }
+      html += '<p>Degree ' + formatNumber(node.degree) + (node.type ? ' · ' + esc(node.type) : '') + '</p>';
+      var relations = (adjacency[node.id] || []).slice(0, 18);
+      if (relations.length) {
+        html += '<h3>Relations</h3><ul>';
+        relations.forEach(function (relation) {
+          var other = nodeById[relation.id];
+          html += '<li><span class="rel">' + esc(relation.relation) + '</span><span>' + esc(other ? other.label : relation.id) + '</span>' +
+            '<span class="conf">' + esc(relation.confidence) + '</span></li>';
+        });
+        html += '</ul>';
+      }
+    }
+    html += '<div class="inspector-actions"><button id="focusNode" type="button">Focus camera</button><button id="clearNode" type="button">Clear</button></div>';
+    body.innerHTML = html;
+    $('inspector').hidden = false;
+    var focusButton = $('focusNode');
+    if (focusButton) focusButton.addEventListener('click', function () { focusCamera(node); });
+    var clearButton = $('clearNode');
+    if (clearButton) clearButton.addEventListener('click', clearSelection);
+  }
+
+  function clearSelection() {
+    selectedId = null;
+    $('inspector').hidden = true;
+    $('isolate').disabled = true;
+    $('isolate').classList.remove('active');
+    $('isolate').textContent = 'Isolate';
+    if (graph) graph.graphData().nodes.forEach(function (node) { node.__selected = false; });
+  }
+
+  function isolateSelected() {
+    if (!selectedId || !graph) return;
+    var depth = Math.max(1, Math.min(6, parseInt($('depth').value, 10) || 1));
+    var keep = Object.create(null);
+    keep[selectedId] = true;
+    var frontier = [selectedId];
+    for (var d = 0; d < depth; d += 1) {
+      var next = [];
+      frontier.forEach(function (nodeId) {
+        (adjacency[nodeId] || []).forEach(function (link) {
+          if (!keep[link.id]) {
+            keep[link.id] = true;
+            next.push(link.id);
+          }
+        });
+      });
+      frontier = next;
+    }
+    var nodes = rawNodes.filter(function (node) { return keep[node.id]; });
+    var links = rawLinks.filter(function (link) {
+      return keep[idOf(link.source)] && keep[idOf(link.target)];
+    });
+    graph.graphData(cloneData({ nodes: nodes, links: links }));
+    $('isolate').textContent = 'Isolated ' + depth + ' hop' + (depth === 1 ? '' : 's');
+    $('isolate').classList.add('active');
+    window.setTimeout(function () { graph.zoomToFit(600, 50); }, 120);
+  }
+
+  function resetView() {
+    if (!graph) return;
+    graph.graphData(cloneData({ nodes: rawNodes, links: rawLinks }));
+    selectedId = null;
+    $('inspector').hidden = true;
+    $('isolate').disabled = true;
+    $('isolate').classList.remove('active');
+    $('isolate').textContent = 'Isolate';
+    $('communityFilter').value = '';
+    $('search').value = '';
+    hideResults();
+    graph.zoomToFit(700, 45);
+  }
+
+  function linkColor(link) {
+    if (mode === 'community') return '#7c8aa5';
+    var relation = String(link.relation || '').toLowerCase();
+    if (relation.indexOf('call') >= 0) return '#67e8f9';
+    if (relation.indexOf('import') >= 0) return '#a78bfa';
+    if (relation.indexOf('inherit') >= 0 || relation.indexOf('implement') >= 0) return '#fb7185';
+    if (relation.indexOf('contains') >= 0) return '#94a3b8';
+    if (relation.indexOf('reference') >= 0 || relation.indexOf('use') >= 0) return '#34d399';
+    return '#8194b5';
+  }
+
+  function linkWidth(link) {
+    if (mode === 'community') return Math.max(0.4, Math.min(3, Math.log2((link.weight || 1) + 1)));
+    return 0;
+  }
+
+  function cloneData(data) {
+    return JSON.parse(JSON.stringify(data));
+  }
+
+  function hasWebGL() {
+    try {
+      var canvas = document.createElement('canvas');
+      return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function hideLoading() {
+    if (loadingDone) return;
+    loadingDone = true;
+    var loading = $('loading');
+    if (!loading) return;
+    loading.classList.add('hidden');
+    window.setTimeout(function () { if (loading.parentNode) loading.parentNode.removeChild(loading); }, 500);
+  }
+
+  function showFatal(message) {
+    hideLoading();
+    $('fallbackMessage').textContent = message;
+    $('fallback').hidden = false;
+  }
+
+  function esc(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function (character) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character];
+    });
+  }
+})();
+</script>
+</body>
+</html>

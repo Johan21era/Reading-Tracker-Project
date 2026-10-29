@@ -1,0 +1,434 @@
+#!/usr/bin/env python3
+"""Build standalone, offline 3D graph pages from graphify-out/graph.json.
+
+The output is a single HTML file: embedded graph data, embedded renderer, no
+CDN, no server, no network calls. Open it with:
+
+    open graphify-out/graph-3d.html
+
+Two views are available:
+
+    community  one node per graphify community (the fast, readable default)
+    full       every graph node (7,510 nodes / 19,023 edges at the time of the
+               first build)
+
+Examples:
+
+    python3 scripts/build-graph-3d.py
+    python3 scripts/build-graph-3d.py --mode community
+    python3 scripts/build-graph-3d.py --mode full
+    python3 scripts/build-graph-3d.py --check
+"""
+
+from __future__ import annotations
+
+import argparse
+import collections
+import hashlib
+import html
+import json
+import math
+import sys
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parents[1]
+GRAPHIFY_OUT = ROOT / "graphify-out"
+DEFAULT_GRAPH = GRAPHIFY_OUT / "graph.json"
+DEFAULT_LABELS = GRAPHIFY_OUT / ".graphify_labels.json"
+TEMPLATE = ROOT / "scripts" / "graph3d-template.html"
+LIBRARY = ROOT / "scripts" / "vendor" / "3d-force-graph-1.80.0.min.js"
+LICENSE = ROOT / "scripts" / "vendor" / "3d-force-graph-1.80.0.LICENSE"
+
+# Tableau 10, the same palette graphify's 2D export uses for communities.
+PALETTE = [
+    "#4E79A7",
+    "#F28E2B",
+    "#E15759",
+    "#76B7B2",
+    "#59A14F",
+    "#EDC948",
+    "#B07AA1",
+    "#FF9DA7",
+    "#9C755F",
+    "#BAB0AC",
+]
+
+OUTPUT_NAMES = {
+    "community": "graph-3d.html",
+    "full": "graph-3d-full.html",
+}
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def node_id(value: Any) -> str | None:
+    """graph.json uses string ids; links may already be id strings."""
+    if isinstance(value, dict):
+        value = value.get("id")
+    if value is None:
+        return None
+    return str(value)
+
+
+def load_json(path: Path) -> Any:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_graph(graph_path: Path, labels_path: Path) -> tuple[list[dict], list[dict], dict, dict[int, str], dict]:
+    graph = load_json(graph_path)
+    if not isinstance(graph, dict):
+        raise SystemExit(f"{graph_path}: expected a JSON object")
+    nodes = graph.get("nodes") or []
+    links = graph.get("links") or []
+    if not isinstance(nodes, list) or not isinstance(links, list):
+        raise SystemExit(f"{graph_path}: expected 'nodes' and 'links' arrays")
+
+    labels: dict[int, str] = {}
+    if labels_path.exists():
+        raw_labels = load_json(labels_path)
+        if isinstance(raw_labels, dict):
+            for key, value in raw_labels.items():
+                try:
+                    labels[int(key)] = str(value)
+                except (TypeError, ValueError):
+                    continue
+
+    node_degrees: collections.Counter[str] = collections.Counter()
+    for link in links:
+        source = node_id(link.get("source"))
+        target = node_id(link.get("target"))
+        if source is None or target is None or source == target:
+            continue
+        node_degrees[source] += 1
+        node_degrees[target] += 1
+
+    return nodes, links, labels, node_degrees, graph
+
+
+def community_view(
+    nodes: list[dict],
+    links: list[dict],
+    labels: dict[int, str],
+    node_degrees: collections.Counter[str],
+    graph: dict,
+    meta: dict,
+) -> dict:
+    node_community: dict[str, int] = {}
+    communities: dict[int, dict] = {}
+
+    for node in nodes:
+        cid = node.get("community")
+        if cid is None:
+            continue
+        try:
+            cid = int(cid)
+        except (TypeError, ValueError):
+            continue
+        node_community[str(node.get("id"))] = cid
+        if cid not in communities:
+            communities[cid] = {
+                "cid": cid,
+                "members": [],
+            }
+        communities[cid]["members"].append(node)
+
+    pair_counts: collections.Counter[tuple[int, int]] = collections.Counter()
+    cross_incident: collections.Counter[int] = collections.Counter()
+    neighbours: dict[int, set[int]] = {cid: set() for cid in communities}
+    internal: collections.Counter[int] = collections.Counter()
+
+    for link in links:
+        source = node_id(link.get("source"))
+        target = node_id(link.get("target"))
+        if source is None or target is None:
+            continue
+        a = node_community.get(source)
+        b = node_community.get(target)
+        if a is None or b is None:
+            continue
+        if a == b:
+            internal[a] += 1
+            continue
+        pair_counts[(min(a, b), max(a, b))] += 1
+        cross_incident[a] += 1
+        cross_incident[b] += 1
+        neighbours[a].add(b)
+        neighbours[b].add(a)
+
+    view_nodes: list[dict] = []
+    for cid in sorted(communities):
+        members = communities[cid]["members"]
+        label = labels.get(cid)
+        if not label:
+            label = str(members[0].get("community_name") or f"Community {cid}")
+        degree = len(neighbours[cid])
+        top = sorted(
+            members,
+            key=lambda item: (
+                0 if item.get("source_file") else 1,
+                -node_degrees.get(str(item.get("id")), 0),
+                str(item.get("label") or ""),
+            ),
+        )[:8]
+        top_members = [
+            {
+                "label": str(member.get("label") or member.get("id")),
+                "degree": int(node_degrees.get(str(member.get("id")), 0)),
+                "file": str(member.get("source_file") or ""),
+                "loc": str(member.get("source_location") or ""),
+            }
+            for member in top
+        ]
+        view_nodes.append(
+            {
+                "id": f"c{cid}",
+                "cid": cid,
+                "label": label,
+                "community": cid,
+                "communityName": label,
+                "color": PALETTE[cid % len(PALETTE)],
+                "members": len(members),
+                "degree": degree,
+                "internal": int(internal[cid]),
+                "external": int(cross_incident[cid]),
+                "val": round(1.0 + math.sqrt(len(members)) * 0.8 + math.sqrt(degree) * 0.45, 2),
+                "type": "community",
+                "top": top_members,
+            }
+        )
+
+    view_links = [
+        {
+            "source": f"c{a}",
+            "target": f"c{b}",
+            "relation": f"{count} cross-community edges",
+            "confidence": "AGGREGATED",
+            "weight": count,
+            # Orientation matches graphify's 2D aggregate edge; it is not a
+            # semantic direction, but it keeps the Arrows toggle meaningful.
+            "directed": True,
+        }
+        for (a, b), count in sorted(pair_counts.items())
+    ]
+
+    payload = {
+        "mode": "community",
+        "title": "Graphify 3D — AsterismaV1.0 community view",
+        "subtitle": (
+            f"{len(view_nodes):,} communities · {len(nodes):,} nodes · "
+            f"{len(view_links):,} cross-community edges"
+        ),
+        "stats": {
+            "sourceNodes": len(nodes),
+            "sourceLinks": len(links),
+            "communities": len(view_nodes),
+            "viewNodes": len(view_nodes),
+            "viewLinks": len(view_links),
+        },
+        "meta": dict(meta),
+        "nodes": view_nodes,
+        "links": view_links,
+    }
+    return payload
+
+
+def full_view(
+    nodes: list[dict],
+    links: list[dict],
+    labels: dict[int, str],
+    node_degrees: collections.Counter[str],
+    graph: dict,
+    meta: dict,
+) -> dict:
+    ids = {str(node.get("id")) for node in nodes if node.get("id") is not None}
+    view_nodes: list[dict] = []
+    communities: set[str] = set()
+
+    for node in nodes:
+        identifier = node_id(node.get("id"))
+        if identifier is None:
+            continue
+        cid = node.get("community")
+        try:
+            cid = int(cid) if cid is not None else None
+        except (TypeError, ValueError):
+            cid = None
+        community_name = labels.get(cid, "") if cid is not None else ""
+        if not community_name:
+            community_name = str(node.get("community_name") or "Unassigned")
+        if cid is not None:
+            communities.add(str(cid))
+        degree = int(node_degrees.get(identifier, 0))
+        view_nodes.append(
+            {
+                "id": identifier,
+                "label": str(node.get("label") or identifier),
+                "community": cid if cid is not None else -1,
+                "communityName": community_name,
+                "color": PALETTE[cid % len(PALETTE)] if cid is not None else "#8ab4f8",
+                "val": round(1.0 + math.sqrt(max(1, degree)) * 0.5, 2),
+                "degree": degree,
+                "type": str(node.get("file_type") or ""),
+                "file": str(node.get("source_file") or ""),
+                "loc": str(node.get("source_location") or ""),
+            }
+        )
+
+    view_links: list[dict] = []
+    dropped = 0
+    for link in links:
+        source = node_id(link.get("source"))
+        target = node_id(link.get("target"))
+        if source is None or target is None or source not in ids or target not in ids:
+            dropped += 1
+            continue
+        view_links.append(
+            {
+                "source": source,
+                "target": target,
+                "relation": str(link.get("relation") or "link"),
+                "confidence": str(link.get("confidence") or ""),
+                "weight": link.get("weight") if isinstance(link.get("weight"), (int, float)) else 1,
+                "directed": True,
+            }
+        )
+
+    if dropped:
+        print(f"  note: dropped {dropped:,} links whose endpoints are not nodes", file=sys.stderr)
+
+    payload = {
+        "mode": "full",
+        "title": "Graphify 3D — AsterismaV1.0 full view",
+        "subtitle": (
+            f"{len(view_nodes):,} nodes · {len(view_links):,} edges · "
+            f"{len(communities):,} communities · hover a node to inspect"
+        ),
+        "stats": {
+            "sourceNodes": len(nodes),
+            "sourceLinks": len(links),
+            "communities": len(communities),
+            "viewNodes": len(view_nodes),
+            "viewLinks": len(view_links),
+        },
+        "meta": dict(meta),
+        "nodes": view_nodes,
+        "links": view_links,
+    }
+    return payload
+
+
+def safe_json(payload: dict) -> str:
+    raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    # Inside <script type="application/json">, '<' is the only character that
+    # can terminate the element early. \u003c keeps the JSON equivalent.
+    return raw.replace("<", "\\u003c")
+
+
+def build_html(payload: dict, template: str, library: str, license_text: str) -> str:
+    title = html.escape(str(payload.get("title") or "Graphify 3D"), quote=True)
+    output = (
+        template.replace("%%TITLE%%", title)
+        .replace("%%GRAPH_DATA%%", safe_json(payload))
+        .replace("%%LIBRARY%%", library)
+        .replace("%%LICENSE%%", html.escape(license_text))
+    )
+    if "%%" in output:
+        raise SystemExit("template token left unreplaced; refusing to write a broken page")
+    return output
+
+
+def verify_renderer(library: str) -> None:
+    if "ForceGraph3D" not in library:
+        raise SystemExit(f"{LIBRARY}: does not look like the 3d-force-graph UMD bundle")
+    if "</script" in library.lower():
+        raise SystemExit(f"{LIBRARY}: contains '</script' and cannot be inlined safely")
+
+
+def write_atomic(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_text(content, encoding="utf-8")
+    temporary.replace(path)
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--mode", choices=("community", "full", "both"), default="both")
+    parser.add_argument("--graph", type=Path, default=DEFAULT_GRAPH)
+    parser.add_argument("--labels", type=Path, default=DEFAULT_LABELS)
+    parser.add_argument("--out-dir", type=Path, default=GRAPHIFY_OUT)
+    parser.add_argument("--check", action="store_true", help="verify the existing files match a fresh build")
+    args = parser.parse_args(argv)
+
+    if not TEMPLATE.exists():
+        raise SystemExit(f"missing template: {TEMPLATE}")
+    if not LIBRARY.exists():
+        raise SystemExit(f"missing renderer: {LIBRARY}")
+    if not LICENSE.exists():
+        raise SystemExit(f"missing renderer license: {LICENSE}")
+    if not args.graph.exists():
+        raise SystemExit(f"missing graph: {args.graph}")
+
+    template = TEMPLATE.read_text(encoding="utf-8")
+    library = LIBRARY.read_text(encoding="utf-8")
+    license_text = LICENSE.read_text(encoding="utf-8")
+    verify_renderer(library)
+
+    nodes, links, labels, node_degrees, graph = load_graph(args.graph, args.labels)
+    source_hash = sha256_file(args.graph)
+    library_hash = sha256_file(LIBRARY)
+    commit = graph.get("built_at_commit") or "unknown"
+    meta = {
+        "source": str(args.graph.relative_to(ROOT)) if args.graph.is_relative_to(ROOT) else str(args.graph),
+        "sourceSha256": source_hash,
+        "library": "3d-force-graph 1.80.0",
+        "librarySha256": library_hash,
+        "builtAtCommit": str(commit),
+        "note": (
+            f"Source {args.graph.name} SHA-256 {source_hash[:16]}… · commit {commit} · "
+            f"renderer 3d-force-graph 1.80.0 (MIT, vendored) · generated by "
+            "scripts/build-graph-3d.py"
+        ),
+    }
+
+    modes = ("community", "full") if args.mode == "both" else (args.mode,)
+    failures = 0
+    for mode in modes:
+        if mode == "community":
+            payload = community_view(nodes, links, labels, node_degrees, graph, meta)
+        else:
+            payload = full_view(nodes, links, labels, node_degrees, graph, meta)
+        output = build_html(payload, template, library, license_text)
+        destination = args.out_dir / OUTPUT_NAMES[mode]
+        if args.check:
+            if not destination.exists():
+                print(f"MISSING {destination}")
+                failures += 1
+            elif destination.read_text(encoding="utf-8") != output:
+                print(f"STALE   {destination}")
+                failures += 1
+            else:
+                print(f"ok      {destination}")
+        else:
+            write_atomic(destination, output)
+            print(
+                f"wrote   {destination}  "
+                f"({len(payload['nodes']):,} nodes / {len(payload['links']):,} links, "
+                f"{len(output) / (1024 * 1024):.2f} MiB)"
+            )
+
+    if args.check and failures:
+        print(f"{failures} file(s) out of date; run: python3 scripts/build-graph-3d.py", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

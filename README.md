@@ -275,6 +275,24 @@ Release package:
 
 The package is ad-hoc signed, not notarized. First launch on another Mac requires right-click → Open. See `docs/plans/bedrock/DISTRIBUTION.md`.
 
+### Knowledge graph (offline 2D + 3D)
+
+`graphify-out/graph.html` is the 2D vis-network export and loads its renderer from unpkg. The 3D export is fully self-contained — no CDN, server, or network request:
+
+```bash
+open graphify-out/graph-3d.html
+```
+
+Rebuild both views from `graphify-out/graph.json` at any time (Python standard library only):
+
+```bash
+python3 scripts/build-graph-3d.py                 # community + full
+python3 scripts/build-graph-3d.py --mode community
+python3 scripts/build-graph-3d.py --check         # fail if an output is stale
+```
+
+`graph-3d.html` is the community view (369 nodes / 1,372 aggregated edges, ~1.8 MB, tracked). `graph-3d-full.html` is the node-level view (7,510 nodes / 19,023 edges, ~7.7 MB, generated locally and gitignored). Both embed `3d-force-graph` 1.80.0 with its MIT notice; the renderer is vendored under `scripts/vendor/`, and the page template is `scripts/graph3d-template.html`. `--check` is deterministic because the generator embeds the source and renderer hashes, not a build timestamp.
+
 ### Testing reset
 
 For clean test sessions, open the sidebar **More (…)** menu and choose

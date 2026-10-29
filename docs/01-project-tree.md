@@ -22,10 +22,10 @@ This is a map of every file and folder in the project, organized so you can find
 | `AsterismaV1.0.xcodeproj/` | The Xcode project file (do not edit by hand) |
 | `AsterismaV1.0.entitlements` | Permissions the app asks macOS for (sandbox, user-selected files, location) |
 | `AsterismaV1.0-Info.plist` | App settings such as its name, icon, and location description |
-| `scripts/` | Census, benchmark, test-isolation, runtime staging, icon, and release-package scripts |
+| `scripts/` | Census, benchmark, test-isolation, runtime staging, icon, release-package, and 3D-graph build scripts (`build-graph-3d.py` + vendored renderer) |
 | `dist/` | Generated release packages (gitignored, rebuilt by `scripts/package-release.sh`); the stale local build was removed on 2026-10-28 |
 | `.mirage-runtime/` | Local staged Mirage runtime (gitignored; required for a fresh build) |
-| `graphify-out/` | Generated knowledge graph, community-aggregated HTML, and report (refreshed 2026-10-28: 7,510 nodes / 19,023 edges; `graph.html` shows 369 community nodes because the full graph exceeds the 5,000-node node-level limit) |
+| `graphify-out/` | Generated knowledge graph, 2D community HTML, offline 3D community HTML, and report (refreshed 2026-10-28: 7,510 nodes / 19,023 edges; `graph.html` and `graph-3d.html` show 369 community nodes because the full graph exceeds the 5,000-node node-level limit; `graph-3d-full.html` is the generated-local 7,510-node view) |
 | `.gitignore` | Tells Git which files to ignore (build junk, user settings, etc.) |
 
 ---
