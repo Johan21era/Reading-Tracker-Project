@@ -361,3 +361,10 @@ change is the `nonisolated` concurrency annotation.
 | S-005 | Build junk removed: `.DS_Store` files and the stale 84 MB `dist/` output | `git status --ignored` shows no build directory left |
 | S-006 | Graphify refreshed from the new code | 7,510 nodes · 19,023 edges · 369 communities; HTML retired at the 5,000-node limit |
 | S-007 | Sentinel catalog grew to 140 probes / 58 required; local census 432 tests / 671 runs / 9 skipped / 0 failed | `./scripts/census.sh --unit-only` passed; Debug and Release builds succeeded |
+
+## Stage S follow-up — repository hygiene (2026-10-29)
+
+| Item | What changed | Verification |
+|---|---|---|
+| S-008 | Removed regenerable graphify cache/backup, a byte-identical root playbook copy, and OS metadata | 102 MB → 77 MB; tracked tree clean; `graph.json`/`GRAPH_REPORT.md` and the Mirage runtime intact |
+| S-009 | Refreshed the stale GitHub homepage contributor cache with a temporary same-SHA default branch | Sidebar lists 1 contributor (`Johan21era`); temp branch deleted; default branch restored to `main` |

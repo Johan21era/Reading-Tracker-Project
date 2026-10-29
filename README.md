@@ -159,7 +159,7 @@ The audit-era **NEW-DE-1 … NEW-DE-8 punch list was fixed and pinned** during B
 | 3 | **Reader selection highlights/quotes** | Notes, tags, page anchors, and collections work; EPUB/PDF text-selection highlighting is not wired. | 1–2 sessions |
 | 4 | **Behavior evidence to SQLite** | Evidence currently persists in a JSON archive; the SQLite behavior tables exist but are not the live store. | 1 session |
 | 5 | **Collection rename UI** | Create/delete/membership work; rename has no UI. | Small |
-| 6 | **Legacy artifact cleanup** | Old P5-G `library.sqlite3`, `.migrated` files, and graphify bulk remain; none are live. | 1 short session |
+| 6 | **Legacy artifact cleanup** | Repository graphify cache/backup, duplicate playbook, and OS metadata were removed on 2026-10-29 (102 MB → 77 MB); old P5-G `library.sqlite3`/`.migrated` app-support artifacts remain outside the repo and are not live. | App-support check |
 | 7 | **Remaining dead code** | Some zero-caller fragments remain after G7's −1,157-line sweep. | 3–5 h |
 | 8 | **Mirage era — standing items** | TB-M0 observation cadence; a perf-budget report; the engine-side backup-surface gap. The packaged app-embed exercise is now done (runtime embedded and signed). | Process, not code |
 
