@@ -257,6 +257,10 @@ facts); unit census **432 tests / 671 runs / 423 passed / 9 skipped / 0 failed**
 exit 0; the 3D page rendered in Chromium with WebGL, zero console
 errors, and no external requests.
 
+**Remote CI:** run `40813582449` succeeded in 2m25s on commit
+`b4b587be9aaead322d42581f0a44a7e35bf939e7`; the surface-freshness,
+comprehension-index, and unit-census steps are all green.
+
 **Docs:** the close-out audit covers every Markdown file edited this session
 (README, AGENTS, project tree, INDEX, fix log, handoff, testing method,
 remediation roadmap) plus the new ledger. The remaining tracked Markdown files

@@ -207,3 +207,19 @@ unchanged.
 After the remote census run for this commit is green, append its run id to
 `docs/registers/04-handoff.md` and re-audit that file plus this ledger. Then run
 the full 74-file sweep before the next release.
+
+### Post-push receipt (2026-10-29)
+
+GitHub Actions run `40813582449` succeeded in **2m25s** on commit
+`b4b587be9aaead322d42581f0a44a7e35bf939e7` (the graph and documentation
+commit). The log shows all three gates green: “Sentinel surface manifest
+freshness”, “Comprehension index freshness”, and “Unit census (green =
+merge-presence receipt)”. This is the remote proof for the local mirror above.
+
+The handoff then gained the run receipt, so its audited bytes moved again:
+`936b58856ffa67bc3624107dc658517d713c31646834eb22a312b9ec07796612`, 273
+lines. This supersedes the
+`33f8c550d9e7b6af5d7c26c513406e80898e3e71078fc4ceecfa03803a38a11e` row; every
+other row stands. This
+ledger's own bytes change with this section, which is expected and recorded by
+the next audit.
