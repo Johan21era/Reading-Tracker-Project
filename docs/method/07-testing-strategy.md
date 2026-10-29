@@ -17,8 +17,8 @@ This describes **what to build so the same classes of bug get caught automatical
 | | |
 |---|---|
 | **Framework** | Swift Testing — `@Suite` / `@Test` / `#expect` (the project standardized after converting the original XCTest suites) |
-| **Scale** | 57 Swift files in the unit target · 379 test functions in 79 suites · 1,024 passing cases · responsibility-based groups plus Sentinel domain/runtime/catalog/persistence suites |
-| **Standing census** | Local census on macOS 26.6.1 / Xcode 26.6 (2026-10-28): **379 test functions, 1,024 passed cases, 9 skipped, 0 failed**; Release build exit 0. Artifact `rt-census-20261028-152733.xcresult`. The remote GitHub census will roll to these numbers on the next push. |
+| **Scale** | 66 Swift files in the test folder · 432 tests in 88 suites · 671 runs · responsibility-based groups plus Sentinel domain/runtime/catalog/persistence suites |
+| **Standing census** | GitHub census run `40811182851` (2026-10-29, Xcode 26.6): **432 tests in 88 suites passed**; the local receipt records **432 tests / 671 runs / 9 skipped / 0 failed**. The workflow uploads the census log for that run. |
 | **CI scope** | The deterministic unit target is the merge-presence receipt. UI tests are placeholder launch stubs and depend on interactive automation, so they are not part of CI. The bundled-runtime assertion self-gates on `.mirage-runtime` being staged. |
 | **The 9 local skips** | 4 Mirage real-engine cases (identity import, handshake/health, and the two lifecycle steps), 1 benchmark, 2 real-library SQLite parity cases, and 2 live Open-Meteo cases. None are Sentinel coverage skips. CI may add a bundled-runtime presence skip on a clean checkout without the staged 47 MB runtime. |
 | **Census discipline** | Every fixing session opens and closes on a green census; canonical numbers come from `xcrun xcresulttool get test-results summary --path <.xcresult>` — never from eyeballing the console |

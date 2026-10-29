@@ -64,12 +64,22 @@
 | 3D graph view: full nodes and edges, 2D community HTML, generator | `README.md#L294` | `scripts/build-graph-3d.py`, `scripts/graph3d-template.html` |
 | 3D graph generator: verify outputs without writing, staleness flag | `scripts/build-graph-3d.py#L232` | `README.md` §6 |
 | Retired artifacts: the community 3D graph file removed 2026-10-29 | `AGENTS.md#L134` | `README.md#L294` |
+| Graph exclusions: the vendored 3D renderer is kept out of graph counts | `.graphifyignore#L1` | `README.md#L294`, `docs/01-project-tree.md` |
+| Graph refresh receipt: counts, excluded vendor nodes, artifact hashes, browser check | `docs/registers/03-fix-log.md#L484` | `README.md#L294` |
 
 ## Tests
 
 | If you need… | Read first | Then |
 |---|---|---|
 | Reader appearance tests: covers settings and contrast | `AsterismaV1.0Tests/Reader/ReaderAppearanceTests.swift#L1` | `docs/design/READER-POLISH-2026-10-25.md` |
+
+## Documentation evidence
+
+| If you need… | Read first | Then |
+|---|---|---|
+| Markdown truth audit: evidence standard, weighted rubric, verdict rules | `AGENTS.md#L12` | `docs/registers/05-doc-audit.md` |
+| Markdown evidence collector: digests, paths, anchors, commands | `scripts/audit-markdown.py` | `docs/registers/05-doc-audit.md` |
+| Current close-out receipt: graph refresh and truth audit | `docs/registers/04-handoff.md#L238` | `docs/registers/03-fix-log.md#L484` |
 
 ## How this page is checked
 

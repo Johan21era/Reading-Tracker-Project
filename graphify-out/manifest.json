@@ -1,7 +1,7 @@
 {
   "README.md": {
-    "mtime": 1793233186.9637575,
-    "ast_hash": "b04da1949efa5f7d7a1e57ab20ffa7ce",
+    "mtime": 1793244495.646583,
+    "ast_hash": "dd7c3276ff3244287281be3095dfe278",
     "semantic_hash": ""
   },
   "docs/history/LAST_DEFEAT_demo_profiles.txt": {
@@ -40,13 +40,13 @@
     "semantic_hash": "fd1ca35990afd0f831ddc1a62a037330"
   },
   ".github/workflows/census.yml": {
-    "mtime": 1793232666.550389,
-    "ast_hash": "dd8d86288617bc91cafa5bc748b1c5ed",
+    "mtime": 1793243273.4155474,
+    "ast_hash": "9c949d7b79b1c10864d7ee1fde6988ea",
     "semantic_hash": ""
   },
   "docs/01-project-tree.md": {
-    "mtime": 1793216367.627387,
-    "ast_hash": "b6664eccc491ad5b084dd8fe9af7244d",
+    "mtime": 1793244635.0317302,
+    "ast_hash": "f80f07252c8ef3c040b7840e862c1a6b",
     "semantic_hash": ""
   },
   "docs/audits/08-deep-audit.md": {
@@ -190,8 +190,8 @@
     "semantic_hash": "5649bcfa5bdf18d842374e96d6113a76"
   },
   "docs/method/07-testing-strategy.md": {
-    "mtime": 1793216378.2184799,
-    "ast_hash": "504fcd9a4107d86222d9da0147a6cec5",
+    "mtime": 1793244541.6779287,
+    "ast_hash": "9940feae2957623ab415c8d03cb7c4fc",
     "semantic_hash": ""
   },
   "docs/registers/02-defect-register.md": {
@@ -200,18 +200,18 @@
     "semantic_hash": ""
   },
   "docs/registers/03-fix-log.md": {
-    "mtime": 1792988535.0015469,
-    "ast_hash": "da320a1cad4f12171f530fc9e35de5e2",
+    "mtime": 1793244506.3832383,
+    "ast_hash": "243b908f0fd9c9e2f1eb2d0755d8ffd3",
     "semantic_hash": ""
   },
   "docs/registers/04-handoff.md": {
-    "mtime": 1793233186.9643612,
-    "ast_hash": "a3d82f402ed6afa772a90c2c0e7387d5",
+    "mtime": 1793244016.5043843,
+    "ast_hash": "47a1a29dceac762b4f5697d0708af5be",
     "semantic_hash": ""
   },
   "docs/roadmap/05-remediation-roadmap.md": {
-    "mtime": 1793215791.591795,
-    "ast_hash": "ad268ce7b22ecad57f910f78773d5b43",
+    "mtime": 1793244545.5459816,
+    "ast_hash": "da23c85dce52f35b4dda511677f779ab",
     "semantic_hash": ""
   },
   "docs/roadmap/06-rsvp-feature-plan.md": {
@@ -1680,18 +1680,18 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1793233096.0283024,
-    "ast_hash": "80b9598d0de5dd6197c40f3fdbcd058c",
+    "mtime": 1793244371.8181863,
+    "ast_hash": "4203164ccf8a050ac676649ee6ce3a11",
     "semantic_hash": ""
   },
   "DBappends.md": {
-    "mtime": 1793233186.9661887,
-    "ast_hash": "b7590d56875322d0b5bcd4917592dd92",
+    "mtime": 1793233357.564182,
+    "ast_hash": "8434cccb3039aa2d1b052ec6511b9ea6",
     "semantic_hash": ""
   },
   "docs/audits/12-sentinel-v2-tranche-2026-10-28.md": {
-    "mtime": 1793233186.9666047,
-    "ast_hash": "cacdf17b0476d697358aa98e0d44c6fb",
+    "mtime": 1793233309.638703,
+    "ast_hash": "0a96b9418e7e5d06c3ed661426c822a7",
     "semantic_hash": ""
   },
   "docs/integration/MIRAGE-DEEP-DIVE-2026-10-28.md": {
@@ -1700,18 +1700,18 @@
     "semantic_hash": ""
   },
   "docs/plans/library-recovery/G6.md": {
-    "mtime": 1793231626.0596585,
-    "ast_hash": "0ed6aac404f5c6f2143cdf1c0634d4c3",
+    "mtime": 1793233344.4778473,
+    "ast_hash": "09a895e6fad19b912239da3dca438486",
     "semantic_hash": ""
   },
   "docs/plans/sentinel/SENTINEL-ROADWORK.md": {
-    "mtime": 1793215806.3374221,
-    "ast_hash": "230907687d47c9e7670997add4d35f29",
+    "mtime": 1793233353.978813,
+    "ast_hash": "de78882433580d32a3de1a26cf04a981",
     "semantic_hash": ""
   },
   "docs/plans/sentinel/gates/README.md": {
-    "mtime": 1793233186.9678023,
-    "ast_hash": "bd6ecdeba350bd90fe127a9191029d37",
+    "mtime": 1793233261.5117419,
+    "ast_hash": "7079c3431a5e438bb7a10add060df282",
     "semantic_hash": ""
   },
   "docs/plans/sentinel/gates/SG0.md": {
@@ -1755,13 +1755,53 @@
     "semantic_hash": ""
   },
   "docs/plans/sentinel/gates/SG8.md": {
-    "mtime": 1793233186.971128,
-    "ast_hash": "2f4a014db10e3b0e5ae753c4469ef1bb",
+    "mtime": 1793233264.91606,
+    "ast_hash": "5a57a17c14129181693b6c4a8f54d460",
     "semantic_hash": ""
   },
   "docs/plans/sentinel/gates/census-2026-10-28.md": {
-    "mtime": 1793233186.9698966,
-    "ast_hash": "35d93306bb54b6006920e0450610a0af",
+    "mtime": 1793233335.6387517,
+    "ast_hash": "895e9c5f15a478bd4e524bf25cf47e9d",
+    "semantic_hash": ""
+  },
+  "scripts/audit-markdown.py": {
+    "mtime": 1793244468.2386777,
+    "ast_hash": "861ff8673f833195a44114444d56c347",
+    "semantic_hash": ""
+  },
+  "scripts/build-graph-3d.py": {
+    "mtime": 1793242524.4121997,
+    "ast_hash": "768a3ff84d8c90d8a1ab481e2c805845",
+    "semantic_hash": ""
+  },
+  "scripts/comprehension-bench.py": {
+    "mtime": 1793242908.8444548,
+    "ast_hash": "cafb02a6650c6ac231be1b4cdd0073dd",
+    "semantic_hash": ""
+  },
+  "scripts/comprehension-questions.json": {
+    "mtime": 1793243169.8765192,
+    "ast_hash": "9ba1f0f2ea775ef45194a92b728a8975",
+    "semantic_hash": ""
+  },
+  "scripts/vendor/3d-force-graph-1.80.0.min.js": {
+    "mtime": 1793235238.5991154,
+    "ast_hash": "7ba6b3228e395ba771597f37fa550486",
+    "semantic_hash": ""
+  },
+  "docs/INDEX.md": {
+    "mtime": 1793243556.2223136,
+    "ast_hash": "1e0f2b3b3da5213ca617f1d65f9f02f0",
+    "semantic_hash": ""
+  },
+  "docs/registers/05-doc-audit.md": {
+    "mtime": 1793244650.5354786,
+    "ast_hash": "f2747d6d006e0e75d9c5b0de3673bf73",
+    "semantic_hash": ""
+  },
+  "scripts/graph3d-template.html": {
+    "mtime": 1793242298.6023972,
+    "ast_hash": "9d92b9cff6fc72fcd7c078b1a7abe1ba",
     "semantic_hash": ""
   }
 }

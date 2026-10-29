@@ -83,13 +83,13 @@
     {
       "id": "graph-nodes",
       "question": "How many nodes are in the full 3D graph view?",
-      "answer": "7,510",
+      "answer": "7,599",
       "path": "README.md"
     },
     {
       "id": "graph-edges",
       "question": "How many edges are in the full 3D graph view?",
-      "answer": "19,023",
+      "answer": "19,164",
       "path": "README.md"
     },
     {
@@ -235,7 +235,7 @@
     {
       "id": "graph",
       "label": "Full 3D graph counts",
-      "answer": "7,510",
+      "answer": "7,599",
       "canonical": ["README.md"]
     },
     {

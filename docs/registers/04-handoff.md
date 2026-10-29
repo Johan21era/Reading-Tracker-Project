@@ -232,3 +232,38 @@ repeatable context-free measurement is the fresh-process harness.
 **Next:** owner visual checks; refresh graphify and the full 3D view so the new
 files appear in the graph; keep `docs/INDEX.md` anchors current and rerun
 `--mode all` after any edit above an indexed line.
+
+---
+
+## Session close — 2026-10-29 (graph refresh + truth audit)
+
+**Delivered:** graphify refreshed from the current tree; a root
+`.graphifyignore` excludes the minified vendored 3D renderer; the 2D community
+export and the full 3D page were regenerated; `AGENTS.md` gained the mandatory
+Markdown truth audit (evidence standard, weighted rubric, append-only ledger),
+`scripts/audit-markdown.py` collects the mechanical evidence, and the stale
+app/test counts in README, the project tree, the testing method, and the
+remediation roadmap were corrected against fresh commands and CI logs.
+
+**Graph:** **7,599 nodes / 19,164 edges / 361 communities** (previous receipt
+7,510 / 19,023; the difference is +89 doc and tooling nodes after removing
+3,371 vendor-renderer nodes). `graph.html` is the aggregated view (361
+community nodes / 1,425 cross-community edges); `graph-3d-full.html` is 7.76 MiB
+and `--check` returns `ok`.
+
+**Verified:** surface manifest OK (15 tables / 8 defaults keys / 5 notification
+names); `comprehension-bench.py --validate-only` OK (30 facts, 12 overview
+facts); unit census **432 tests / 671 runs / 423 passed / 9 skipped / 0 failed**,
+exit 0; the 3D page rendered in Chromium with WebGL, zero console
+errors, and no external requests.
+
+**Docs:** the close-out audit covers every Markdown file edited this session
+(README, AGENTS, project tree, INDEX, fix log, handoff, testing method,
+remediation roadmap) plus the new ledger. The remaining tracked Markdown files
+are deferred for the full sweep with the reason recorded in
+`docs/registers/05-doc-audit.md`; that sweep is the first documentation task of
+the next session.
+
+**Next:** owner visual check of `graph-3d-full.html` and `graph.html`; run the
+full Markdown sweep; keep the index anchors current; refresh the graph again
+after the next batch of doc edits if the node counts matter for a receipt.

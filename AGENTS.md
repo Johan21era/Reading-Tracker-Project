@@ -9,6 +9,102 @@ because GitHub credited the account in the contributors graph.
 
 Commit messages end at their own last line.
 
+## Markdown truth audit (mandatory)
+
+A Markdown file is a set of claims about this repository. An unsupported claim
+is a defect, the same as a failing test. From this rule forward, **every `.md`
+file you create or edit must be audited with the rubric below before you call
+the task done**, and audited again at session close even if the last edit was
+earlier.
+
+### The one rule
+
+If `something.md` says it, you must be able to prove it from bytes: a path that
+exists, a line that contains the claim, a command and its exit status, a digest,
+a commit, a run ID, or a tag. "Should", "probably", "appears to", "as
+expected", and inherited benchmarks are not evidence. If you cannot prove a
+sentence, do one of exactly three things:
+
+1. delete it;
+2. replace it with the receipt that proves it;
+3. mark it `SKIPPED` in the audit ledger with a plain-English reason a
+   non-engineer can understand (no jargon, no acronyms, no blame).
+
+A skipped check is not a pass. A compile is not a test. A plan is not shipped
+behaviour.
+
+### When
+
+- After the last `.md` edit of a task, before `git add`.
+- At session close, over every `.md` touched in the session **plus** every
+  `.md` that cites a fact the session changed.
+- Before a release or close-out: every tracked `.md`. If that sweep is not
+  possible, audit the touched/intersecting files and list the rest as
+  `SKIPPED` with one plain-English reason and a re-audit owner.
+
+### Evidence standard (byte level)
+
+- **Paths** — must exist now. `path:line` must be inside the file, and that
+  line must contain the claim's subject. Record the line's text.
+- **Numbers** — counts, sizes, timings, LOC: cite the command and its exact
+  output, or `file:line` plus the file's SHA-256 at audit time. Re-derive code
+  and test counts; never copy an old number.
+- **Hashes** — 64 lowercase hex, with the producing command and a resolving
+  receipt. A deleted artifact can be cited only as a recorded receipt, marked
+  `SKIPPED` for re-derivation.
+- **Commits, runs, tags** — `git rev-parse`, `gh run view <id>`, `git tag
+  --list`; exact IDs, never paraphrased.
+- **Commands** — the exact command and its exit status. Timing claims also
+  record the machine, repetition count, statistic (median), and raw runs.
+- **File identity** — each audited file records its SHA-256 and line count in
+  `docs/registers/05-doc-audit.md`. Any later edit invalidates that audit;
+  re-audit, do not assume.
+
+### Weighted rubric (100 points)
+
+Score each dimension as the percentage of that file's claims in the dimension
+that meet the evidence standard. Dimensions with no claims are `N/A` and their
+weight is redistributed proportionally over the scored dimensions.
+
+| ID | Dimension | Weight | What scores 100 |
+|---|---|---:|---|
+| A1 | Numerical claims | 14 | Every count/size/time has a command or `file:line` + digest; no inherited figures |
+| A2 | Paths and anchors | 12 | Every backticked path exists; every `path:line` is in bounds and contains the claim |
+| A3 | Commands and exit status | 8 | Every quoted command was run; pass/fail and exit code recorded |
+| A4 | Receipts | 6 | Commits, runs, tags, hashes exact and resolvable |
+| B1 | Internal consistency | 7 | The file never contradicts itself, including tense and counts |
+| B2 | Cross-document consistency | 12 | Shared facts match every other document that states them |
+| B3 | State and chronology | 6 | No "pending/open" leftover after it shipped; dated changes carry dates |
+| C1 | Skipped/failed disclosure | 8 | Every unrun check is `SKIPPED` with a plain-English reason |
+| C2 | Verification honesty | 6 | Compiles, previews, and plans are never presented as tests or releases |
+| C3 | Limitations and risks | 6 | Known gaps and residual risks are stated where the claim lives |
+| D1 | Canonical placement | 4 | One canonical copy; no contradictory duplicate |
+| D2 | One-hop retrieval | 3 | `docs/INDEX.md` points at the right file/line and resolves |
+| D3 | Link and table hygiene | 3 | No dead links, broken tables, or orphan headings |
+| E1 | Freshness | 3 | Claims reflect the latest receipt; historical text is labelled historical |
+| E2 | Generated artifacts | 2 | Generated files carry their generator command and are not hand-edited |
+
+`score = Σ(weight × dimension%) / Σ(scored weights)`. **PASS = 90 or more with
+zero critical failures. REVIEW = 70–89. FAIL = below 70 or any critical.**
+
+**Critical failures** (cap the file at 59 regardless of other scores): a false
+claim that a check passed; a path or anchor that does not resolve; a wrong
+hash/run/tag; a contradiction on a release fact (version, count, tag, package);
+a skipped check that is not disclosed.
+
+### Output (required, append-only)
+
+Append one row per file to `docs/registers/05-doc-audit.md`:
+
+| Date | File (+ SHA-256, lines) | A1…E2 scores | Weighted | Verdict | Evidence / SKIPPED reason |
+|---|---|---|---|---|---|
+
+Rules for the ledger: append, never rewrite history (a corrected audit is a new
+row that names the row it supersedes); `PROVEN` means every claim meets the
+standard; `SKIPPED` must carry the plain-English blocker; `FAIL` must name the
+false sentence and the receipt that contradicts it. The ledger itself is a
+Markdown file and is audited by the same rubric.
+
 ## CI gate: GitHub Actions is the source of truth
 
 `.github/workflows/census.yml` is the merge gate. Treat a red run as an
@@ -150,8 +246,10 @@ python3 scripts/build-graph-3d.py
 python3 scripts/build-graph-3d.py --check
 ```
 
-- Verify `graph.html` and `graph-3d-full.html` open from `file://` with WebGL
-  (3D), no console errors, and no external resource requests.
+- Verify `graph-3d-full.html` opens from `file://` with WebGL, no console
+  errors, and no external resource requests. Verify `graph.html` separately: it
+  loads its documented vis-network renderer from unpkg, so it needs network
+  access.
 - Update graph counts and hashes in `README.md`, `docs/01-project-tree.md`, and
   `docs/registers/03-fix-log.md` when they changed.
 - If graphify cannot run, record the blocker and mark the graph stale. Do not

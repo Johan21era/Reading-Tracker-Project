@@ -50,7 +50,7 @@ There is also a hidden **Developer Console** (⌘⇧D, Debug builds only) for st
 | **Language** | Swift 5 mode, SwiftUI + AppKit only |
 | **Build config** | `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, `SWIFT_APPROACHABLE_CONCURRENCY = YES`, deployment target macOS 26.5, Xcode 27.1 locally; CI pins Xcode 26.6 |
 | **Dependencies** | Exactly one Swift dependency: ZIPFoundation 0.9.20 (SPM, pinned via `Package.resolved` — used for unzipping EPUBs). Mirage ships as a self-contained bundled runtime (its own Python interpreter), not a Swift dependency |
-| **App size** | 144 app files · 57,139 raw LOC (counted directly — not estimated) |
+| **App size** | 166 Swift files · 62,452 raw lines (55,177 non-blank) — counted from the tree on 2026-10-29 |
 | **Tests** | **432 tests / 671 runs · 9 skips · 0 failures** in the local unit census (2026-10-28, after SG8); CI runs the surface-freshness gate before the census |
 | **How it is tested** | Swift Testing (`@Suite` / `@Test` / `#expect`) — not XCTest |
 | **History** | ~30 working sessions (Jun–Oct 2026), 45+ commits, then the **RT–Mirage merge campaign** (Oct 2026): the 8-PR integration ladder PR-1…PR-8, closed with owner signatures; then the **Bedrock / AsterismaV1.0 release** (2026-10-24) |
@@ -291,7 +291,7 @@ python3 scripts/build-graph-3d.py                 # full node-level view
 python3 scripts/build-graph-3d.py --check         # fail if the output is stale
 ```
 
-`graph-3d-full.html` is the only 3D view: all 7,510 nodes / 19,023 edges, ~7.7 MB, generated locally and gitignored. `graph.html` remains the 2D community export. The 3D page embeds `3d-force-graph` 1.80.0 with its MIT notice; the renderer is vendored under `scripts/vendor/`, and the page template is `scripts/graph3d-template.html`. `--check` is deterministic because the generator embeds the source and renderer hashes, not a build timestamp. The aggregated community view (`graph-3d.html`) was retired on 2026-10-29.
+`graph-3d-full.html` is the only 3D view: all 7,599 nodes / 19,164 edges across 361 communities, 7.76 MB, generated locally and gitignored. `graph.html` remains the 2D community export (361 community nodes / 1,425 cross-community edges, because the full graph exceeds the 5,000-node 2D limit). The 3D page embeds `3d-force-graph` 1.80.0 with its MIT notice; the renderer is vendored under `scripts/vendor/`, and the page template is `scripts/graph3d-template.html`. A root `.graphifyignore` keeps that minified bundle (3,371 AST nodes) out of the graph, so the counts describe project code and docs. `--check` is deterministic because the generator embeds the source and renderer hashes, not a build timestamp. The aggregated community view (`graph-3d.html`) was retired on 2026-10-29.
 
 The 3D view orbits a full 360° in pitch and yaw (the camera flips its up vector at the poles), the arrow keys drive the same rotation, and the settled layout is cached locally, so a reopen is interactive in a few hundred milliseconds instead of replaying the force simulation.
 

@@ -369,7 +369,7 @@ change is the `nonisolated` concurrency annotation.
 | S-008 | Removed regenerable graphify cache/backup, a byte-identical root playbook copy, and OS metadata | 102 MB → 77 MB; tracked tree clean; `graph.json`/`GRAPH_REPORT.md` and the Mirage runtime intact |
 | S-009 | Refreshed the stale GitHub homepage contributor cache with a temporary same-SHA default branch | Sidebar lists 1 contributor (`Johan21era`); temp branch deleted; default branch restored to `main` |
 | S-010 | Generated the missing `graph.html` from the existing graph; the 7,510-node graph auto-aggregated to 369 community nodes / 1,372 cross-community edges | 435 KB; browser preview renders one canvas; `graph.json`/`GRAPH_REPORT.md`/`manifest.json`/`.graphify_labels.json` hashes unchanged |
-| S-011 | Added a deterministic offline 3D graph export: `scripts/build-graph-3d.py`, a vendored `3d-force-graph` 1.80.0 bundle with its MIT notice, and `graphify-out/graph-3d.html` (community) plus a gitignored full-node view | `--check` matches both outputs; Playwright rendered 369 nodes / 1,372 links and 7,510 / 19,023 with zero console errors after the favicon fix; full view sends only the document request; source/renderer hashes embedded instead of a timestamp |
+| S-011 | Added a deterministic offline 3D graph export: `scripts/build-graph-3d.py`, a vendored `3d-force-graph` 1.80.0 bundle with its MIT notice, and a tracked community page (`graph-3d.html`, since deleted) plus a gitignored full-node view | `--check` matches both outputs; Playwright rendered 369 nodes / 1,372 links and 7,510 / 19,023 with zero console errors after the favicon fix; full view sends only the document request; source/renderer hashes embedded instead of a timestamp |
 | S-012 | 3D views made usable on a double-click in Safari: `[hidden]` now wins over the layout `display: grid` | WebKit `file://` load shows the canvas, `#fallback` computed `display: none`; the card had been covering a working WebGL canvas |
 | S-013 | 3D render and navigation rework (quality, feel, full-sphere orbit) | See Stage T |
 
@@ -419,7 +419,7 @@ green, never by skipping or weakening a check.
 
 | Item | What changed | Verification |
 |---|---|---|
-| U-001 | Deleted `graphify-out/graph-3d.html` (369-node community view, 1.86 MiB, tracked) at owner request; the full-node view is now the only 3D export | File removed from disk and git index; `graph.html` (2D) and `graph-3d-full.html` remain |
+| U-001 | Deleted the tracked community 3D page `graph-3d.html` (369 nodes, 1.86 MiB) at owner request; the full-node view is now the only 3D export | File removed from disk and git index; `graph.html` (2D) and `graph-3d-full.html` remain |
 | U-002 | `scripts/build-graph-3d.py` no longer takes `--mode`; it builds, writes, and checks only `graph-3d-full.html` (−127 lines, the `community_view` builder and the multi-output loop) | `python3 -m py_compile` clean; `--check` → `ok` for the single output; no `community_view` / `--mode` references left |
 | U-003 | `.gitignore` no longer un-ignores `graph-3d.html`; the full view keeps its ignore entry with the new single-view wording | `git status --ignored` shows no community 3D file; rebuild writes only the full view |
 
@@ -480,3 +480,38 @@ within the file. That drift is caught only by the local `--mode facts` gate, so
 run it after any edit above an indexed line. Two anchors drifted during the
 final doc edits (AGENTS retired-3D, README graph paragraph) and were re-pointed;
 the full 30-question gate was then rerun and passed with zero fallbacks.
+
+## Stage W — graph refresh and the Markdown truth audit (2026-10-29)
+
+Goal: leave the navigation artifacts and the documentation byte-accurate for
+the next engineering session, with every refreshed figure carrying a receipt.
+
+| Item | What changed | Verification |
+|---|---|---|
+| W-001 | Graphify refreshed from the current tree. A root `.graphifyignore` now excludes `scripts/vendor/`, the minified 3D renderer, so its 3,371 AST nodes do not dominate the graph. | `graphify update . --force` exit 0: **7,599 nodes / 19,164 edges / 361 communities**, corpus 338 files / ~593,191 words; vendor nodes **0**; previous graph 7,510 / 19,023. |
+| W-002 | 2D export regenerated as an aggregated community view; the 3D page rebuilt from the new graph. | `graphify export html` → 361 community nodes / 1,425 cross-community edges, 452,499 B; `python3 scripts/build-graph-3d.py` → 8,135,754 B (7.76 MiB); `--check` → `ok`. |
+| W-003 | `AGENTS.md` graph verification corrected: it claimed both HTML pages were offline, but `graph.html` loads vis-network from unpkg by design. | The sentence now separates the self-contained 3D page from the networked 2D page. |
+| W-004 | Markdown truth-audit rule, weighted rubric, append-only ledger, and evidence collector landed earlier this session; this stage records the close-out audit and refreshes the graph-cited counts. | `scripts/audit-markdown.py` OK on every edited file; `--validate-only` 30 facts / 12 overview facts; ledger rows appended. |
+
+**Graph artifact hashes (2026-10-29):** `graph.json`
+`fc4728f076bf080e175e2ad30d1a949c39c9ded4f4d0d55e380d9343c545f7bb`;
+`graph.html` `05c85819dc15cace17c60213543a3a8cb6bd2cdc2ecf5130d358ff03ae86d3e7`;
+`GRAPH_REPORT.md` `0db98f786082e0bb3a2954f02c58713f126dc5197ae1736a98d02ec179e314f4`;
+`manifest.json` `813aa62cb845526feb64b4b956fe3152ea5d18df94ed9f3f0b096eea720bf806`.
+The gitignored 3D page is
+`360f961b681319b52a960fb01c08800a4d84eb31a10fd7c1fb39ba48756332ee`.
+
+**Browser receipt:** the full 3D view loaded over loopback in Chromium with a
+1280×720 canvas, WebGL true, **0 console errors**, and no external asset
+references; the 2D page rendered through its documented unpkg renderer (one
+local favicon 404).
+
+**Local CI mirror:** surface OK (15 tables / 8 defaults keys / 5 notification
+names); `--validate-only` OK; unit census **432 tests / 671 runs / 423 passed /
+9 skipped / 0 failed**, exit 0.
+
+**Limits:** the refresh used graphify's incremental AST update. A full semantic
+re-extraction of docs was not run because no Gemini/Google backend is
+configured; doc changes were re-extracted structurally by the update. The
+tracked Markdown files outside this audit remain scheduled for the full sweep
+recorded in `docs/registers/05-doc-audit.md`.
